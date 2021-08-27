@@ -19,7 +19,8 @@ from uuid import UUID
 import pytest
 from requests import HTTPError
 
-from iqm_client.iqm_client import (CircuitDTO, IQMClient, RunStatus, SingleQubitMappingDTO)
+from iqm_client.iqm_client import (CircuitDTO, IQMClient, RunStatus,
+                                   SingleQubitMappingDTO)
 
 existing_run = UUID("3c3fcda3-e860-46bf-92a4-bcc59fa76ce9")
 missing_run = UUID("059e4186-50a3-4e6c-ba1f-37fe6afbdfc2")
