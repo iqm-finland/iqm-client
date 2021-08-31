@@ -25,7 +25,7 @@ from typing import Any, Optional, Union
 from uuid import UUID
 
 import requests
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 TIMEOUT_SECONDS = 120
 SECONDS_BETWEEN_CALLS = 1
@@ -45,41 +45,62 @@ class RunStatus(str, Enum):
     """
     Status of a task
     """
-    PENDING = "pending"
-    READY = "ready"
-    FAILED = "failed"
+    PENDING = 'pending'
+    READY = 'ready'
+    FAILED = 'failed'
 
 
 class InstructionDTO(BaseModel):
-    """DTO for operations constituting a quantum circuit.
+    """An instruction in a quantum circuit.
     """
-    name: str
-    qubits: list[str]
-    args: dict[str, Any]
+    name: str = Field(..., description='name of the quantum operation', example='phased_rx')
+    'name of the quantum operation'
+    qubits: list[str] = Field(
+        ...,
+        description='names of the logical qubits the operation acts on',
+        example=['q1'],
+    )
+    'names of the logical qubits the operation acts on'
+    args: dict[str, Any] = Field(
+        ...,
+        description='arguments for the operation',
+        example={'angle_t': 0.1, 'phase_t': 0.2},
+    )
+    'arguments for the operation'
 
 
 class CircuitDTO(BaseModel):
-    """DTO for quantum circuits.
+    """Quantum circuit to be executed.
     """
-    name: str
-    args: dict[str, Any]
-    instructions: list[InstructionDTO]
+    name: str = Field(..., description='name of the circuit', example='test circuit')
+    'name of the circuit'
+    args: dict[str, Any] = Field(..., description='arguments for a parameterized circuit', example={})
+    'arguments for a parameterized circuit'
+    instructions: list[InstructionDTO] = Field(..., description='instructions comprising the circuit')
+    'instructions comprising the circuit'
 
 
 class SingleQubitMappingDTO(BaseModel):
-    """Mapping of a logical qubit to a physical qubit.
+    """Mapping of a logical qubit name to a physical qubit name.
     """
-    logical_name: str
-    physical_name: str
+    logical_name: str = Field(..., description='logical name of the qubit', example='q1')
+    'logical name of the qubit'
+    physical_name: str = Field(..., description='physical name of the qubit', example='qubit_1')
+    'physical name of the qubit'
 
 
 class RunRequestDTO(BaseModel):
     """Request for an IQM quantum computer to execute a circuit.
     """
-    qubit_mapping: list[SingleQubitMappingDTO]
-    circuit: CircuitDTO
-    settings: dict[str, Any]
-    shots: int
+    circuit: CircuitDTO = Field(..., description='quantum circuit to compile into a pulse schedule')
+    settings: dict[str, Any] = Field(..., description='EXA settings node containing the calibration data')
+    qubit_mapping: list[SingleQubitMappingDTO] = Field(
+        ...,
+        description='mapping of logical qubit names to physical qubit names'
+    )
+    'mapping of logical qubit names to physical qubit names'
+    shots: int = Field(..., description='how many times to execute the circuit')
+    'how many times to execute the circuit'
 
 
 class RunResult(BaseModel):
@@ -89,9 +110,10 @@ class RunResult(BaseModel):
     * ``message`` carries additional information for the ``'failed'`` status.
     * If the status is ``'pending'``, ``measurements`` and ``message`` are ``None``.
     """
-    status: RunStatus
-    measurements: Optional[dict[str, list[list[int]]]] = None
-    message: Optional[str] = None
+    status: RunStatus = Field(..., description='Current status of the run, either "pending", "ready" or "failed"')
+    measurements: Optional[dict[str, list[list[int]]]] = \
+        Field(None, description='If run has finished successfully, the measurement values for the circuit execution')
+    message: Optional[str] = Field(None, description='If the run failed, an error message')
 
     @staticmethod
     def from_dict(inp: dict[str, Union[str, dict]]) -> RunResult:
@@ -105,7 +127,7 @@ class RunResult(BaseModel):
 
         """
         input_copy = inp.copy()
-        return RunResult(status=RunStatus(input_copy.pop("status")), **input_copy)
+        return RunResult(status=RunStatus(input_copy.pop('status')), **input_copy)
 
 
 class IQMClient:
@@ -113,6 +135,7 @@ class IQMClient:
 
     Args:
         url: Endpoint for accessing the server. Has to start with http or https.
+        settings: Settings for the quantum computer, in IQM JSON format
     """
 
     def __init__(self, url: str, settings: dict[str, Any]):
@@ -143,9 +166,9 @@ class IQMClient:
             shots=shots
         )
 
-        result = requests.post(join(self._base_url, "circuit/run"), json=data.dict())
+        result = requests.post(join(self._base_url, 'circuit/run'), json=data.dict())
         result.raise_for_status()
-        return UUID(json.loads(result.text)["id"])
+        return UUID(json.loads(result.text)['id'])
 
     def get_run(self, run_id: UUID) -> RunResult:
         """Query the status of the running task.
@@ -161,7 +184,7 @@ class IQMClient:
             CircuitExecutionError: IQM server specific exceptions
 
         """
-        result = requests.get(join(self._base_url, "circuit/run/", str(run_id)))
+        result = requests.get(join(self._base_url, 'circuit/run/', str(run_id)))
         result.raise_for_status()
         result = RunResult.from_dict(json.loads(result.text))
         if result.status == RunStatus.FAILED:
