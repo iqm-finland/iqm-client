@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.abspath(py_path))
 
 project = 'IQM client'
 copyright = '2021, IQM'
-author = 'IQM developers'
+author = 'IQM client developers'
 
 # The short X.Y version.
 version = ''

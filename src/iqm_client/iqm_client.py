@@ -1,4 +1,4 @@
-# Copyright 2020–2021 Cirq on IQM developers
+# Copyright 2021 IQM client developers
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -130,7 +130,7 @@ class IQMClient:
         Args:
             circuit: circuit to be executed
             qubit_mapping: mapping of human-readable qubit names to physical qubit names
-            shots: number of times the circuit is sampled
+            shots: number of times the circuit is executed
 
         Returns:
             ID for the created task. This ID is needed to query the status and the execution results.
