@@ -27,7 +27,7 @@ version = ''
 # The full version, including alpha/beta/rc tags.
 release = ''
 try:
-    from cirq_iqm import __version__ as version
+    from iqm_client import __version__ as version
 except ImportError:
     pass
 else:
@@ -106,7 +106,7 @@ html_theme = 'nature'
 #html_static_path = ['_static']
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'cirq_iqm-doc'
+htmlhelp_basename = 'iqm_client-doc'
 
 
 # -- MathJax options ----------------------------------------------------------
@@ -135,8 +135,8 @@ intersphinx_mapping = {
 }
 
 extlinks = {
-    'issue': ('https://github.com/iqm-finland/cirq-on-iqm/issues/%s', 'issue '),
-    'mr': ('https://github.com/iqm-finland/cirq-on-iqm/pull/%s', 'MR '),
+    'issue': ('https://github.com/iqm-finland/iqm-client/issues/%s', 'issue '),
+    'mr': ('https://github.com/iqm-finland/iqm-client/pull/%s', 'MR '),
 }
 
 
