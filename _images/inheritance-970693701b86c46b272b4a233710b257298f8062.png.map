@@ -1,0 +1,13 @@
+<map id="inheritanceccd5403770" name="inheritanceccd5403770">
+<area shape="rect" id="node1" href="iqm_client.iqm_client.APITimeoutError.html#iqm_client.iqm_client.APITimeoutError" target="_top" title="Exception for when executing a task on the server takes too long." alt="" coords="212,153,340,179"/>
+<area shape="rect" id="node2" href="iqm_client.iqm_client.CircuitExecutionError.html#iqm_client.iqm_client.CircuitExecutionError" target="_top" title="Something went wrong on the server." alt="" coords="5,153,164,179"/>
+<area shape="rect" id="node5" href="iqm_client.iqm_client.Circuit.html#iqm_client.iqm_client.Circuit" target="_top" title="Quantum circuit to be executed." alt="" coords="429,5,501,31"/>
+<area shape="rect" id="node8" href="iqm_client.iqm_client.Instruction.html#iqm_client.iqm_client.Instruction" target="_top" title="An instruction in a quantum circuit." alt="" coords="419,55,510,80"/>
+<area shape="rect" id="node9" href="iqm_client.iqm_client.RunRequest.html#iqm_client.iqm_client.RunRequest" target="_top" title="Request for an IQM quantum computer to execute a quantum circuit." alt="" coords="415,104,515,129"/>
+<area shape="rect" id="node10" href="iqm_client.iqm_client.RunResult.html#iqm_client.iqm_client.RunResult" target="_top" title="Results of a circuit execution." alt="" coords="421,153,509,179"/>
+<area shape="rect" id="node12" href="iqm_client.iqm_client.SingleQubitMapping.html#iqm_client.iqm_client.SingleQubitMapping" target="_top" title="Mapping of a logical qubit name to a physical qubit name." alt="" coords="388,203,541,228"/>
+<area shape="rect" id="node4" title="Mixin to provide __str__, __repr__, and __pretty__ methods. See #884 for more details." alt="" coords="24,104,145,129"/>
+<area shape="rect" id="node6" title="Generic enumeration." alt="" coords="49,55,121,80"/>
+<area shape="rect" id="node11" href="iqm_client.iqm_client.RunStatus.html#iqm_client.iqm_client.RunStatus" target="_top" title="Status of a task." alt="" coords="232,55,320,80"/>
+<area shape="rect" id="node7" href="iqm_client.iqm_client.IQMClient.html#iqm_client.iqm_client.IQMClient" target="_top" title="Provides access to IQM quantum computers." alt="" coords="41,5,128,31"/>
+</map>

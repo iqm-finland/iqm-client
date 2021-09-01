@@ -1,0 +1,171 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>iqm_client.iqm_client &#8212; IQM client 1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="iqm_client.iqm_client.Circuit" href="iqm_client.iqm_client.Circuit.html" />
+    <link rel="prev" title="iqm_client" href="iqm_client.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="iqm_client.iqm_client.Circuit.html" title="iqm_client.iqm_client.Circuit"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="iqm_client.html" title="iqm_client"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">IQM client 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../API.html" >API Reference</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="iqm_client.html" accesskey="U">iqm_client</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">iqm_client.iqm_client</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-iqm_client.iqm_client">
+<span id="iqm-client-iqm-client"></span><h1>iqm_client.iqm_client<a class="headerlink" href="#module-iqm_client.iqm_client" title="Permalink to this headline">¶</a></h1>
+<p>Client for connecting to the IQM quantum computer server interface.</p>
+<p class="rubric">Classes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="iqm_client.iqm_client.Circuit.html#iqm_client.iqm_client.Circuit" title="iqm_client.iqm_client.Circuit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Circuit</span></code></a>(*, name, args, instructions)</p></td>
+<td><p>Quantum circuit to be executed.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="iqm_client.iqm_client.IQMClient.html#iqm_client.iqm_client.IQMClient" title="iqm_client.iqm_client.IQMClient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IQMClient</span></code></a>(url, settings)</p></td>
+<td><p>Provides access to IQM quantum computers.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="iqm_client.iqm_client.Instruction.html#iqm_client.iqm_client.Instruction" title="iqm_client.iqm_client.Instruction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Instruction</span></code></a>(*, name, qubits, args)</p></td>
+<td><p>An instruction in a quantum circuit.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="iqm_client.iqm_client.RunRequest.html#iqm_client.iqm_client.RunRequest" title="iqm_client.iqm_client.RunRequest"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RunRequest</span></code></a>(*, circuit, settings, …)</p></td>
+<td><p>Request for an IQM quantum computer to execute a quantum circuit.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="iqm_client.iqm_client.RunResult.html#iqm_client.iqm_client.RunResult" title="iqm_client.iqm_client.RunResult"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RunResult</span></code></a>(*, status[, measurements, message])</p></td>
+<td><p>Results of a circuit execution.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="iqm_client.iqm_client.RunStatus.html#iqm_client.iqm_client.RunStatus" title="iqm_client.iqm_client.RunStatus"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RunStatus</span></code></a>(value)</p></td>
+<td><p>Status of a task.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="iqm_client.iqm_client.SingleQubitMapping.html#iqm_client.iqm_client.SingleQubitMapping" title="iqm_client.iqm_client.SingleQubitMapping"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SingleQubitMapping</span></code></a>(*, logical_name, …)</p></td>
+<td><p>Mapping of a logical qubit name to a physical qubit name.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Exceptions</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="iqm_client.iqm_client.APITimeoutError.html#iqm_client.iqm_client.APITimeoutError" title="iqm_client.iqm_client.APITimeoutError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">APITimeoutError</span></code></a></p></td>
+<td><p>Exception for when executing a task on the server takes too long.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="iqm_client.iqm_client.CircuitExecutionError.html#iqm_client.iqm_client.CircuitExecutionError" title="iqm_client.iqm_client.CircuitExecutionError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CircuitExecutionError</span></code></a></p></td>
+<td><p>Something went wrong on the server.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Inheritance</p>
+<div class="graphviz"><img src="../_images/inheritance-970693701b86c46b272b4a233710b257298f8062.png" alt="Inheritance diagram of iqm_client.iqm_client" usemap="#inheritanceccd5403770" class="inheritance graphviz" /></div>
+<map id="inheritanceccd5403770" name="inheritanceccd5403770">
+<area shape="rect" id="node1" href="iqm_client.iqm_client.APITimeoutError.html#iqm_client.iqm_client.APITimeoutError" target="_top" title="Exception for when executing a task on the server takes too long." alt="" coords="212,153,340,179"/>
+<area shape="rect" id="node2" href="iqm_client.iqm_client.CircuitExecutionError.html#iqm_client.iqm_client.CircuitExecutionError" target="_top" title="Something went wrong on the server." alt="" coords="5,153,164,179"/>
+<area shape="rect" id="node5" href="iqm_client.iqm_client.Circuit.html#iqm_client.iqm_client.Circuit" target="_top" title="Quantum circuit to be executed." alt="" coords="429,5,501,31"/>
+<area shape="rect" id="node8" href="iqm_client.iqm_client.Instruction.html#iqm_client.iqm_client.Instruction" target="_top" title="An instruction in a quantum circuit." alt="" coords="419,55,510,80"/>
+<area shape="rect" id="node9" href="iqm_client.iqm_client.RunRequest.html#iqm_client.iqm_client.RunRequest" target="_top" title="Request for an IQM quantum computer to execute a quantum circuit." alt="" coords="415,104,515,129"/>
+<area shape="rect" id="node10" href="iqm_client.iqm_client.RunResult.html#iqm_client.iqm_client.RunResult" target="_top" title="Results of a circuit execution." alt="" coords="421,153,509,179"/>
+<area shape="rect" id="node12" href="iqm_client.iqm_client.SingleQubitMapping.html#iqm_client.iqm_client.SingleQubitMapping" target="_top" title="Mapping of a logical qubit name to a physical qubit name." alt="" coords="388,203,541,228"/>
+<area shape="rect" id="node11" href="iqm_client.iqm_client.RunStatus.html#iqm_client.iqm_client.RunStatus" target="_top" title="Status of a task." alt="" coords="232,55,320,80"/>
+<area shape="rect" id="node7" href="iqm_client.iqm_client.IQMClient.html#iqm_client.iqm_client.IQMClient" target="_top" title="Provides access to IQM quantum computers." alt="" coords="41,5,128,31"/>
+</map></section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="iqm_client.html"
+                        title="previous chapter">iqm_client</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="iqm_client.iqm_client.Circuit.html"
+                        title="next chapter">iqm_client.iqm_client.Circuit</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/iqm_client.iqm_client.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="iqm_client.iqm_client.Circuit.html" title="iqm_client.iqm_client.Circuit"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="iqm_client.html" title="iqm_client"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">IQM client 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../API.html" >API Reference</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="iqm_client.html" >iqm_client</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">iqm_client.iqm_client</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, IQM.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.0.2.
+    </div>
+  </body>
+</html>

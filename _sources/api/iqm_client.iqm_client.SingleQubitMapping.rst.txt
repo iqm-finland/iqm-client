@@ -1,0 +1,23 @@
+iqm\_client.iqm\_client.SingleQubitMapping
+==========================================
+
+.. currentmodule:: iqm_client.iqm_client
+
+.. autoclass:: SingleQubitMapping
+   :members:
+   :show-inheritance:
+
+   
+   
+   
+
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~SingleQubitMapping.__json_encoder__
+   
+   
