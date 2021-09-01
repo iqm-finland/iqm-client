@@ -43,7 +43,7 @@ class APITimeoutError(CircuitExecutionError):
 
 class RunStatus(str, Enum):
     """
-    Status of a task
+    Status of a task.
     """
     PENDING = 'pending'
     READY = 'ready'
@@ -90,44 +90,51 @@ class SingleQubitMappingDTO(BaseModel):
 
 
 class RunRequestDTO(BaseModel):
-    """Request for an IQM quantum computer to execute a circuit.
+    """Request for an IQM quantum computer to execute a quantum circuit.
     """
-    circuit: CircuitDTO = Field(..., description='quantum circuit to compile into a pulse schedule')
+    circuit: CircuitDTO = Field(..., description='quantum circuit to execute')
+    'quantum circuit to execute'
     settings: dict[str, Any] = Field(..., description='EXA settings node containing the calibration data')
+    'EXA settings node containing the calibration data'
     qubit_mapping: list[SingleQubitMappingDTO] = Field(
         ...,
         description='mapping of logical qubit names to physical qubit names'
     )
     'mapping of logical qubit names to physical qubit names'
-    shots: int = Field(..., description='how many times to execute the circuit')
-    'how many times to execute the circuit'
+    shots: int = Field(..., description='how many times to sample the circuit')
+    'how many times to sample the circuit'
 
 
-class RunResult(BaseModel):
+class RunResultDTO(BaseModel):
     """Results of a circuit execution.
 
     * ``measurements`` is present iff the status is ``'ready'``.
     * ``message`` carries additional information for the ``'failed'`` status.
     * If the status is ``'pending'``, ``measurements`` and ``message`` are ``None``.
     """
-    status: RunStatus = Field(..., description='Current status of the run, either "pending", "ready" or "failed"')
-    measurements: Optional[dict[str, list[list[int]]]] = \
-        Field(None, description='If run has finished successfully, the measurement values for the circuit execution')
-    message: Optional[str] = Field(None, description='If the run failed, an error message')
+    status: RunStatus = Field(..., description='current status of the run, either "pending", "ready" or "failed"')
+    'current status of the run, either "pending", "ready" or "failed"'
+    measurements: Optional[dict[str, list[list[int]]]] = Field(
+        None,
+        description='if the run has finished successfully, the measurement values for the circuit'
+    )
+    'if the run has finished successfully, the measurement values for the circuit'
+    message: Optional[str] = Field(None, description='if the run failed, an error message')
+    'if the run failed, an error message'
 
     @staticmethod
-    def from_dict(inp: dict[str, Union[str, dict]]) -> RunResult:
+    def from_dict(inp: dict[str, Union[str, dict]]) -> RunResultDTO:
         """Parses the result from a dict.
 
         Args:
-            inp: value to parse, has to map to RunResult
+            inp: value to parse, has to map to RunResultDTO
 
         Returns:
-            parsed RunResult
+            parsed run result
 
         """
         input_copy = inp.copy()
-        return RunResult(status=RunStatus(input_copy.pop('status')), **input_copy)
+        return RunResultDTO(status=RunStatus(input_copy.pop('status')), **input_copy)
 
 
 class IQMClient:
@@ -135,9 +142,8 @@ class IQMClient:
 
     Args:
         url: Endpoint for accessing the server. Has to start with http or https.
-        settings: Settings for the quantum computer, in IQM JSON format
+        settings: Settings for the quantum computer, in IQM JSON format.
     """
-
     def __init__(self, url: str, settings: dict[str, Any]):
         self._base_url = url
         self._settings = settings
@@ -152,8 +158,8 @@ class IQMClient:
 
         Args:
             circuit: circuit to be executed
-            qubit_mapping: mapping of human-readable qubit names to physical qubit names
-            shots: number of times the circuit is executed
+            qubit_mapping: mapping of human-readable qubit names in ``circuit`` to physical qubit names
+            shots: number of times ``circuit`` is sampled
 
         Returns:
             ID for the created task. This ID is needed to query the status and the execution results.
@@ -170,7 +176,7 @@ class IQMClient:
         result.raise_for_status()
         return UUID(json.loads(result.text)['id'])
 
-    def get_run(self, run_id: UUID) -> RunResult:
+    def get_run(self, run_id: UUID) -> RunResultDTO:
         """Query the status of the running task.
 
         Args:
@@ -182,16 +188,15 @@ class IQMClient:
         Raises:
             HTTPException: http exceptions
             CircuitExecutionError: IQM server specific exceptions
-
         """
         result = requests.get(join(self._base_url, 'circuit/run/', str(run_id)))
         result.raise_for_status()
-        result = RunResult.from_dict(json.loads(result.text))
+        result = RunResultDTO.from_dict(json.loads(result.text))
         if result.status == RunStatus.FAILED:
             raise CircuitExecutionError(result.message)
         return result
 
-    def wait_for_results(self, run_id: UUID, timeout_secs: float = TIMEOUT_SECONDS) -> RunResult:
+    def wait_for_results(self, run_id: UUID, timeout_secs: float = TIMEOUT_SECONDS) -> RunResultDTO:
         """Poll results until run is ready, failed, or timed out.
 
         Args:
@@ -203,7 +208,6 @@ class IQMClient:
 
         Raises:
             APITimeoutError: time exceeded the set timeout
-
         """
         start_time = datetime.now()
         while (datetime.now() - start_time).total_seconds() < timeout_secs:
