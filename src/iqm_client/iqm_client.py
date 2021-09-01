@@ -50,7 +50,7 @@ class RunStatus(str, Enum):
     FAILED = 'failed'
 
 
-class InstructionDTO(BaseModel):
+class Instruction(BaseModel):
     """An instruction in a quantum circuit.
     """
     name: str = Field(..., description='name of the quantum operation', example='phased_rx')
@@ -69,18 +69,18 @@ class InstructionDTO(BaseModel):
     'arguments for the operation'
 
 
-class CircuitDTO(BaseModel):
+class Circuit(BaseModel):
     """Quantum circuit to be executed.
     """
     name: str = Field(..., description='name of the circuit', example='test circuit')
     'name of the circuit'
     args: dict[str, Any] = Field(..., description='arguments for a parameterized circuit', example={})
     'arguments for a parameterized circuit'
-    instructions: list[InstructionDTO] = Field(..., description='instructions comprising the circuit')
+    instructions: list[Instruction] = Field(..., description='instructions comprising the circuit')
     'instructions comprising the circuit'
 
 
-class SingleQubitMappingDTO(BaseModel):
+class SingleQubitMapping(BaseModel):
     """Mapping of a logical qubit name to a physical qubit name.
     """
     logical_name: str = Field(..., description='logical name of the qubit', example='q1')
@@ -89,23 +89,23 @@ class SingleQubitMappingDTO(BaseModel):
     'physical name of the qubit'
 
 
-class RunRequestDTO(BaseModel):
+class RunRequest(BaseModel):
     """Request for an IQM quantum computer to execute a quantum circuit.
     """
-    circuit: CircuitDTO = Field(..., description='quantum circuit to execute')
+    circuit: Circuit = Field(..., description='quantum circuit to execute')
     'quantum circuit to execute'
     settings: dict[str, Any] = Field(..., description='EXA settings node containing the calibration data')
     'EXA settings node containing the calibration data'
-    qubit_mapping: list[SingleQubitMappingDTO] = Field(
+    qubit_mapping: list[SingleQubitMapping] = Field(
         ...,
         description='mapping of logical qubit names to physical qubit names'
     )
     'mapping of logical qubit names to physical qubit names'
-    shots: int = Field(..., description='how many times to sample the circuit')
-    'how many times to sample the circuit'
+    shots: int = Field(..., description='how many times to execute the circuit')
+    'how many times to execute the circuit'
 
 
-class RunResultDTO(BaseModel):
+class RunResult(BaseModel):
     """Results of a circuit execution.
 
     * ``measurements`` is present iff the status is ``'ready'``.
@@ -123,18 +123,18 @@ class RunResultDTO(BaseModel):
     'if the run failed, an error message'
 
     @staticmethod
-    def from_dict(inp: dict[str, Union[str, dict]]) -> RunResultDTO:
+    def from_dict(inp: dict[str, Union[str, dict]]) -> RunResult:
         """Parses the result from a dict.
 
         Args:
-            inp: value to parse, has to map to RunResultDTO
+            inp: value to parse, has to map to RunResult
 
         Returns:
             parsed run result
 
         """
         input_copy = inp.copy()
-        return RunResultDTO(status=RunStatus(input_copy.pop('status')), **input_copy)
+        return RunResult(status=RunStatus(input_copy.pop('status')), **input_copy)
 
 
 class IQMClient:
@@ -150,8 +150,8 @@ class IQMClient:
 
     def submit_circuit(
             self,
-            circuit: CircuitDTO,
-            qubit_mapping: list[SingleQubitMappingDTO],
+            circuit: Circuit,
+            qubit_mapping: list[SingleQubitMapping],
             shots: int = 1
     ) -> UUID:
         """Submits a quantum circuit to be executed on a quantum computer.
@@ -159,13 +159,13 @@ class IQMClient:
         Args:
             circuit: circuit to be executed
             qubit_mapping: mapping of human-readable qubit names in ``circuit`` to physical qubit names
-            shots: number of times ``circuit`` is sampled
+            shots: number of times ``circuit`` is executed
 
         Returns:
             ID for the created task. This ID is needed to query the status and the execution results.
         """
 
-        data = RunRequestDTO(
+        data = RunRequest(
             qubit_mapping=qubit_mapping,
             circuit=circuit,
             settings=self._settings,
@@ -176,7 +176,7 @@ class IQMClient:
         result.raise_for_status()
         return UUID(json.loads(result.text)['id'])
 
-    def get_run(self, run_id: UUID) -> RunResultDTO:
+    def get_run(self, run_id: UUID) -> RunResult:
         """Query the status of the running task.
 
         Args:
@@ -191,12 +191,12 @@ class IQMClient:
         """
         result = requests.get(join(self._base_url, 'circuit/run/', str(run_id)))
         result.raise_for_status()
-        result = RunResultDTO.from_dict(json.loads(result.text))
+        result = RunResult.from_dict(json.loads(result.text))
         if result.status == RunStatus.FAILED:
             raise CircuitExecutionError(result.message)
         return result
 
-    def wait_for_results(self, run_id: UUID, timeout_secs: float = TIMEOUT_SECONDS) -> RunResultDTO:
+    def wait_for_results(self, run_id: UUID, timeout_secs: float = TIMEOUT_SECONDS) -> RunResult:
         """Poll results until run is ready, failed, or timed out.
 
         Args:

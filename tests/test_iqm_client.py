@@ -19,8 +19,8 @@ from uuid import UUID
 import pytest
 from requests import HTTPError
 
-from iqm_client.iqm_client import (CircuitDTO, IQMClient, RunStatus,
-                                   SingleQubitMappingDTO)
+from iqm_client.iqm_client import (Circuit, IQMClient, RunStatus,
+                                   SingleQubitMapping)
 
 existing_run = UUID("3c3fcda3-e860-46bf-92a4-bcc59fa76ce9")
 missing_run = UUID("059e4186-50a3-4e6c-ba1f-37fe6afbdfc2")
@@ -33,10 +33,10 @@ def test_submit_circuit_returns_id(mock_server, settings_dict, base_url):
     client = IQMClient(base_url, settings_dict)
     run_id = client.submit_circuit(
         qubit_mapping=[
-            SingleQubitMappingDTO(logical_name="Qubit A", physical_name="qubit_1"),
-            SingleQubitMappingDTO(logical_name="Qubit B", physical_name="qubit_2")
+            SingleQubitMapping(logical_name="Qubit A", physical_name="qubit_1"),
+            SingleQubitMapping(logical_name="Qubit B", physical_name="qubit_2")
         ],
-        circuit=CircuitDTO.parse_obj(
+        circuit=Circuit.parse_obj(
             {
                 "name": "The circuit",
                 "args": {
