@@ -53,7 +53,7 @@ class RunStatus(str, Enum):
 class Instruction(BaseModel):
     """An instruction in a quantum circuit.
     """
-    name: str = Field(..., description='name of the quantum operation', example='phased_rx')
+    name: str = Field(..., description='name of the quantum operation', example='measurement')
     'name of the quantum operation'
     qubits: list[str] = Field(
         ...,
@@ -64,7 +64,7 @@ class Instruction(BaseModel):
     args: dict[str, Any] = Field(
         ...,
         description='arguments for the operation',
-        example={'angle_t': 0.1, 'phase_t': 0.2},
+        example={'key': 'm'},
     )
     'arguments for the operation'
 
@@ -180,7 +180,7 @@ class IQMClient:
         """Query the status of the running task.
 
         Args:
-            run_id: id of the taks
+            run_id: id of the task
 
         Returns:
             result of the run (can be pending)
