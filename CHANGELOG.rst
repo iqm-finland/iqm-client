@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 1.2
+===========
+
+Remove unneeded args field from Circuit. `#4 <https://github.com/iqm-finland/iqm-client/pull/4>`_
+
 Version 1.1
 ===========
 
