@@ -74,8 +74,6 @@ class Circuit(BaseModel):
     """
     name: str = Field(..., description='name of the circuit', example='test circuit')
     'name of the circuit'
-    args: dict[str, Any] = Field(..., description='arguments for a parameterized circuit', example={})
-    'arguments for a parameterized circuit'
     instructions: list[Instruction] = Field(..., description='instructions comprising the circuit')
     'instructions comprising the circuit'
 

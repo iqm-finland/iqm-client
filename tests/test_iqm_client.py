@@ -39,9 +39,6 @@ def test_submit_circuit_returns_id(mock_server, settings_dict, base_url):
         circuit=Circuit.parse_obj(
             {
                 "name": "The circuit",
-                "args": {
-                    "alpha": 1.2
-                },
                 "instructions": [
                     {
                         "name": "cz",
