@@ -11,8 +11,82 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""
+r"""
 Client for connecting to the IQM quantum computer server interface.
+
+The :class:`Circuit` class represents quantum circuits to be executed, consisting of a list of
+native quantum operations, each represented by an instance of the :class:`Instruction` class.
+Different Instruction types are distinguished by their ``name``.
+Each Instruction type acts on a number of ``qubits``, and expects certain ``args``.
+
+
+Instructions
+============
+
+We currently support three native instruction types:
+
+================ =========== ====================================== ===========
+name             # of qubits args                                   description
+================ =========== ====================================== ===========
+measurement      >= 1        ``key: str``                           Measurement in the Z basis.
+phased_rx        1           ``angle_t: float``, ``phase_t: float`` Phased x-rotation gate.
+cz               2                                                  Controlled-Z gate.
+================ =========== ====================================== ===========
+
+Measurement
+-----------
+
+Measurement in the computational (Z) basis. The measurement results are the output of the circuit.
+Takes one string argument, ``key``, denoting the measurement key the results are labeled with.
+All the measurement keys in a circuit must be unique.
+Each qubit may only be measured once.
+The measurement must be the last operation on each qubit, i.e. it cannot be followed by gates.
+
+Example: ``Instruction(name='measurement', qubits=['alice', 'bob', 'charlie'], args={'key': 'm1'})``
+
+
+Phased Rx
+---------
+
+Phased x-rotation gate, i.e. an x-rotation conjugated by a z-rotation.
+Takes two arguments, the rotation angle ``angle_t`` and the phase angle ``phase_t``,
+both both measured in units of full turns (:math:`2\pi` radians).
+The gate is represented in the standard computational basis by the matrix
+
+.. math::
+    R(\theta, \phi) = \exp(-i (X \cos (2 \pi \; \phi) + Y \sin (2 \pi \; \phi)) \: \pi \; \theta)
+    = R_z(\phi) R_x(\theta) R_z^\dagger(\phi),
+
+where :math:`\theta` = ``angle_t``, :math:`\phi` = ``phase_t``,
+and :math:`X` and :math:`Y` are Pauli matrices.
+
+Example: ``Instruction(name='phased_rx', qubits=['bob'], args={'angle_t': 0.7, 'phase_t': 0.25})``
+
+
+CZ
+--
+
+Controlled-Z gate. Represented in the standard computational basis by the matrix
+
+.. math:: \text{CZ} = \text{diag}(1, 1, 1, -1).
+
+Symmetric wrt. the qubits it's acting on. Takes no arguments.
+
+Example: ``Instruction(name='cz', qubits=['alice', 'bob'], args={})``
+
+
+Circuit output
+==============
+
+The :class:`RunResult` class represents the results of a quantum circuit execution.
+If the run succeeded, ``RunResult.measurements`` contains the output of the circuit, consisting
+of the results of the measurement operations in the circuit.
+It is a dictionary that maps each measurement key to a 2D array of measurement results, represented as a nested list.
+``RunResult.measurements[key][shot][index]`` is the result of measuring the ``index`` th qubit in measurement
+operation ``key`` in the shot ``shot``. The results are nonnegative integers representing the computational
+basis state (for qubits, 0 or 1) that was the measurement outcome.
+
+----
 """
 from __future__ import annotations
 
@@ -114,9 +188,9 @@ class RunResult(BaseModel):
     'current status of the run, either "pending", "ready" or "failed"'
     measurements: Optional[dict[str, list[list[int]]]] = Field(
         None,
-        description='if the run has finished successfully, the measurement values for the circuit'
+        description='if the run has finished successfully, the measurement results for the circuit'
     )
-    'if the run has finished successfully, the measurement values for the circuit'
+    'if the run has finished successfully, the measurement results for the circuit'
     message: Optional[str] = Field(None, description='if the run failed, an error message')
     'if the run failed, an error message'
 
