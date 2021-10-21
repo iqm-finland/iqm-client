@@ -50,7 +50,7 @@ Phased Rx
 
 Phased x-rotation gate, i.e. an x-rotation conjugated by a z-rotation.
 Takes two arguments, the rotation angle ``angle_t`` and the phase angle ``phase_t``,
-both both measured in units of full turns (:math:`2\pi` radians).
+both measured in units of full turns (:math:`2\pi` radians).
 The gate is represented in the standard computational basis by the matrix
 
 .. math::
