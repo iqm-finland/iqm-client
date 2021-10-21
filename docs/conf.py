@@ -37,7 +37,7 @@ else:
 # -- General configuration ---------------------------------------------------
 
 # require a recent version of Sphinx
-needs_sphinx = '4.0'
+needs_sphinx = '4.2'
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -95,15 +95,45 @@ autosummary_generate = True
 
 # -- Options for HTML output -------------------------------------------------
 
+import sphinx_book_theme
+
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-#
-html_theme = 'nature'
+html_theme = 'sphinx_book_theme'
+
+# Add any paths that contain custom themes here, relative to this directory.
+html_theme_path = [sphinx_book_theme.get_html_theme_path()]
+
+# Theme options are theme-specific and customize the look and feel of a theme
+# further.  For a list of options available for each theme, see the
+# documentation.
+html_theme_options = {
+    'logo_only': True,
+}
+
+# A shorter title for the navigation bar.  Default is the same as html_title.
+# html_short_title = None
+
+# The name of an image file (relative to this directory) to place at the top
+# of the sidebar.
+html_logo = '_static/images/logo.png'
+
+# The name of an image file (within the static path) to use as favicon of the
+# docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
+# pixels large.
+html_favicon = '_static/images/favicon.ico'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-#html_static_path = ['_static']
+html_static_path = ['_static']
+#html_css_files = [
+#    'css/custom.css'
+#]
+
+# If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
+# using the given strftime format.
+html_last_updated_fmt = '%Y-%m-%d'
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'iqm_client-doc'
