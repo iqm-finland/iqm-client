@@ -9,6 +9,14 @@ iqm\_client.iqm\_client.RunResult
 
    
    
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~RunResult.status
+      ~RunResult.measurements
+      ~RunResult.message
+   
    
 
 

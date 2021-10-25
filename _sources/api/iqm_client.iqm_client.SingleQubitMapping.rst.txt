@@ -9,6 +9,13 @@ iqm\_client.iqm\_client.SingleQubitMapping
 
    
    
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~SingleQubitMapping.logical_name
+      ~SingleQubitMapping.physical_name
+   
    
 
 

@@ -9,6 +9,15 @@ iqm\_client.iqm\_client.RunRequest
 
    
    
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~RunRequest.circuit
+      ~RunRequest.settings
+      ~RunRequest.qubit_mapping
+      ~RunRequest.shots
+   
    
 
 

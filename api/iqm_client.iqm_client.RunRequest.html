@@ -4,50 +4,248 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>iqm_client.iqm_client.RunRequest &#8212; IQM client 1.3 documentation</title>
+    
+  <link href="../_static/css/theme.css" rel="stylesheet" />
+  <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
 
-    <title>iqm_client.iqm_client.RunRequest &#8212; IQM client 1.2 documentation</title>
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
+
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="iqm_client.iqm_client.RunResult" href="iqm_client.iqm_client.RunResult.html" />
-    <link rel="prev" title="iqm_client.iqm_client.Instruction" href="iqm_client.iqm_client.Instruction.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="iqm_client.iqm_client.RunResult.html" title="iqm_client.iqm_client.RunResult"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="iqm_client.iqm_client.Instruction.html" title="iqm_client.iqm_client.Instruction"
-             accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">IQM client 1.2 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../API.html" >API Reference</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="iqm_client.html" >iqm_client</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="iqm_client.iqm_client.html" accesskey="U">iqm_client.iqm_client</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">iqm_client.iqm_client.RunRequest</a></li> 
-      </ul>
-    </div>  
+    <link rel="prev" title="iqm_client.iqm_client.Instruction" href="iqm_client.iqm_client.Instruction.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="../index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
+      
+      <img src="../_static/logo.png" class="logo" alt="logo">
+      
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../readme.html">
+   IQM Client
+  </a>
+ </li>
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="../API.html">
+   API Reference
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2 current active has-children">
+    <a class="reference internal" href="iqm_client.html">
+     iqm_client
+    </a>
+    <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+    <label for="toctree-checkbox-2">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul class="current">
+     <li class="toctree-l3 current active has-children">
+      <a class="reference internal" href="iqm_client.iqm_client.html">
+       iqm_client.iqm_client
+      </a>
+      <input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+      <label for="toctree-checkbox-3">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul class="current">
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.Circuit.html">
+         iqm_client.iqm_client.Circuit
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.IQMClient.html">
+         iqm_client.iqm_client.IQMClient
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.Instruction.html">
+         iqm_client.iqm_client.Instruction
+        </a>
+       </li>
+       <li class="toctree-l4 current active">
+        <a class="current reference internal" href="#">
+         iqm_client.iqm_client.RunRequest
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.RunResult.html">
+         iqm_client.iqm_client.RunResult
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.RunStatus.html">
+         iqm_client.iqm_client.RunStatus
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.SingleQubitMapping.html">
+         iqm_client.iqm_client.SingleQubitMapping
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.APITimeoutError.html">
+         iqm_client.iqm_client.APITimeoutError
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.CircuitExecutionError.html">
+         iqm_client.iqm_client.CircuitExecutionError
+        </a>
+       </li>
+      </ul>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../license.html">
+   License
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../authors.html">
+   Contributors
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../changelog.html">
+   Changelog
+  </a>
+ </li>
+</ul>
+
+    </div>
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
             
-  <section id="iqm-client-iqm-client-runrequest">
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../_sources/api/iqm_client.iqm_client.RunRequest.rst.txt"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.rst</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+            <!-- Source interaction buttons -->
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+
+<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+        title="Fullscreen mode"><i
+            class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
+        </div>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="iqm-client-iqm-client-runrequest">
 <h1>iqm_client.iqm_client.RunRequest<a class="headerlink" href="#iqm-client-iqm-client-runrequest" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="iqm_client.iqm_client.RunRequest">
@@ -56,8 +254,29 @@
 <p>Request for an IQM quantum computer to execute a quantum circuit.</p>
 <p>Create a new model by parsing and validating input data from keyword arguments.</p>
 <p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
+<p class="rubric">Attributes</p>
+<table class="longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.RunRequest.circuit" title="iqm_client.iqm_client.RunRequest.circuit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">circuit</span></code></a></p></td>
+<td><p>quantum circuit to execute</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm_client.iqm_client.RunRequest.settings" title="iqm_client.iqm_client.RunRequest.settings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">settings</span></code></a></p></td>
+<td><p>EXA settings node containing the calibration data</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.RunRequest.qubit_mapping" title="iqm_client.iqm_client.RunRequest.qubit_mapping"><code class="xref py py-obj docutils literal notranslate"><span class="pre">qubit_mapping</span></code></a></p></td>
+<td><p>mapping of logical qubit names to physical qubit names</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm_client.iqm_client.RunRequest.shots" title="iqm_client.iqm_client.RunRequest.shots"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shots</span></code></a></p></td>
+<td><p>how many times to execute the circuit</p></td>
+</tr>
+</tbody>
+</table>
 <p class="rubric">Methods</p>
-<table class="longtable docutils align-default">
+<table class="longtable table autosummary">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
@@ -72,8 +291,8 @@
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>circuit</strong> (<a class="reference internal" href="iqm_client.iqm_client.Circuit.html#iqm_client.iqm_client.Circuit" title="iqm_client.iqm_client.Circuit"><em>iqm_client.iqm_client.Circuit</em></a>) – </p></li>
-<li><p><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – </p></li>
-<li><p><strong>qubit_mapping</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – </p></li>
+<li><p><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>typing.Any</em><em>]</em>) – </p></li>
+<li><p><strong>qubit_mapping</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference internal" href="iqm_client.iqm_client.SingleQubitMapping.html#iqm_client.iqm_client.SingleQubitMapping" title="iqm_client.iqm_client.SingleQubitMapping"><em>iqm_client.iqm_client.SingleQubitMapping</em></a><em>]</em>) – </p></li>
 <li><p><strong>shots</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – </p></li>
 </ul>
 </dd>
@@ -89,13 +308,13 @@
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="iqm_client.iqm_client.RunRequest.settings">
-<span class="sig-name descname"><span class="pre">settings</span></span><em class="property"><span class="pre">:</span> <a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><span class="pre">dict</span></a></em><a class="headerlink" href="#iqm_client.iqm_client.RunRequest.settings" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">settings</span></span><em class="property"><span class="pre">:</span> <a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">typing.Any</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#iqm_client.iqm_client.RunRequest.settings" title="Permalink to this definition">¶</a></dt>
 <dd><p>EXA settings node containing the calibration data</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="iqm_client.iqm_client.RunRequest.qubit_mapping">
-<span class="sig-name descname"><span class="pre">qubit_mapping</span></span><em class="property"><span class="pre">:</span> <a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><span class="pre">list</span></a></em><a class="headerlink" href="#iqm_client.iqm_client.RunRequest.qubit_mapping" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">qubit_mapping</span></span><em class="property"><span class="pre">:</span> <a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="iqm_client.iqm_client.SingleQubitMapping.html#iqm_client.iqm_client.SingleQubitMapping" title="iqm_client.iqm_client.SingleQubitMapping"><span class="pre">iqm_client.iqm_client.SingleQubitMapping</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#iqm_client.iqm_client.RunRequest.qubit_mapping" title="Permalink to this definition">¶</a></dt>
 <dd><p>mapping of logical qubit names to physical qubit names</p>
 </dd></dl>
 
@@ -107,67 +326,60 @@
 
 </dd></dl>
 
-</section>
-
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="iqm_client.iqm_client.Instruction.html"
-                        title="previous chapter">iqm_client.iqm_client.Instruction</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="iqm_client.iqm_client.RunResult.html"
-                        title="next chapter">iqm_client.iqm_client.RunResult</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/api/iqm_client.iqm_client.RunRequest.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
-    </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+
+
+              </div>
+              
+        
+            
+
+
+
+<div class='prev-next-bottom'>
+    
+    <div id="prev">
+        <a class="left-prev" href="iqm_client.iqm_client.Instruction.html" title="previous page">
+            <i class="prevnext-label fas fa-angle-left"></i>
+            <div class="prevnext-info">
+                <p class="prevnext-label">previous</p>
+                <p class="prevnext-title">iqm_client.iqm_client.Instruction</p>
+            </div>
+        </a>
+    </div>
+     <div id="next">
+        <a class="right-next" href="iqm_client.iqm_client.RunResult.html" title="next page">
+            <div class="prevnext-info">
+                <p class="prevnext-label">next</p>
+                <p class="prevnext-title">iqm_client.iqm_client.RunResult</p>
+            </div>
+            <i class="prevnext-label fas fa-angle-right"></i>
+        </a>
+     </div>
+
+</div>
+        
         </div>
+    </div>
+    <footer class="footer">
+    <div class="container">
+      <p>
+        
+          By IQM client developers<br/>
+        
+            &copy; Copyright 2021, IQM.<br/>
+          Last updated on 2021-10-25.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
       </div>
-      <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="iqm_client.iqm_client.RunResult.html" title="iqm_client.iqm_client.RunResult"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="iqm_client.iqm_client.Instruction.html" title="iqm_client.iqm_client.Instruction"
-             >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">IQM client 1.2 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../API.html" >API Reference</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="iqm_client.html" >iqm_client</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="iqm_client.iqm_client.html" >iqm_client.iqm_client</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">iqm_client.iqm_client.RunRequest</a></li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2021, IQM.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.0.2.
-    </div>
+  
+  <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
+
+  
   </body>
 </html>

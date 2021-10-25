@@ -9,6 +9,14 @@ iqm\_client.iqm\_client.Instruction
 
    
    
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Instruction.name
+      ~Instruction.qubits
+      ~Instruction.args
+   
    
 
 

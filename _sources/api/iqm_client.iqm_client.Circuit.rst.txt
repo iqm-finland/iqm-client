@@ -9,6 +9,13 @@ iqm\_client.iqm\_client.Circuit
 
    
    
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Circuit.name
+      ~Circuit.instructions
+   
    
 
 
