@@ -1,0 +1,13 @@
+name: Create tag and release
+
+on:
+  pull_request:
+
+jobs:
+  create_tag_and_release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Create a new tag
+        run: echo test
