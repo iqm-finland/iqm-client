@@ -10,4 +10,4 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Create a new tag
-        run: echo test
+        run: echo Hello

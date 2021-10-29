@@ -21,3 +21,5 @@ jobs:
           pip install -e ".[dev]"
       - name: Run tests
         run: tox -e tests
+      - name: Check version in changelog
+        run: bash ./tag-from-pipeline.sh verify_changelog_version
