@@ -101,7 +101,7 @@ from uuid import UUID
 import requests
 from pydantic import BaseModel, Field
 
-TIMEOUT_SECONDS = 120
+DEFAULT_TIMEOUT_SECONDS = 900
 SECONDS_BETWEEN_CALLS = 1
 
 
@@ -268,7 +268,7 @@ class IQMClient:
             raise CircuitExecutionError(result.message)
         return result
 
-    def wait_for_results(self, run_id: UUID, timeout_secs: float = TIMEOUT_SECONDS) -> RunResult:
+    def wait_for_results(self, run_id: UUID, timeout_secs: float = DEFAULT_TIMEOUT_SECONDS) -> RunResult:
         """Poll results until run is ready, failed, or timed out.
 
         Args:
