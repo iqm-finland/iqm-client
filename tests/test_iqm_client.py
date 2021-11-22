@@ -30,7 +30,7 @@ def test_submit_circuit_returns_id(mock_server, settings_dict, base_url):
     """
     Tests sending a circuit
     """
-    client = IQMClient(base_url, settings_dict, username=None, api_key=None)
+    client = IQMClient(base_url, settings_dict)
     run_id = client.submit_circuit(
         qubit_mapping=[
             SingleQubitMapping(logical_name='Qubit A', physical_name='qubit_1'),
@@ -79,7 +79,7 @@ def test_get_run_status_for_existing_run(mock_server, base_url, settings_dict):
     """
     Tests getting the run status
     """
-    client = IQMClient(base_url, settings_dict, username=None, api_key=None)
+    client = IQMClient(base_url, settings_dict)
     assert client.get_run(existing_run).status == RunStatus.PENDING
     assert client.get_run(existing_run).status == RunStatus.READY
 
@@ -88,7 +88,7 @@ def test_get_run_status_for_missing_run(mock_server, base_url, settings_dict):
     """
     Tests getting a task that was not created
     """
-    client = IQMClient(base_url, settings_dict, username=None, api_key=None)
+    client = IQMClient(base_url, settings_dict)
     with pytest.raises(HTTPError):
         assert client.get_run(missing_run)
 
@@ -97,17 +97,31 @@ def test_waiting_for_results(mock_server, base_url, settings_dict):
     """
     Tests waiting for results for an existing task
     """
-    client = IQMClient(base_url, settings_dict, username=None, api_key=None)
+    client = IQMClient(base_url, settings_dict)
     assert client.wait_for_results(existing_run).status == RunStatus.READY
 
 
-def test_credentials_passed_to_server(base_url, settings_dict):
+def test_credentials_passed_to_server_from_arguments(base_url, settings_dict):
     """
     Tests that if the client is initialized with credentials, they are passed to the server correctly.
     """
     fake_username = 'a user'
     fake_api_key = 'an api key'
     client = IQMClient(base_url, settings_dict, username=fake_username, api_key=fake_api_key)
+    with when(requests).get(f'{base_url}/circuit/run/{existing_run}', auth=(fake_username, fake_api_key))\
+            .thenReturn(mock({'status_code': 200, 'text': json.dumps({'status': 'pending'})})):
+        client.get_run(existing_run)
+
+
+def test_credentials_passed_to_server_from_env_variables(base_url, settings_dict, monkeypatch):
+    """
+    Tests that credentials are read from environment variables
+    """
+    fake_username = 'fake username'
+    fake_api_key = 'fake key'
+    monkeypatch.setenv('IQM_SERVER_USERNAME', fake_username)
+    monkeypatch.setenv('IQM_SERVER_API_KEY', fake_api_key)
+    client = IQMClient(base_url, settings_dict)
     with when(requests).get(f'{base_url}/circuit/run/{existing_run}', auth=(fake_username, fake_api_key))\
             .thenReturn(mock({'status_code': 200, 'text': json.dumps({'status': 'pending'})})):
         client.get_run(existing_run)

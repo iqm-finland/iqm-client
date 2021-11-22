@@ -230,7 +230,8 @@ class IQMClient:
         api_key: API key, if required by the IQM Cortex server. This can also be set in the IQM_SERVER_API_KEY
                  environment variable.
     """
-    def __init__(self, url: str, settings: dict[str, Any], username: Optional[str], api_key: Optional[str]):
+    def __init__(self, url: str, settings: dict[str, Any],
+                 username: Optional[str] = None, api_key: Optional[str] = None):
         self._base_url = url
         self._settings = settings
         self._credentials = _get_credentials(username, api_key)
