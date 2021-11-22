@@ -21,5 +21,11 @@ jobs:
           pip install -e ".[dev]"
       - name: Run tests
         run: tox -e tests
+      - name: Log in to the Container registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Check version in changelog
         run: bash ./tag-from-pipeline.sh verify_changelog_version
