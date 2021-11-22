@@ -2,7 +2,12 @@
 Changelog
 =========
 
-Version 1.2
+Version 1.4
+===========
+
+* Increase default timeout. `#8 <https://github.com/iqm-finland/iqm-client/pull/8>`_
+
+Version 1.3
 ===========
 
 Features
