@@ -14,59 +14,59 @@
 """Tests for the IQM client.
 """
 # pylint: disable=unused-argument
-from uuid import UUID
+import json
 
 import pytest
+import requests
+from mockito import mock, when
 from requests import HTTPError
 
 from iqm_client.iqm_client import (Circuit, IQMClient, RunStatus,
                                    SingleQubitMapping)
-
-existing_run = UUID("3c3fcda3-e860-46bf-92a4-bcc59fa76ce9")
-missing_run = UUID("059e4186-50a3-4e6c-ba1f-37fe6afbdfc2")
+from tests.conftest import existing_run, missing_run
 
 
 def test_submit_circuit_returns_id(mock_server, settings_dict, base_url):
     """
     Tests sending a circuit
     """
-    client = IQMClient(base_url, settings_dict)
+    client = IQMClient(base_url, settings_dict, username=None, api_key=None)
     run_id = client.submit_circuit(
         qubit_mapping=[
-            SingleQubitMapping(logical_name="Qubit A", physical_name="qubit_1"),
-            SingleQubitMapping(logical_name="Qubit B", physical_name="qubit_2")
+            SingleQubitMapping(logical_name='Qubit A', physical_name='qubit_1'),
+            SingleQubitMapping(logical_name='Qubit B', physical_name='qubit_2')
         ],
         circuit=Circuit.parse_obj(
             {
-                "name": "The circuit",
-                "instructions": [
+                'name': 'The circuit',
+                'instructions': [
                     {
-                        "name": "cz",
-                        "qubits": [
-                            "Qubit A",
-                            "Qubit B"
+                        'name': 'cz',
+                        'qubits': [
+                            'Qubit A',
+                            'Qubit B'
                         ],
-                        "args": {}
+                        'args': {}
                     },
                     {
-                        "name": "rotation",
-                        "qubits": [
-                            "Qubit A"
+                        'name': 'rotation',
+                        'qubits': [
+                            'Qubit A'
                         ],
-                        "args": {
-                            "phase_t": 1.22,
-                            "angle_t": {
-                                "expr": "{{alpha}}/2"
+                        'args': {
+                            'phase_t': 1.22,
+                            'angle_t': {
+                                'expr': '{{alpha}}/2'
                             }
                         }
                     },
                     {
-                        "name": "measurement",
-                        "qubits": [
-                            "Qubit A"
+                        'name': 'measurement',
+                        'qubits': [
+                            'Qubit A'
                         ],
-                        "args": {
-                            "output_label": "A"
+                        'args': {
+                            'output_label': 'A'
                         }
                     }
                 ]
@@ -79,7 +79,7 @@ def test_get_run_status_for_existing_run(mock_server, base_url, settings_dict):
     """
     Tests getting the run status
     """
-    client = IQMClient(base_url, settings_dict)
+    client = IQMClient(base_url, settings_dict, username=None, api_key=None)
     assert client.get_run(existing_run).status == RunStatus.PENDING
     assert client.get_run(existing_run).status == RunStatus.READY
 
@@ -88,7 +88,7 @@ def test_get_run_status_for_missing_run(mock_server, base_url, settings_dict):
     """
     Tests getting a task that was not created
     """
-    client = IQMClient(base_url, settings_dict)
+    client = IQMClient(base_url, settings_dict, username=None, api_key=None)
     with pytest.raises(HTTPError):
         assert client.get_run(missing_run)
 
@@ -97,5 +97,17 @@ def test_waiting_for_results(mock_server, base_url, settings_dict):
     """
     Tests waiting for results for an existing task
     """
-    client = IQMClient(base_url, settings_dict)
+    client = IQMClient(base_url, settings_dict, username=None, api_key=None)
     assert client.wait_for_results(existing_run).status == RunStatus.READY
+
+
+def test_credentials_passed_to_server(base_url, settings_dict):
+    """
+    Tests that if the client is initialized with credentials, they are passed to the server correctly.
+    """
+    fake_username = 'a user'
+    fake_api_key = 'an api key'
+    client = IQMClient(base_url, settings_dict, username=fake_username, api_key=fake_api_key)
+    with when(requests).get(f'{base_url}/circuit/run/{existing_run}', auth=(fake_username, fake_api_key))\
+            .thenReturn(mock({'status_code': 200, 'text': json.dumps({'status': 'pending'})})):
+        client.get_run(existing_run)
