@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 1.5
+===========
+
+* Implement HTTP Basic auth. `#9 <https://github.com/iqm-finland/iqm-client/pull/9>`_
+
 Version 1.4
 ===========
 
