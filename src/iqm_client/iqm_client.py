@@ -210,8 +210,12 @@ class RunResult(BaseModel):
         return RunResult(status=RunStatus(input_copy.pop('status')), **input_copy)
 
 
-def _get_credentials(username: str, api_key: str) -> Optional[tuple[str, str]]:
-    """Obtain credentials from environment or parameters if available"""
+def _get_credentials(username: Optional[str], api_key: Optional[str]) -> Optional[tuple[str, str]]:
+    """Try to obtain credentials, first from arguments, then from environment variables.
+
+    Returns:
+        (username, API key), or ``None`` if credentials could not be found.
+    """
     uname = username or os.environ.get('IQM_SERVER_USERNAME')
     key = api_key or os.environ.get('IQM_SERVER_API_KEY')
     if uname and key:
@@ -225,13 +229,18 @@ class IQMClient:
     Args:
         url: Endpoint for accessing the server. Has to start with http or https.
         settings: Settings for the quantum computer, in IQM JSON format.
-        username: username, if required by the IQM server. This can also be set in the IQM_SERVER_USERNAME
-                  environment variable.
-        api_key: API key, if required by the IQM server. This can also be set in the IQM_SERVER_API_KEY
-                 environment variable.
+        username: Username, if required by the IQM server.
+            This can also be set in the IQM_SERVER_USERNAME environment variable.
+        api_key: API key, if required by the IQM server.
+            This can also be set in the IQM_SERVER_API_KEY environment variable.
     """
-    def __init__(self, url: str, settings: dict[str, Any],
-                 username: Optional[str] = None, api_key: Optional[str] = None):
+    def __init__(
+            self,
+            url: str,
+            settings: dict[str, Any],
+            username: Optional[str] = None,
+            api_key: Optional[str] = None
+    ):
         self._base_url = url
         self._settings = settings
         self._credentials = _get_credentials(username, api_key)
@@ -260,8 +269,11 @@ class IQMClient:
             shots=shots
         )
 
-        result = requests.post(join(self._base_url, 'circuit/run'), json=data.dict(),
-                               auth=self._credentials)
+        result = requests.post(
+            join(self._base_url, 'circuit/run'),
+            json=data.dict(),
+            auth=self._credentials
+        )
         result.raise_for_status()
         return UUID(json.loads(result.text)['id'])
 
