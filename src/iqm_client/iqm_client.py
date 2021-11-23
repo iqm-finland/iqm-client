@@ -212,8 +212,8 @@ class RunResult(BaseModel):
 
 def _get_credentials(username: str, api_key: str) -> Optional[tuple[str, str]]:
     """Obtain credentials from environment or parameters if available"""
-    uname = username if username else os.environ.get('IQM_SERVER_USERNAME')
-    key = api_key if api_key else os.environ.get('IQM_SERVER_API_KEY')
+    uname = username or os.environ.get('IQM_SERVER_USERNAME')
+    key = api_key or os.environ.get('IQM_SERVER_API_KEY')
     if uname and key:
         return uname, key
     return None
@@ -225,9 +225,9 @@ class IQMClient:
     Args:
         url: Endpoint for accessing the server. Has to start with http or https.
         settings: Settings for the quantum computer, in IQM JSON format.
-        username: username, if required by the IQM Cortex server. This can also be set in the IQM_SERVER_USERNAME
+        username: username, if required by the IQM server. This can also be set in the IQM_SERVER_USERNAME
                   environment variable.
-        api_key: API key, if required by the IQM Cortex server. This can also be set in the IQM_SERVER_API_KEY
+        api_key: API key, if required by the IQM server. This can also be set in the IQM_SERVER_API_KEY
                  environment variable.
     """
     def __init__(self, url: str, settings: dict[str, Any],
