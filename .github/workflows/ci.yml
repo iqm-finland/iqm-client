@@ -12,6 +12,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
@@ -21,14 +23,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
           sudo apt-get install graphviz
+      - name: Print current version
+        run: |
+          echo hello
+          t=$(git tag -l --sort=-version:refname | grep -E "^[0-9]+(\.[0-9]){1,2}$" | head -n 1)
+          echo $t
       - name: Run tests
         run: tox -e tests
-      - name: Log in to the Container registry
-        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ secrets.PYPI_USER  }}
-          password: ${{ secrets.PYPI_PASSWORD }}
       - name: Check version in changelog
         run: bash ./tag-from-pipeline.sh verify_changelog_version
       - name: Test docs can be built
