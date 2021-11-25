@@ -21,6 +21,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
+          sudo apt-get install graphviz
       - name: Run tests
         run: tox -e tests
       - name: Log in to the Container registry
@@ -31,3 +32,5 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Check version in changelog
         run: bash ./tag-from-pipeline.sh verify_changelog_version
+      - name: Test docs can be built
+        run: tox -e docs
