@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      checks: read
 
     steps:
       - uses: actions/checkout@v2
