@@ -8,19 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      checks: read
-      contents: read
-      deployments: read
-      id-token: read
-      issues: read
-      discussions: read
-      packages: read
-      pull-requests: read
-      repository-projects: read
-      security-events: read
-      statuses: read
+
 
     steps:
       - uses: actions/checkout@v2
@@ -39,8 +27,8 @@ jobs:
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
         with:
           registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ secrets.PYPI_USER  }}
+          password: ${{ secrets.PYPI_PASSWORD }}
       - name: Check version in changelog
         run: bash ./tag-from-pipeline.sh verify_changelog_version
       - name: Test docs can be built
