@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 10
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
