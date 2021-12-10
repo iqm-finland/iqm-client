@@ -26,8 +26,7 @@ jobs:
       - name: Print current version
         run: |
           echo hello
-          t=$(git tag -l --sort=-version:refname | grep -E "^[0-9]+(\.[0-9]){1,2}$" | head -n 1)
-          echo $t
+          git tag
       - name: Run tests
         run: tox -e tests
       - name: Check version in changelog
