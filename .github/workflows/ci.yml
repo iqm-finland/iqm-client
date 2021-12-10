@@ -9,7 +9,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-
     steps:
       - uses: actions/checkout@v2
         with:
@@ -23,10 +22,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
           sudo apt-get install graphviz
-      - name: Print current version
-        run: |
-          echo hello
-          git tag
       - name: Run tests
         run: tox -e tests
       - name: Check version in changelog
