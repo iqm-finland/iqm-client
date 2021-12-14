@@ -1,7 +1,9 @@
 name: Create tag and release
 
 on:
-  pull_request:
+  push:
+    paths:
+      - 'CHANGELOG.rst'
 
 jobs:
   create_tag_and_release:
@@ -9,5 +11,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Create a new tag
-        run: echo Hello
+        with:
+          fetch-depth: 0
+      - name: Check version in changelog
+        run: bash ./tag-from-pipeline.sh verify_changelog_version
+      - name: Create new tag and release
+        if: ${{ github.ref == 'refs/heads/main' }}
+        run: bash ./tag-from-pipeline.sh create_new_tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

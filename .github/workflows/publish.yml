@@ -1,4 +1,4 @@
-name: Release to PyPI
+name: Upload to PyPI and publish documentation
 
 on:
   release:
