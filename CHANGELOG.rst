@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 1.6
+===========
+
+* Implement automatic tagging and releasing. `#7 <https://github.com/iqm-finland/iqm-client/pull/7>`_
+
 Version 1.5
 ===========
 
