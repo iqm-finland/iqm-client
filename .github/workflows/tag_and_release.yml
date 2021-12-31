@@ -38,3 +38,6 @@ jobs:
   trigger_publishing:
     needs: create_tag_and_release
     uses: iqm-finland/iqm-client/.github/workflows/publish.yml@main
+    secrets:
+      PYPI_USER: ${{ secrets.PYPI_USER }}
+      PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
