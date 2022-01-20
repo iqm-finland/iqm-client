@@ -93,6 +93,7 @@ from __future__ import annotations
 import json
 import os
 import time
+import warnings
 from datetime import datetime
 from enum import Enum
 from posixpath import join
@@ -194,6 +195,8 @@ class RunResult(BaseModel):
     'if the run has finished successfully, the measurement results for the circuit'
     message: Optional[str] = Field(None, description='if the run failed, an error message')
     'if the run failed, an error message'
+    warnings: Optional[str] = Field(None, description='newline separated warning messages')
+    'newline separated warning messages'
 
     @staticmethod
     def from_dict(inp: dict[str, Union[str, dict]]) -> RunResult:
@@ -281,6 +284,8 @@ class IQMClient:
         result = requests.get(join(self._base_url, 'circuit/run/', str(run_id)), auth=self._credentials)
         result.raise_for_status()
         result = RunResult.from_dict(json.loads(result.text))
+        if result.warnings:
+            warnings.warn(result.warnings)
         if result.status == RunStatus.FAILED:
             raise CircuitExecutionError(result.message)
         return result
