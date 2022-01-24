@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 1.7
+===========
+
+* Emit warnings in server response as python UserWarning. `#15 <https://github.com/iqm-finland/iqm-client/pull/15>`_
+
 Version 1.6
 ===========
 
