@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>iqm_client.iqm_client.RunResult &#8212; IQM client 0.0.post1.dev1+gceaa300 documentation</title>
+    <title>iqm_client.iqm_client.RunResult &#8212; IQM client 0.0.post1.dev1+g2369d76 documentation</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet" />
   <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -249,7 +249,7 @@
 <h1>iqm_client.iqm_client.RunResult<a class="headerlink" href="#iqm-client-iqm-client-runresult" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="iqm_client.iqm_client.RunResult">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">iqm_client.iqm_client.</span></span><span class="sig-name descname"><span class="pre">RunResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurements</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm_client.iqm_client.RunResult" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">iqm_client.iqm_client.</span></span><span class="sig-name descname"><span class="pre">RunResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurements</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warnings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm_client.iqm_client.RunResult" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pydantic.main.BaseModel</span></code></p>
 <p>Results of a circuit execution.</p>
 <ul class="simple">
@@ -275,6 +275,9 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.RunResult.message" title="iqm_client.iqm_client.RunResult.message"><code class="xref py py-obj docutils literal notranslate"><span class="pre">message</span></code></a></p></td>
 <td><p>if the run failed, an error message</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm_client.iqm_client.RunResult.warnings" title="iqm_client.iqm_client.RunResult.warnings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">warnings</span></code></a></p></td>
+<td><p>list of warning messages</p></td>
+</tr>
 </tbody>
 </table>
 <p class="rubric">Methods</p>
@@ -298,6 +301,7 @@
 <li><p><strong>status</strong> (<a class="reference internal" href="iqm_client.iqm_client.RunStatus.html#iqm_client.iqm_client.RunStatus" title="iqm_client.iqm_client.RunStatus"><em>iqm_client.iqm_client.RunStatus</em></a>) – </p></li>
 <li><p><strong>measurements</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em><em>]</em><em>]</em><em>]</em>) – </p></li>
 <li><p><strong>message</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – </p></li>
+<li><p><strong>warnings</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em><em>]</em>) – </p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -320,6 +324,12 @@
 <dt class="sig sig-object py" id="iqm_client.iqm_client.RunResult.message">
 <span class="sig-name descname"><span class="pre">message</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#iqm_client.iqm_client.RunResult.message" title="Permalink to this definition">¶</a></dt>
 <dd><p>if the run failed, an error message</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="iqm_client.iqm_client.RunResult.warnings">
+<span class="sig-name descname"><span class="pre">warnings</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#iqm_client.iqm_client.RunResult.warnings" title="Permalink to this definition">¶</a></dt>
+<dd><p>list of warning messages</p>
 </dd></dl>
 
 <dl class="py method">
@@ -383,7 +393,7 @@
           By IQM client developers<br/>
         
             &copy; Copyright 2021, IQM.<br/>
-          Last updated on 2021-12-15.<br/>
+          Last updated on 2022-01-25.<br/>
       </p>
     </div>
   </footer>

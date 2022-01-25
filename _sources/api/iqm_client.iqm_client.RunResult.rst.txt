@@ -16,6 +16,7 @@ iqm\_client.iqm\_client.RunResult
       ~RunResult.status
       ~RunResult.measurements
       ~RunResult.message
+      ~RunResult.warnings
    
    
 
