@@ -125,3 +125,12 @@ def test_credentials_passed_to_server_from_env_variables(base_url, settings_dict
     with when(requests).get(f'{base_url}/circuit/run/{existing_run}', auth=(fake_username, fake_api_key))\
             .thenReturn(mock({'status_code': 200, 'text': json.dumps({'status': 'pending'})})):
         client.get_run(existing_run)
+
+
+def test_user_warning_is_emitted_when_warnings_in_response(base_url, settings_dict, capsys):
+    client = IQMClient(base_url, settings_dict)
+    msg = 'This is a warning msg'
+    with when(requests).get(f'{base_url}/circuit/run/{existing_run}', auth=None) \
+            .thenReturn(mock({'status_code': 200, 'text': json.dumps({'status': 'ready', 'warnings': [msg]})})):
+        with pytest.warns(UserWarning, match=msg):
+            client.get_run(existing_run)
