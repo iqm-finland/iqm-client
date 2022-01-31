@@ -263,7 +263,8 @@ class IQMClient:
             shots=shots
         )
 
-        result = requests.post(join(self._base_url, 'circuit/run'), json=data.dict(),
+        headers = {'Expect': '100-Continue'}
+        result = requests.post(join(self._base_url, 'circuit/run'), headers=headers, json=data.dict(),
                                auth=self._credentials)
         result.raise_for_status()
         return UUID(json.loads(result.text)['id'])
