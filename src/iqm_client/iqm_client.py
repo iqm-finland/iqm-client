@@ -1,4 +1,4 @@
-# Copyright 2021 IQM client developers
+# Copyright 2021-2022 IQM client developers
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,8 +16,9 @@ Client for connecting to the IQM quantum computer server interface.
 
 The :class:`Circuit` class represents quantum circuits to be executed, consisting of a list of
 native quantum operations, each represented by an instance of the :class:`Instruction` class.
-Different Instruction types are distinguished by their ``name``.
-Each Instruction type acts on a number of ``qubits``, and expects certain ``args``.
+Different Instruction types are distinguished by their :attr:`~Instruction.name`.
+Each Instruction type acts on a number of :attr:`~Instruction.qubits`, and expects certain
+:attr:`~Instruction.args`.
 
 
 Instructions
@@ -79,10 +80,10 @@ Circuit output
 ==============
 
 The :class:`RunResult` class represents the results of a quantum circuit execution.
-If the run succeeded, ``RunResult.measurements`` contains the output of the circuit, consisting
+If the run succeeded, :attr:`RunResult.measurements` contains the output of the circuit, consisting
 of the results of the measurement operations in the circuit.
 It is a dictionary that maps each measurement key to a 2D array of measurement results, represented as a nested list.
-``RunResult.measurements[key][shot][index]`` is the result of measuring the ``index`` th qubit in measurement
+``RunResult.measurements[key][shot][index]`` is the result of measuring the ``index``'th qubit in measurement
 operation ``key`` in the shot ``shot``. The results are nonnegative integers representing the computational
 basis state (for qubits, 0 or 1) that was the measurement outcome.
 
@@ -157,10 +158,10 @@ class Circuit(BaseModel):
 class SingleQubitMapping(BaseModel):
     """Mapping of a logical qubit name to a physical qubit name.
     """
-    logical_name: str = Field(..., description='logical name of the qubit', example='q1')
-    'logical name of the qubit'
-    physical_name: str = Field(..., description='physical name of the qubit', example='qubit_1')
-    'physical name of the qubit'
+    logical_name: str = Field(..., description='logical qubit name', example='q1')
+    'logical qubit name'
+    physical_name: str = Field(..., description='physical qubit name', example='qubit_1')
+    'physical qubit name'
 
 
 class RunRequest(BaseModel):
@@ -186,8 +187,8 @@ class RunResult(BaseModel):
     * ``message`` carries additional information for the ``'failed'`` status.
     * If the status is ``'pending'``, ``measurements`` and ``message`` are ``None``.
     """
-    status: RunStatus = Field(..., description='current status of the run, either "pending", "ready" or "failed"')
-    'current status of the run, either "pending", "ready" or "failed"'
+    status: RunStatus = Field(..., description="current status of the run, in ``{'pending', 'ready', 'failed'}``")
+    "current status of the run, in ``{'pending', 'ready', 'failed'}``"
     measurements: Optional[dict[str, list[list[int]]]] = Field(
         None,
         description='if the run has finished successfully, the measurement results for the circuit'
@@ -213,8 +214,12 @@ class RunResult(BaseModel):
         return RunResult(status=RunStatus(input_copy.pop('status')), **input_copy)
 
 
-def _get_credentials(username: str, api_key: str) -> Optional[tuple[str, str]]:
-    """Obtain credentials from environment or parameters if available"""
+def _get_credentials(username: Optional[str], api_key: Optional[str]) -> Optional[tuple[str, str]]:
+    """Try to obtain credentials, first from arguments, then from environment variables.
+
+    Returns:
+        (username, API key), or ``None`` if credentials could not be found.
+    """
     uname = username or os.environ.get('IQM_SERVER_USERNAME')
     key = api_key or os.environ.get('IQM_SERVER_API_KEY')
     if uname and key:
@@ -228,13 +233,18 @@ class IQMClient:
     Args:
         url: Endpoint for accessing the server. Has to start with http or https.
         settings: Settings for the quantum computer, in IQM JSON format.
-        username: username, if required by the IQM server. This can also be set in the IQM_SERVER_USERNAME
-                  environment variable.
-        api_key: API key, if required by the IQM server. This can also be set in the IQM_SERVER_API_KEY
-                 environment variable.
+        username: Username, if required by the IQM server.
+            This can also be set in the IQM_SERVER_USERNAME environment variable.
+        api_key: API key, if required by the IQM server.
+            This can also be set in the IQM_SERVER_API_KEY environment variable.
     """
-    def __init__(self, url: str, settings: dict[str, Any],
-                 username: Optional[str] = None, api_key: Optional[str] = None):
+    def __init__(
+            self,
+            url: str,
+            settings: dict[str, Any],
+            username: Optional[str] = None,
+            api_key: Optional[str] = None
+    ):
         self._base_url = url
         self._settings = settings
         self._credentials = _get_credentials(username, api_key)
@@ -263,8 +273,11 @@ class IQMClient:
             shots=shots
         )
 
-        result = requests.post(join(self._base_url, 'circuit/run'), json=data.dict(),
-                               auth=self._credentials)
+        result = requests.post(
+            join(self._base_url, 'circuit/run'),
+            json=data.dict(),
+            auth=self._credentials
+        )
         result.raise_for_status()
         return UUID(json.loads(result.text)['id'])
 
