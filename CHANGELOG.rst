@@ -2,6 +2,13 @@
 Changelog
 =========
 
+Version 1.8
+===========
+
+* Add 'Expect: 100-Continue' header to the post request. `#18 <https://github.com/iqm-finland/iqm-client/pull/18>`_
+* Bump pydantic dependency. `#13 <https://github.com/iqm-finland/iqm-client/pull/13>`_
+* Minor updates in docs. `#13 <https://github.com/iqm-finland/iqm-client/pull/13>`_
+
 Version 1.7
 ===========
 

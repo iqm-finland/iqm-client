@@ -273,9 +273,11 @@ class IQMClient:
             shots=shots
         )
 
+        headers = {'Expect': '100-Continue'}
         result = requests.post(
             join(self._base_url, 'circuit/run'),
             json=data.dict(),
+            headers=headers,
             auth=self._credentials
         )
         result.raise_for_status()
