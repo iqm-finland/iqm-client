@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>iqm_client.iqm_client &#8212; IQM client 1.7 documentation</title>
+    <title>iqm_client.iqm_client &#8212; IQM client 1.8 documentation</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet" />
   <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -289,8 +289,9 @@
 <p>Client for connecting to the IQM quantum computer server interface.</p>
 <p>The <a class="reference internal" href="iqm_client.iqm_client.Circuit.html#iqm_client.iqm_client.Circuit" title="iqm_client.iqm_client.Circuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Circuit</span></code></a> class represents quantum circuits to be executed, consisting of a list of
 native quantum operations, each represented by an instance of the <a class="reference internal" href="iqm_client.iqm_client.Instruction.html#iqm_client.iqm_client.Instruction" title="iqm_client.iqm_client.Instruction"><code class="xref py py-class docutils literal notranslate"><span class="pre">Instruction</span></code></a> class.
-Different Instruction types are distinguished by their <code class="docutils literal notranslate"><span class="pre">name</span></code>.
-Each Instruction type acts on a number of <code class="docutils literal notranslate"><span class="pre">qubits</span></code>, and expects certain <code class="docutils literal notranslate"><span class="pre">args</span></code>.</p>
+Different Instruction types are distinguished by their <a class="reference internal" href="iqm_client.iqm_client.Instruction.html#iqm_client.iqm_client.Instruction.name" title="iqm_client.iqm_client.Instruction.name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">name</span></code></a>.
+Each Instruction type acts on a number of <a class="reference internal" href="iqm_client.iqm_client.Instruction.html#iqm_client.iqm_client.Instruction.qubits" title="iqm_client.iqm_client.Instruction.qubits"><code class="xref py py-attr docutils literal notranslate"><span class="pre">qubits</span></code></a>, and expects certain
+<a class="reference internal" href="iqm_client.iqm_client.Instruction.html#iqm_client.iqm_client.Instruction.args" title="iqm_client.iqm_client.Instruction.args"><code class="xref py py-attr docutils literal notranslate"><span class="pre">args</span></code></a>.</p>
 <div class="section" id="instructions">
 <h2>Instructions<a class="headerlink" href="#instructions" title="Permalink to this headline">¶</a></h2>
 <p>We currently support three native instruction types:</p>
@@ -360,10 +361,10 @@ and <span class="math notranslate nohighlight">\(X\)</span> and <span class="mat
 <div class="section" id="circuit-output">
 <h2>Circuit output<a class="headerlink" href="#circuit-output" title="Permalink to this headline">¶</a></h2>
 <p>The <a class="reference internal" href="iqm_client.iqm_client.RunResult.html#iqm_client.iqm_client.RunResult" title="iqm_client.iqm_client.RunResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunResult</span></code></a> class represents the results of a quantum circuit execution.
-If the run succeeded, <code class="docutils literal notranslate"><span class="pre">RunResult.measurements</span></code> contains the output of the circuit, consisting
+If the run succeeded, <a class="reference internal" href="iqm_client.iqm_client.RunResult.html#iqm_client.iqm_client.RunResult.measurements" title="iqm_client.iqm_client.RunResult.measurements"><code class="xref py py-attr docutils literal notranslate"><span class="pre">RunResult.measurements</span></code></a> contains the output of the circuit, consisting
 of the results of the measurement operations in the circuit.
 It is a dictionary that maps each measurement key to a 2D array of measurement results, represented as a nested list.
-<code class="docutils literal notranslate"><span class="pre">RunResult.measurements[key][shot][index]</span></code> is the result of measuring the <code class="docutils literal notranslate"><span class="pre">index</span></code> th qubit in measurement
+<code class="docutils literal notranslate"><span class="pre">RunResult.measurements[key][shot][index]</span></code> is the result of measuring the <code class="docutils literal notranslate"><span class="pre">index</span></code>’th qubit in measurement
 operation <code class="docutils literal notranslate"><span class="pre">key</span></code> in the shot <code class="docutils literal notranslate"><span class="pre">shot</span></code>. The results are nonnegative integers representing the computational
 basis state (for qubits, 0 or 1) that was the measurement outcome.</p>
 <hr class="docutils" />
@@ -467,7 +468,7 @@ basis state (for qubits, 0 or 1) that was the measurement outcome.</p>
           By IQM client developers<br/>
         
             &copy; Copyright 2021, IQM.<br/>
-          Last updated on 2022-01-27.<br/>
+          Last updated on 2022-02-01.<br/>
       </p>
     </div>
   </footer>
