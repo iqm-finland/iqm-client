@@ -6,7 +6,7 @@
 IQM Client
 ###########
 
-Client-side library for connecting to an `IQM <https://meetiqm.com/>`_ quantum computer.
+Client-side Python library for connecting to an `IQM <https://meetiqm.com/>`_ quantum computer.
 
 Installation
 ============
@@ -26,4 +26,4 @@ Copyright
 
 IQM client is free software, released under the Apache License, version 2.0.
 
-Copyright 2021 IQM client developers.
+Copyright 2022 IQM client developers.
