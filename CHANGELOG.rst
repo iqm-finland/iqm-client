@@ -2,6 +2,13 @@
 Changelog
 =========
 
+Version 1.9
+===========
+
+* Add IQMClient http, https server url validation `#20 <https://github.com/iqm-finland/iqm-client/pull/20>`_
+* Raise ClientConfigurationError Exception in-case of url valiation failure `#20 <https://github.com/iqm-finland/iqm-client/pull/20>`_
+
+
 Version 1.8
 ===========
 
