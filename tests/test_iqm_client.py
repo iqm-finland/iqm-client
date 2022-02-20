@@ -22,7 +22,7 @@ from mockito import mock, when
 from requests import HTTPError
 
 from iqm_client.iqm_client import (Circuit, IQMClient, RunStatus,
-                                   SingleQubitMapping)
+                                   SingleQubitMapping, ClientConfigurationError)
 from tests.conftest import existing_run, missing_run
 
 
@@ -134,3 +134,17 @@ def test_user_warning_is_emitted_when_warnings_in_response(base_url, settings_di
             .thenReturn(mock({'status_code': 200, 'text': json.dumps({'status': 'ready', 'warnings': [msg]})})):
         with pytest.warns(UserWarning, match=msg):
             client.get_run(existing_run)
+
+
+def test_base_url_is_valid(base_url, settings_dict):
+    try:
+        client = IQMClient(base_url, settings_dict)
+    except Exception as exc:
+        assert False, f" IQMClient raised an exception {exc}"
+
+
+def test_base_url_is_invalid(settings_dict):
+    invalid_base_url = 'https//example.com'
+    with pytest.raises(ClientConfigurationError) as exc:
+        client = IQMClient(invalid_base_url, settings_dict)
+    assert f"The URL schema has to be http or https. Incorrect schema in URL: {invalid_base_url}" == str(exc.value)
