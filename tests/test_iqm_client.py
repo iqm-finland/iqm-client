@@ -139,5 +139,5 @@ def test_user_warning_is_emitted_when_warnings_in_response(base_url, settings_di
 def test_base_url_is_invalid(settings_dict):
     invalid_base_url = 'https//example.com'
     with pytest.raises(ClientConfigurationError) as exc:
-        client = IQMClient(invalid_base_url, settings_dict)
-    assert f"The URL schema has to be http or https. Incorrect schema in URL: {invalid_base_url}" == str(exc.value)
+        IQMClient(invalid_base_url, settings_dict)
+    assert f'The URL schema has to be http or https. Incorrect schema in URL: {invalid_base_url}' == str(exc.value)
