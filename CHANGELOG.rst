@@ -5,7 +5,7 @@ Changelog
 Version 1.10
 ============
 
-* Make qubit_mapping an optional parameter in submit_circuit. `#21 <https://github.com/iqm-finland/iqm-client/pull/21>`
+* Make ``qubit_mapping`` an optional parameter in ``IQMClient.submit_circuit``. `#21 <https://github.com/iqm-finland/iqm-client/pull/21>`_
 
 Version 1.9
 ===========
