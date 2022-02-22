@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 1.9
+===========
+
+* Validate that the schema of IQM server URL is http or https. `#20 <https://github.com/iqm-finland/iqm-client/pull/20>`_
+
 Version 1.8
 ===========
 
