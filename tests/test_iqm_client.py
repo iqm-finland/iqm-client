@@ -148,3 +148,4 @@ def test_base_url_is_invalid(settings_dict):
     with pytest.raises(ClientConfigurationError) as exc:
         client = IQMClient(invalid_base_url, settings_dict)
     assert f"The URL schema has to be http or https. Incorrect schema in URL: {invalid_base_url}" == str(exc.value)
+    
