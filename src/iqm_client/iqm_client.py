@@ -251,7 +251,7 @@ class IQMClient:
             api_key: Optional[str] = None
     ):
         if not url.startswith(('http:', 'https:')):
-            raise ClientConfigurationError(f"The URL schema has to be http or https. Incorrect schema in URL: {url}")
+            raise ClientConfigurationError(f'The URL schema has to be http or https. Incorrect schema in URL: {url}')
         self._base_url = url
         self._settings = settings
         self._credentials = _get_credentials(username, api_key)
