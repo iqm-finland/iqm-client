@@ -136,13 +136,6 @@ def test_user_warning_is_emitted_when_warnings_in_response(base_url, settings_di
             client.get_run(existing_run)
 
 
-def test_base_url_is_valid(base_url, settings_dict):
-    try:
-        client = IQMClient(base_url, settings_dict)
-    except Exception as exc:
-        assert False, f" IQMClient raised an exception {exc}"
-
-
 def test_base_url_is_invalid(settings_dict):
     invalid_base_url = 'https//example.com'
     with pytest.raises(ClientConfigurationError) as exc:
