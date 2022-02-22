@@ -176,7 +176,10 @@ class RunRequest(BaseModel):
     'quantum circuit to execute'
     settings: dict[str, Any] = Field(..., description='EXA settings node containing the calibration data')
     'EXA settings node containing the calibration data'
-    qubit_mapping: Optional[list[SingleQubitMapping]]
+    qubit_mapping: Optional[list[SingleQubitMapping]] = Field(
+        None,
+        description='mapping of logical qubit names to physical qubit names'
+    )
     'mapping of logical qubit names to physical qubit names'
     shots: int = Field(..., description='how many times to execute the circuit')
     'how many times to execute the circuit'
