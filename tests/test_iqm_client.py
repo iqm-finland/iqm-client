@@ -26,7 +26,7 @@ from iqm_client.iqm_client import (Circuit, ClientConfigurationError,
 from tests.conftest import existing_run, missing_run
 
 
-def test_submit_circuit_returns_id(mock_server, settings_dict, base_url):
+def test_submit_circuit_returns_id(mock_server, settings_dict, base_url, sample_circuit):
     """
     Tests sending a circuit
     """
@@ -36,41 +36,18 @@ def test_submit_circuit_returns_id(mock_server, settings_dict, base_url):
             SingleQubitMapping(logical_name='Qubit A', physical_name='qubit_1'),
             SingleQubitMapping(logical_name='Qubit B', physical_name='qubit_2')
         ],
-        circuit=Circuit.parse_obj(
-            {
-                'name': 'The circuit',
-                'instructions': [
-                    {
-                        'name': 'cz',
-                        'qubits': [
-                            'Qubit A',
-                            'Qubit B'
-                        ],
-                        'args': {}
-                    },
-                    {
-                        'name': 'phased_rx',
-                        'qubits': [
-                            'Qubit A'
-                        ],
-                        'args': {
-                            'phase_t': 1.22,
-                            'angle_t': {
-                                'expr': '{{alpha}}/2'
-                            }
-                        }
-                    },
-                    {
-                        'name': 'measurement',
-                        'qubits': [
-                            'Qubit A'
-                        ],
-                        'args': {
-                            'output_label': 'A'
-                        }
-                    }
-                ]
-            }),
+        circuit=Circuit.parse_obj(sample_circuit),
+        shots=1000)
+    assert run_id == existing_run
+
+
+def test_submit_circuit_without_qubit_mapping_returns_id(mock_server, settings_dict, base_url, sample_circuit):
+    """
+    Tests sending a circuit without qubit mapping
+    """
+    client = IQMClient(base_url, settings_dict)
+    run_id = client.submit_circuit(
+        circuit=Circuit.parse_obj(sample_circuit),
         shots=1000)
     assert run_id == existing_run
 

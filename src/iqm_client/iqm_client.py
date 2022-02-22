@@ -176,10 +176,7 @@ class RunRequest(BaseModel):
     'quantum circuit to execute'
     settings: dict[str, Any] = Field(..., description='EXA settings node containing the calibration data')
     'EXA settings node containing the calibration data'
-    qubit_mapping: list[SingleQubitMapping] = Field(
-        ...,
-        description='mapping of logical qubit names to physical qubit names'
-    )
+    qubit_mapping: Optional[list[SingleQubitMapping]]
     'mapping of logical qubit names to physical qubit names'
     shots: int = Field(..., description='how many times to execute the circuit')
     'how many times to execute the circuit'
@@ -259,14 +256,15 @@ class IQMClient:
     def submit_circuit(
             self,
             circuit: Circuit,
-            qubit_mapping: list[SingleQubitMapping],
+            qubit_mapping: Optional[list[SingleQubitMapping]] = None,
             shots: int = 1
     ) -> UUID:
         """Submits a quantum circuit to be executed on a quantum computer.
 
         Args:
             circuit: circuit to be executed
-            qubit_mapping: mapping of human-readable qubit names in ``circuit`` to physical qubit names
+            qubit_mapping: mapping of human-readable qubit names in ``circuit`` to physical qubit names,
+                           if circuit uses physical qubit names qubit_mapping can be set to None (default)
             shots: number of times ``circuit`` is executed
 
         Returns:
