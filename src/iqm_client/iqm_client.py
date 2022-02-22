@@ -266,8 +266,8 @@ class IQMClient:
 
         Args:
             circuit: circuit to be executed
-            qubit_mapping: mapping of human-readable qubit names in ``circuit`` to physical qubit names,
-                           if circuit uses physical qubit names qubit_mapping can be set to None (default)
+            qubit_mapping: Mapping of human-readable (logical) qubit names in ``circuit`` to physical qubit names.
+                Can be set to ``None`` if ``circuit`` already uses physical qubit names.
             shots: number of times ``circuit`` is executed
 
         Returns:
