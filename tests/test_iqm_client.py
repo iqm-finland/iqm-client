@@ -21,8 +21,8 @@ import requests
 from mockito import mock, when
 from requests import HTTPError
 
-from iqm_client.iqm_client import (Circuit, IQMClient, RunStatus,
-                                   SingleQubitMapping, ClientConfigurationError)
+from iqm_client.iqm_client import (Circuit, ClientConfigurationError,
+                                   IQMClient, RunStatus, SingleQubitMapping)
 from tests.conftest import existing_run, missing_run
 
 
