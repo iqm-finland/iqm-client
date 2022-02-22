@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>iqm_client.iqm_client &#8212; IQM client 1.8 documentation</title>
+    <title>iqm_client.iqm_client &#8212; IQM client 1.9 documentation</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet" />
   <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -150,6 +150,11 @@
        <li class="toctree-l4">
         <a class="reference internal" href="iqm_client.iqm_client.CircuitExecutionError.html">
          iqm_client.iqm_client.CircuitExecutionError
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.ClientConfigurationError.html">
+         iqm_client.iqm_client.ClientConfigurationError
         </a>
        </li>
       </ul>
@@ -411,21 +416,25 @@ basis state (for qubits, 0 or 1) that was the measurement outcome.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="iqm_client.iqm_client.CircuitExecutionError.html#iqm_client.iqm_client.CircuitExecutionError" title="iqm_client.iqm_client.CircuitExecutionError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CircuitExecutionError</span></code></a></p></td>
 <td><p>Something went wrong on the server.</p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="iqm_client.iqm_client.ClientConfigurationError.html#iqm_client.iqm_client.ClientConfigurationError" title="iqm_client.iqm_client.ClientConfigurationError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ClientConfigurationError</span></code></a></p></td>
+<td><p>Wrong configuration provided.</p></td>
+</tr>
 </tbody>
 </table>
 </div>
 <p class="rubric">Inheritance</p>
-<div class="graphviz"><img src="../_images/inheritance-970693701b86c46b272b4a233710b257298f8062.png" alt="Inheritance diagram of iqm_client.iqm_client" usemap="#inheritanceccd5403770" class="inheritance graphviz" /></div>
+<div class="graphviz"><img src="../_images/inheritance-a458ad004af3b642ea413e12156e1e20be5f5492.png" alt="Inheritance diagram of iqm_client.iqm_client" usemap="#inheritanceccd5403770" class="inheritance graphviz" /></div>
 <map id="inheritanceccd5403770" name="inheritanceccd5403770">
-<area shape="rect" id="node1" href="iqm_client.iqm_client.APITimeoutError.html#iqm_client.iqm_client.APITimeoutError" target="_top" title="Exception for when executing a task on the server takes too long." alt="" coords="212,153,340,179"/>
-<area shape="rect" id="node2" href="iqm_client.iqm_client.CircuitExecutionError.html#iqm_client.iqm_client.CircuitExecutionError" target="_top" title="Something went wrong on the server." alt="" coords="5,153,164,179"/>
-<area shape="rect" id="node5" href="iqm_client.iqm_client.Circuit.html#iqm_client.iqm_client.Circuit" target="_top" title="Quantum circuit to be executed." alt="" coords="429,5,501,31"/>
-<area shape="rect" id="node8" href="iqm_client.iqm_client.Instruction.html#iqm_client.iqm_client.Instruction" target="_top" title="An instruction in a quantum circuit." alt="" coords="419,55,510,80"/>
-<area shape="rect" id="node9" href="iqm_client.iqm_client.RunRequest.html#iqm_client.iqm_client.RunRequest" target="_top" title="Request for an IQM quantum computer to execute a quantum circuit." alt="" coords="415,104,515,129"/>
-<area shape="rect" id="node10" href="iqm_client.iqm_client.RunResult.html#iqm_client.iqm_client.RunResult" target="_top" title="Results of a circuit execution." alt="" coords="421,153,509,179"/>
-<area shape="rect" id="node12" href="iqm_client.iqm_client.SingleQubitMapping.html#iqm_client.iqm_client.SingleQubitMapping" target="_top" title="Mapping of a logical qubit name to a physical qubit name." alt="" coords="388,203,541,228"/>
-<area shape="rect" id="node11" href="iqm_client.iqm_client.RunStatus.html#iqm_client.iqm_client.RunStatus" target="_top" title="Status of a task." alt="" coords="232,55,320,80"/>
-<area shape="rect" id="node7" href="iqm_client.iqm_client.IQMClient.html#iqm_client.iqm_client.IQMClient" target="_top" title="Provides access to IQM quantum computers." alt="" coords="41,5,128,31"/>
+<area shape="rect" id="node1" href="iqm_client.iqm_client.APITimeoutError.html#iqm_client.iqm_client.APITimeoutError" target="_top" title="Exception for when executing a task on the server takes too long." alt="" coords="232,203,360,228"/>
+<area shape="rect" id="node2" href="iqm_client.iqm_client.CircuitExecutionError.html#iqm_client.iqm_client.CircuitExecutionError" target="_top" title="Something went wrong on the server." alt="" coords="15,203,174,228"/>
+<area shape="rect" id="node5" href="iqm_client.iqm_client.Circuit.html#iqm_client.iqm_client.Circuit" target="_top" title="Quantum circuit to be executed." alt="" coords="449,55,521,80"/>
+<area shape="rect" id="node9" href="iqm_client.iqm_client.Instruction.html#iqm_client.iqm_client.Instruction" target="_top" title="An instruction in a quantum circuit." alt="" coords="439,104,530,129"/>
+<area shape="rect" id="node10" href="iqm_client.iqm_client.RunRequest.html#iqm_client.iqm_client.RunRequest" target="_top" title="Request for an IQM quantum computer to execute a quantum circuit." alt="" coords="435,153,535,179"/>
+<area shape="rect" id="node11" href="iqm_client.iqm_client.RunResult.html#iqm_client.iqm_client.RunResult" target="_top" title="Results of a circuit execution." alt="" coords="441,203,529,228"/>
+<area shape="rect" id="node13" href="iqm_client.iqm_client.SingleQubitMapping.html#iqm_client.iqm_client.SingleQubitMapping" target="_top" title="Mapping of a logical qubit name to a physical qubit name." alt="" coords="408,252,561,277"/>
+<area shape="rect" id="node6" href="iqm_client.iqm_client.ClientConfigurationError.html#iqm_client.iqm_client.ClientConfigurationError" target="_top" title="Wrong configuration provided." alt="" coords="5,104,184,129"/>
+<area shape="rect" id="node12" href="iqm_client.iqm_client.RunStatus.html#iqm_client.iqm_client.RunStatus" target="_top" title="Status of a task." alt="" coords="252,55,340,80"/>
+<area shape="rect" id="node8" href="iqm_client.iqm_client.IQMClient.html#iqm_client.iqm_client.IQMClient" target="_top" title="Provides access to IQM quantum computers." alt="" coords="51,5,138,31"/>
 </map></div>
 
 
@@ -468,7 +477,7 @@ basis state (for qubits, 0 or 1) that was the measurement outcome.</p>
           By IQM client developers<br/>
         
             &copy; Copyright 2021, IQM.<br/>
-          Last updated on 2022-02-01.<br/>
+          Last updated on 2022-02-22.<br/>
       </p>
     </div>
   </footer>

@@ -38,6 +38,7 @@ iqm\_client.iqm\_client
    
       APITimeoutError
       CircuitExecutionError
+      ClientConfigurationError
    
    
 
