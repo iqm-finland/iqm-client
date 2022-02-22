@@ -250,7 +250,7 @@ class IQMClient:
             username: Optional[str] = None,
             api_key: Optional[str] = None
     ):
-        if not url.startswith(("http:", "https:")):
+        if not url.startswith(('http:', 'https:')):
             raise ClientConfigurationError(f"The URL schema has to be http or https. Incorrect schema in URL: {url}")
         self._base_url = url
         self._settings = settings
