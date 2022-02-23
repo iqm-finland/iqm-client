@@ -54,6 +54,47 @@ def settings_dict():
         return json.loads(f.read())
 
 
+@pytest.fixture
+def sample_circuit():
+    """
+    A sample circuit for testing submit_circuit.
+    """
+    return {
+        'name': 'The circuit',
+        'instructions': [
+            {
+                'name': 'cz',
+                'qubits': [
+                    'Qubit A',
+                    'Qubit B'
+                ],
+                'args': {}
+            },
+            {
+                'name': 'phased_rx',
+                'qubits': [
+                    'Qubit A'
+                ],
+                'args': {
+                    'phase_t': 1.22,
+                    'angle_t': {
+                        'expr': '{{alpha}}/2'
+                    }
+                }
+            },
+            {
+                'name': 'measurement',
+                'qubits': [
+                    'Qubit A'
+                ],
+                'args': {
+                    'output_label': 'A'
+                }
+            }
+        ]
+    }
+
+
 def generate_server_stubs(base_url):
     """
     Mocking some of the calls to the server by mocking 'requests'
