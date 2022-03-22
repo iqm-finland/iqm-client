@@ -95,6 +95,7 @@ import json
 import os
 import time
 import warnings
+from base64 import b64decode
 from datetime import datetime
 from enum import Enum
 from posixpath import join
@@ -104,12 +105,22 @@ from uuid import UUID
 import requests
 from pydantic import BaseModel, Field
 
+
 DEFAULT_TIMEOUT_SECONDS = 900
 SECONDS_BETWEEN_CALLS = 1
+REFRESH_MARGIN_SECONDS = 5
+
+AUTH_CLIENT_ID = 'iqm_client'
+AUTH_REALM = 'cortex'
 
 
 class ClientConfigurationError(RuntimeError):
     """Wrong configuration provided.
+    """
+
+
+class ClientAuthenticationError(RuntimeError):
+    """Something went wrong with user authentication.
     """
 
 
@@ -219,17 +230,37 @@ class RunResult(BaseModel):
         return RunResult(status=RunStatus(input_copy.pop('status')), **input_copy)
 
 
-def _get_credentials(username: Optional[str], api_key: Optional[str]) -> Optional[tuple[str, str]]:
+def _get_credentials(
+        auth_url: Optional[str],
+        username: Optional[str],
+        password: Optional[str]
+) -> dict[str, str]:
     """Try to obtain credentials, first from arguments, then from environment variables.
 
     Returns:
-        (username, API key), or ``None`` if credentials could not be found.
+        Dict of credentials, or empty dict if ``auth_url`` is not set.
     """
-    uname = username or os.environ.get('IQM_SERVER_USERNAME')
-    key = api_key or os.environ.get('IQM_SERVER_API_KEY')
-    if uname and key:
-        return uname, key
-    return None
+    auth_url = auth_url or os.environ.get('IQM_AUTH_SERVER')
+    username = username or os.environ.get('IQM_AUTH_USERNAME')
+    password = password or os.environ.get('IQM_AUTH_PASSWORD')
+    if not auth_url:
+        return {}
+    elif not username or not password:
+        raise ClientConfigurationError(f'Auth server URL is set but no username or password')
+    return {'auth_url': auth_url, 'username': username, 'password': password}
+
+
+def _time_left_seconds(token: str) -> int:
+    """Check how much time is left until the token expires.
+
+    Returns:
+        Time left on token in seconds.
+    """
+    _, body, _ = token.split('.', 2)
+    while len(body) % 4 != 0:
+        body += '='
+    exp_time = int(json.loads(b64decode(body)).get('exp', '0'))
+    return max(0, exp_time - int(time.time()))
 
 
 class IQMClient:
@@ -238,23 +269,29 @@ class IQMClient:
     Args:
         url: Endpoint for accessing the server. Has to start with http or https.
         settings: Settings for the quantum computer, in IQM JSON format.
-        username: Username, if required by the IQM server.
-            This can also be set in the IQM_SERVER_USERNAME environment variable.
-        api_key: API key, if required by the IQM server.
-            This can also be set in the IQM_SERVER_API_KEY environment variable.
+        auth_url: URL to the user authentication server that can provide access tokens.
+            This can also be set in the IQM_AUTH_SERVER environment variable.
+            If unset, unauthenticated requests will be used.
+        username: Username to log in to authentication server.
+            This can also be set in the IQM_AUTH_USERNAME environment variable.
+        password: Password to log in to authentication server.
+            This can also be set in the IQM_AUTH_PASSWORD environment variable.
     """
     def __init__(
             self,
             url: str,
             settings: dict[str, Any],
+            auth_url: Optional[str] = None,
             username: Optional[str] = None,
-            api_key: Optional[str] = None
+            password: Optional[str] = None
     ):
         if not url.startswith(('http:', 'https:')):
             raise ClientConfigurationError(f'The URL schema has to be http or https. Incorrect schema in URL: {url}')
         self._base_url = url
         self._settings = settings
-        self._credentials = _get_credentials(username, api_key)
+        self._credentials = _get_credentials(auth_url, username, password)
+        self._tokens = {}
+        self._update_tokens()
 
     def submit_circuit(
             self,
@@ -274,6 +311,8 @@ class IQMClient:
             ID for the created task. This ID is needed to query the status and the execution results.
         """
 
+        access_token = self._get_access_token()
+
         data = RunRequest(
             qubit_mapping=qubit_mapping,
             circuit=circuit,
@@ -281,12 +320,11 @@ class IQMClient:
             shots=shots
         )
 
-        headers = {'Expect': '100-Continue'}
+        headers = {'Expect': '100-Continue', 'Authorization': f'Bearer ${access_token}'}
         result = requests.post(
             join(self._base_url, 'circuit/run'),
             json=data.dict(),
             headers=headers,
-            auth=self._credentials
         )
         result.raise_for_status()
         return UUID(json.loads(result.text)['id'])
@@ -304,7 +342,11 @@ class IQMClient:
             HTTPException: http exceptions
             CircuitExecutionError: IQM server specific exceptions
         """
-        result = requests.get(join(self._base_url, 'circuit/run/', str(run_id)), auth=self._credentials)
+        access_token = self._get_access_token()
+        result = requests.get(
+            join(self._base_url, 'circuit/run/', str(run_id)),
+            headers={'Authorization': f'Bearer ${access_token}'}
+        )
         result.raise_for_status()
         result = RunResult.from_dict(json.loads(result.text))
         if result.warnings:
@@ -334,3 +376,63 @@ class IQMClient:
                 return results
             time.sleep(SECONDS_BETWEEN_CALLS)
         raise APITimeoutError(f"The task didn't finish in {timeout_secs} seconds.")
+
+    def close(self) -> bool:
+        """Terminate session with authentication server.
+        """
+        auth_url = self._credentials.get('auth_utl')
+        if not auth_url:
+            return False
+
+        refresh_token = self._tokens.get('refresh_token')
+        if not refresh_token:
+            return False
+
+        result = requests.post(
+            f'{auth_url}/realms/{AUTH_REALM}/protocol/openid-connect/logout',
+            data={'client_id': AUTH_CLIENT_ID, 'refresh_token': refresh_token}
+        )
+        if result.status_code not in [200, 204]:
+            raise ClientAuthenticationError(f'Logout failed, {result.text}')
+        return True
+
+    def _get_access_token(self) -> str:
+        access_token = self._tokens.get('access_token')
+        if access_token and _time_left_seconds(access_token) > REFRESH_MARGIN_SECONDS:
+            # Access token is still valid, no need to refresh
+            return access_token
+        self._update_tokens()
+        return self._tokens['access_token']
+
+    def _update_tokens(self):
+        auth_url = self._credentials.get('auth_url')
+        if not auth_url:
+            self._tokens = {}
+            return
+
+        refresh_token = self._tokens.get('refresh_token')
+        if refresh_token and _time_left_seconds(refresh_token) > REFRESH_MARGIN_SECONDS:
+            # Update tokens using existing refresh_token
+            data = {
+                'client_id': AUTH_CLIENT_ID,
+                'grant_type': 'refresh_token',
+                'refresh_token': self._tokens['refresh_token'],
+            }
+        elif self._credentials.get('username') and self._credentials.get('password'):
+            # Update tokens using credentials
+            data = {
+                'client_id': AUTH_CLIENT_ID,
+                'grant_type': 'password',
+                'username': self._credentials.get('username'),
+                'password': self._credentials.get('password'),
+            }
+        else:
+            raise ClientAuthenticationError('Failed to update tokens, no valid refresh token or credentials')
+
+        result = requests.post(
+            f'{auth_url}/realms/{AUTH_REALM}/protocol/openid-connect/token',
+            data=data
+        )
+        if result.status_code != 200:
+            raise ClientAuthenticationError(f'Failed to update tokens, {result.text}')
+        self._tokens = result.json()
