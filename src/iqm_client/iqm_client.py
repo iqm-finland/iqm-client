@@ -105,7 +105,6 @@ from uuid import UUID
 import requests
 from pydantic import BaseModel, Field
 
-
 DEFAULT_TIMEOUT_SECONDS = 900
 SECONDS_BETWEEN_CALLS = 1
 REFRESH_MARGIN_SECONDS = 5
@@ -230,24 +229,76 @@ class RunResult(BaseModel):
         return RunResult(status=RunStatus(input_copy.pop('status')), **input_copy)
 
 
-def _get_credentials(
-        auth_url: Optional[str],
-        username: Optional[str],
-        password: Optional[str]
-) -> dict[str, str]:
+class GrantType(str, Enum):
+    """
+    Type of token request
+    """
+    PASSWORD = 'password'
+    REFRESH = 'refresh_token'
+
+
+class AuthRequest(BaseModel):
+    """Request sent to authentication server for access token and refresh token, or for terminating the session
+
+    * Token request with grant type ``'password'`` starts a new session in the authentication server.
+    It uses fields ```client_id'``, ```grant_type'``, ``'username'`` and ``'password'``.
+    * Token request with grant type ``'refresh_token'`` is used for maintaining an existing session.
+    It uses field ```client_id'``, ```grant_type'``, ``'refresh_token'``.
+    * Logout request uses only fields ``'client_id'`` and ``'refresh_token'``.
+    """
+    client_id: str = Field(..., description='name of the client for all request types')
+    'name of the client for all request types'
+    grant_type: Optional[GrantType] = Field(
+        None,
+        description="type of token request, in ``{'password', 'refresh_token'}``"
+    )
+    "type of token request, in ``{'password', 'refresh_token'}``"
+    username: Optional[str] = Field(None, description="username for grant type ``'password'``")
+    "username for grant type ``'password'``"
+    password: Optional[str] = Field(None, description="password for grant type ``'password'``")
+    "password for grant type ``'password'``"
+    refresh_token: Optional[str] = Field(
+        None,
+        description="refresh token for grant type ``'refresh_token'`` and logout request")
+    "refresh token for grant type ``'refresh_token'`` and logout request"
+
+
+class Credentials(BaseModel):
+    """Credentials and tokens for maintaining session with the authentication server
+
+    * Fields ``'auth:server_url'``, ``'username'`` and ``'password'`` are provided by the user.
+    * Fields ``'access_token'`` and ```refresh_token'`` are loaded from the authentication server and
+    refreshed periodically.
+    """
+    auth_server_url: str = Field(..., description='Base URL of the authentication server')
+    'Base URL of the authentication server'
+    username: str = Field(..., description='username for logging in to the server')
+    'username for logging in to the server'
+    password: str = Field(..., description='password for logging in to the server')
+    'password for logging in to the server'
+    access_token: Optional[str] = Field(None, description='current access token of the session')
+    'current access token of the session'
+    refresh_token: Optional[str] = Field(None, description='current refresh token of the session')
+    'current refresh token of the session'
+
+
+def _get_credentials(credentials: dict[str, str]) -> Optional[Credentials]:
     """Try to obtain credentials, first from arguments, then from environment variables.
 
+    Args:
+        credentials: dict of credentials provided as arguments
+
     Returns:
-        Dict of credentials, or empty dict if ``auth_url`` is not set.
+        Credentials with token fields cleared, or None if ``'auth_server_url'`` was not set.
     """
-    auth_url = auth_url or os.environ.get('IQM_AUTH_SERVER')
-    username = username or os.environ.get('IQM_AUTH_USERNAME')
-    password = password or os.environ.get('IQM_AUTH_PASSWORD')
-    if not auth_url:
-        return {}
-    elif not username or not password:
-        raise ClientConfigurationError(f'Auth server URL is set but no username or password')
-    return {'auth_url': auth_url, 'username': username, 'password': password}
+    auth_server_url = credentials.get('auth_server_url') or os.environ.get('IQM_AUTH_SERVER')
+    username = credentials.get('username') or os.environ.get('IQM_AUTH_USERNAME')
+    password = credentials.get('password') or os.environ.get('IQM_AUTH_PASSWORD')
+    if not auth_server_url:
+        return None
+    if not username or not password:
+        raise ClientConfigurationError('Auth server URL is set but no username or password')
+    return Credentials(auth_server_url=auth_server_url, username=username, password=password)
 
 
 def _time_left_seconds(token: str) -> int:
@@ -269,28 +320,27 @@ class IQMClient:
     Args:
         url: Endpoint for accessing the server. Has to start with http or https.
         settings: Settings for the quantum computer, in IQM JSON format.
-        auth_url: URL to the user authentication server that can provide access tokens.
+        auth_server_url: Optional base URL of the authentication server.
             This can also be set in the IQM_AUTH_SERVER environment variable.
-            If unset, unauthenticated requests will be used.
-        username: Username to log in to authentication server.
+            If unset, requests will be sent unauthenticated.
+        username: Optional username to log in to authentication server.
             This can also be set in the IQM_AUTH_USERNAME environment variable.
-        password: Password to log in to authentication server.
+            Username must be set if ``auth_server_url`` is set.
+        password: Optional password to log in to authentication server.
             This can also be set in the IQM_AUTH_PASSWORD environment variable.
+            Password must be set if ``auth_server_url`` is set.
     """
     def __init__(
             self,
             url: str,
             settings: dict[str, Any],
-            auth_url: Optional[str] = None,
-            username: Optional[str] = None,
-            password: Optional[str] = None
+            **credentials  # contains auth_server_url, username, password
     ):
         if not url.startswith(('http:', 'https:')):
             raise ClientConfigurationError(f'The URL schema has to be http or https. Incorrect schema in URL: {url}')
         self._base_url = url
         self._settings = settings
-        self._credentials = _get_credentials(auth_url, username, password)
-        self._tokens = {}
+        self._credentials = _get_credentials(credentials)
         self._update_tokens()
 
     def submit_circuit(
@@ -311,7 +361,7 @@ class IQMClient:
             ID for the created task. This ID is needed to query the status and the execution results.
         """
 
-        access_token = self._get_access_token()
+        bearer_token = self._get_bearer_token()
 
         data = RunRequest(
             qubit_mapping=qubit_mapping,
@@ -320,7 +370,10 @@ class IQMClient:
             shots=shots
         )
 
-        headers = {'Expect': '100-Continue', 'Authorization': f'Bearer ${access_token}'}
+        headers = {'Expect': '100-Continue'}
+        if bearer_token:
+            headers['Authorization'] = bearer_token
+
         result = requests.post(
             join(self._base_url, 'circuit/run'),
             json=data.dict(),
@@ -342,10 +395,10 @@ class IQMClient:
             HTTPException: http exceptions
             CircuitExecutionError: IQM server specific exceptions
         """
-        access_token = self._get_access_token()
+        bearer_token = self._get_bearer_token()
         result = requests.get(
             join(self._base_url, 'circuit/run/', str(run_id)),
-            headers={'Authorization': f'Bearer ${access_token}'}
+            headers=None if not bearer_token else {'Authorization': bearer_token}
         )
         result.raise_for_status()
         result = RunResult.from_dict(json.loads(result.text))
@@ -380,59 +433,76 @@ class IQMClient:
     def close(self) -> bool:
         """Terminate session with authentication server.
         """
-        auth_url = self._credentials.get('auth_utl')
-        if not auth_url:
+        if self._credentials is None:
             return False
 
-        refresh_token = self._tokens.get('refresh_token')
-        if not refresh_token:
+        if not self._credentials.refresh_token:
             return False
 
-        result = requests.post(
-            f'{auth_url}/realms/{AUTH_REALM}/protocol/openid-connect/logout',
-            data={'client_id': AUTH_CLIENT_ID, 'refresh_token': refresh_token}
-        )
+        url = f'{self._credentials.auth_server_url}/realms/{AUTH_REALM}/protocol/openid-connect/logout'
+        data = AuthRequest(client_id=AUTH_CLIENT_ID, refresh_token=self._credentials.refresh_token)
+        result = requests.post(url, json=data.dict())
         if result.status_code not in [200, 204]:
             raise ClientAuthenticationError(f'Logout failed, {result.text}')
+        self._credentials.access_token = None
+        self._credentials.refresh_token = None
         return True
 
-    def _get_access_token(self) -> str:
-        access_token = self._tokens.get('access_token')
-        if access_token and _time_left_seconds(access_token) > REFRESH_MARGIN_SECONDS:
+    def _get_bearer_token(self, retries: int = 1) -> Optional[str]:
+        """Make a bearer token for Authorization header. If access token is about to expire refresh it first.
+
+        Args:
+            retries: number of times to try updating the tokens
+
+        Returns:
+            Bearer token, i.e. string containing prefix 'Bearer ' and the access token, or None if access token
+            is not available.
+        """
+        if self._credentials is None or not self._credentials.access_token:
+            return None
+        if _time_left_seconds(self._credentials.access_token) > REFRESH_MARGIN_SECONDS:
             # Access token is still valid, no need to refresh
-            return access_token
+            return f'Bearer {self._credentials.access_token}'
+        if retries < 1:
+            return None
         self._update_tokens()
-        return self._tokens['access_token']
+        return self._get_bearer_token(retries - 1)
 
     def _update_tokens(self):
-        auth_url = self._credentials.get('auth_url')
-        if not auth_url:
-            self._tokens = {}
+        """Update access token and refresh token.
+
+        Uses refresh token to request new tokens from authentication server.  If the refresh token has expired or
+        is about to expire, starts a new session by requesting the tokens using username and password.
+
+        Updated tokens are stored in ``self._credentials``.
+
+        Raises:
+            ClientAuthenticationError: updating the tokens failed
+        """
+        if self._credentials is None:
             return
 
-        refresh_token = self._tokens.get('refresh_token')
+        refresh_token = self._credentials.refresh_token
         if refresh_token and _time_left_seconds(refresh_token) > REFRESH_MARGIN_SECONDS:
             # Update tokens using existing refresh_token
-            data = {
-                'client_id': AUTH_CLIENT_ID,
-                'grant_type': 'refresh_token',
-                'refresh_token': self._tokens['refresh_token'],
-            }
-        elif self._credentials.get('username') and self._credentials.get('password'):
-            # Update tokens using credentials
-            data = {
-                'client_id': AUTH_CLIENT_ID,
-                'grant_type': 'password',
-                'username': self._credentials.get('username'),
-                'password': self._credentials.get('password'),
-            }
+            data = AuthRequest(
+                client_id=AUTH_CLIENT_ID,
+                grant_type=GrantType.REFRESH,
+                refresh_token=refresh_token
+            )
         else:
-            raise ClientAuthenticationError('Failed to update tokens, no valid refresh token or credentials')
+            # Update tokens using username and password
+            data = AuthRequest(
+                client_id=AUTH_CLIENT_ID,
+                grant_type=GrantType.PASSWORD,
+                username=self._credentials.username,
+                password=self._credentials.password
+            )
 
-        result = requests.post(
-            f'{auth_url}/realms/{AUTH_REALM}/protocol/openid-connect/token',
-            data=data
-        )
+        url = f'{self._credentials.auth_server_url}/realms/{AUTH_REALM}/protocol/openid-connect/token'
+        result = requests.post(url, json=data.dict())
         if result.status_code != 200:
             raise ClientAuthenticationError(f'Failed to update tokens, {result.text}')
-        self._tokens = result.json()
+        tokens = json.loads(result.text)
+        self._credentials.access_token = tokens.get('access_token')
+        self._credentials.refresh_token = tokens.get('refresh_token')
