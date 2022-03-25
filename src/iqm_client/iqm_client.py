@@ -442,7 +442,7 @@ class IQMClient:
 
         url = f'{self._credentials.auth_server_url}/realms/{AUTH_REALM}/protocol/openid-connect/logout'
         data = AuthRequest(client_id=AUTH_CLIENT_ID, refresh_token=self._credentials.refresh_token)
-        result = requests.post(url, json=data.dict())
+        result = requests.post(url, data=data.dict(exclude_none=True))
         if result.status_code not in [200, 204]:
             raise ClientAuthenticationError(f'Logout failed, {result.text}')
         self._credentials.access_token = None
@@ -501,7 +501,7 @@ class IQMClient:
             )
 
         url = f'{self._credentials.auth_server_url}/realms/{AUTH_REALM}/protocol/openid-connect/token'
-        result = requests.post(url, json=data.dict())
+        result = requests.post(url, data=data.dict(exclude_none=True))
         if result.status_code != 200:
             raise ClientAuthenticationError(f'Failed to update tokens, {result.text}')
         tokens = json.loads(result.text)
