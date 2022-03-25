@@ -18,12 +18,18 @@ Mocks server calls for testing
 
 import json
 import os
-from uuid import UUID
+import time
+from base64 import b64encode
+from typing import Optional
+from uuid import UUID, uuid4
 
 import pytest
 import requests
-from mockito import mock, unstub, when
+from mockito import expect, mock, unstub, when
 from requests import Response
+
+from iqm_client.iqm_client import (AUTH_CLIENT_ID, AUTH_REALM, AuthRequest,
+                                   GrantType)
 
 existing_run = UUID('3c3fcda3-e860-46bf-92a4-bcc59fa76ce9')
 missing_run = UUID('059e4186-50a3-4e6c-ba1f-37fe6afbdfc2')
@@ -32,6 +38,15 @@ missing_run = UUID('059e4186-50a3-4e6c-ba1f-37fe6afbdfc2')
 @pytest.fixture()
 def base_url():
     return 'https://example.com'
+
+
+@pytest.fixture()
+def credentials():
+    return {
+        'auth_server_url': 'some_auth_server',
+        'username': 'some_username',
+        'password': 'some_password',
+    }
 
 
 @pytest.fixture(scope='function')
@@ -114,3 +129,102 @@ def generate_server_stubs(base_url):
     when(requests).get(f'{base_url}/circuit/run/{existing_run}', ...). \
         thenReturn(running_response).thenReturn(success_get_response)
     when(requests).get(f'{base_url}/circuit/run/{missing_run}', ...).thenReturn(no_run_response)
+
+
+def prepare_tokens(
+        access_token_lifetime: int,
+        refresh_token_lifetime: int,
+        previous_refresh_token: Optional[str] = None,
+        status_code: int = 200,
+        **credentials
+) -> dict[str, str]:
+    """Prepare tokens and set them to be returned for a token request.
+
+    Args:
+        access_token_lifetime: seconds from current time to access token expire time
+        refresh_token_lifetime: seconds from current time to refresh token expire time
+        previous_refresh_token: refresh token to be used in refresh request
+        status_code: status code to return for token request
+        credentials: dict containing auth_server_url, username and password
+
+    Returns:
+         Prepared tokens as a dict.
+    """
+    if previous_refresh_token is None:
+        request_data = AuthRequest(
+            client_id=AUTH_CLIENT_ID,
+            grant_type=GrantType.PASSWORD,
+            username=credentials['username'],
+            password=credentials['password']
+        )
+    else:
+        request_data = AuthRequest(
+            client_id=AUTH_CLIENT_ID,
+            grant_type=GrantType.REFRESH,
+            refresh_token=previous_refresh_token
+        )
+
+    tokens = {
+        'access_token': make_token('Bearer', access_token_lifetime),
+        'refresh_token': make_token('Refresh', refresh_token_lifetime)
+    }
+    when(requests).post(
+        f'{credentials["auth_server_url"]}/realms/{AUTH_REALM}/protocol/openid-connect/token',
+        json=request_data.dict()
+    ).thenReturn(
+        mock({'status_code': status_code, 'text': json.dumps(tokens)})
+    )
+
+    return tokens
+
+
+def make_token(token_type: str, lifetime: int) -> str:
+    """Encode given token type and expire time as a token
+
+    Args:
+        token_type: 'Bearer' for access tokens, 'Refresh' for refresh tokens
+        lifetime: seconds from current time to token's expire time
+
+    Returns:
+        Encoded token
+    """
+    empty = b64encode('{}'.encode('utf-8')).decode('utf-8')
+    body = f'{{ "typ": "{token_type}", "exp": {int(time.time()) + lifetime} }}'
+    body = b64encode(body.encode('utf-8')).decode('utf-8')
+    return f'{empty}.{body}.{empty}'
+
+
+def expect_status_request(url: str, access_token: Optional[str], times: int = 1) -> UUID:
+    """Prepare for status request.
+
+    Args:
+        url: server URL for the status request
+        access_token: access token to use in Authorization header
+            If not set, expect request to have no Authorization header
+        times: number of times the status request is expected to be made
+
+    Returns:
+        Expected job ID to be used in the request
+    """
+    job_id = uuid4()
+    headers = None if access_token is None else {'Authorization': f'Bearer {access_token}'}
+    expect(requests, times=times).get(f'{url}/circuit/run/{job_id}', headers=headers).thenReturn(
+        mock({'status_code': 200, 'text': json.dumps({'status': 'pending'})})
+    )
+    return job_id
+
+
+def expect_logout(auth_server_url: str, refresh_token: str):
+    """Prepare for logout request
+
+    Args:
+        auth_server_url: base URL of the authentication server
+        refresh_token: refresh token expected to be used in the request
+    """
+    request_data = AuthRequest(client_id=AUTH_CLIENT_ID, refresh_token=refresh_token)
+    expect(requests, times=1).post(
+        f'{auth_server_url}/realms/{AUTH_REALM}/protocol/openid-connect/logout',
+        json=request_data.dict()
+    ).thenReturn(
+        mock({'status_code': 204, 'text': '{}'})
+    )
