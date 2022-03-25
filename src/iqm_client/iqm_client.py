@@ -241,10 +241,11 @@ class AuthRequest(BaseModel):
     """Request sent to authentication server for access token and refresh token, or for terminating the session
 
     * Token request with grant type ``'password'`` starts a new session in the authentication server.
-    It uses fields ```client_id'``, ```grant_type'``, ``'username'`` and ``'password'``.
+        It uses fields ```client_id'``, ```grant_type'``, ``'username'`` and ``'password'``.
     * Token request with grant type ``'refresh_token'`` is used for maintaining an existing session.
-    It uses field ```client_id'``, ```grant_type'``, ``'refresh_token'``.
+        It uses field ```client_id'``, ```grant_type'``, ``'refresh_token'``.
     * Logout request uses only fields ``'client_id'`` and ``'refresh_token'``.
+
     """
     client_id: str = Field(..., description='name of the client for all request types')
     'name of the client for all request types'
@@ -268,7 +269,7 @@ class Credentials(BaseModel):
 
     * Fields ``'auth:server_url'``, ``'username'`` and ``'password'`` are provided by the user.
     * Fields ``'access_token'`` and ```refresh_token'`` are loaded from the authentication server and
-    refreshed periodically.
+        refreshed periodically.
     """
     auth_server_url: str = Field(..., description='Base URL of the authentication server')
     'Base URL of the authentication server'

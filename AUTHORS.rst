@@ -7,3 +7,4 @@ Contributors
 * Maija Nevala <maija@meetiqm.com>
 * Hayk Sargsyan <hayk@meetiqm.com>
 * Maxim Smirnov <dc914337@gmail.com>
+* Olli Tyrkkö <otyrkko@meetiqm.com>
