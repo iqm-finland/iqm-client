@@ -72,7 +72,7 @@ def settings_dict():
 @pytest.fixture
 def sample_circuit():
     """
-    A sample circuit for testing submit_circuit.
+    A sample circuit for testing submit_circuit
     """
     return {
         'name': 'The circuit',
