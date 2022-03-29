@@ -26,7 +26,7 @@ from uuid import UUID, uuid4
 import pytest
 import requests
 from mockito import expect, mock, unstub, when
-from requests import Response
+from requests import HTTPError, Response
 
 from iqm_client.iqm_client import (AUTH_CLIENT_ID, AUTH_REALM, AuthRequest,
                                    GrantType)
@@ -110,24 +110,44 @@ def sample_circuit():
     }
 
 
+class MockJsonResponse:
+    def __init__(self, status_code: int, json_data: dict):
+        self.status_code = status_code
+        self.json_data = json_data
+
+    @property
+    def text(self):
+        return json.dumps(self.json_data)
+
+    def json(self):
+        return self.json_data
+
+    def raise_for_status(self):
+        if self.status_code not in [200, 201, 204]:
+            raise HTTPError('')
+
+
 def generate_server_stubs(base_url):
     """
-    Mocking some of the calls to the server by mocking 'requests'
+    Mocking some calls to the server by mocking 'requests'
     """
-    success_submit_response = mock({'status_code': 201, 'text': json.dumps({'id': str(existing_run)})})
-    when(requests).post(f'{base_url}/circuit/run', ...).thenReturn(success_submit_response)
+    when(requests).post(f'{base_url}/circuit/run', ...).thenReturn(
+        MockJsonResponse(201, {'id': str(existing_run)})
+    )
 
-    running_response = mock({'status_code': 200, 'text': json.dumps({'status': 'pending'})})
-    success_get_response = mock({'status_code': 200, 'text': json.dumps(
-        {'status': 'ready', 'measurements': {'result': [[1, 0, 1, 1], [1, 0, 0, 1], [1, 0, 1, 1], [1, 0, 1, 1]]}})})
+    when(requests).get(f'{base_url}/circuit/run/{existing_run}', ...).thenReturn(
+        MockJsonResponse(200, {'status': 'pending'})
+    ).thenReturn(
+        MockJsonResponse(
+            200,
+            {'status': 'ready', 'measurements': {'result': [[1, 0, 1, 1], [1, 0, 0, 1], [1, 0, 1, 1], [1, 0, 1, 1]]}}
+        )
+    )
 
-    # run was not created response
+    # 'run was not created' response
     no_run_response = Response()
     no_run_response.status_code = 404
     no_run_response.reason = 'Run not found'
-
-    when(requests).get(f'{base_url}/circuit/run/{existing_run}', ...). \
-        thenReturn(running_response).thenReturn(success_get_response)
     when(requests).get(f'{base_url}/circuit/run/{missing_run}', ...).thenReturn(no_run_response)
 
 
@@ -171,9 +191,7 @@ def prepare_tokens(
     when(requests).post(
         f'{credentials["auth_server_url"]}/realms/{AUTH_REALM}/protocol/openid-connect/token',
         data=request_data.dict(exclude_none=True)
-    ).thenReturn(
-        mock({'status_code': status_code, 'text': json.dumps(tokens)})
-    )
+    ).thenReturn(MockJsonResponse(status_code, tokens))
 
     return tokens
 
@@ -209,7 +227,7 @@ def expect_status_request(url: str, access_token: Optional[str], times: int = 1)
     job_id = uuid4()
     headers = None if access_token is None else {'Authorization': f'Bearer {access_token}'}
     expect(requests, times=times).get(f'{url}/circuit/run/{job_id}', headers=headers).thenReturn(
-        mock({'status_code': 200, 'text': json.dumps({'status': 'pending'})})
+        MockJsonResponse(200, {'status': 'pending'})
     )
     return job_id
 

@@ -14,16 +14,14 @@
 """Tests for the IQM client.
 """
 # pylint: disable=unused-argument
-import json
-
 import pytest
 import requests
-from mockito import mock, when
+from mockito import when
 from requests import HTTPError
 
 from iqm_client.iqm_client import (Circuit, ClientConfigurationError,
                                    IQMClient, RunStatus, SingleQubitMapping)
-from tests.conftest import existing_run, missing_run
+from tests.conftest import MockJsonResponse, existing_run, missing_run
 
 
 def test_submit_circuit_returns_id(mock_server, settings_dict, base_url, sample_circuit):
@@ -81,8 +79,9 @@ def test_waiting_for_results(mock_server, base_url, settings_dict):
 def test_user_warning_is_emitted_when_warnings_in_response(base_url, settings_dict, capsys):
     client = IQMClient(base_url, settings_dict)
     msg = 'This is a warning msg'
-    with when(requests).get(f'{base_url}/circuit/run/{existing_run}', headers=None) \
-            .thenReturn(mock({'status_code': 200, 'text': json.dumps({'status': 'ready', 'warnings': [msg]})})):
+    with when(requests).get(f'{base_url}/circuit/run/{existing_run}', headers=None).thenReturn(
+            MockJsonResponse(200, {'status': 'ready', 'warnings': [msg]})
+    ):
         with pytest.warns(UserWarning, match=msg):
             client.get_run(existing_run)
 

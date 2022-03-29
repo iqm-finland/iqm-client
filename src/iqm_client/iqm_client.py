@@ -265,7 +265,7 @@ class AuthRequest(BaseModel):
 
 
 class Credentials(BaseModel):
-    """Credentials and tokens for maintaining session with the authentication server.
+    """Credentials and tokens for maintaining a session with the authentication server.
 
     * Fields ``auth:server_url``, ``username`` and ``password`` are provided by the user.
     * Fields ``access_token`` and ``refresh_token`` are loaded from the authentication server and
@@ -384,7 +384,7 @@ class IQMClient:
             headers=headers,
         )
         result.raise_for_status()
-        return UUID(json.loads(result.text)['id'])
+        return UUID(result.json()['id'])
 
     def get_run(self, run_id: UUID) -> RunResult:
         """Query the status of the running task.
@@ -405,7 +405,7 @@ class IQMClient:
             headers=None if not bearer_token else {'Authorization': bearer_token}
         )
         result.raise_for_status()
-        result = RunResult.from_dict(json.loads(result.text))
+        result = RunResult.from_dict(result.json())
         if result.warnings:
             for warning in result.warnings:
                 warnings.warn(warning)
@@ -513,6 +513,6 @@ class IQMClient:
         result = requests.post(url, data=data.dict(exclude_none=True))
         if result.status_code != 200:
             raise ClientAuthenticationError(f'Failed to update tokens, {result.text}')
-        tokens = json.loads(result.text)
+        tokens = result.json()
         self._credentials.access_token = tokens.get('access_token')
         self._credentials.refresh_token = tokens.get('refresh_token')
