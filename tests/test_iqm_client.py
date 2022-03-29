@@ -1,4 +1,4 @@
-# Copyright 2021 IQM client developers
+# Copyright 2021-2022 IQM client developers
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,16 +14,14 @@
 """Tests for the IQM client.
 """
 # pylint: disable=unused-argument
-import json
-
 import pytest
 import requests
-from mockito import mock, when
+from mockito import when
 from requests import HTTPError
 
 from iqm_client.iqm_client import (Circuit, ClientConfigurationError,
                                    IQMClient, RunStatus, SingleQubitMapping)
-from tests.conftest import existing_run, missing_run
+from tests.conftest import MockJsonResponse, existing_run, missing_run
 
 
 def test_submit_circuit_returns_id(mock_server, settings_dict, base_url, sample_circuit):
@@ -78,37 +76,12 @@ def test_waiting_for_results(mock_server, base_url, settings_dict):
     assert client.wait_for_results(existing_run).status == RunStatus.READY
 
 
-def test_credentials_passed_to_server_from_arguments(base_url, settings_dict):
-    """
-    Tests that if the client is initialized with credentials, they are passed to the server correctly.
-    """
-    fake_username = 'a user'
-    fake_api_key = 'an api key'
-    client = IQMClient(base_url, settings_dict, username=fake_username, api_key=fake_api_key)
-    with when(requests).get(f'{base_url}/circuit/run/{existing_run}', auth=(fake_username, fake_api_key))\
-            .thenReturn(mock({'status_code': 200, 'text': json.dumps({'status': 'pending'})})):
-        client.get_run(existing_run)
-
-
-def test_credentials_passed_to_server_from_env_variables(base_url, settings_dict, monkeypatch):
-    """
-    Tests that credentials are read from environment variables
-    """
-    fake_username = 'fake username'
-    fake_api_key = 'fake key'
-    monkeypatch.setenv('IQM_SERVER_USERNAME', fake_username)
-    monkeypatch.setenv('IQM_SERVER_API_KEY', fake_api_key)
-    client = IQMClient(base_url, settings_dict)
-    with when(requests).get(f'{base_url}/circuit/run/{existing_run}', auth=(fake_username, fake_api_key))\
-            .thenReturn(mock({'status_code': 200, 'text': json.dumps({'status': 'pending'})})):
-        client.get_run(existing_run)
-
-
 def test_user_warning_is_emitted_when_warnings_in_response(base_url, settings_dict, capsys):
     client = IQMClient(base_url, settings_dict)
     msg = 'This is a warning msg'
-    with when(requests).get(f'{base_url}/circuit/run/{existing_run}', auth=None) \
-            .thenReturn(mock({'status_code': 200, 'text': json.dumps({'status': 'ready', 'warnings': [msg]})})):
+    with when(requests).get(f'{base_url}/circuit/run/{existing_run}', headers=None).thenReturn(
+            MockJsonResponse(200, {'status': 'ready', 'warnings': [msg]})
+    ):
         with pytest.warns(UserWarning, match=msg):
             client.get_run(existing_run)
 

@@ -2,6 +2,12 @@
 Changelog
 =========
 
+Version 2.0
+===========
+
+* Update user authentication to use access token. `#22 <https://github.com/iqm-finland/iqm-client/pull/22>`_
+* Add token management to IQMClient. `#22 <https://github.com/iqm-finland/iqm-client/pull/22>`_
+
 Version 1.10
 ============
 
