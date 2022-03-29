@@ -143,7 +143,7 @@ def test_start_new_session_when_refresh_token_has_expired(base_url, credentials,
 
 def test_tokens_are_cleared_at_logout(base_url, credentials, settings_dict):
     """
-    Tests that calling ``close`` will terminate the session and clear tokens.
+    Tests that calling ``close`` will terminate the session and clear tokens
     """
     initial_tokens = prepare_tokens(300, 3600, **credentials)
     expect_logout(credentials['auth_server_url'], initial_tokens['refresh_token'])

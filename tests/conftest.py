@@ -197,7 +197,7 @@ def prepare_tokens(
 
 
 def make_token(token_type: str, lifetime: int) -> str:
-    """Encode given token type and expire time as a token
+    """Encode given token type and expire time as a token.
 
     Args:
         token_type: 'Bearer' for access tokens, 'Refresh' for refresh tokens
@@ -233,7 +233,7 @@ def expect_status_request(url: str, access_token: Optional[str], times: int = 1)
 
 
 def expect_logout(auth_server_url: str, refresh_token: str):
-    """Prepare for logout request
+    """Prepare for logout request.
 
     Args:
         auth_server_url: base URL of the authentication server
