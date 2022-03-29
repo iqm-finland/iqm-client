@@ -123,7 +123,7 @@ class MockJsonResponse:
         return self.json_data
 
     def raise_for_status(self):
-        if self.status_code not in [200, 201, 204]:
+        if 400 <= self.status_code < 600:
             raise HTTPError('')
 
 
