@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>iqm_client.iqm_client.IQMClient &#8212; IQM client 1.10 documentation</title>
+    <title>iqm_client.iqm_client.IQMClient &#8212; IQM client 2.0 documentation</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet" />
   <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -37,7 +37,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="iqm_client.iqm_client.Instruction" href="iqm_client.iqm_client.Instruction.html" />
-    <link rel="prev" title="iqm_client.iqm_client.Circuit" href="iqm_client.iqm_client.Circuit.html" />
+    <link rel="prev" title="iqm_client.iqm_client.GrantType" href="iqm_client.iqm_client.GrantType.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
     
@@ -106,8 +106,23 @@
       </label>
       <ul class="current">
        <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.AuthRequest.html">
+         iqm_client.iqm_client.AuthRequest
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="iqm_client.iqm_client.Circuit.html">
          iqm_client.iqm_client.Circuit
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.Credentials.html">
+         iqm_client.iqm_client.Credentials
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.GrantType.html">
+         iqm_client.iqm_client.GrantType
         </a>
        </li>
        <li class="toctree-l4 current active">
@@ -148,6 +163,11 @@
        <li class="toctree-l4">
         <a class="reference internal" href="iqm_client.iqm_client.CircuitExecutionError.html">
          iqm_client.iqm_client.CircuitExecutionError
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.ClientAuthenticationError.html">
+         iqm_client.iqm_client.ClientAuthenticationError
         </a>
        </li>
        <li class="toctree-l4">
@@ -254,7 +274,7 @@
 <h1>iqm_client.iqm_client.IQMClient<a class="headerlink" href="#iqm-client-iqm-client-iqmclient" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="iqm_client.iqm_client.IQMClient">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">iqm_client.iqm_client.</span></span><span class="sig-name descname"><span class="pre">IQMClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm_client.iqm_client.IQMClient" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">iqm_client.iqm_client.</span></span><span class="sig-name descname"><span class="pre">IQMClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">credentials</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm_client.iqm_client.IQMClient" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.9/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Provides access to IQM quantum computers.</p>
 <dl class="field-list simple">
@@ -262,10 +282,19 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Endpoint for accessing the server. Has to start with http or https.</p></li>
 <li><p><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>Any</em><em>]</em>) – Settings for the quantum computer, in IQM JSON format.</p></li>
-<li><p><strong>username</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – Username, if required by the IQM server.
-This can also be set in the IQM_SERVER_USERNAME environment variable.</p></li>
-<li><p><strong>api_key</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – API key, if required by the IQM server.
-This can also be set in the IQM_SERVER_API_KEY environment variable.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>auth_server_url</strong> – Optional base URL of the authentication server.
+This can also be set in the IQM_AUTH_SERVER environment variable.
+If unset, requests will be sent unauthenticated.</p></li>
+<li><p><strong>username</strong> – Optional username to log in to authentication server.
+This can also be set in the IQM_AUTH_USERNAME environment variable.
+Username must be set if <code class="docutils literal notranslate"><span class="pre">auth_server_url</span></code> is set.</p></li>
+<li><p><strong>password</strong> – Optional password to log in to authentication server.
+This can also be set in the IQM_AUTH_PASSWORD environment variable.
+Password must be set if <code class="docutils literal notranslate"><span class="pre">auth_server_url</span></code> is set.</p></li>
 </ul>
 </dd>
 </dl>
@@ -276,13 +305,22 @@ This can also be set in the IQM_SERVER_API_KEY environment variable.</p></li>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.get_run" title="iqm_client.iqm_client.IQMClient.get_run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_run</span></code></a>(run_id)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_get_bearer_token</span></code>([retries])</p></td>
+<td><p>Make a bearer token for Authorization header.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_update_tokens</span></code>()</p></td>
+<td><p>Update access token and refresh token.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.close" title="iqm_client.iqm_client.IQMClient.close"><code class="xref py py-obj docutils literal notranslate"><span class="pre">close</span></code></a>()</p></td>
+<td><p>Terminate session with authentication server.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.get_run" title="iqm_client.iqm_client.IQMClient.get_run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_run</span></code></a>(run_id)</p></td>
 <td><p>Query the status of the running task.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.submit_circuit" title="iqm_client.iqm_client.IQMClient.submit_circuit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit_circuit</span></code></a>(circuit[, qubit_mapping, shots])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.submit_circuit" title="iqm_client.iqm_client.IQMClient.submit_circuit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit_circuit</span></code></a>(circuit[, qubit_mapping, shots])</p></td>
 <td><p>Submits a quantum circuit to be executed on a quantum computer.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.wait_for_results" title="iqm_client.iqm_client.IQMClient.wait_for_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait_for_results</span></code></a>(run_id[, timeout_secs])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.wait_for_results" title="iqm_client.iqm_client.IQMClient.wait_for_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait_for_results</span></code></a>(run_id[, timeout_secs])</p></td>
 <td><p>Poll results until run is ready, failed, or timed out.</p></td>
 </tr>
 </tbody>
@@ -355,6 +393,23 @@ Can be set to <code class="docutils literal notranslate"><span class="pre">None<
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="iqm_client.iqm_client.IQMClient.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#iqm_client.iqm_client.IQMClient.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Terminate session with authentication server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True iff session was successfully closed</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="iqm_client.iqm_client.ClientAuthenticationError.html#iqm_client.iqm_client.ClientAuthenticationError" title="iqm_client.iqm_client.ClientAuthenticationError"><strong>ClientAuthenticationError</strong></a> – if logout failed</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -370,11 +425,11 @@ Can be set to <code class="docutils literal notranslate"><span class="pre">None<
 <div class='prev-next-bottom'>
     
     <div id="prev">
-        <a class="left-prev" href="iqm_client.iqm_client.Circuit.html" title="previous page">
+        <a class="left-prev" href="iqm_client.iqm_client.GrantType.html" title="previous page">
             <i class="prevnext-label fas fa-angle-left"></i>
             <div class="prevnext-info">
                 <p class="prevnext-label">previous</p>
-                <p class="prevnext-title">iqm_client.iqm_client.Circuit</p>
+                <p class="prevnext-title">iqm_client.iqm_client.GrantType</p>
             </div>
         </a>
     </div>
@@ -399,7 +454,7 @@ Can be set to <code class="docutils literal notranslate"><span class="pre">None<
           By IQM client developers<br/>
         
             &copy; Copyright 2021, IQM.<br/>
-          Last updated on 2022-02-23.<br/>
+          Last updated on 2022-03-29.<br/>
       </p>
     </div>
   </footer>

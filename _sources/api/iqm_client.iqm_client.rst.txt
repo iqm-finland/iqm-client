@@ -19,7 +19,10 @@ iqm\_client.iqm\_client
       :toctree:
       :template: autosummary-class-template.rst
    
+      AuthRequest
       Circuit
+      Credentials
+      GrantType
       IQMClient
       Instruction
       RunRequest
@@ -38,6 +41,7 @@ iqm\_client.iqm\_client
    
       APITimeoutError
       CircuitExecutionError
+      ClientAuthenticationError
       ClientConfigurationError
    
    

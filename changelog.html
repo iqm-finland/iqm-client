@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Changelog &#8212; IQM client 1.10 documentation</title>
+    <title>Changelog &#8212; IQM client 2.0 documentation</title>
     
   <link href="_static/css/theme.css" rel="stylesheet" />
   <link href="_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -105,8 +105,23 @@
       </label>
       <ul>
        <li class="toctree-l4">
+        <a class="reference internal" href="api/iqm_client.iqm_client.AuthRequest.html">
+         iqm_client.iqm_client.AuthRequest
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="api/iqm_client.iqm_client.Circuit.html">
          iqm_client.iqm_client.Circuit
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="api/iqm_client.iqm_client.Credentials.html">
+         iqm_client.iqm_client.Credentials
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="api/iqm_client.iqm_client.GrantType.html">
+         iqm_client.iqm_client.GrantType
         </a>
        </li>
        <li class="toctree-l4">
@@ -147,6 +162,11 @@
        <li class="toctree-l4">
         <a class="reference internal" href="api/iqm_client.iqm_client.CircuitExecutionError.html">
          iqm_client.iqm_client.CircuitExecutionError
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="api/iqm_client.iqm_client.ClientAuthenticationError.html">
+         iqm_client.iqm_client.ClientAuthenticationError
         </a>
        </li>
        <li class="toctree-l4">
@@ -247,6 +267,11 @@
             <nav id="bd-toc-nav" aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#version-2-0">
+   Version 2.0
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#version-1-10">
    Version 1.10
   </a>
@@ -311,7 +336,7 @@
   </a>
   <ul class="nav section-nav flex-column">
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#id12">
+    <a class="reference internal nav-link" href="#id14">
      Fixes
     </a>
    </li>
@@ -323,7 +348,7 @@
   </a>
   <ul class="nav section-nav flex-column">
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#id14">
+    <a class="reference internal nav-link" href="#id16">
      Features
     </a>
    </li>
@@ -342,6 +367,13 @@
                 
   <div class="section" id="changelog">
 <span id="changes"></span><h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="version-2-0">
+<h2>Version 2.0<a class="headerlink" href="#version-2-0" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Update user authentication to use access token. <a class="reference external" href="https://github.com/iqm-finland/iqm-client/pull/22">#22</a></p></li>
+<li><p>Add token management to IQMClient. <a class="reference external" href="https://github.com/iqm-finland/iqm-client/pull/22">#22</a></p></li>
+</ul>
+</div>
 <div class="section" id="version-1-10">
 <h2>Version 1.10<a class="headerlink" href="#version-1-10" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
@@ -406,8 +438,8 @@
 </div>
 <div class="section" id="version-1-1">
 <h2>Version 1.1<a class="headerlink" href="#version-1-1" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id12">
-<h3>Fixes<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id14">
+<h3>Fixes<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Changed example instruction phased_rx to measurement. <a class="reference external" href="https://github.com/iqm-finland/iqm-client/pull/2">#2</a></p></li>
 </ul>
@@ -415,8 +447,8 @@
 </div>
 <div class="section" id="version-1-0">
 <h2>Version 1.0<a class="headerlink" href="#version-1-0" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id14">
-<h3>Features<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id16">
+<h3>Features<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Split IQM client from the Cirq on IQM library</p></li>
 </ul>
@@ -455,7 +487,7 @@
           By IQM client developers<br/>
         
             &copy; Copyright 2021, IQM.<br/>
-          Last updated on 2022-02-23.<br/>
+          Last updated on 2022-03-29.<br/>
       </p>
     </div>
   </footer>

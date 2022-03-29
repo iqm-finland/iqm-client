@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Index &#8212; IQM client 1.10 documentation</title>
+    <title>Index &#8212; IQM client 2.0 documentation</title>
     
   <link href="_static/css/theme.css" rel="stylesheet" />
   <link href="_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -104,8 +104,23 @@
       </label>
       <ul>
        <li class="toctree-l4">
+        <a class="reference internal" href="api/iqm_client.iqm_client.AuthRequest.html">
+         iqm_client.iqm_client.AuthRequest
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="api/iqm_client.iqm_client.Circuit.html">
          iqm_client.iqm_client.Circuit
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="api/iqm_client.iqm_client.Credentials.html">
+         iqm_client.iqm_client.Credentials
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="api/iqm_client.iqm_client.GrantType.html">
+         iqm_client.iqm_client.GrantType
         </a>
        </li>
        <li class="toctree-l4">
@@ -146,6 +161,11 @@
        <li class="toctree-l4">
         <a class="reference internal" href="api/iqm_client.iqm_client.CircuitExecutionError.html">
          iqm_client.iqm_client.CircuitExecutionError
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="api/iqm_client.iqm_client.ClientAuthenticationError.html">
+         iqm_client.iqm_client.ClientAuthenticationError
         </a>
        </li>
        <li class="toctree-l4">
@@ -247,17 +267,24 @@
  | <a href="#Q"><strong>Q</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
+ | <a href="#U"><strong>U</strong></a>
  | <a href="#W"><strong>W</strong></a>
  
 </div>
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/iqm_client.iqm_client.Credentials.html#iqm_client.iqm_client.Credentials.access_token">access_token (iqm_client.iqm_client.Credentials attribute)</a>
+</li>
       <li><a href="api/iqm_client.iqm_client.APITimeoutError.html#iqm_client.iqm_client.APITimeoutError">APITimeoutError</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/iqm_client.iqm_client.Instruction.html#iqm_client.iqm_client.Instruction.args">args (iqm_client.iqm_client.Instruction attribute)</a>
+</li>
+      <li><a href="api/iqm_client.iqm_client.Credentials.html#iqm_client.iqm_client.Credentials.auth_server_url">auth_server_url (iqm_client.iqm_client.Credentials attribute)</a>
+</li>
+      <li><a href="api/iqm_client.iqm_client.AuthRequest.html#iqm_client.iqm_client.AuthRequest">AuthRequest (class in iqm_client.iqm_client)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -269,11 +296,19 @@
 </li>
       <li><a href="api/iqm_client.iqm_client.RunRequest.html#iqm_client.iqm_client.RunRequest.circuit">circuit (iqm_client.iqm_client.RunRequest attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/iqm_client.iqm_client.CircuitExecutionError.html#iqm_client.iqm_client.CircuitExecutionError">CircuitExecutionError</a>
 </li>
+      <li><a href="api/iqm_client.iqm_client.AuthRequest.html#iqm_client.iqm_client.AuthRequest.client_id">client_id (iqm_client.iqm_client.AuthRequest attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/iqm_client.iqm_client.ClientAuthenticationError.html#iqm_client.iqm_client.ClientAuthenticationError">ClientAuthenticationError</a>
+</li>
       <li><a href="api/iqm_client.iqm_client.ClientConfigurationError.html#iqm_client.iqm_client.ClientConfigurationError">ClientConfigurationError</a>
+</li>
+      <li><a href="api/iqm_client.iqm_client.IQMClient.html#iqm_client.iqm_client.IQMClient.close">close() (iqm_client.iqm_client.IQMClient method)</a>
+</li>
+      <li><a href="api/iqm_client.iqm_client.Credentials.html#iqm_client.iqm_client.Credentials">Credentials (class in iqm_client.iqm_client)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -290,6 +325,12 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/iqm_client.iqm_client.IQMClient.html#iqm_client.iqm_client.IQMClient.get_run">get_run() (iqm_client.iqm_client.IQMClient method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/iqm_client.iqm_client.AuthRequest.html#iqm_client.iqm_client.AuthRequest.grant_type">grant_type (iqm_client.iqm_client.AuthRequest attribute)</a>
+</li>
+      <li><a href="api/iqm_client.iqm_client.GrantType.html#iqm_client.iqm_client.GrantType">GrantType (class in iqm_client.iqm_client)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -366,6 +407,14 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/iqm_client.iqm_client.AuthRequest.html#iqm_client.iqm_client.AuthRequest.password">password (iqm_client.iqm_client.AuthRequest attribute)</a>
+
+      <ul>
+        <li><a href="api/iqm_client.iqm_client.Credentials.html#iqm_client.iqm_client.Credentials.password">(iqm_client.iqm_client.Credentials attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/iqm_client.iqm_client.SingleQubitMapping.html#iqm_client.iqm_client.SingleQubitMapping.physical_name">physical_name (iqm_client.iqm_client.SingleQubitMapping attribute)</a>
 </li>
   </ul></td>
@@ -386,10 +435,16 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/iqm_client.iqm_client.RunRequest.html#iqm_client.iqm_client.RunRequest">RunRequest (class in iqm_client.iqm_client)</a>
+      <li><a href="api/iqm_client.iqm_client.AuthRequest.html#iqm_client.iqm_client.AuthRequest.refresh_token">refresh_token (iqm_client.iqm_client.AuthRequest attribute)</a>
+
+      <ul>
+        <li><a href="api/iqm_client.iqm_client.Credentials.html#iqm_client.iqm_client.Credentials.refresh_token">(iqm_client.iqm_client.Credentials attribute)</a>
 </li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/iqm_client.iqm_client.RunRequest.html#iqm_client.iqm_client.RunRequest">RunRequest (class in iqm_client.iqm_client)</a>
+</li>
       <li><a href="api/iqm_client.iqm_client.RunResult.html#iqm_client.iqm_client.RunResult">RunResult (class in iqm_client.iqm_client)</a>
 </li>
       <li><a href="api/iqm_client.iqm_client.RunStatus.html#iqm_client.iqm_client.RunStatus">RunStatus (class in iqm_client.iqm_client)</a>
@@ -412,6 +467,18 @@
 </li>
       <li><a href="api/iqm_client.iqm_client.IQMClient.html#iqm_client.iqm_client.IQMClient.submit_circuit">submit_circuit() (iqm_client.iqm_client.IQMClient method)</a>
 </li>
+  </ul></td>
+</tr></table>
+
+<h2 id="U">U</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/iqm_client.iqm_client.AuthRequest.html#iqm_client.iqm_client.AuthRequest.username">username (iqm_client.iqm_client.AuthRequest attribute)</a>
+
+      <ul>
+        <li><a href="api/iqm_client.iqm_client.Credentials.html#iqm_client.iqm_client.Credentials.username">(iqm_client.iqm_client.Credentials attribute)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -450,7 +517,7 @@
           By IQM client developers<br/>
         
             &copy; Copyright 2021, IQM.<br/>
-          Last updated on 2022-02-23.<br/>
+          Last updated on 2022-03-29.<br/>
       </p>
     </div>
   </footer>

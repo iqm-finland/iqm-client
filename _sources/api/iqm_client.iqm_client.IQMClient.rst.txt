@@ -18,6 +18,9 @@ iqm\_client.iqm\_client.IQMClient
 
    .. autosummary::
    
+      ~IQMClient._get_bearer_token
+      ~IQMClient._update_tokens
+      ~IQMClient.close
       ~IQMClient.get_run
       ~IQMClient.submit_circuit
       ~IQMClient.wait_for_results
