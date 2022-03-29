@@ -198,9 +198,9 @@ class RunRequest(BaseModel):
 class RunResult(BaseModel):
     """Results of a circuit execution.
 
-    * ``measurements`` is present iff the status is ``'ready``.
-    * ``message`` carries additional information for the ``'failed`` status.
-    * If the status is ``'pending``, ``measurements`` and ``message`` are ``None``.
+    * ``measurements`` is present iff the status is ``'ready'``.
+    * ``message`` carries additional information for the ``'failed'`` status.
+    * If the status is ``'pending'``, ``measurements`` and ``message`` are ``None``.
     """
     status: RunStatus = Field(..., description="current status of the run, in ``{'pending', 'ready', 'failed'}``")
     "current status of the run, in ``{'pending', 'ready', 'failed'}``"
