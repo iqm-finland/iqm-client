@@ -240,9 +240,9 @@ class GrantType(str, Enum):
 class AuthRequest(BaseModel):
     """Request sent to authentication server for access token and refresh token, or for terminating the session.
 
-    * Token request with grant type ``password`` starts a new session in the authentication server.
+    * Token request with grant type ``'password'`` starts a new session in the authentication server.
       It uses fields ``client_id``, ``grant_type``, ``username`` and ``password``.
-    * Token request with grant type ``refresh_token`` is used for maintaining an existing session.
+    * Token request with grant type ``'refresh_token'`` is used for maintaining an existing session.
       It uses field ``client_id``, ``grant_type``, ``refresh_token``.
     * Logout request uses only fields ``client_id`` and ``refresh_token``.
 
@@ -254,14 +254,14 @@ class AuthRequest(BaseModel):
         description="type of token request, in ``{'password', 'refresh_token'}``"
     )
     "type of token request, in ``{'password', 'refresh_token'}``"
-    username: Optional[str] = Field(None, description='username for grant type ``password``')
-    'username for grant type ``password``'
-    password: Optional[str] = Field(None, description='password for grant type ``password``')
-    'password for grant type ``password``'
+    username: Optional[str] = Field(None, description="username for grant type ``'password'``")
+    "username for grant type ``'password'``"
+    password: Optional[str] = Field(None, description="password for grant type ``'password'``")
+    "password for grant type ``'password'``"
     refresh_token: Optional[str] = Field(
         None,
-        description='refresh token for grant type ``refresh_token`` and logout request')
-    'refresh token for grant type ``refresh_token`` and logout request'
+        description="refresh token for grant type ``'refresh_token'`` and logout request")
+    "refresh token for grant type ``'refresh_token'`` and logout request"
 
 
 class Credentials(BaseModel):
