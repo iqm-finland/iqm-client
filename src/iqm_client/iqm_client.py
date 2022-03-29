@@ -198,9 +198,9 @@ class RunRequest(BaseModel):
 class RunResult(BaseModel):
     """Results of a circuit execution.
 
-    * ``measurements`` is present iff the status is ``'ready'``.
-    * ``message`` carries additional information for the ``'failed'`` status.
-    * If the status is ``'pending'``, ``measurements`` and ``message`` are ``None``.
+    * ``measurements`` is present iff the status is ``'ready``.
+    * ``message`` carries additional information for the ``'failed`` status.
+    * If the status is ``'pending``, ``measurements`` and ``message`` are ``None``.
     """
     status: RunStatus = Field(..., description="current status of the run, in ``{'pending', 'ready', 'failed'}``")
     "current status of the run, in ``{'pending', 'ready', 'failed'}``"
@@ -231,20 +231,20 @@ class RunResult(BaseModel):
 
 class GrantType(str, Enum):
     """
-    Type of token request
+    Type of token request.
     """
     PASSWORD = 'password'
     REFRESH = 'refresh_token'
 
 
 class AuthRequest(BaseModel):
-    """Request sent to authentication server for access token and refresh token, or for terminating the session
+    """Request sent to authentication server for access token and refresh token, or for terminating the session.
 
-    * Token request with grant type ``'password'`` starts a new session in the authentication server.
-        It uses fields ```client_id'``, ```grant_type'``, ``'username'`` and ``'password'``.
-    * Token request with grant type ``'refresh_token'`` is used for maintaining an existing session.
-        It uses field ```client_id'``, ```grant_type'``, ``'refresh_token'``.
-    * Logout request uses only fields ``'client_id'`` and ``'refresh_token'``.
+    * Token request with grant type ``password`` starts a new session in the authentication server.
+      It uses fields ``client_id``, ``grant_type``, ``username`` and ``password``.
+    * Token request with grant type ``refresh_token`` is used for maintaining an existing session.
+      It uses field ``client_id``, ``grant_type``, ``refresh_token``.
+    * Logout request uses only fields ``client_id`` and ``refresh_token``.
 
     """
     client_id: str = Field(..., description='name of the client for all request types')
@@ -254,21 +254,21 @@ class AuthRequest(BaseModel):
         description="type of token request, in ``{'password', 'refresh_token'}``"
     )
     "type of token request, in ``{'password', 'refresh_token'}``"
-    username: Optional[str] = Field(None, description="username for grant type ``'password'``")
-    "username for grant type ``'password'``"
-    password: Optional[str] = Field(None, description="password for grant type ``'password'``")
-    "password for grant type ``'password'``"
+    username: Optional[str] = Field(None, description="username for grant type ``password``")
+    "username for grant type ``password``"
+    password: Optional[str] = Field(None, description="password for grant type ``password``")
+    "password for grant type ``password``"
     refresh_token: Optional[str] = Field(
         None,
-        description="refresh token for grant type ``'refresh_token'`` and logout request")
-    "refresh token for grant type ``'refresh_token'`` and logout request"
+        description="refresh token for grant type ``refresh_token`` and logout request")
+    "refresh token for grant type ``refresh_token`` and logout request"
 
 
 class Credentials(BaseModel):
-    """Credentials and tokens for maintaining session with the authentication server
+    """Credentials and tokens for maintaining session with the authentication server.
 
-    * Fields ``'auth:server_url'``, ``'username'`` and ``'password'`` are provided by the user.
-    * Fields ``'access_token'`` and ```refresh_token'`` are loaded from the authentication server and
+    * Fields ``auth:server_url``, ``username`` and ``password`` are provided by the user.
+    * Fields ``access_token`` and ``refresh_token`` are loaded from the authentication server and
         refreshed periodically.
     """
     auth_server_url: str = Field(..., description='Base URL of the authentication server')
@@ -290,7 +290,7 @@ def _get_credentials(credentials: dict[str, str]) -> Optional[Credentials]:
         credentials: dict of credentials provided as arguments
 
     Returns:
-        Credentials with token fields cleared, or None if ``'auth_server_url'`` was not set.
+        Credentials with token fields cleared, or None if ``auth_server_url`` was not set.
     """
     auth_server_url = credentials.get('auth_server_url') or os.environ.get('IQM_AUTH_SERVER')
     username = credentials.get('username') or os.environ.get('IQM_AUTH_USERNAME')
