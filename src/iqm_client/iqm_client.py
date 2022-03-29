@@ -310,8 +310,7 @@ def _time_left_seconds(token: str) -> int:
     """
     _, body, _ = token.split('.', 2)
     # Add padding to adjust body length to a multiple of 4 chars as required by base64 decoding
-    while len(body) % 4 != 0:
-        body += '='
+    body += '=' * (-len(body) % 4)
     exp_time = int(json.loads(b64decode(body)).get('exp', '0'))
     return max(0, exp_time - int(time.time()))
 
