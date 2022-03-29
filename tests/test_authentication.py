@@ -80,7 +80,7 @@ def test_no_authorization_header_when_credentials_are_not_provided(base_url, set
 
 def test_raises_client_authentication_error_if_authentication_fails(base_url, credentials, settings_dict):
     """
-    Tests that requests are sent with Authorization header when credentials are provided
+    Tests that authentication failure raises ClientAuthenticationError
     """
     prepare_tokens(300, 3600, status_code=401, **credentials)
     with raises(ClientAuthenticationError):
