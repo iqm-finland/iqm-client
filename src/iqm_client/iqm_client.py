@@ -269,7 +269,7 @@ class Credentials(BaseModel):
 
     * Fields ``auth:server_url``, ``username`` and ``password`` are provided by the user.
     * Fields ``access_token`` and ``refresh_token`` are loaded from the authentication server and
-        refreshed periodically.
+      refreshed periodically.
     """
     auth_server_url: str = Field(..., description='Base URL of the authentication server')
     'Base URL of the authentication server'
@@ -309,6 +309,7 @@ def _time_left_seconds(token: str) -> int:
         Time left on token in seconds.
     """
     _, body, _ = token.split('.', 2)
+    # Add padding to adjust body length to a multiple of 4 chars as required by base64 decoding
     while len(body) % 4 != 0:
         body += '='
     exp_time = int(json.loads(b64decode(body)).get('exp', '0'))
@@ -321,6 +322,8 @@ class IQMClient:
     Args:
         url: Endpoint for accessing the server. Has to start with http or https.
         settings: Settings for the quantum computer, in IQM JSON format.
+
+    Keyword Args:
         auth_server_url: Optional base URL of the authentication server.
             This can also be set in the IQM_AUTH_SERVER environment variable.
             If unset, requests will be sent unauthenticated.
@@ -433,6 +436,12 @@ class IQMClient:
 
     def close(self) -> bool:
         """Terminate session with authentication server.
+
+        Returns:
+            True iff session was successfully closed
+
+        Raises:
+            ClientAuthenticationError: if logout failed
         """
         if self._credentials is None:
             return False
