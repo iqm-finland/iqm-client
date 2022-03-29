@@ -254,14 +254,14 @@ class AuthRequest(BaseModel):
         description="type of token request, in ``{'password', 'refresh_token'}``"
     )
     "type of token request, in ``{'password', 'refresh_token'}``"
-    username: Optional[str] = Field(None, description="username for grant type ``password``")
-    "username for grant type ``password``"
-    password: Optional[str] = Field(None, description="password for grant type ``password``")
-    "password for grant type ``password``"
+    username: Optional[str] = Field(None, description='username for grant type ``password``')
+    'username for grant type ``password``'
+    password: Optional[str] = Field(None, description='password for grant type ``password``')
+    'password for grant type ``password``'
     refresh_token: Optional[str] = Field(
         None,
-        description="refresh token for grant type ``refresh_token`` and logout request")
-    "refresh token for grant type ``refresh_token`` and logout request"
+        description='refresh token for grant type ``refresh_token`` and logout request')
+    'refresh token for grant type ``refresh_token`` and logout request'
 
 
 class Credentials(BaseModel):
