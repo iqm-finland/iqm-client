@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 2.1
+===========
+
+* Add support for Python 3.10
+
 Version 2.0
 ===========
 
