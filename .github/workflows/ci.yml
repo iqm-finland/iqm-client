@@ -24,7 +24,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
           sudo apt-get install graphviz
-      - name: Run tests for ${{ matrix.python-version }}
-        run: tox -e tests
+      - name: Run tests for Python 3.9
+        run: tox -e py39
+      - name Run tests for Python 3.10
+        run: tox -e py310
       - name: Test docs can be built
         run: tox -e docs
