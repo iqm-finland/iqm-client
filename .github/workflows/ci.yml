@@ -25,6 +25,6 @@ jobs:
           pip install -e ".[dev]"
           sudo apt-get install graphviz
       - name: Run tests for Python ${{ matrix.python-version }}
-        run: tox -e py${{${{matrix.python-version}}//./$''}}
+        run: tox -e py${{ ${{ matrix.python-version }}//./$'' }}
       - name: Test docs can be built
         run: tox -e docs
