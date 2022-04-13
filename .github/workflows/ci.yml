@@ -26,7 +26,7 @@ jobs:
           sudo apt-get install graphviz
       - name: Run tests for Python 3.9
         run: tox -e py39
-      - name Run tests for Python 3.10
+      - name: Run tests for Python 3.10
         run: tox -e py310
       - name: Test docs can be built
         run: tox -e docs
