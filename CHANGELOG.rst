@@ -5,7 +5,7 @@ Changelog
 Version 2.1
 ===========
 
-* Add support for Python 3.10
+* Add support for Python 3.10. `#23 <https://github.com/iqm-finland/iqm-client/pull/23>`_
 
 Version 2.0
 ===========
