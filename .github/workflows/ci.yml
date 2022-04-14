@@ -25,6 +25,10 @@ jobs:
           pip install -e ".[dev]"
           sudo apt-get install graphviz
       - name: Run tests for Python ${{ matrix.python-version }}
-        run: tox -e py${{ matrix.python-version }}
+        run: |
+          export PYVER=${{matrix.python-version}}
+          export TOXENV="py"${PYVER//.}
+          echo "Using Tox environment: ${TOXENV}"
+          tox -e "${TOXENV}"
       - name: Test docs can be built
         run: tox -e docs
