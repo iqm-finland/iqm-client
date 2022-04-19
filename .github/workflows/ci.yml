@@ -26,7 +26,7 @@ jobs:
           sudo apt-get install graphviz
       - name: Run tests for Python ${{ matrix.python-version }}
         run: |
-          export PYVER=${{matrix.python-version}}
+          export PYVER=${{matrix.python-version}} # Constructing Tox environment names from Github Python version strings should become unnecessary once/if this ticket gets implemented: https://github.com/tox-dev/tox/issues/2115
           export TOXENV="py"${PYVER//.}
           echo "Using Tox environment: ${TOXENV}"
           tox -e "${TOXENV}"
