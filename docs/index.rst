@@ -18,6 +18,7 @@ Contents
    license
    authors
    changelog
+   circuit_execution_request
 
 
 Indices and tables
