@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # Copyright 2022 IQM client developers
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +16,7 @@ Script to publish json schema for the circuit execution request which is sent to
 """
 import json
 import os
-from typing import Any, Dict
+from typing import Any
 
 from git import Repo
 
@@ -29,7 +28,7 @@ def _get_git_tag() -> str:
     tags = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
     return str(tags[-1])
 
-def generate_json_schema() -> Dict[str, Any]:
+def generate_json_schema() -> dict[str, Any]:
     """
     Generate json schema dictionary from pydantic model of RunRequest.
     """
@@ -43,7 +42,7 @@ def save_json_schema_to_docs() -> None:
     """
     json_schema_path = os.path.join(os.getcwd(), 'docs', 'run_request_json_schema.json')
     with open(json_schema_path, 'w', encoding='utf-8') as f:
-        f.write(json.dumps(generate_json_schema(),indent=2))
+        f.write(json.dumps(generate_json_schema(), indent=2))
 
 if __name__ == '__main__':
     save_json_schema_to_docs()

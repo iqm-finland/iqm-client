@@ -46,10 +46,10 @@ def sample_invalid_run_request(sample_valid_run_request):
 
 def test_jsonschema_validates_run_requests(sample_valid_run_request):
     """
-    Tests that the generated json schema valdidates valid run requests.
+    Tests that the generated json schema validates valid run requests.
     """
     json_schema = generate_json_schema()
-    validate(schema=json_schema,instance=sample_valid_run_request)
+    validate(schema=json_schema, instance=sample_valid_run_request)
 
 def test_jsonschema_throws_validation_errors(sample_invalid_run_request):
     """
