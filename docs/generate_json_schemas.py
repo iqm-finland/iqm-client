@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """
-Script to publish json schema for the circuit execution request which is sent to the IQM backend.
+Script to publish JSON schemas for the Pydantic models used by the HTTP API.
 """
 import json
 import os
@@ -23,6 +23,7 @@ from git import Repo
 from iqm_client.iqm_client import BaseModel, RunRequest
 
 
+# schemas to generate
 SCHEMAS = {
     'run_request_schema': RunRequest,
 }
