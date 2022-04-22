@@ -19,7 +19,7 @@ from copy import deepcopy
 import pytest
 from jsonschema import ValidationError, validate
 
-from docs.generate_run_request_json_schema import generate_json_schema
+from docs.generate_json_schemas import generate_json_schema
 from iqm_client.iqm_client import RunRequest
 
 
@@ -48,13 +48,13 @@ def test_jsonschema_validates_run_requests(sample_valid_run_request):
     """
     Tests that the generated json schema validates valid run requests.
     """
-    json_schema = generate_json_schema()
+    json_schema = generate_json_schema(RunRequest, '')
     validate(schema=json_schema, instance=sample_valid_run_request)
 
 def test_jsonschema_throws_validation_errors(sample_invalid_run_request):
     """
     Tests that the generated json schema rejects invalid run requests.
     """
-    json_schema = generate_json_schema()
+    json_schema = generate_json_schema(RunRequest, '')
     with pytest.raises(ValidationError):
         validate(schema=json_schema, instance=sample_invalid_run_request)

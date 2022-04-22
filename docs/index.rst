@@ -18,7 +18,7 @@ Contents
    license
    authors
    changelog
-   circuit_execution_request
+   json_schemas
 
 
 Indices and tables

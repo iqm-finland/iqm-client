@@ -150,7 +150,7 @@ class Instruction(BaseModel):
     qubits: list[str] = Field(
         ...,
         description='names of the logical qubits the operation acts on',
-        example=['q1'],
+        example=['alice'],
     )
     'names of the logical qubits the operation acts on'
     args: dict[str, Any] = Field(
@@ -173,9 +173,9 @@ class Circuit(BaseModel):
 class SingleQubitMapping(BaseModel):
     """Mapping of a logical qubit name to a physical qubit name.
     """
-    logical_name: str = Field(..., description='logical qubit name', example='q1')
+    logical_name: str = Field(..., description='logical qubit name', example='alice')
     'logical qubit name'
-    physical_name: str = Field(..., description='physical qubit name', example='qubit_1')
+    physical_name: str = Field(..., description='physical qubit name', example='QB1')
     'physical qubit name'
 
 
