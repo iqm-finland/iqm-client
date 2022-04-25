@@ -36,6 +36,10 @@ def _get_git_tag() -> str:
 
 def generate_json_schema(cls: type[BaseModel], filename: str) -> dict[str, Any]:
     """Generate a JSON schema dictionary from the given Pydantic model.
+
+    Args:
+        cls: pydantic model for which the JSON schema should be generated.
+        filename: filename for saving the JSON schema.
     """
     json_schema = cls.schema()
     tag = _get_git_tag()
