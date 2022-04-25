@@ -18,44 +18,41 @@ import json
 import os
 from typing import Any
 
-from git import Repo
-
 from iqm_client.iqm_client import BaseModel, RunRequest
 
+try:
+    from iqm_client import __version__ as version
+except ImportError:
+    pass
 
 # schemas to generate
 SCHEMAS = {
     'run_request_schema': RunRequest,
 }
 
-
-def _get_git_tag() -> str:
-    repo = Repo(os.getcwd())
-    tags = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
-    return str(tags[-1])
-
 def generate_json_schema(cls: type[BaseModel], filename: str) -> dict[str, Any]:
     """Generate a JSON schema dictionary from the given Pydantic model.
 
     Args:
         cls: pydantic model for which the JSON schema should be generated.
-        filename: filename for saving the JSON schema.
+        filename: filename of the JSON schema.
     """
     json_schema = cls.schema()
-    tag = _get_git_tag()
+
     return {
         # JSON Schema version used
         '$schema': 'https://json-schema.org/draft/2020-12/schema',
         # URI containing the version of the generated schema
-        '$id': f'https://www.meetiqm.com/iqm_client/{filename}_v{tag}.json',
+        '$id': f'https://iqm-finland.github.io/iqm-client/{filename}',
         **json_schema,
     }
 
 def save_json_schemas_to_docs() -> None:
     """Save the JSON schemas in the docs folder.
     """
-    for filename, cls in SCHEMAS.items():
-        json_schema_path = os.path.join(os.getcwd(), 'docs', filename + '.json')
+    for filename_prefix, cls in SCHEMAS.items():
+        filename = f"{filename_prefix}_v{version}.json"
+        json_schema_path = os.path.join(os.getcwd(), 'docs', filename)
         with open(json_schema_path, 'w', encoding='utf-8') as f:
             f.write(json.dumps(generate_json_schema(cls, filename), indent=2))
 
