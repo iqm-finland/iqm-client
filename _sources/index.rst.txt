@@ -18,6 +18,7 @@ Contents
    license
    authors
    changelog
+   json_schemas
 
 
 Indices and tables
