@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 2.2
+===========
+
+* Publish JSON schema for the circuit run request sent to an IQM server. `#24 <https://github.com/iqm-finland/iqm-client/pull/24>`_
+
 Version 2.1
 ===========
 
