@@ -79,7 +79,7 @@ def test_waiting_for_results(mock_server, base_url, settings_dict):
 def test_user_warning_is_emitted_when_warnings_in_response(base_url, settings_dict, capsys):
     client = IQMClient(base_url, settings_dict)
     msg = 'This is a warning msg'
-    with when(requests).get(f'{base_url}/circuit/run/{existing_run}', headers=None).thenReturn(
+    with when(requests).get(f'{base_url}/jobs/{existing_run}', headers=None).thenReturn(
             MockJsonResponse(200, {'status': 'ready', 'warnings': [msg]})
     ):
         with pytest.warns(UserWarning, match=msg):

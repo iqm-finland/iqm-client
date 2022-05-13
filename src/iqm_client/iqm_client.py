@@ -378,7 +378,7 @@ class IQMClient:
             headers['Authorization'] = bearer_token
 
         result = requests.post(
-            join(self._base_url, 'circuit/run'),
+            join(self._base_url, 'jobs'),
             json=data.dict(),
             headers=headers,
         )
@@ -400,7 +400,7 @@ class IQMClient:
         """
         bearer_token = self._get_bearer_token()
         result = requests.get(
-            join(self._base_url, 'circuit/run/', str(run_id)),
+            join(self._base_url, 'jobs/', str(run_id)),
             headers=None if not bearer_token else {'Authorization': bearer_token}
         )
         result.raise_for_status()
