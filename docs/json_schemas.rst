@@ -1,7 +1,7 @@
 JSON schemas
 ============
 
-The following JSON schemas describe the payload format of the ``iqm-client`` HTTP API.
+The following JSON schemas describe the format of the payloads ``iqm-client`` sends to the IQM server.
 
 .. |link-pre| raw:: html
 
