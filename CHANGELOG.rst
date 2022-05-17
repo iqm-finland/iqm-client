@@ -6,6 +6,7 @@ Version 3.0
 ===========
 
 * Update HTTP endpoints for circuit execution and results retrieval. `#26 <https://github.com/iqm-finland/iqm-client/pull/26>`_
+* Update JSON schema for the job request sent to an IQM server.
 * Requires CoCoS 4.0
 
 

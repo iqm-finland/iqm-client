@@ -31,8 +31,8 @@ from requests import HTTPError, Response
 from iqm_client.iqm_client import (AUTH_CLIENT_ID, AUTH_REALM, AuthRequest,
                                    GrantType)
 
-existing_run = UUID('3c3fcda3-e860-46bf-92a4-bcc59fa76ce9')
-missing_run = UUID('059e4186-50a3-4e6c-ba1f-37fe6afbdfc2')
+existing_job = UUID('3c3fcda3-e860-46bf-92a4-bcc59fa76ce9')
+missing_job = UUID('059e4186-50a3-4e6c-ba1f-37fe6afbdfc2')
 
 
 @pytest.fixture()
@@ -132,10 +132,10 @@ def generate_server_stubs(base_url):
     Mocking some calls to the server by mocking 'requests'
     """
     when(requests).post(f'{base_url}/jobs', ...).thenReturn(
-        MockJsonResponse(201, {'id': str(existing_run)})
+        MockJsonResponse(201, {'id': str(existing_job)})
     )
 
-    when(requests).get(f'{base_url}/jobs/{existing_run}', ...).thenReturn(
+    when(requests).get(f'{base_url}/jobs/{existing_job}', ...).thenReturn(
         MockJsonResponse(200, {'status': 'pending'})
     ).thenReturn(
         MockJsonResponse(
@@ -144,11 +144,11 @@ def generate_server_stubs(base_url):
         )
     )
 
-    # 'run was not created' response
-    no_run_response = Response()
-    no_run_response.status_code = 404
-    no_run_response.reason = 'Run not found'
-    when(requests).get(f'{base_url}/jobs/{missing_run}', ...).thenReturn(no_run_response)
+    # 'job was not created' response
+    no_job_response = Response()
+    no_job_response.status_code = 404
+    no_job_response.reason = 'Job not found'
+    when(requests).get(f'{base_url}/jobs/{missing_job}', ...).thenReturn(no_job_response)
 
 
 def prepare_tokens(

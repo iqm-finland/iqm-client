@@ -20,8 +20,8 @@ from mockito import when
 from requests import HTTPError
 
 from iqm_client.iqm_client import (Circuit, ClientConfigurationError,
-                                   IQMClient, RunStatus, SingleQubitMapping)
-from tests.conftest import MockJsonResponse, existing_run, missing_run
+                                   IQMClient, JobStatus, SingleQubitMapping)
+from tests.conftest import MockJsonResponse, existing_job, missing_job
 
 
 def test_submit_circuit_returns_id(mock_server, settings_dict, base_url, sample_circuit):
@@ -36,7 +36,7 @@ def test_submit_circuit_returns_id(mock_server, settings_dict, base_url, sample_
         ],
         circuit=Circuit.parse_obj(sample_circuit),
         shots=1000)
-    assert job_id == existing_run
+    assert job_id == existing_job
 
 
 def test_submit_circuit_without_qubit_mapping_returns_id(mock_server, settings_dict, base_url, sample_circuit):
@@ -47,43 +47,43 @@ def test_submit_circuit_without_qubit_mapping_returns_id(mock_server, settings_d
     job_id = client.submit_circuit(
         circuit=Circuit.parse_obj(sample_circuit),
         shots=1000)
-    assert job_id == existing_run
+    assert job_id == existing_job
 
 
-def test_get_run_status_for_existing_run(mock_server, base_url, settings_dict):
+def test_get_job_status_for_existing_job(mock_server, base_url, settings_dict):
     """
-    Tests getting the run status
+    Tests getting the job status
     """
     client = IQMClient(base_url, settings_dict)
-    assert client.get_run(existing_run).status == RunStatus.PENDING
-    assert client.get_run(existing_run).status == RunStatus.READY
+    assert client.get_job(existing_job).status == JobStatus.PENDING
+    assert client.get_job(existing_job).status == JobStatus.READY
 
 
-def test_get_run_status_for_missing_run(mock_server, base_url, settings_dict):
+def test_get_job_status_for_missing_job(mock_server, base_url, settings_dict):
     """
-    Tests getting a task that was not created
+    Tests getting a job that was not created
     """
     client = IQMClient(base_url, settings_dict)
     with pytest.raises(HTTPError):
-        assert client.get_run(missing_run)
+        assert client.get_job(missing_job)
 
 
 def test_waiting_for_results(mock_server, base_url, settings_dict):
     """
-    Tests waiting for results for an existing task
+    Tests waiting for results for an existing job
     """
     client = IQMClient(base_url, settings_dict)
-    assert client.wait_for_results(existing_run).status == RunStatus.READY
+    assert client.wait_for_results(existing_job).status == JobStatus.READY
 
 
 def test_user_warning_is_emitted_when_warnings_in_response(base_url, settings_dict, capsys):
     client = IQMClient(base_url, settings_dict)
     msg = 'This is a warning msg'
-    with when(requests).get(f'{base_url}/jobs/{existing_run}', headers=None).thenReturn(
+    with when(requests).get(f'{base_url}/jobs/{existing_job}', headers=None).thenReturn(
             MockJsonResponse(200, {'status': 'ready', 'warnings': [msg]})
     ):
         with pytest.warns(UserWarning, match=msg):
-            client.get_run(existing_run)
+            client.get_job(existing_job)
 
 
 def test_base_url_is_invalid(settings_dict):

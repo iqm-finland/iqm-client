@@ -5,7 +5,7 @@ The following JSON schemas describe the payload format of the ``iqm-client`` HTT
 
 .. |link-pre| raw:: html
 
-    <a href="run_request_schema_v
+    <a href="job_request_schema_v
 
 .. |link-post| raw:: html
 

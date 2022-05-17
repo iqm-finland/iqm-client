@@ -62,7 +62,7 @@ def test_add_authorization_header_when_credentials_are_provided(base_url, creden
     tokens = prepare_tokens(300, 3600, **credentials)
     job_id = expect_status_request(base_url, tokens['access_token'])
     client = IQMClient(base_url, settings_dict, **credentials)
-    result = client.get_run(job_id)
+    result = client.get_job(job_id)
     assert result.status == 'pending'
     unstub()
 
@@ -73,7 +73,7 @@ def test_no_authorization_header_when_credentials_are_not_provided(base_url, set
     """
     job_id = expect_status_request(base_url, None)
     client = IQMClient(base_url, settings_dict)
-    result = client.get_run(job_id)
+    result = client.get_job(job_id)
     assert result.status == 'pending'
     unstub()
 
@@ -97,9 +97,9 @@ def test_access_token_is_not_refreshed_if_it_has_not_expired(base_url, credentia
     assert client._credentials.access_token == tokens['access_token']
 
     job_id = expect_status_request(base_url, tokens['access_token'], 3)
-    client.get_run(job_id)
-    client.get_run(job_id)
-    client.get_run(job_id)
+    client.get_job(job_id)
+    client.get_job(job_id)
+    client.get_job(job_id)
 
 
 def test_expired_access_token_is_refreshed_automatically(base_url, credentials, settings_dict):
@@ -115,7 +115,7 @@ def test_expired_access_token_is_refreshed_automatically(base_url, credentials, 
     assert client._credentials.access_token == initial_tokens['access_token']
 
     # Check that assert token is refreshed
-    result = client.get_run(job_id)
+    result = client.get_job(job_id)
     assert client._credentials.access_token == refreshed_tokens['access_token']
     assert result.status == 'pending'
 
@@ -134,7 +134,7 @@ def test_start_new_session_when_refresh_token_has_expired(base_url, credentials,
 
     refreshed_tokens = prepare_tokens(300, 3600, **credentials)  # refreshed access token and refresh token
     job_id = expect_status_request(base_url, refreshed_tokens['access_token'])
-    result = client.get_run(job_id)
+    result = client.get_job(job_id)
     assert client._credentials.access_token == refreshed_tokens['access_token']
     assert result.status == 'pending'
 
