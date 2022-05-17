@@ -29,14 +29,14 @@ def test_submit_circuit_returns_id(mock_server, settings_dict, base_url, sample_
     Tests sending a circuit
     """
     client = IQMClient(base_url, settings_dict)
-    run_id = client.submit_circuit(
+    job_id = client.submit_circuit(
         qubit_mapping=[
             SingleQubitMapping(logical_name='Qubit A', physical_name='qubit_1'),
             SingleQubitMapping(logical_name='Qubit B', physical_name='qubit_2')
         ],
         circuit=Circuit.parse_obj(sample_circuit),
         shots=1000)
-    assert run_id == existing_run
+    assert job_id == existing_run
 
 
 def test_submit_circuit_without_qubit_mapping_returns_id(mock_server, settings_dict, base_url, sample_circuit):
@@ -44,10 +44,10 @@ def test_submit_circuit_without_qubit_mapping_returns_id(mock_server, settings_d
     Tests sending a circuit without qubit mapping
     """
     client = IQMClient(base_url, settings_dict)
-    run_id = client.submit_circuit(
+    job_id = client.submit_circuit(
         circuit=Circuit.parse_obj(sample_circuit),
         shots=1000)
-    assert run_id == existing_run
+    assert job_id == existing_run
 
 
 def test_get_run_status_for_existing_run(mock_server, base_url, settings_dict):
