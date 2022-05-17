@@ -79,11 +79,11 @@ Example: ``Instruction(name='cz', qubits=['alice', 'bob'], args={})``
 Circuit output
 ==============
 
-The :class:`JobResult` class represents the results of a quantum circuit execution.
-If the job succeeded, :attr:`JobResult.measurements` contains the output of the circuit, consisting
+The :class:`RunResult` class represents the results of a quantum circuit execution.
+If the run succeeded, :attr:`RunResult.measurements` contains the output of the circuit, consisting
 of the results of the measurement operations in the circuit.
 It is a dictionary that maps each measurement key to a 2D array of measurement results, represented as a nested list.
-``JobResult.measurements[key][shot][index]`` is the result of measuring the ``index``'th qubit in measurement
+``RunResult.measurements[key][shot][index]`` is the result of measuring the ``index``'th qubit in measurement
 operation ``key`` in the shot ``shot``. The results are nonnegative integers representing the computational
 basis state (for qubits, 0 or 1) that was the measurement outcome.
 
@@ -129,13 +129,13 @@ class CircuitExecutionError(RuntimeError):
 
 
 class APITimeoutError(CircuitExecutionError):
-    """Exception for when executing a job on the server takes too long.
+    """Exception for when executing a task on the server takes too long.
     """
 
 
-class JobStatus(str, Enum):
+class RunStatus(str, Enum):
     """
-    Status of a job.
+    Status of a task.
     """
     PENDING = 'pending'
     READY = 'ready'
@@ -179,7 +179,7 @@ class SingleQubitMapping(BaseModel):
     'physical qubit name'
 
 
-class JobRequest(BaseModel):
+class RunRequest(BaseModel):
     """Request for an IQM quantum computer to execute a quantum circuit.
     """
     circuit: Circuit = Field(..., description='quantum circuit to execute')
@@ -195,38 +195,38 @@ class JobRequest(BaseModel):
     'how many times to execute the circuit'
 
 
-class JobResult(BaseModel):
+class RunResult(BaseModel):
     """Results of a circuit execution.
 
     * ``measurements`` is present iff the status is ``'ready'``.
     * ``message`` carries additional information for the ``'failed'`` status.
     * If the status is ``'pending'``, ``measurements`` and ``message`` are ``None``.
     """
-    status: JobStatus = Field(..., description="current status of the job, in ``{'pending', 'ready', 'failed'}``")
-    "current status of the job, in ``{'pending', 'ready', 'failed'}``"
+    status: RunStatus = Field(..., description="current status of the run, in ``{'pending', 'ready', 'failed'}``")
+    "current status of the run, in ``{'pending', 'ready', 'failed'}``"
     measurements: Optional[dict[str, list[list[int]]]] = Field(
         None,
-        description='if the job has finished successfully, the measurement results for the circuit'
+        description='if the run has finished successfully, the measurement results for the circuit'
     )
-    'if the job has finished successfully, the measurement results for the circuit'
-    message: Optional[str] = Field(None, description='if the job failed, an error message')
-    'if the job failed, an error message'
+    'if the run has finished successfully, the measurement results for the circuit'
+    message: Optional[str] = Field(None, description='if the run failed, an error message')
+    'if the run failed, an error message'
     warnings: Optional[list[str]] = Field(None, description='list of warning messages')
     'list of warning messages'
 
     @staticmethod
-    def from_dict(inp: dict[str, Union[str, dict]]) -> JobResult:
+    def from_dict(inp: dict[str, Union[str, dict]]) -> RunResult:
         """Parses the result from a dict.
 
         Args:
-            inp: value to parse, has to map to JobResult
+            inp: value to parse, has to map to RunResult
 
         Returns:
-            parsed job result
+            parsed run result
 
         """
         input_copy = inp.copy()
-        return JobResult(status=JobStatus(input_copy.pop('status')), **input_copy)
+        return RunResult(status=RunStatus(input_copy.pop('status')), **input_copy)
 
 
 class GrantType(str, Enum):
@@ -361,12 +361,12 @@ class IQMClient:
             shots: number of times ``circuit`` is executed
 
         Returns:
-            ID for the created job. This ID is needed to query the status and the execution results.
+            ID for the created task. This ID is needed to query the status and the execution results.
         """
 
         bearer_token = self._get_bearer_token()
 
-        data = JobRequest(
+        data = RunRequest(
             qubit_mapping=qubit_mapping,
             circuit=circuit,
             settings=self._settings,
@@ -385,14 +385,14 @@ class IQMClient:
         result.raise_for_status()
         return UUID(result.json()['id'])
 
-    def get_job(self, job_id: UUID) -> JobResult:
-        """Query the status of the running job.
+    def get_run(self, job_id: UUID) -> RunResult:
+        """Query the status of the running task.
 
         Args:
-            job_id: id of the job
+            job_id: id of the task
 
         Returns:
-            result of the job (can be pending)
+            result of the run (can be pending)
 
         Raises:
             HTTPException: http exceptions
@@ -404,34 +404,34 @@ class IQMClient:
             headers=None if not bearer_token else {'Authorization': bearer_token}
         )
         result.raise_for_status()
-        result = JobResult.from_dict(result.json())
+        result = RunResult.from_dict(result.json())
         if result.warnings:
             for warning in result.warnings:
                 warnings.warn(warning)
-        if result.status == JobStatus.FAILED:
+        if result.status == RunStatus.FAILED:
             raise CircuitExecutionError(result.message)
         return result
 
-    def wait_for_results(self, job_id: UUID, timeout_secs: float = DEFAULT_TIMEOUT_SECONDS) -> JobResult:
-        """Poll results until job is ready, failed, or timed out.
+    def wait_for_results(self, job_id: UUID, timeout_secs: float = DEFAULT_TIMEOUT_SECONDS) -> RunResult:
+        """Poll results until run is ready, failed, or timed out.
 
         Args:
-            job_id: id of the job to wait
+            job_id: id of the task to wait
             timeout_secs: how long to wait for a response before raising an APITimeoutError
 
         Returns:
-            job result
+            run result
 
         Raises:
             APITimeoutError: time exceeded the set timeout
         """
         start_time = datetime.now()
         while (datetime.now() - start_time).total_seconds() < timeout_secs:
-            results = self.get_job(job_id)
-            if results.status != JobStatus.PENDING:
+            results = self.get_run(job_id)
+            if results.status != RunStatus.PENDING:
                 return results
             time.sleep(SECONDS_BETWEEN_CALLS)
-        raise APITimeoutError(f"The job didn't finish in {timeout_secs} seconds.")
+        raise APITimeoutError(f"The task didn't finish in {timeout_secs} seconds.")
 
     def close(self) -> bool:
         """Terminate session with authentication server.

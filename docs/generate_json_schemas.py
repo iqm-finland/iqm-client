@@ -18,7 +18,7 @@ import json
 import os
 from typing import Any
 
-from iqm_client.iqm_client import BaseModel, JobRequest
+from iqm_client.iqm_client import BaseModel, RunRequest
 
 try:
     from iqm_client import __version__ as version
@@ -27,7 +27,7 @@ except ImportError:
 
 # schemas to generate
 SCHEMAS = {
-    'job_request_schema': JobRequest,
+    'run_request_schema': RunRequest,
 }
 
 def generate_json_schema(cls: type[BaseModel], filename: str) -> dict[str, Any]:
