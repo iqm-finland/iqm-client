@@ -32,6 +32,7 @@ name             # of qubits args                                   description
 measurement      >= 1        ``key: str``                           Measurement in the Z basis.
 phased_rx        1           ``angle_t: float``, ``phase_t: float`` Phased x-rotation gate.
 cz               2                                                  Controlled-Z gate.
+barrier          >= 2                                               Barrier instruction.
 ================ =========== ====================================== ===========
 
 Measurement
@@ -74,6 +75,15 @@ Controlled-Z gate. Represented in the standard computational basis by the matrix
 Symmetric wrt. the qubits it's acting on. Takes no arguments.
 
 Example: ``Instruction(name='cz', qubits=['alice', 'bob'], args={})``
+
+
+Barrier
+-------
+
+Barrier operations ensure that all operations after the barrier on the qubit subsystems spanned by
+the barrier are only executed when all the operations before the barrier have been completed.
+
+Example: ``Instruction(name='barrier', qubits=['alice', 'bob'], args={})``
 
 
 Circuit output
