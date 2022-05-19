@@ -378,18 +378,18 @@ class IQMClient:
             headers['Authorization'] = bearer_token
 
         result = requests.post(
-            join(self._base_url, 'circuit/run'),
+            join(self._base_url, 'jobs'),
             json=data.dict(),
             headers=headers,
         )
         result.raise_for_status()
         return UUID(result.json()['id'])
 
-    def get_run(self, run_id: UUID) -> RunResult:
+    def get_run(self, job_id: UUID) -> RunResult:
         """Query the status of the running task.
 
         Args:
-            run_id: id of the task
+            job_id: id of the task
 
         Returns:
             result of the run (can be pending)
@@ -400,7 +400,7 @@ class IQMClient:
         """
         bearer_token = self._get_bearer_token()
         result = requests.get(
-            join(self._base_url, 'circuit/run/', str(run_id)),
+            join(self._base_url, 'jobs/', str(job_id)),
             headers=None if not bearer_token else {'Authorization': bearer_token}
         )
         result.raise_for_status()
@@ -412,11 +412,11 @@ class IQMClient:
             raise CircuitExecutionError(result.message)
         return result
 
-    def wait_for_results(self, run_id: UUID, timeout_secs: float = DEFAULT_TIMEOUT_SECONDS) -> RunResult:
+    def wait_for_results(self, job_id: UUID, timeout_secs: float = DEFAULT_TIMEOUT_SECONDS) -> RunResult:
         """Poll results until run is ready, failed, or timed out.
 
         Args:
-            run_id: id of the task to wait
+            job_id: id of the task to wait
             timeout_secs: how long to wait for a response before raising an APITimeoutError
 
         Returns:
@@ -427,7 +427,7 @@ class IQMClient:
         """
         start_time = datetime.now()
         while (datetime.now() - start_time).total_seconds() < timeout_secs:
-            results = self.get_run(run_id)
+            results = self.get_run(job_id)
             if results.status != RunStatus.PENDING:
                 return results
             time.sleep(SECONDS_BETWEEN_CALLS)

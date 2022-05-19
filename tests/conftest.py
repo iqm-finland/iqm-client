@@ -131,11 +131,11 @@ def generate_server_stubs(base_url):
     """
     Mocking some calls to the server by mocking 'requests'
     """
-    when(requests).post(f'{base_url}/circuit/run', ...).thenReturn(
+    when(requests).post(f'{base_url}/jobs', ...).thenReturn(
         MockJsonResponse(201, {'id': str(existing_run)})
     )
 
-    when(requests).get(f'{base_url}/circuit/run/{existing_run}', ...).thenReturn(
+    when(requests).get(f'{base_url}/jobs/{existing_run}', ...).thenReturn(
         MockJsonResponse(200, {'status': 'pending'})
     ).thenReturn(
         MockJsonResponse(
@@ -148,7 +148,7 @@ def generate_server_stubs(base_url):
     no_run_response = Response()
     no_run_response.status_code = 404
     no_run_response.reason = 'Run not found'
-    when(requests).get(f'{base_url}/circuit/run/{missing_run}', ...).thenReturn(no_run_response)
+    when(requests).get(f'{base_url}/jobs/{missing_run}', ...).thenReturn(no_run_response)
 
 
 def prepare_tokens(
@@ -226,7 +226,7 @@ def expect_status_request(url: str, access_token: Optional[str], times: int = 1)
     """
     job_id = uuid4()
     headers = None if access_token is None else {'Authorization': f'Bearer {access_token}'}
-    expect(requests, times=times).get(f'{url}/circuit/run/{job_id}', headers=headers).thenReturn(
+    expect(requests, times=times).get(f'{url}/jobs/{job_id}', headers=headers).thenReturn(
         MockJsonResponse(200, {'status': 'pending'})
     )
     return job_id

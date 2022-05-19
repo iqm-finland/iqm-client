@@ -29,14 +29,14 @@ def test_submit_circuit_returns_id(mock_server, settings_dict, base_url, sample_
     Tests sending a circuit
     """
     client = IQMClient(base_url, settings_dict)
-    run_id = client.submit_circuit(
+    job_id = client.submit_circuit(
         qubit_mapping=[
             SingleQubitMapping(logical_name='Qubit A', physical_name='qubit_1'),
             SingleQubitMapping(logical_name='Qubit B', physical_name='qubit_2')
         ],
         circuit=Circuit.parse_obj(sample_circuit),
         shots=1000)
-    assert run_id == existing_run
+    assert job_id == existing_run
 
 
 def test_submit_circuit_without_qubit_mapping_returns_id(mock_server, settings_dict, base_url, sample_circuit):
@@ -44,10 +44,10 @@ def test_submit_circuit_without_qubit_mapping_returns_id(mock_server, settings_d
     Tests sending a circuit without qubit mapping
     """
     client = IQMClient(base_url, settings_dict)
-    run_id = client.submit_circuit(
+    job_id = client.submit_circuit(
         circuit=Circuit.parse_obj(sample_circuit),
         shots=1000)
-    assert run_id == existing_run
+    assert job_id == existing_run
 
 
 def test_get_run_status_for_existing_run(mock_server, base_url, settings_dict):
@@ -79,7 +79,7 @@ def test_waiting_for_results(mock_server, base_url, settings_dict):
 def test_user_warning_is_emitted_when_warnings_in_response(base_url, settings_dict, capsys):
     client = IQMClient(base_url, settings_dict)
     msg = 'This is a warning msg'
-    with when(requests).get(f'{base_url}/circuit/run/{existing_run}', headers=None).thenReturn(
+    with when(requests).get(f'{base_url}/jobs/{existing_run}', headers=None).thenReturn(
             MockJsonResponse(200, {'status': 'ready', 'warnings': [msg]})
     ):
         with pytest.warns(UserWarning, match=msg):
