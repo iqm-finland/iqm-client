@@ -8,3 +8,4 @@ Contributors
 * Hayk Sargsyan <hayk@meetiqm.com>
 * Maxim Smirnov <dc914337@gmail.com>
 * Olli Tyrkkö <otyrkko@meetiqm.com>
+* Rakhim Davletkaliyev <rakhim.davletkaliyev@meetiqm.com>

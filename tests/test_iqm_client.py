@@ -50,13 +50,35 @@ def test_submit_circuit_without_qubit_mapping_returns_id(mock_server, settings_d
     assert job_id == existing_run
 
 
-def test_get_run_status_for_existing_run(mock_server, base_url, settings_dict):
+def test_get_run_status_and_results_for_existing_run(mock_server, base_url, settings_dict):
     """
     Tests getting the run status
     """
     client = IQMClient(base_url, settings_dict)
     assert client.get_run(existing_run).status == RunStatus.PENDING
-    assert client.get_run(existing_run).status == RunStatus.READY
+    ready_run = client.get_run(existing_run)
+    assert ready_run.status == RunStatus.READY
+    assert ready_run.measurements is not None
+
+
+def test_get_run_status_for_existing_run(mock_server, base_url, settings_dict):
+    """
+    Tests getting the run status
+    """
+    client = IQMClient(base_url, settings_dict)
+    assert client.get_run_status(existing_run).status == RunStatus.PENDING
+    ready_run = client.get_run_status(existing_run)
+    assert ready_run.status == RunStatus.READY
+    assert ready_run.measurements is None
+
+
+def test_get_run_status_and_results_for_missing_run(mock_server, base_url, settings_dict):
+    """
+    Tests getting a task that was not created
+    """
+    client = IQMClient(base_url, settings_dict)
+    with pytest.raises(HTTPError):
+        assert client.get_run(missing_run)
 
 
 def test_get_run_status_for_missing_run(mock_server, base_url, settings_dict):
@@ -65,7 +87,7 @@ def test_get_run_status_for_missing_run(mock_server, base_url, settings_dict):
     """
     client = IQMClient(base_url, settings_dict)
     with pytest.raises(HTTPError):
-        assert client.get_run(missing_run)
+        assert client.get_run_status(missing_run)
 
 
 def test_waiting_for_results(mock_server, base_url, settings_dict):
