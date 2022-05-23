@@ -80,7 +80,7 @@ Example: ``Instruction(name='cz', qubits=['alice', 'bob'], args={})``
 Barrier
 -------
 
-Barrier operations ensure that all operations after the barrier on the qubit subsystems spanned by
+Barriers ensure that all operations after the barrier on the qubit subsystems spanned by
 the barrier are only executed when all the operations before the barrier have been completed.
 
 Example: ``Instruction(name='barrier', qubits=['alice', 'bob'], args={})``
