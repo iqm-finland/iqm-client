@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>iqm_client.iqm_client &#8212; IQM client 3.0 documentation</title>
+    <title>iqm_client.iqm_client &#8212; IQM client 3.1 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -372,6 +372,11 @@ title="Print to PDF"
      CZ
     </a>
    </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#barrier">
+     Barrier
+    </a>
+   </li>
   </ul>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -418,6 +423,11 @@ title="Print to PDF"
    <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#cz">
      CZ
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#barrier">
+     Barrier
     </a>
    </li>
   </ul>
@@ -480,6 +490,11 @@ Each Instruction type acts on a number of <a class="reference internal" href="iq
 <td></td>
 <td><p>Controlled-Z gate.</p></td>
 </tr>
+<tr class="row-odd"><td><p>barrier</p></td>
+<td><p>&gt;= 2</p></td>
+<td></td>
+<td><p>Barrier instruction.</p></td>
+</tr>
 </tbody>
 </table>
 <section id="measurement">
@@ -511,6 +526,12 @@ and <span class="math notranslate nohighlight">\(X\)</span> and <span class="mat
 \[\text{CZ} = \text{diag}(1, 1, 1, -1).\]</div>
 <p>Symmetric wrt. the qubits it’s acting on. Takes no arguments.</p>
 <p>Example: <code class="docutils literal notranslate"><span class="pre">Instruction(name='cz',</span> <span class="pre">qubits=['alice',</span> <span class="pre">'bob'],</span> <span class="pre">args={})</span></code></p>
+</section>
+<section id="barrier">
+<h3>Barrier<a class="headerlink" href="#barrier" title="Permalink to this headline">#</a></h3>
+<p>Barriers ensure that all operations after the barrier on the qubit subsystems spanned by
+the barrier are only executed when all the operations before the barrier have been completed.</p>
+<p>Example: <code class="docutils literal notranslate"><span class="pre">Instruction(name='barrier',</span> <span class="pre">qubits=['alice',</span> <span class="pre">'bob'],</span> <span class="pre">args={})</span></code></p>
 </section>
 </section>
 <section id="circuit-output">
@@ -635,7 +656,7 @@ basis state (for qubits, 0 or 1) that was the measurement outcome.</p>
     By IQM client developers<br/>
   
       &copy; Copyright 2021, IQM.<br/>
-    Last updated on 2022-05-19.<br/>
+    Last updated on 2022-05-23.<br/>
 </p>
         </footer>
     </div>
