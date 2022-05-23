@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 3.1
+===========
+
+* Update documentation to mention barriers. `#28 <https://github.com/iqm-finland/iqm-client/pull/28>`_
+  
 Version 3.0
 ===========
 
