@@ -435,8 +435,6 @@ class IQMClient:
         if result.warnings:
             for warning in result.warnings:
                 warnings.warn(warning)
-        if result.status == RunStatus.FAILED:
-            raise CircuitExecutionError(result.message)
         return result
 
     def wait_for_results(self, job_id: UUID, timeout_secs: float = DEFAULT_TIMEOUT_SECONDS) -> RunResult:
