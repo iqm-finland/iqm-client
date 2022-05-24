@@ -2,11 +2,16 @@
 Changelog
 =========
 
-Version 3.1
+Version 3.2
 ===========
 
 * Add function `get_run_status` to check status of execution without getting measurement results. `#29 <https://github.com/iqm-finland/iqm-client/pull/29>`_
 
+Version 3.1
+===========
+
+* Update documentation to mention barriers. `#28 <https://github.com/iqm-finland/iqm-client/pull/28>`_
+  
 Version 3.0
 ===========
 
