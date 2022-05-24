@@ -144,11 +144,18 @@ def generate_server_stubs(base_url):
         )
     )
 
+    when(requests).get(f'{base_url}/jobs/{existing_run}/status', ...).thenReturn(
+        MockJsonResponse(200, {'status': 'pending'})
+    ).thenReturn(
+        MockJsonResponse(200, {'status': 'ready'})
+    )
+
     # 'run was not created' response
     no_run_response = Response()
     no_run_response.status_code = 404
     no_run_response.reason = 'Run not found'
     when(requests).get(f'{base_url}/jobs/{missing_run}', ...).thenReturn(no_run_response)
+    when(requests).get(f'{base_url}/jobs/{missing_run}/status', ...).thenReturn(no_run_response)
 
 
 def prepare_tokens(

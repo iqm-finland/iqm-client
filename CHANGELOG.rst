@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 3.2
+===========
+
+* Add function `get_run_status` to check status of execution without getting measurement results. `#29 <https://github.com/iqm-finland/iqm-client/pull/29>`_
+
 Version 3.1
 ===========
 
@@ -12,7 +17,6 @@ Version 3.0
 
 * Update HTTP endpoints for circuit execution and results retrieval. `#26 <https://github.com/iqm-finland/iqm-client/pull/26>`_
 * Requires CoCoS 4.0
-
 
 Version 2.2
 ===========

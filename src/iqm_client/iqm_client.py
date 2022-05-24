@@ -396,7 +396,7 @@ class IQMClient:
         return UUID(result.json()['id'])
 
     def get_run(self, job_id: UUID) -> RunResult:
-        """Query the status of the running task.
+        """Query the status and results of the running task.
 
         Args:
             job_id: id of the task
@@ -420,6 +420,31 @@ class IQMClient:
                 warnings.warn(warning)
         if result.status == RunStatus.FAILED:
             raise CircuitExecutionError(result.message)
+        return result
+
+    def get_run_status(self, job_id: UUID) -> RunResult:
+        """Query the status of the running task.
+
+        Args:
+            job_id: id of the task
+
+        Returns:
+            status of the run
+
+        Raises:
+            HTTPException: http exceptions
+            CircuitExecutionError: IQM server specific exceptions
+        """
+        bearer_token = self._get_bearer_token()
+        result = requests.get(
+            join(self._base_url, 'jobs/', str(job_id), 'status'),
+            headers=None if not bearer_token else {'Authorization': bearer_token}
+        )
+        result.raise_for_status()
+        result = RunResult.from_dict(result.json())
+        if result.warnings:
+            for warning in result.warnings:
+                warnings.warn(warning)
         return result
 
     def wait_for_results(self, job_id: UUID, timeout_secs: float = DEFAULT_TIMEOUT_SECONDS) -> RunResult:
