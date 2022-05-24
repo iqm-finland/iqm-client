@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://iqm-finland.github.io/iqm-client/run_request_schema_v3.1.json",
+  "$id": "https://iqm-finland.github.io/iqm-client/run_request_schema_v3.2.json",
   "title": "RunRequest",
   "description": "Request for an IQM quantum computer to execute a quantum circuit.\n    ",
   "type": "object",
