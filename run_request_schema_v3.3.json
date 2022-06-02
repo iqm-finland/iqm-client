@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://iqm-finland.github.io/iqm-client/run_request_schema_v3.2.json",
+  "$id": "https://iqm-finland.github.io/iqm-client/run_request_schema_v3.3.json",
   "title": "RunRequest",
   "description": "Request for an IQM quantum computer to execute a quantum circuit.\n    ",
   "type": "object",
@@ -16,12 +16,12 @@
     },
     "settings": {
       "title": "Settings",
-      "description": "EXA settings node containing the calibration data",
+      "description": "EXA settings node containing the calibration data, or None if using default settings",
       "type": "object"
     },
     "qubit_mapping": {
       "title": "Qubit Mapping",
-      "description": "mapping of logical qubit names to physical qubit names",
+      "description": "mapping of logical qubit names to physical qubit names, or None if using physical qubit names",
       "type": "array",
       "items": {
         "$ref": "#/definitions/SingleQubitMapping"
@@ -35,7 +35,6 @@
   },
   "required": [
     "circuit",
-    "settings",
     "shots"
   ],
   "definitions": {

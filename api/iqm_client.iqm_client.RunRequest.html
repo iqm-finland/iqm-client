@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>iqm_client.iqm_client.RunRequest &#8212; IQM client 3.2 documentation</title>
+    <title>iqm_client.iqm_client.RunRequest &#8212; IQM client 3.3 documentation</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -356,7 +356,7 @@ title="Print to PDF"
 <h1>iqm_client.iqm_client.RunRequest<a class="headerlink" href="#iqm-client-iqm-client-runrequest" title="Permalink to this headline">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="iqm_client.iqm_client.RunRequest">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">iqm_client.iqm_client.</span></span><span class="sig-name descname"><span class="pre">RunRequest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">circuit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit_mapping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shots</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm_client.iqm_client.RunRequest" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">iqm_client.iqm_client.</span></span><span class="sig-name descname"><span class="pre">RunRequest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">circuit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit_mapping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shots</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm_client.iqm_client.RunRequest" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pydantic.main.BaseModel</span></code></p>
 <p>Request for an IQM quantum computer to execute a quantum circuit.</p>
 <p>Create a new model by parsing and validating input data from keyword arguments.</p>
@@ -372,10 +372,10 @@ title="Print to PDF"
 <td><p>quantum circuit to execute</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#iqm_client.iqm_client.RunRequest.settings" title="iqm_client.iqm_client.RunRequest.settings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">settings</span></code></a></p></td>
-<td><p>EXA settings node containing the calibration data</p></td>
+<td><p>EXA settings node containing the calibration data, or None if using default settings</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.RunRequest.qubit_mapping" title="iqm_client.iqm_client.RunRequest.qubit_mapping"><code class="xref py py-obj docutils literal notranslate"><span class="pre">qubit_mapping</span></code></a></p></td>
-<td><p>mapping of logical qubit names to physical qubit names</p></td>
+<td><p>mapping of logical qubit names to physical qubit names, or None if using physical qubit names</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#iqm_client.iqm_client.RunRequest.shots" title="iqm_client.iqm_client.RunRequest.shots"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shots</span></code></a></p></td>
 <td><p>how many times to execute the circuit</p></td>
@@ -398,7 +398,7 @@ title="Print to PDF"
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>circuit</strong> (<a class="reference internal" href="iqm_client.iqm_client.Circuit.html#iqm_client.iqm_client.Circuit" title="iqm_client.iqm_client.Circuit"><em>iqm_client.iqm_client.Circuit</em></a>) – </p></li>
-<li><p><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><em>Any</em></a><em>]</em>) – </p></li>
+<li><p><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><em>Any</em></a><em>]</em><em>]</em>) – </p></li>
 <li><p><strong>qubit_mapping</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference internal" href="iqm_client.iqm_client.SingleQubitMapping.html#iqm_client.iqm_client.SingleQubitMapping" title="iqm_client.iqm_client.SingleQubitMapping"><em>iqm_client.iqm_client.SingleQubitMapping</em></a><em>]</em><em>]</em>) – </p></li>
 <li><p><strong>shots</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – </p></li>
 </ul>
@@ -415,14 +415,14 @@ title="Print to PDF"
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="iqm_client.iqm_client.RunRequest.settings">
-<span class="sig-name descname"><span class="pre">settings</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#iqm_client.iqm_client.RunRequest.settings" title="Permalink to this definition">#</a></dt>
-<dd><p>EXA settings node containing the calibration data</p>
+<span class="sig-name descname"><span class="pre">settings</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#iqm_client.iqm_client.RunRequest.settings" title="Permalink to this definition">#</a></dt>
+<dd><p>EXA settings node containing the calibration data, or None if using default settings</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="iqm_client.iqm_client.RunRequest.qubit_mapping">
 <span class="sig-name descname"><span class="pre">qubit_mapping</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="iqm_client.iqm_client.SingleQubitMapping.html#iqm_client.iqm_client.SingleQubitMapping" title="iqm_client.iqm_client.SingleQubitMapping"><span class="pre">iqm_client.iqm_client.SingleQubitMapping</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#iqm_client.iqm_client.RunRequest.qubit_mapping" title="Permalink to this definition">#</a></dt>
-<dd><p>mapping of logical qubit names to physical qubit names</p>
+<dd><p>mapping of logical qubit names to physical qubit names, or None if using physical qubit names</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -467,7 +467,7 @@ title="Print to PDF"
     By IQM client developers<br/>
   
       &copy; Copyright 2021, IQM.<br/>
-    Last updated on 2022-05-24.<br/>
+    Last updated on 2022-06-02.<br/>
 </p>
         </footer>
     </div>
