@@ -2,10 +2,16 @@
 Changelog
 =========
 
+Version 3.3
+===========
+
+* Make ``settings`` an optional parameter for ``IQMClient``. `#30 <https://github.com/iqm-finland/iqm-client/pull/30>`_
+
+
 Version 3.2
 ===========
 
-* Add function `get_run_status` to check status of execution without getting measurement results. `#29 <https://github.com/iqm-finland/iqm-client/pull/29>`_
+* Add function ``get_run_status`` to check status of execution without getting measurement results. `#29 <https://github.com/iqm-finland/iqm-client/pull/29>`_
 
 Version 3.1
 ===========
