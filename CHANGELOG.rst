@@ -7,7 +7,6 @@ Version 3.3
 
 * Make ``settings`` an optional parameter for ``IQMClient``. `#30 <https://github.com/iqm-finland/iqm-client/pull/30>`_
 
-
 Version 3.2
 ===========
 
