@@ -194,13 +194,16 @@ class RunRequest(BaseModel):
     """
     circuit: Circuit = Field(..., description='quantum circuit to execute')
     'quantum circuit to execute'
-    settings: dict[str, Any] = Field(..., description='EXA settings node containing the calibration data')
-    'EXA settings node containing the calibration data'
+    settings: Optional[dict[str, Any]] = Field(
+        None,
+        description='EXA settings node containing the calibration data, or None if using default settings'
+    )
+    'EXA settings node containing the calibration data, or None if using default settings'
     qubit_mapping: Optional[list[SingleQubitMapping]] = Field(
         None,
-        description='mapping of logical qubit names to physical qubit names'
+        description='mapping of logical qubit names to physical qubit names, or None if using physical qubit names'
     )
-    'mapping of logical qubit names to physical qubit names'
+    'mapping of logical qubit names to physical qubit names, or None if using physical qubit names'
     shots: int = Field(..., description='how many times to execute the circuit')
     'how many times to execute the circuit'
 
@@ -346,7 +349,7 @@ class IQMClient:
     def __init__(
             self,
             url: str,
-            settings: dict[str, Any],
+            settings: Optional[dict[str, Any]] = None,
             **credentials  # contains auth_server_url, username, password
     ):
         if not url.startswith(('http:', 'https:')):
@@ -389,7 +392,7 @@ class IQMClient:
 
         result = requests.post(
             join(self._base_url, 'jobs'),
-            json=data.dict(),
+            json=data.dict(exclude_none=True),
             headers=headers,
         )
         result.raise_for_status()
