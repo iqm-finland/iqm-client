@@ -17,8 +17,7 @@
 from mockito import unstub
 from pytest import raises
 
-from iqm_client.iqm_client import (ClientAuthenticationError, Credentials,
-                                   IQMClient)
+from iqm_client import ClientAuthenticationError, Credentials, IQMClient
 from tests.conftest import expect_logout, expect_status_request, prepare_tokens
 
 

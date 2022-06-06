@@ -18,7 +18,7 @@ import json
 import os
 from typing import Any
 
-from iqm_client.iqm_client import BaseModel, RunRequest
+from iqm_client import BaseModel, RunRequest
 
 try:
     from iqm_client import __version__ as version

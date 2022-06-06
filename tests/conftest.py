@@ -28,8 +28,7 @@ import requests
 from mockito import expect, mock, unstub, when
 from requests import HTTPError, Response
 
-from iqm_client.iqm_client import (AUTH_CLIENT_ID, AUTH_REALM, AuthRequest,
-                                   GrantType)
+from iqm_client import AUTH_CLIENT_ID, AUTH_REALM, AuthRequest, GrantType
 
 existing_run = UUID('3c3fcda3-e860-46bf-92a4-bcc59fa76ce9')
 missing_run = UUID('059e4186-50a3-4e6c-ba1f-37fe6afbdfc2')
