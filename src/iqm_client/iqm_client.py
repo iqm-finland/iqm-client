@@ -333,7 +333,6 @@ class IQMClient:
 
     Args:
         url: Endpoint for accessing the server. Has to start with http or https.
-        settings: Settings for the quantum computer, in IQM JSON format.
 
     Keyword Args:
         auth_server_url: Optional base URL of the authentication server.
@@ -349,13 +348,11 @@ class IQMClient:
     def __init__(
             self,
             url: str,
-            settings: Optional[dict[str, Any]] = None,
             **credentials  # contains auth_server_url, username, password
     ):
         if not url.startswith(('http:', 'https:')):
             raise ClientConfigurationError(f'The URL schema has to be http or https. Incorrect schema in URL: {url}')
         self._base_url = url
-        self._settings = settings
         self._credentials = _get_credentials(credentials)
         self._update_tokens()
 
@@ -363,7 +360,8 @@ class IQMClient:
             self,
             circuit: Circuit,
             qubit_mapping: Optional[list[SingleQubitMapping]] = None,
-            shots: int = 1
+            shots: int = 1,
+            settings: Optional[dict[str, Any]] = None,
     ) -> UUID:
         """Submits a quantum circuit to be executed on a quantum computer.
 
@@ -372,6 +370,7 @@ class IQMClient:
             qubit_mapping: Mapping of human-readable (logical) qubit names in ``circuit`` to physical qubit names.
                 Can be set to ``None`` if ``circuit`` already uses physical qubit names.
             shots: number of times ``circuit`` is executed
+            settings: Settings for the quantum computer, in IQM JSON format.
 
         Returns:
             ID for the created task. This ID is needed to query the status and the execution results.
@@ -382,7 +381,7 @@ class IQMClient:
         data = RunRequest(
             qubit_mapping=qubit_mapping,
             circuit=circuit,
-            settings=self._settings,
+            settings=settings,
             shots=shots
         )
 
