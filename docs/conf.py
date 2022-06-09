@@ -12,27 +12,25 @@ import sys
 
 # Find the path to the source files we want to to document, relative to the location of this file,
 # convert it to an absolute path.
-py_path = os.path.join(os.getcwd(), os.path.dirname(__file__), '../src')
+default_py_root = os.path.join(os.getcwd(), os.path.dirname(__file__))
+py_path = os.path.join(os.getenv("SPHINX_MULTIVERSION_SOURCEDIR", default=default_py_root), "../src")
 sys.path.insert(0, os.path.abspath(py_path))
-
 
 # -- Project information -----------------------------------------------------
 
 project = 'IQM client'
-copyright = '2021, IQM'
+copyright = '2022, IQM'
 author = 'IQM client developers'
 
 # The short X.Y version.
 version = ''
 # The full version, including alpha/beta/rc tags.
-release = ''
 try:
     from iqm_client import __version__ as version
 except ImportError:
     pass
 else:
-    release = version
-
+    release = ''
 
 # -- General configuration ---------------------------------------------------
 
@@ -51,6 +49,7 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.extlinks',
     'sphinx.ext.intersphinx',
+    "sphinx_multiversion",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -112,6 +111,12 @@ html_theme_path = [sphinx_book_theme.get_html_theme_path()]
 # documentation.
 html_theme_options = {
     'logo_only': True,
+}
+
+html_sidebars = {
+    '**': [
+        'sidebar-logo.html', 'search-field.html', 'sbt-sidebar-nav.html', 'versioning.html'
+    ]
 }
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
@@ -177,3 +182,6 @@ extlinks = {
 
 # List of all bibliography files used.
 #bibtex_bibfiles = ['references.bib']
+# smv_branch_whitelist = "None"
+smv_branch_whitelist = r'^main' 
+smv_remote_whitelist = "None"
