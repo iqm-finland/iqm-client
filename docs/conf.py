@@ -187,5 +187,6 @@ extlinks = {
 #bibtex_bibfiles = ['references.bib']
 
 # -- Options for sphinx_multiversion --------------------------------------------------
+smv_tag_whitelist = r'^.*$'     # Include all tags
 smv_branch_whitelist = r'^main' # include "main" branch in versions list
 smv_remote_whitelist = "None"   # do not include remote branches in versions list
