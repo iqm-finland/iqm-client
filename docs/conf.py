@@ -182,6 +182,7 @@ extlinks = {
 
 # List of all bibliography files used.
 #bibtex_bibfiles = ['references.bib']
-# smv_branch_whitelist = "None"
-smv_branch_whitelist = r'^main' 
-smv_remote_whitelist = "None"
+
+# -- Options for sphinx_multiversion --------------------------------------------------
+smv_branch_whitelist = r'^main' # include "main" branch in versions list
+smv_remote_whitelist = "None"   # do not include remote branches in versions list
