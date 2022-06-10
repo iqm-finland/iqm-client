@@ -12,6 +12,9 @@ import sys
 
 # Find the path to the source files we want to to document, relative to the location of this file,
 # convert it to an absolute path.
+# Sphinx-multiversion checks out the repo at different ref points into tmp directory.
+# We're using SPHINX_MULTIVERSION_SOURCEDIR in order to access each such directory.
+# See https://github.com/Holzhaus/sphinx-multiversion/issues/42 for details.
 default_py_root = os.path.join(os.getcwd(), os.path.dirname(__file__))
 py_path = os.path.join(os.getenv("SPHINX_MULTIVERSION_SOURCEDIR", default=default_py_root), "../src")
 sys.path.insert(0, os.path.abspath(py_path))
@@ -30,7 +33,7 @@ try:
 except ImportError:
     pass
 else:
-    release = ''
+    release = version
 
 # -- General configuration ---------------------------------------------------
 
