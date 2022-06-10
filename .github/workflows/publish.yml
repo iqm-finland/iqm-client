@@ -52,9 +52,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
           sudo apt-get install graphviz
-      # - name: Checkout latest tagged commit
-      #   run: |
-      #     git checkout $(git describe --tags --abbrev=0)
       - name: Build docs
         run: |
           tox -e docs
