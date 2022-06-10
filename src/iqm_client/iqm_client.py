@@ -360,8 +360,8 @@ class IQMClient:
             self,
             circuit: Circuit,
             qubit_mapping: Optional[list[SingleQubitMapping]] = None,
-            shots: int = 1,
             settings: Optional[dict[str, Any]] = None,
+            shots: int = 1,
     ) -> UUID:
         """Submits a quantum circuit to be executed on a quantum computer.
 
