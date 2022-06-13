@@ -28,6 +28,7 @@ author = 'IQM client developers'
 # The short X.Y version.
 version = ''
 # The full version, including alpha/beta/rc tags.
+release = ''
 try:
     from iqm_client import __version__ as version
 except ImportError:
