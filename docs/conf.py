@@ -187,10 +187,9 @@ extlinks = {
 #bibtex_bibfiles = ['references.bib']
 
 # -- Options for sphinx_multiversion --------------------------------------------------
-# Which tags to include:
-# - latest versions in 1.x and 2.x series
-# - all newer versions (3.0, 3.1, etc.)
-smv_tag_whitelist = r'^(1\.10|2\.2|[^1-2]\.\d).*$' 
+# Only include certain tags (i.e. all tags except for ones listed below)
+# (technically a whitelist, but we treat it as blacklist by using negative lookahead regex `?!`)
+smv_tag_whitelist = r'^(?!(1\.0|1\.1\b|1\.2|1\.3|1\.4|1\.5|1\.6|1\.7|1\.8|1\.9|2\.0|2\.1)).*$' 
 
 smv_branch_whitelist = "None"   # Do not include local branches in versions list
 smv_remote_whitelist = "None"   # Do not include remote branches in versions list
