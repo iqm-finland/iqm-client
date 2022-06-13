@@ -22,7 +22,7 @@ sys.path.insert(0, os.path.abspath(py_path))
 # -- Project information -----------------------------------------------------
 
 project = 'IQM client'
-copyright = '2022, IQM'
+copyright = '2021-2022, IQM'
 author = 'IQM client developers'
 
 # The short X.Y version.
