@@ -54,7 +54,6 @@ def test_submit_circuit_without_settings_returns_id(mock_server, base_url, sampl
     assert job_id == existing_run
 
 
-
 def test_submit_circuit_without_qubit_mapping_returns_id(mock_server, settings_dict, base_url, sample_circuit):
     """
     Tests sending a circuit without qubit mapping

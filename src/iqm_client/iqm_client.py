@@ -192,8 +192,8 @@ class SingleQubitMapping(BaseModel):
 class RunRequest(BaseModel):
     """Request for an IQM quantum computer to execute a quantum circuit.
     """
-    circuit: Circuit = Field(..., description='quantum circuit to execute')
-    'quantum circuit to execute'
+    circuits: list[Circuit] = Field(..., description='batch of quantum circuit(s) to execute')
+    'batch of quantum circuit(s) to execute'
     settings: Optional[dict[str, Any]] = Field(
         None,
         description='EXA settings node containing the calibration data, or None if using default settings'
@@ -205,11 +205,15 @@ class RunRequest(BaseModel):
     )
     'mapping of logical qubit names to physical qubit names, or None if using physical qubit names'
     shots: int = Field(..., description='how many times to execute the circuit')
-    'how many times to execute the circuit'
+    'how many times to execute each circuit in the batch'
+
+
+CircuitMeasurementResults = dict[str, list[list[int]]]
+"""Type to represent measurement results from a single circuit. Maps measurement keys to corresponding results."""
 
 
 class RunResult(BaseModel):
-    """Results of a circuit execution.
+    """Results of executing a batch of circuit(s).
 
     * ``measurements`` is present iff the status is ``'ready'``.
     * ``message`` carries additional information for the ``'failed'`` status.
@@ -217,11 +221,11 @@ class RunResult(BaseModel):
     """
     status: RunStatus = Field(..., description="current status of the run, in ``{'pending', 'ready', 'failed'}``")
     "current status of the run, in ``{'pending', 'ready', 'failed'}``"
-    measurements: Optional[dict[str, list[list[int]]]] = Field(
+    measurements: Optional[list[CircuitMeasurementResults]] = Field(
         None,
-        description='if the run has finished successfully, the measurement results for the circuit'
+        description='if the run has finished successfully, the measurement results for the circuit(s)'
     )
-    'if the run has finished successfully, the measurement results for the circuit'
+    'if the run has finished successfully, the measurement results for the circuit(s)'
     message: Optional[str] = Field(None, description='if the run failed, an error message')
     'if the run failed, an error message'
     warnings: Optional[list[str]] = Field(None, description='list of warning messages')
@@ -365,10 +369,29 @@ class IQMClient:
             qubit_mapping: Optional[list[SingleQubitMapping]] = None,
             shots: int = 1
     ) -> UUID:
-        """Submits a quantum circuit to be executed on a quantum computer.
+        """Submit a single circuit for execution.
 
         Args:
-            circuit: circuit to be executed
+            circuit: a circuit to be executed
+            qubit_mapping: Mapping of human-readable (logical) qubit names in ``circuit`` to physical qubit names.
+                Can be set to ``None`` if ``circuit`` already uses physical qubit names.
+            shots: number of times ``circuit`` is executed
+
+        Returns:
+            ID for the created task. This ID is needed to query the status and the execution results.
+        """
+        return self.submit_circuit_batch([circuit], qubit_mapping, shots)
+
+    def submit_circuit_batch(
+            self,
+            circuits: list[Circuit],
+            qubit_mapping: Optional[list[SingleQubitMapping]] = None,
+            shots: int = 1
+    ) -> UUID:
+        """Submits a batch of quantum circuits for execution on a quantum computer.
+
+        Args:
+            circuits: list of circuit to be executed
             qubit_mapping: Mapping of human-readable (logical) qubit names in ``circuit`` to physical qubit names.
                 Can be set to ``None`` if ``circuit`` already uses physical qubit names.
             shots: number of times ``circuit`` is executed
@@ -381,7 +404,7 @@ class IQMClient:
 
         data = RunRequest(
             qubit_mapping=qubit_mapping,
-            circuit=circuit,
+            circuits=circuits,
             settings=self._settings,
             shots=shots
         )
