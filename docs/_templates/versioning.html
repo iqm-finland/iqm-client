@@ -21,7 +21,7 @@
 </style>
 <h3>{{ _('Versions') }}</h3>
 <ul class="version_list">
-  {%- for item in versions %}
+  {%- for item in versions|reverse %}
     {% if item.name != current_version.name %}
       <li class="version_item"><a href="{{ item.url }}">{{ item.name }}</a></li>
     {% else %}
