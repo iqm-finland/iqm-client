@@ -23,7 +23,9 @@ Build and view the docs:
    $ tox -e docs
 
 To view the documentation, open the file ``build/sphinx/html/index.html``
-in a browser.
+in a browser. Note that a separate version of documentation is built for each git tag.
+File ``build/sphinx/html/index.html`` simply redirects to the latest version of the
+documentation.
 
 
 Run the tests:
