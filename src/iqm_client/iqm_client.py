@@ -363,26 +363,7 @@ class IQMClient:
         self._credentials = _get_credentials(credentials)
         self._update_tokens()
 
-    def submit_circuit(
-            self,
-            circuit: Circuit,
-            qubit_mapping: Optional[list[SingleQubitMapping]] = None,
-            shots: int = 1
-    ) -> UUID:
-        """Submit a single circuit for execution.
-
-        Args:
-            circuit: a circuit to be executed
-            qubit_mapping: Mapping of human-readable (logical) qubit names in ``circuit`` to physical qubit names.
-                Can be set to ``None`` if ``circuit`` already uses physical qubit names.
-            shots: number of times ``circuit`` is executed
-
-        Returns:
-            ID for the created task. This ID is needed to query the status and the execution results.
-        """
-        return self.submit_circuit_batch([circuit], qubit_mapping, shots)
-
-    def submit_circuit_batch(
+    def submit_circuits(
             self,
             circuits: list[Circuit],
             qubit_mapping: Optional[list[SingleQubitMapping]] = None,
