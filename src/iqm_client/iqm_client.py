@@ -194,7 +194,7 @@ class SingleQubitMapping(BaseModel):
 
 
 class RunRequest(BaseModel):
-    """Request for an IQM quantum computer to execute a quantum circuit.
+    """Request for an IQM quantum computer to execute a batch of quantum circuits.
     """
     circuits: list[Circuit] = Field(..., description='batch of quantum circuit(s) to execute')
     'batch of quantum circuit(s) to execute'
@@ -208,7 +208,7 @@ class RunRequest(BaseModel):
         description='mapping of logical qubit names to physical qubit names, or None if using physical qubit names'
     )
     'mapping of logical qubit names to physical qubit names, or None if using physical qubit names'
-    shots: int = Field(..., description='how many times to execute the circuit')
+    shots: int = Field(..., description='how many times to execute each circuit in the batch')
     'how many times to execute each circuit in the batch'
 
 
@@ -377,8 +377,9 @@ class IQMClient:
 
         Args:
             circuits: list of circuit to be executed
-            qubit_mapping: Mapping of human-readable (logical) qubit names in ``circuit`` to physical qubit names.
-                Can be set to ``None`` if ``circuit`` already uses physical qubit names.
+            qubit_mapping: Mapping of human-readable (logical) qubit names in to physical qubit names.
+                Can be set to ``None`` if all ``circuits`` already use physical qubit names.
+                Note that the ``qubit_mapping`` is used for all ``circuits``.
             shots: number of times ``circuit`` is executed
 
         Returns:
