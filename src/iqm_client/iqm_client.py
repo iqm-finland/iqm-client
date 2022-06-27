@@ -89,13 +89,17 @@ Example: ``Instruction(name='barrier', qubits=['alice', 'bob'], args={})``
 Circuit output
 ==============
 
-The :class:`RunResult` class represents the results of a quantum circuit execution.
-If the run succeeded, :attr:`RunResult.measurements` contains the output of the circuit, consisting
-of the results of the measurement operations in the circuit.
-It is a dictionary that maps each measurement key to a 2D array of measurement results, represented as a nested list.
-``RunResult.measurements[key][shot][index]`` is the result of measuring the ``index``'th qubit in measurement
-operation ``key`` in the shot ``shot``. The results are nonnegative integers representing the computational
-basis state (for qubits, 0 or 1) that was the measurement outcome.
+The :class:`RunResult` class represents the results of the quantum circuit execution.
+If the run succeeded, :attr:`RunResult.measurements` contains the output of the batch of circuits,
+consisting of the results of the measurement operations in each circuit.
+It is a list of dictionaries, where each dict maps each measurement key to a 2D array of measurement
+results, represented as a nested list.
+``RunResult.measurements[circuit_index][key][shot][qubit_index]`` is the result of measuring the
+``qubit_index``'th qubit in measurement operation ``key`` in the shot ``shot`` in the
+``circuit_index``'th circuit of the batch.
+
+The results are nonnegative integers representing the computational basis state (for qubits, 0 or 1)
+that was the measurement outcome.
 
 ----
 """
