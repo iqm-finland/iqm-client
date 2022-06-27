@@ -195,6 +195,8 @@ class SingleQubitMapping(BaseModel):
 
 class RunRequest(BaseModel):
     """Request for an IQM quantum computer to execute a batch of quantum circuits.
+
+    Note: all circuits in a batch must measure the same qubits otherwise batch execution fails.
     """
     circuits: list[Circuit] = Field(..., description='batch of quantum circuit(s) to execute')
     'batch of quantum circuit(s) to execute'
