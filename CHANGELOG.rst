@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 4.0
+===========
+
+* Implement functionality to submit a batch of circuits in one job. `#34 <https://github.com/iqm-finland/iqm-client/pull/34>`_
+
 Version 3.3
 ===========
 

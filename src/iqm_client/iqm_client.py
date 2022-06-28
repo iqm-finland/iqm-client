@@ -89,13 +89,17 @@ Example: ``Instruction(name='barrier', qubits=['alice', 'bob'], args={})``
 Circuit output
 ==============
 
-The :class:`RunResult` class represents the results of a quantum circuit execution.
-If the run succeeded, :attr:`RunResult.measurements` contains the output of the circuit, consisting
-of the results of the measurement operations in the circuit.
-It is a dictionary that maps each measurement key to a 2D array of measurement results, represented as a nested list.
-``RunResult.measurements[key][shot][index]`` is the result of measuring the ``index``'th qubit in measurement
-operation ``key`` in the shot ``shot``. The results are nonnegative integers representing the computational
-basis state (for qubits, 0 or 1) that was the measurement outcome.
+The :class:`RunResult` class represents the results of the quantum circuit execution.
+If the run succeeded, :attr:`RunResult.measurements` contains the output of the batch of circuits,
+consisting of the results of the measurement operations in each circuit.
+It is a list of dictionaries, where each dict maps each measurement key to a 2D array of measurement
+results, represented as a nested list.
+``RunResult.measurements[circuit_index][key][shot][qubit_index]`` is the result of measuring the
+``qubit_index``'th qubit in measurement operation ``key`` in the shot ``shot`` in the
+``circuit_index``'th circuit of the batch.
+
+The results are nonnegative integers representing the computational basis state (for qubits, 0 or 1)
+that was the measurement outcome.
 
 ----
 """
@@ -190,10 +194,12 @@ class SingleQubitMapping(BaseModel):
 
 
 class RunRequest(BaseModel):
-    """Request for an IQM quantum computer to execute a quantum circuit.
+    """Request for an IQM quantum computer to execute a batch of quantum circuits.
+
+    Note: all circuits in a batch must measure the same qubits otherwise batch execution fails.
     """
-    circuit: Circuit = Field(..., description='quantum circuit to execute')
-    'quantum circuit to execute'
+    circuits: list[Circuit] = Field(..., description='batch of quantum circuit(s) to execute')
+    'batch of quantum circuit(s) to execute'
     settings: Optional[dict[str, Any]] = Field(
         None,
         description='EXA settings node containing the calibration data, or None if using default settings'
@@ -204,12 +210,18 @@ class RunRequest(BaseModel):
         description='mapping of logical qubit names to physical qubit names, or None if using physical qubit names'
     )
     'mapping of logical qubit names to physical qubit names, or None if using physical qubit names'
-    shots: int = Field(..., description='how many times to execute the circuit')
-    'how many times to execute the circuit'
+    shots: int = Field(..., description='how many times to execute each circuit in the batch')
+    'how many times to execute each circuit in the batch'
+
+
+CircuitMeasurementResults = dict[str, list[list[int]]]
+"""Measurement results from a single circuit. For each measurement operation in the circuit,
+maps the measurement key to the corresponding results. The outer list elements correspond to shots,
+and the inner list elements to the qubits measured in the measurement operation."""
 
 
 class RunResult(BaseModel):
-    """Results of a circuit execution.
+    """Results of executing a batch of circuit(s).
 
     * ``measurements`` is present iff the status is ``'ready'``.
     * ``message`` carries additional information for the ``'failed'`` status.
@@ -217,11 +229,11 @@ class RunResult(BaseModel):
     """
     status: RunStatus = Field(..., description="current status of the run, in ``{'pending', 'ready', 'failed'}``")
     "current status of the run, in ``{'pending', 'ready', 'failed'}``"
-    measurements: Optional[dict[str, list[list[int]]]] = Field(
+    measurements: Optional[list[CircuitMeasurementResults]] = Field(
         None,
-        description='if the run has finished successfully, the measurement results for the circuit'
+        description='if the run has finished successfully, the measurement results for the circuit(s)'
     )
-    'if the run has finished successfully, the measurement results for the circuit'
+    'if the run has finished successfully, the measurement results for the circuit(s)'
     message: Optional[str] = Field(None, description='if the run failed, an error message')
     'if the run failed, an error message'
     warnings: Optional[list[str]] = Field(None, description='list of warning messages')
@@ -359,18 +371,19 @@ class IQMClient:
         self._credentials = _get_credentials(credentials)
         self._update_tokens()
 
-    def submit_circuit(
+    def submit_circuits(
             self,
-            circuit: Circuit,
+            circuits: list[Circuit],
             qubit_mapping: Optional[list[SingleQubitMapping]] = None,
             shots: int = 1
     ) -> UUID:
-        """Submits a quantum circuit to be executed on a quantum computer.
+        """Submits a batch of quantum circuits for execution on a quantum computer.
 
         Args:
-            circuit: circuit to be executed
-            qubit_mapping: Mapping of human-readable (logical) qubit names in ``circuit`` to physical qubit names.
-                Can be set to ``None`` if ``circuit`` already uses physical qubit names.
+            circuits: list of circuit to be executed
+            qubit_mapping: Mapping of human-readable (logical) qubit names in to physical qubit names.
+                Can be set to ``None`` if all ``circuits`` already use physical qubit names.
+                Note that the ``qubit_mapping`` is used for all ``circuits``.
             shots: number of times ``circuit`` is executed
 
         Returns:
@@ -381,7 +394,7 @@ class IQMClient:
 
         data = RunRequest(
             qubit_mapping=qubit_mapping,
-            circuit=circuit,
+            circuits=circuits,
             settings=self._settings,
             shots=shots
         )

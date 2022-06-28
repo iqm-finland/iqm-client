@@ -140,7 +140,7 @@ def generate_server_stubs(base_url):
     ).thenReturn(
         MockJsonResponse(
             200,
-            {'status': 'ready', 'measurements': {'result': [[1, 0, 1, 1], [1, 0, 0, 1], [1, 0, 1, 1], [1, 0, 1, 1]]}}
+            {'status': 'ready', 'measurements': [{'result': [[1, 0, 1, 1], [1, 0, 0, 1], [1, 0, 1, 1], [1, 0, 1, 1]]}]}
         )
     )
 
