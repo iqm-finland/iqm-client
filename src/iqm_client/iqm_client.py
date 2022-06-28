@@ -215,7 +215,9 @@ class RunRequest(BaseModel):
 
 
 CircuitMeasurementResults = dict[str, list[list[int]]]
-"""Measurement results from a single circuit. For each measurement operation in the circuit, maps the measurement key to the corresponding results. The outer list elements correspond to shots, and the inner list elements to the qubits measured in the measurement operation."""
+"""Measurement results from a single circuit. For each measurement operation in the circuit,
+maps the measurement key to the corresponding results. The outer list elements correspond to shots,
+and the inner list elements to the qubits measured in the measurement operation."""
 
 
 class RunResult(BaseModel):
