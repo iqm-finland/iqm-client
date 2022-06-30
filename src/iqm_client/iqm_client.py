@@ -44,7 +44,7 @@ All the measurement keys in a circuit must be unique.
 Each qubit may only be measured once.
 The measurement must be the last operation on each qubit, i.e. it cannot be followed by gates.
 
-Example: ``Instruction(name='measurement', qubits=['alice', 'bob', 'charlie'], args={'key': 'm1'})``
+Example: ``Instruction(name='measurement', qubits=('alice', 'bob', 'charlie'), args={'key': 'm1'})``
 
 
 Phased Rx
@@ -155,12 +155,16 @@ class RunStatus(str, Enum):
 class Instruction(BaseModel):
     """An instruction in a quantum circuit.
     """
-    name: str = Field(..., description='name of the quantum operation', example='measurement')
+    name: str = Field(
+        ...,
+        description='name of the quantum operation',
+        example='measurement',
+    )
     'name of the quantum operation'
-    qubits: list[str] = Field(
+    qubits: tuple[str, ...] = Field(
         ...,
         description='names of the logical qubits the operation acts on',
-        example=['alice'],
+        example=('alice',),
     )
     'names of the logical qubits the operation acts on'
     args: dict[str, Any] = Field(
@@ -176,7 +180,7 @@ class Circuit(BaseModel):
     """
     name: str = Field(..., description='name of the circuit', example='test circuit')
     'name of the circuit'
-    instructions: list[Instruction] = Field(..., description='instructions comprising the circuit')
+    instructions: tuple[Instruction, ...] = Field(..., description='instructions comprising the circuit')
     'instructions comprising the circuit'
 
     def all_qubits(self):

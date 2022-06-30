@@ -14,10 +14,14 @@
 """Tests to check if the generated json schema validates run requests.
 """
 # pylint: disable=redefined-outer-name
+from __future__ import annotations
+
 from copy import deepcopy
 
+import jsonschema
 import pytest
-from jsonschema import ValidationError, validate
+from jsonschema import Draft202012Validator, ValidationError
+from jsonschema.validators import extend
 
 from docs.generate_json_schemas import generate_json_schema
 from iqm_client import RunRequest
@@ -44,17 +48,33 @@ def sample_invalid_run_request(sample_valid_run_request):
     invalid_run_request['shots'] = 'not_a_number'
     return invalid_run_request
 
-def test_jsonschema_validates_run_requests(sample_valid_run_request):
+@pytest.fixture
+def run_request_schema() -> dict:
+    """JSON schema for RunRequests.
     """
-    Tests that the generated json schema validates valid run requests.
-    """
-    json_schema = generate_json_schema(RunRequest, '')
-    validate(schema=json_schema, instance=sample_valid_run_request)
+    return generate_json_schema(RunRequest, filename='')
 
-def test_jsonschema_throws_validation_errors(sample_invalid_run_request):
+@pytest.fixture
+def json_validator(run_request_schema) -> jsonschema.protocols.Validator:
+    """Validator for JSON-serialized RunRequests.
     """
-    Tests that the generated json schema rejects invalid run requests.
+    # allow the representation of JSON arrays as either tuples or lists
+    type_checker = Draft202012Validator.TYPE_CHECKER.redefine(
+        'array',
+        lambda checker, instance: isinstance(instance, (tuple, list))
+    )
+    validator_class = extend(Draft202012Validator, type_checker=type_checker)
+    return validator_class(schema=run_request_schema)
+
+
+def test_jsonschema_validates_run_requests(sample_valid_run_request, json_validator):
+    """Tests that the generated json schema validates valid run requests.
     """
-    json_schema = generate_json_schema(RunRequest, '')
+    json_validator.validate(instance=sample_valid_run_request)
+
+
+def test_jsonschema_throws_validation_errors(sample_invalid_run_request, json_validator):
+    """Tests that the generated json schema rejects invalid run requests.
+    """
     with pytest.raises(ValidationError):
-        validate(schema=json_schema, instance=sample_invalid_run_request)
+        json_validator.validate(instance=sample_invalid_run_request)

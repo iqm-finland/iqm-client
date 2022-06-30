@@ -74,21 +74,21 @@ def sample_circuit():
     A sample circuit for testing submit_circuit
     """
     return {
-        'name': 'The circuit',
-        'instructions': [
+        'name': 'Sample circuit',
+        'instructions': (
             {
                 'name': 'cz',
-                'qubits': [
+                'qubits': (
                     'Qubit A',
                     'Qubit B'
-                ],
+                ),
                 'args': {}
             },
             {
                 'name': 'phased_rx',
-                'qubits': [
-                    'Qubit A'
-                ],
+                'qubits': (
+                    'Qubit A',
+                ),
                 'args': {
                     'phase_t': 1.22,
                     'angle_t': {
@@ -98,14 +98,14 @@ def sample_circuit():
             },
             {
                 'name': 'measurement',
-                'qubits': [
-                    'Qubit A'
-                ],
+                'qubits': (
+                    'Qubit A',
+                ),
                 'args': {
-                    'output_label': 'A'
+                    'key': 'A'
                 }
             }
-        ]
+        )
     }
 
 
