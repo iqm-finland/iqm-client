@@ -31,8 +31,8 @@ def test_submit_circuit_returns_id(mock_server, settings_dict, base_url, sample_
     client = IQMClient(base_url)
     job_id = client.submit_circuit(
         qubit_mapping=[
-            SingleQubitMapping(logical_name='Qubit A', physical_name='qubit_1'),
-            SingleQubitMapping(logical_name='Qubit B', physical_name='qubit_2')
+            SingleQubitMapping(logical_name='Qubit A', physical_name='QB1'),
+            SingleQubitMapping(logical_name='Qubit B', physical_name='QB2')
         ],
         circuit=Circuit.parse_obj(sample_circuit),
         settings=settings_dict,
@@ -47,8 +47,8 @@ def test_submit_circuit_without_settings_returns_id(mock_server, base_url, sampl
     client = IQMClient(base_url)
     job_id = client.submit_circuit(
         qubit_mapping=[
-            SingleQubitMapping(logical_name='Qubit A', physical_name='qubit_1'),
-            SingleQubitMapping(logical_name='Qubit B', physical_name='qubit_2')
+            SingleQubitMapping(logical_name='Qubit A', physical_name='QB1'),
+            SingleQubitMapping(logical_name='Qubit B', physical_name='QB2')
         ],
         circuit=Circuit.parse_obj(sample_circuit),
         shots=1000)
