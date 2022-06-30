@@ -24,7 +24,7 @@ Each Instruction type acts on a number of :attr:`~Instruction.qubits`, and expec
 Instructions
 ============
 
-We currently support three native instruction types:
+We currently support the following native instruction types:
 
 ================ =========== ====================================== ===========
 name             # of qubits args                                   description
@@ -32,7 +32,7 @@ name             # of qubits args                                   description
 measurement      >= 1        ``key: str``                           Measurement in the Z basis.
 phased_rx        1           ``angle_t: float``, ``phase_t: float`` Phased x-rotation gate.
 cz               2                                                  Controlled-Z gate.
-barrier          >= 2                                               Barrier instruction.
+barrier          >= 2                                               Execution barrier.
 ================ =========== ====================================== ===========
 
 Measurement
@@ -62,7 +62,7 @@ The gate is represented in the standard computational basis by the matrix
 where :math:`\theta` = ``angle_t``, :math:`\phi` = ``phase_t``,
 and :math:`X` and :math:`Y` are Pauli matrices.
 
-Example: ``Instruction(name='phased_rx', qubits=['bob'], args={'angle_t': 0.7, 'phase_t': 0.25})``
+Example: ``Instruction(name='phased_rx', qubits=('bob',), args={'angle_t': 0.7, 'phase_t': 0.25})``
 
 
 CZ
@@ -72,18 +72,22 @@ Controlled-Z gate. Represented in the standard computational basis by the matrix
 
 .. math:: \text{CZ} = \text{diag}(1, 1, 1, -1).
 
-Symmetric wrt. the qubits it's acting on. Takes no arguments.
+It is symmetric wrt. the qubits it's acting on, and takes no arguments.
 
-Example: ``Instruction(name='cz', qubits=['alice', 'bob'], args={})``
+Example: ``Instruction(name='cz', qubits=('alice', 'bob'), args={})``
 
 
 Barrier
 -------
 
-Barriers ensure that all operations after the barrier on the qubit subsystems spanned by
-the barrier are only executed when all the operations before the barrier have been completed.
+A barrier instruction affects the physical execution order of the instructions elsewhere in the
+circuit that act on qubits spanned by the barrier.
+It ensures that any such instructions that succeed the barrier are only executed after
+all such instructions that precede the barrier have been completed.
+Hence it can be used to guarantee a specific causal order for the other instructions.
+It takes no arguments, and has no other effect.
 
-Example: ``Instruction(name='barrier', qubits=['alice', 'bob'], args={})``
+Example: ``Instruction(name='barrier', qubits=('alice', 'bob'), args={})``
 
 
 Circuit output
