@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.abspath(py_path))
 # -- Project information -----------------------------------------------------
 
 project = 'IQM client'
-copyright = '2021, IQM'
+copyright = '2021-2022, IQM'
 author = 'IQM client developers'
 
 # The short X.Y version.
@@ -37,7 +37,7 @@ else:
 # -- General configuration ---------------------------------------------------
 
 # require a recent version of Sphinx
-needs_sphinx = '4.2'
+needs_sphinx = '4.5'
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom

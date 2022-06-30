@@ -193,7 +193,7 @@ class Circuit(BaseModel):
 class SingleQubitMapping(BaseModel):
     """Mapping of a logical qubit name to a physical qubit name.
     """
-    logical_name: str = Field(..., description='logical qubit name', example='alice')
+    logical_name: str = Field(..., description='logical qubit name', example='Alice')
     'logical qubit name'
     physical_name: str = Field(..., description='physical qubit name', example='QB1')
     'physical qubit name'
