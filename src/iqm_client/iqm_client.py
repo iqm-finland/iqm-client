@@ -179,6 +179,12 @@ class Circuit(BaseModel):
     instructions: list[Instruction] = Field(..., description='instructions comprising the circuit')
     'instructions comprising the circuit'
 
+    def all_qubits(self):
+        qubits = set()
+        for instruction in self.instructions:
+            qubits.update(instruction.qubits)
+        return qubits
+
 
 class SingleQubitMapping(BaseModel):
     """Mapping of a logical qubit name to a physical qubit name.
@@ -187,6 +193,9 @@ class SingleQubitMapping(BaseModel):
     'logical qubit name'
     physical_name: str = Field(..., description='physical qubit name', example='QB1')
     'physical qubit name'
+
+    def __hash__(self):
+        return hash((self.logical_name, self.physical_name))
 
 
 class RunRequest(BaseModel):
@@ -375,6 +384,23 @@ class IQMClient:
         Returns:
             ID for the created task. This ID is needed to query the status and the execution results.
         """
+        # verify that the given qubit_mapping is injective
+        target_qubits = set(q.physical_name for q in qubit_mapping)
+        if not len(set(target_qubits)) == len(qubit_mapping):
+            raise ValueError('Multiple logical qubits map to the same physical qubit.')
+
+        # verify that all the physical qubit names in qubit_mapping are defined in the settings
+        diff = set()
+        if settings is not None:
+            physical_qubits = set(settings['subtrees'])  # pylint: disable=unsubscriptable-object
+            diff = target_qubits - physical_qubits
+        if diff:
+            raise ValueError(f'The physical qubits {diff} in the qubit mapping are not defined in the settings.')
+
+        circuit_qubits = circuit.all_qubits()
+        diff = circuit_qubits - set(q.logical_name for q in qubit_mapping)
+        if diff:
+            raise ValueError(f'The qubits {diff} are not found in the provided qubit mapping.')
 
         bearer_token = self._get_bearer_token()
 
@@ -396,6 +422,7 @@ class IQMClient:
         )
         result.raise_for_status()
         return UUID(result.json()['id'])
+
 
     def get_run(self, job_id: UUID) -> RunResult:
         """Query the status and results of the running task.
