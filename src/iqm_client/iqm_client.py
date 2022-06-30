@@ -44,7 +44,10 @@ All the measurement keys in a circuit must be unique.
 Each qubit may only be measured once.
 The measurement must be the last operation on each qubit, i.e. it cannot be followed by gates.
 
-Example: ``Instruction(name='measurement', qubits=('alice', 'bob', 'charlie'), args={'key': 'm1'})``
+.. code-block:: python
+   :caption: Example
+
+   Instruction(name='measurement', qubits=('alice', 'bob', 'charlie'), args={'key': 'm1'})
 
 
 Phased Rx
@@ -62,7 +65,10 @@ The gate is represented in the standard computational basis by the matrix
 where :math:`\theta` = ``angle_t``, :math:`\phi` = ``phase_t``,
 and :math:`X` and :math:`Y` are Pauli matrices.
 
-Example: ``Instruction(name='phased_rx', qubits=('bob',), args={'angle_t': 0.7, 'phase_t': 0.25})``
+.. code-block:: python
+   :caption: Example
+
+   Instruction(name='phased_rx', qubits=('bob',), args={'angle_t': 0.7, 'phase_t': 0.25})
 
 
 CZ
@@ -74,7 +80,10 @@ Controlled-Z gate. Represented in the standard computational basis by the matrix
 
 It is symmetric wrt. the qubits it's acting on, and takes no arguments.
 
-Example: ``Instruction(name='cz', qubits=('alice', 'bob'), args={})``
+.. code-block:: python
+   :caption: Example
+
+   Instruction(name='cz', qubits=('alice', 'bob'), args={})
 
 
 Barrier
@@ -87,7 +96,10 @@ all such instructions that precede the barrier have been completed.
 Hence it can be used to guarantee a specific causal order for the other instructions.
 It takes no arguments, and has no other effect.
 
-Example: ``Instruction(name='barrier', qubits=('alice', 'bob'), args={})``
+.. code-block:: python
+   :caption: Example
+
+   Instruction(name='barrier', qubits=('alice', 'bob'), args={})
 
 
 Circuit output
