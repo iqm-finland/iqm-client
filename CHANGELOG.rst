@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 4.1
+===========
+
+* Add support for authentication without username/password, using externally managed tokens file. `#35 <https://github.com/iqm-finland/iqm-client/pull/35>`_
+
 Version 4.0
 ===========
 
