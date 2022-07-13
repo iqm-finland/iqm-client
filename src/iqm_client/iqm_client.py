@@ -354,7 +354,6 @@ def _get_external_token(tokens_file: Optional[str] = None) -> Optional[ExternalT
     if not filepath:
         return None
 
-    raw_data = None
     try:
         with open(filepath, 'r', encoding='utf-8') as file:
             raw_data = file.read()
