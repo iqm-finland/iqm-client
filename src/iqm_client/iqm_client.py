@@ -183,6 +183,12 @@ class Circuit(BaseModel):
     instructions: list[Instruction] = Field(..., description='instructions comprising the circuit')
     'instructions comprising the circuit'
 
+    def all_qubits(self):
+        qubits = set()
+        for instruction in self.instructions:
+            qubits.update(instruction.qubits)
+        return qubits
+
 
 class SingleQubitMapping(BaseModel):
     """Mapping of a logical qubit name to a physical qubit name.
@@ -191,6 +197,9 @@ class SingleQubitMapping(BaseModel):
     'logical qubit name'
     physical_name: str = Field(..., description='physical qubit name', example='QB1')
     'physical qubit name'
+
+    def __hash__(self):
+        return hash((self.logical_name, self.physical_name))
 
 
 class RunRequest(BaseModel):
@@ -307,6 +316,7 @@ class Credentials(BaseModel):
     refresh_token: Optional[str] = Field(None, description='current refresh token of the session')
     'current refresh token of the session'
 
+
 class ExternalToken(BaseModel):
     """Externally managed token for maintaining a session with the authentication server.
 
@@ -318,6 +328,7 @@ class ExternalToken(BaseModel):
     'Base URL of the authentication server'
     access_token: str = Field(None, description='current access token of the session')
     'current access token of the session'
+
 
 def _get_credentials(credentials: dict[str, str]) -> Optional[Credentials]:
     """Try to obtain credentials, first from arguments, then from environment variables.
@@ -336,6 +347,7 @@ def _get_credentials(credentials: dict[str, str]) -> Optional[Credentials]:
     if not username or not password:
         raise ClientConfigurationError('Auth server URL is set but no username or password')
     return Credentials(auth_server_url=auth_server_url, username=username, password=password)
+
 
 def _get_external_token(tokens_file: Optional[str] = None) -> Optional[ExternalToken]:
     """Try to obtain external token from a file, first by path provided, then by path from
@@ -369,6 +381,7 @@ def _get_external_token(tokens_file: Optional[str] = None) -> Optional[ExternalT
     access_token = json_data['access_token']
 
     return ExternalToken(auth_server_url=auth_server_url, access_token=access_token)
+
 
 def _time_left_seconds(token: str) -> int:
     """Check how much time is left until the token expires.
@@ -405,10 +418,10 @@ class IQMClient:
             This can also be set in the IQM_AUTH_PASSWORD environment variable.
             Password must be set if ``auth_server_url`` is set.
     """
+
     def __init__(
             self,
             url: str,
-            settings: Optional[dict[str, Any]] = None,
             tokens_file: Optional[str] = None,
             **credentials  # contains auth_server_url, username, password
     ):
@@ -417,7 +430,6 @@ class IQMClient:
         if tokens_file and credentials:
             raise ClientConfigurationError('Either external token or credentials must be provided. Both were provided.')
         self._base_url = url
-        self._settings = settings
         self._external_token = _get_external_token(tokens_file)
         if not self._external_token:
             self._credentials = _get_credentials(credentials)
@@ -427,7 +439,8 @@ class IQMClient:
             self,
             circuits: list[Circuit],
             qubit_mapping: Optional[list[SingleQubitMapping]] = None,
-            shots: int = 1
+            settings: Optional[dict[str, Any]] = None,
+            shots: int = 1,
     ) -> UUID:
         """Submits a batch of quantum circuits for execution on a quantum computer.
 
@@ -437,17 +450,38 @@ class IQMClient:
                 Can be set to ``None`` if all ``circuits`` already use physical qubit names.
                 Note that the ``qubit_mapping`` is used for all ``circuits``.
             shots: number of times ``circuit`` is executed
+            settings: Settings for the quantum computer, in IQM JSON format.
 
         Returns:
             ID for the created task. This ID is needed to query the status and the execution results.
         """
+        if qubit_mapping is not None:
+            # verify that the given qubit_mapping is injective
+            target_qubits = set(q.physical_name for q in qubit_mapping)
+            if not len(set(target_qubits)) == len(qubit_mapping):
+                raise ValueError('Multiple logical qubits map to the same physical qubit.')
+
+            # verify that all the physical qubit names in qubit_mapping are defined in the settings
+            diff = set()
+            if settings is not None:
+                physical_qubits = set(settings['subtrees'])  # pylint: disable=unsubscriptable-object
+                diff = target_qubits - physical_qubits
+            if diff:
+                raise ValueError(f'The physical qubits {diff} in the qubit mapping are not defined in the settings.')
+
+            for circuit in circuits:
+                circuit_qubits = circuit.all_qubits()
+                diff = circuit_qubits - set(q.logical_name for q in qubit_mapping)
+                if diff:
+                    raise ValueError(f'The qubits {diff} are not found in the provided qubit mapping.')
 
         bearer_token = self._get_bearer_token()
 
         data = RunRequest(
             qubit_mapping=qubit_mapping,
+
             circuits=circuits,
-            settings=self._settings,
+            settings=settings,
             shots=shots
         )
 

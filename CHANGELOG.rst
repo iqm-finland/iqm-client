@@ -2,6 +2,12 @@
 Changelog
 =========
 
+Version 5.0
+===========
+
+* ``settings`` are moved from the constructor of ``IQMClient`` to ``IQMClient.submit_circuit``. `#31 <https://github.com/iqm-finland/iqm-client/pull/31>`_
+* User can now import from iqm_client using `from iqm_client import x` instead of `from iqm_client.iqm_client import x`. `#31 <https://github.com/iqm-finland/iqm-client/pull/31>`_
+
 Version 4.2
 ===========
 
@@ -16,6 +22,7 @@ Version 4.0
 ===========
 
 * Implement functionality to submit a batch of circuits in one job. `#34 <https://github.com/iqm-finland/iqm-client/pull/34>`_
+>>>>>>> main
 
 Version 3.3
 ===========

@@ -20,7 +20,7 @@ import pytest
 from jsonschema import ValidationError, validate
 
 from docs.generate_json_schemas import generate_json_schema
-from iqm_client.iqm_client import RunRequest
+from iqm_client import RunRequest
 
 
 @pytest.fixture
