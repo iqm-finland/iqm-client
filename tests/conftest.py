@@ -69,6 +69,15 @@ def settings_dict():
 
 
 @pytest.fixture
+def tokens_dict():
+    """
+    Reads and parses tokens file into a dictionary
+    """
+    tokens_path = os.path.dirname(os.path.realpath(__file__)) + '/resources/tokens.json'
+    with open(tokens_path, 'r', encoding='utf-8') as f:
+        return json.loads(f.read())
+
+@pytest.fixture
 def sample_circuit():
     """
     A sample circuit for testing submit_circuit
@@ -139,7 +148,7 @@ def generate_server_stubs(base_url):
     ).thenReturn(
         MockJsonResponse(
             200,
-            {'status': 'ready', 'measurements': {'result': [[1, 0, 1, 1], [1, 0, 0, 1], [1, 0, 1, 1], [1, 0, 1, 1]]}}
+            {'status': 'ready', 'measurements': [{'result': [[1, 0, 1, 1], [1, 0, 0, 1], [1, 0, 1, 1], [1, 0, 1, 1]]}]}
         )
     )
 

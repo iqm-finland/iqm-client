@@ -29,11 +29,12 @@ def sample_valid_run_request(sample_circuit):
     Returns valid example run request.
     """
     return RunRequest(
-        circuit=sample_circuit,
+        circuits=[sample_circuit],
         settings={},
         shots=1000,
         qubit_mapping=[{'logical_name': 'q1', 'physical_name': 'qubit_1'}]
     ).dict()
+
 
 @pytest.fixture
 def sample_invalid_run_request(sample_valid_run_request):
@@ -44,12 +45,14 @@ def sample_invalid_run_request(sample_valid_run_request):
     invalid_run_request['shots'] = 'not_a_number'
     return invalid_run_request
 
+
 def test_jsonschema_validates_run_requests(sample_valid_run_request):
     """
     Tests that the generated json schema validates valid run requests.
     """
     json_schema = generate_json_schema(RunRequest, '')
     validate(schema=json_schema, instance=sample_valid_run_request)
+
 
 def test_jsonschema_throws_validation_errors(sample_invalid_run_request):
     """

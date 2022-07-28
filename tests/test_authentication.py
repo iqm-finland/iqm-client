@@ -14,6 +14,8 @@
 """Tests for user authentication and token management in IQM client.
 """
 
+import os
+
 from mockito import unstub
 from pytest import raises
 
@@ -66,7 +68,19 @@ def test_add_authorization_header_when_credentials_are_provided(base_url, creden
     unstub()
 
 
-def test_no_authorization_header_when_credentials_are_not_provided(base_url):
+def test_add_authorization_header_when_external_token_is_provided(base_url, settings_dict, tokens_dict):
+    """
+    Tests that requests are sent with Authorization header when credentials are provided
+    """
+    tokens_path = os.path.dirname(os.path.realpath(__file__)) + '/resources/tokens.json'
+    job_id = expect_status_request(base_url, tokens_dict['access_token'])
+    client = IQMClient(base_url, tokens_file=tokens_path)
+    result = client.get_run(job_id)
+    assert result.status == 'pending'
+    unstub()
+
+
+def test_no_authorization_header_when_credentials_are_not_provided(base_url, settings_dict):
     """
     Tests that requests are sent without Authorization header when no credentials are provided
     """

@@ -24,44 +24,60 @@ from iqm_client import (Circuit, ClientConfigurationError, IQMClient,
 from tests.conftest import MockJsonResponse, existing_run, missing_run
 
 
-def test_submit_circuit_returns_id(mock_server, settings_dict, base_url, sample_circuit):
+def test_submit_circuits_returns_id(mock_server, settings_dict, base_url, sample_circuit):
     """
     Tests sending a circuit
     """
     client = IQMClient(base_url)
-    job_id = client.submit_circuit(
+    job_id = client.submit_circuits(
+        circuits=[Circuit.parse_obj(sample_circuit)],
         qubit_mapping=[
-            SingleQubitMapping(logical_name='Qubit A', physical_name='qubit_1'),
-            SingleQubitMapping(logical_name='Qubit B', physical_name='qubit_2')
+            SingleQubitMapping(logical_name='Qubit A', physical_name='QB1'),
+            SingleQubitMapping(logical_name='Qubit B', physical_name='QB2')
         ],
-        circuit=Circuit.parse_obj(sample_circuit),
         settings=settings_dict,
         shots=1000)
     assert job_id == existing_run
 
 
-def test_submit_circuit_without_settings_returns_id(mock_server, base_url, sample_circuit):
+def test_submit_circuit_with_non_existing_qubits(mock_server, settings_dict, base_url, sample_circuit):
     """
     Tests sending a circuit
     """
     client = IQMClient(base_url)
-    job_id = client.submit_circuit(
+    with pytest.raises(ValueError, match="[{'QB100', 'QB200'}]|[{'QB200', 'QB100'}] in the qubit mapping"):
+        client.submit_circuits(
+            circuits=[Circuit.parse_obj(sample_circuit)],
+            qubit_mapping=[
+                SingleQubitMapping(logical_name='Qubit A', physical_name='QB100'),
+                SingleQubitMapping(logical_name='Qubit B', physical_name='QB200')
+            ],
+            settings=settings_dict,
+            shots=1000)
+
+
+def test_submit_circuits_without_settings_returns_id(mock_server, base_url, sample_circuit):
+    """
+    Tests sending a circuit
+    """
+    client = IQMClient(base_url)
+    job_id = client.submit_circuits(
         qubit_mapping=[
             SingleQubitMapping(logical_name='Qubit A', physical_name='qubit_1'),
             SingleQubitMapping(logical_name='Qubit B', physical_name='qubit_2')
         ],
-        circuit=Circuit.parse_obj(sample_circuit),
+        circuits=[Circuit.parse_obj(sample_circuit)],
         shots=1000)
     assert job_id == existing_run
 
 
-def test_submit_circuit_without_qubit_mapping_returns_id(mock_server, settings_dict, base_url, sample_circuit):
+def test_submit_circuits_without_qubit_mapping_returns_id(mock_server, settings_dict, base_url, sample_circuit):
     """
     Tests sending a circuit without qubit mapping
     """
     client = IQMClient(base_url)
-    job_id = client.submit_circuit(
-        circuit=Circuit.parse_obj(sample_circuit),
+    job_id = client.submit_circuits(
+        circuits=[Circuit.parse_obj(sample_circuit)],
         settings=settings_dict,
         shots=1000)
     assert job_id == existing_run
@@ -130,3 +146,19 @@ def test_base_url_is_invalid(settings_dict):
     with pytest.raises(ClientConfigurationError) as exc:
         IQMClient(invalid_base_url)
     assert f'The URL schema has to be http or https. Incorrect schema in URL: {invalid_base_url}' == str(exc.value)
+
+
+def test_tokens_file_not_found(settings_dict):
+    base_url = 'https://example.com'
+    tokens_file = '/home/iqm/tokens.json'
+    with pytest.raises(ClientConfigurationError) as exc:
+        IQMClient(base_url, tokens_file=tokens_file)
+    assert f'File not found: {tokens_file}' == str(exc.value)
+
+
+def test_tokens_and_credentials_combo_invalid(settings_dict, credentials):
+    tokens_file = '/home/iqm/tokens.json'
+    base_url = 'https://example.com'
+    with pytest.raises(ClientConfigurationError) as exc:
+        IQMClient(base_url, tokens_file=tokens_file, **credentials)
+    assert 'Either external token or credentials must be provided. Both were provided.' == str(exc.value)
