@@ -100,10 +100,8 @@ def sample_circuit():
                     'Qubit A'
                 ],
                 'args': {
-                    'phase_t': 1.22,
-                    'angle_t': {
-                        'expr': '{{alpha}}/2'
-                    }
+                    'phase_t': 0.7,
+                    'angle_t': 0.25
                 }
             },
             {
