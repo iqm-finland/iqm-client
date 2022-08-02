@@ -147,7 +147,7 @@ class APITimeoutError(CircuitExecutionError):
     """
 
 
-class RunStatus(str, Enum):
+class Status(str, Enum):
     """
     Status of a task.
     """
@@ -220,6 +220,18 @@ maps the measurement key to the corresponding results. The outer list elements c
 and the inner list elements to the qubits measured in the measurement operation."""
 
 
+class Metadata(BaseModel):
+    """Metadata belonging to a job sumission"""
+    shots: int = Field(..., description='how many times to execute each circuit in the batch')
+    'how many times to execute each circuit in the batch'
+    qubit_mapping: Optional[list[SingleQubitMapping]] = Field(
+        None,
+        description='mapping of logical qubit names to physical qubit names, or None if using physical qubit names'
+    )
+    'mapping of logical qubit names to physical qubit names, or None if using physical qubit names'
+    circuits: list[Circuit] = Field(..., description='batch of quantum circuit(s) to execute')
+    'batch of quantum circuit(s) to execute'
+
 class RunResult(BaseModel):
     """Results of executing a batch of circuit(s).
 
@@ -227,7 +239,7 @@ class RunResult(BaseModel):
     * ``message`` carries additional information for the ``'failed'`` status.
     * If the status is ``'pending'``, ``measurements`` and ``message`` are ``None``.
     """
-    status: RunStatus = Field(..., description="current status of the run, in ``{'pending', 'ready', 'failed'}``")
+    status: Status = Field(..., description="current status of the run, in ``{'pending', 'ready', 'failed'}``")
     "current status of the run, in ``{'pending', 'ready', 'failed'}``"
     measurements: Optional[list[CircuitMeasurementResults]] = Field(
         None,
@@ -236,6 +248,8 @@ class RunResult(BaseModel):
     'if the run has finished successfully, the measurement results for the circuit(s)'
     message: Optional[str] = Field(None, description='if the run failed, an error message')
     'if the run failed, an error message'
+    metadata: Metadata = Field(..., description='metadata about the underlying job request')
+    'metadata about the underlying job request'
     warnings: Optional[list[str]] = Field(None, description='list of warning messages')
     'list of warning messages'
 
@@ -251,8 +265,31 @@ class RunResult(BaseModel):
 
         """
         input_copy = inp.copy()
-        return RunResult(status=RunStatus(input_copy.pop('status')), **input_copy)
+        return RunResult(status=Status(input_copy.pop('status')), **input_copy)
 
+
+class RunStatus(BaseModel):
+    """Status of a batchcircuit execution request."""
+    status: Status = Field(..., description="current status of the run, in ``{'pending', 'ready', 'failed'}``")
+    "current status of the run, in ``{'pending', 'ready', 'failed'}``"
+    message: Optional[str] = Field(None, description='if the run failed, an error message')
+    'if the run failed, an error message'
+    warnings: Optional[list[str]] = Field(None, description='list of warning messages')
+    'list of warning messages'
+
+    @staticmethod
+    def from_dict(inp: dict[str, Union[str, dict]]) -> RunStatus:
+        """Parses the result from a dict.
+
+        Args:
+            inp: value to parse, has to map to RunResult
+
+        Returns:
+            parsed run result
+
+        """
+        input_copy = inp.copy()
+        return RunStatus(status=Status(input_copy.pop('status')), **input_copy)
 
 class GrantType(str, Enum):
     """
@@ -486,11 +523,11 @@ class IQMClient:
         if result.warnings:
             for warning in result.warnings:
                 warnings.warn(warning)
-        if result.status == RunStatus.FAILED:
+        if result.status == Status.FAILED:
             raise CircuitExecutionError(result.message)
         return result
 
-    def get_run_status(self, job_id: UUID) -> RunResult:
+    def get_run_status(self, job_id: UUID) -> RunStatus:
         """Query the status of the running task.
 
         Args:
@@ -509,7 +546,7 @@ class IQMClient:
             headers=None if not bearer_token else {'Authorization': bearer_token}
         )
         result.raise_for_status()
-        result = RunResult.from_dict(result.json())
+        result = RunStatus.from_dict(result.json())
         if result.warnings:
             for warning in result.warnings:
                 warnings.warn(warning)
@@ -531,7 +568,7 @@ class IQMClient:
         start_time = datetime.now()
         while (datetime.now() - start_time).total_seconds() < timeout_secs:
             results = self.get_run(job_id)
-            if results.status != RunStatus.PENDING:
+            if results.status != Status.PENDING:
                 return results
             time.sleep(SECONDS_BETWEEN_CALLS)
         raise APITimeoutError(f"The task didn't finish in {timeout_secs} seconds.")
