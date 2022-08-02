@@ -2,10 +2,15 @@
 Changelog
 =========
 
-Version 4.2
+Version 4.3
 ===========
 
 * Parse new field metadata for job result requests to the IQM quantum computer. `#37 <https://github.com/iqm-finland/iqm-client/pull/37>`_
+
+Version 4.2
+===========
+
+* Update documentation to include development version and certain released versions in a subdirectory. `#36 <https://github.com/iqm-finland/iqm-client/pull/36>`_
 
 Version 4.1
 ===========
