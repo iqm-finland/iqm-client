@@ -160,6 +160,11 @@
         </a>
        </li>
        <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.Metadata.html">
+         iqm_client.iqm_client.Metadata
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="iqm_client.iqm_client.RunRequest.html">
          iqm_client.iqm_client.RunRequest
         </a>
@@ -177,6 +182,11 @@
        <li class="toctree-l4">
         <a class="reference internal" href="iqm_client.iqm_client.SingleQubitMapping.html">
          iqm_client.iqm_client.SingleQubitMapping
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.Status.html">
+         iqm_client.iqm_client.Status
         </a>
        </li>
        <li class="toctree-l4">
@@ -253,6 +263,9 @@
 <ul class="version_list">
     
       <li class="version_item current_version">dev</li>
+    
+    
+      <li class="version_item"><a href="../versions/4.3/index.html">4.3</a></li>
     
     
       <li class="version_item"><a href="../versions/4.2/index.html">4.2</a></li>
@@ -517,7 +530,7 @@ title="Print to PDF"
   <strong>
     
     You're reading the documentation for a development version.
-    For the latest released version, please have a look at <a href="../versions/4.2/index.html">4.2</a>.
+    For the latest released version, please have a look at <a href="../versions/4.3/index.html">4.3</a>.
     
   </strong>
 </div>
@@ -649,17 +662,23 @@ that was the measurement outcome.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="iqm_client.iqm_client.Instruction.html#iqm_client.iqm_client.Instruction" title="iqm_client.iqm_client.Instruction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Instruction</span></code></a>(*, name, qubits, args)</p></td>
 <td><p>An instruction in a quantum circuit.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="iqm_client.iqm_client.RunRequest.html#iqm_client.iqm_client.RunRequest" title="iqm_client.iqm_client.RunRequest"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RunRequest</span></code></a>(*, circuits[, settings, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="iqm_client.iqm_client.Metadata.html#iqm_client.iqm_client.Metadata" title="iqm_client.iqm_client.Metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Metadata</span></code></a>(*, shots[, qubit_mapping])</p></td>
+<td><p>Metadata belonging to a job sumission</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="iqm_client.iqm_client.RunRequest.html#iqm_client.iqm_client.RunRequest" title="iqm_client.iqm_client.RunRequest"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RunRequest</span></code></a>(*, circuits[, settings, ...])</p></td>
 <td><p>Request for an IQM quantum computer to execute a batch of quantum circuits.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="iqm_client.iqm_client.RunResult.html#iqm_client.iqm_client.RunResult" title="iqm_client.iqm_client.RunResult"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RunResult</span></code></a>(*, status[, measurements, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="iqm_client.iqm_client.RunResult.html#iqm_client.iqm_client.RunResult" title="iqm_client.iqm_client.RunResult"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RunResult</span></code></a>(*, status[, measurements, ...])</p></td>
 <td><p>Results of executing a batch of circuit(s).</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="iqm_client.iqm_client.RunStatus.html#iqm_client.iqm_client.RunStatus" title="iqm_client.iqm_client.RunStatus"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RunStatus</span></code></a>(value)</p></td>
-<td><p>Status of a task.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="iqm_client.iqm_client.RunStatus.html#iqm_client.iqm_client.RunStatus" title="iqm_client.iqm_client.RunStatus"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RunStatus</span></code></a>(*, status[, message, warnings])</p></td>
+<td><p>Status of a batchcircuit execution request.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="iqm_client.iqm_client.SingleQubitMapping.html#iqm_client.iqm_client.SingleQubitMapping" title="iqm_client.iqm_client.SingleQubitMapping"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SingleQubitMapping</span></code></a>(*, logical_name, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="iqm_client.iqm_client.SingleQubitMapping.html#iqm_client.iqm_client.SingleQubitMapping" title="iqm_client.iqm_client.SingleQubitMapping"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SingleQubitMapping</span></code></a>(*, logical_name, ...)</p></td>
 <td><p>Mapping of a logical qubit name to a physical qubit name.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="iqm_client.iqm_client.Status.html#iqm_client.iqm_client.Status" title="iqm_client.iqm_client.Status"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Status</span></code></a>(value)</p></td>
+<td><p>Status of a task.</p></td>
 </tr>
 </tbody>
 </table>
@@ -686,23 +705,25 @@ that was the measurement outcome.</p>
 </table>
 </section>
 <p class="rubric">Inheritance</p>
-<div class="graphviz"><img src="../_images/inheritance-80a209003b85cc677063b66d510c9ea9d18fd22a.png" alt="Inheritance diagram of iqm_client.iqm_client" usemap="#inheritanceccd5403770" class="inheritance graphviz" /></div>
+<div class="graphviz"><img src="../_images/inheritance-5a3be3fc4f8ce552f4c181ecbd1c1d8347833b32.png" alt="Inheritance diagram of iqm_client.iqm_client" usemap="#inheritanceccd5403770" class="inheritance graphviz" /></div>
 <map id="inheritanceccd5403770" name="inheritanceccd5403770">
-<area shape="rect" id="node1" href="iqm_client.iqm_client.APITimeoutError.html#iqm_client.iqm_client.APITimeoutError" target="_top" title="Exception for when executing a task on the server takes too long." alt="" coords="240,252,368,277"/>
-<area shape="rect" id="node2" href="iqm_client.iqm_client.CircuitExecutionError.html#iqm_client.iqm_client.CircuitExecutionError" target="_top" title="Something went wrong on the server." alt="" coords="19,252,178,277"/>
-<area shape="rect" id="node3" href="iqm_client.iqm_client.AuthRequest.html#iqm_client.iqm_client.AuthRequest" target="_top" title="Request sent to authentication server for access token and refresh token, or for terminating the session." alt="" coords="440,29,545,55"/>
-<area shape="rect" id="node6" href="iqm_client.iqm_client.Circuit.html#iqm_client.iqm_client.Circuit" target="_top" title="Quantum circuit to be executed." alt="" coords="457,79,529,104"/>
-<area shape="rect" id="node9" href="iqm_client.iqm_client.Credentials.html#iqm_client.iqm_client.Credentials" target="_top" title="Credentials and tokens for maintaining a session with the authentication server." alt="" coords="445,128,541,153"/>
-<area shape="rect" id="node11" href="iqm_client.iqm_client.ExternalToken.html#iqm_client.iqm_client.ExternalToken" target="_top" title="Externally managed token for maintaining a session with the authentication server." alt="" coords="436,177,549,203"/>
-<area shape="rect" id="node14" href="iqm_client.iqm_client.Instruction.html#iqm_client.iqm_client.Instruction" target="_top" title="An instruction in a quantum circuit." alt="" coords="447,227,538,252"/>
-<area shape="rect" id="node15" href="iqm_client.iqm_client.RunRequest.html#iqm_client.iqm_client.RunRequest" target="_top" title="Request for an IQM quantum computer to execute a batch of quantum circuits." alt="" coords="443,276,543,301"/>
-<area shape="rect" id="node16" href="iqm_client.iqm_client.RunResult.html#iqm_client.iqm_client.RunResult" target="_top" title="Results of executing a batch of circuit(s)." alt="" coords="449,325,537,351"/>
-<area shape="rect" id="node18" href="iqm_client.iqm_client.SingleQubitMapping.html#iqm_client.iqm_client.SingleQubitMapping" target="_top" title="Mapping of a logical qubit name to a physical qubit name." alt="" coords="416,375,569,400"/>
-<area shape="rect" id="node7" href="iqm_client.iqm_client.ClientAuthenticationError.html#iqm_client.iqm_client.ClientAuthenticationError" target="_top" title="Something went wrong with user authentication." alt="" coords="5,153,192,179"/>
-<area shape="rect" id="node8" href="iqm_client.iqm_client.ClientConfigurationError.html#iqm_client.iqm_client.ClientConfigurationError" target="_top" title="Wrong configuration provided." alt="" coords="9,104,188,129"/>
-<area shape="rect" id="node12" href="iqm_client.iqm_client.GrantType.html#iqm_client.iqm_client.GrantType" target="_top" title="Type of token request." alt="" coords="260,31,348,56"/>
-<area shape="rect" id="node17" href="iqm_client.iqm_client.RunStatus.html#iqm_client.iqm_client.RunStatus" target="_top" title="Status of a task." alt="" coords="260,80,348,105"/>
-<area shape="rect" id="node13" href="iqm_client.iqm_client.IQMClient.html#iqm_client.iqm_client.IQMClient" target="_top" title="Provides access to IQM quantum computers." alt="" coords="55,5,142,31"/>
+<area shape="rect" id="node1" href="iqm_client.iqm_client.APITimeoutError.html#iqm_client.iqm_client.APITimeoutError" target="_top" title="Exception for when executing a task on the server takes too long." alt="" coords="240,277,368,303"/>
+<area shape="rect" id="node2" href="iqm_client.iqm_client.CircuitExecutionError.html#iqm_client.iqm_client.CircuitExecutionError" target="_top" title="Something went wrong on the server." alt="" coords="19,277,178,303"/>
+<area shape="rect" id="node3" href="iqm_client.iqm_client.AuthRequest.html#iqm_client.iqm_client.AuthRequest" target="_top" title="Request sent to authentication server for access token and refresh token, or for terminating the session." alt="" coords="440,5,545,31"/>
+<area shape="rect" id="node6" href="iqm_client.iqm_client.Circuit.html#iqm_client.iqm_client.Circuit" target="_top" title="Quantum circuit to be executed." alt="" coords="457,55,529,80"/>
+<area shape="rect" id="node9" href="iqm_client.iqm_client.Credentials.html#iqm_client.iqm_client.Credentials" target="_top" title="Credentials and tokens for maintaining a session with the authentication server." alt="" coords="445,104,541,129"/>
+<area shape="rect" id="node11" href="iqm_client.iqm_client.ExternalToken.html#iqm_client.iqm_client.ExternalToken" target="_top" title="Externally managed token for maintaining a session with the authentication server." alt="" coords="436,153,549,179"/>
+<area shape="rect" id="node14" href="iqm_client.iqm_client.Instruction.html#iqm_client.iqm_client.Instruction" target="_top" title="An instruction in a quantum circuit." alt="" coords="447,203,538,228"/>
+<area shape="rect" id="node15" href="iqm_client.iqm_client.Metadata.html#iqm_client.iqm_client.Metadata" target="_top" title="Metadata belonging to a job sumission" alt="" coords="451,252,535,277"/>
+<area shape="rect" id="node16" href="iqm_client.iqm_client.RunRequest.html#iqm_client.iqm_client.RunRequest" target="_top" title="Request for an IQM quantum computer to execute a batch of quantum circuits." alt="" coords="443,301,543,327"/>
+<area shape="rect" id="node17" href="iqm_client.iqm_client.RunResult.html#iqm_client.iqm_client.RunResult" target="_top" title="Results of executing a batch of circuit(s)." alt="" coords="449,351,537,376"/>
+<area shape="rect" id="node18" href="iqm_client.iqm_client.RunStatus.html#iqm_client.iqm_client.RunStatus" target="_top" title="Status of a batchcircuit execution request." alt="" coords="449,400,537,425"/>
+<area shape="rect" id="node19" href="iqm_client.iqm_client.SingleQubitMapping.html#iqm_client.iqm_client.SingleQubitMapping" target="_top" title="Mapping of a logical qubit name to a physical qubit name." alt="" coords="416,449,569,475"/>
+<area shape="rect" id="node7" href="iqm_client.iqm_client.ClientAuthenticationError.html#iqm_client.iqm_client.ClientAuthenticationError" target="_top" title="Something went wrong with user authentication." alt="" coords="5,179,192,204"/>
+<area shape="rect" id="node8" href="iqm_client.iqm_client.ClientConfigurationError.html#iqm_client.iqm_client.ClientConfigurationError" target="_top" title="Wrong configuration provided." alt="" coords="9,129,188,155"/>
+<area shape="rect" id="node12" href="iqm_client.iqm_client.GrantType.html#iqm_client.iqm_client.GrantType" target="_top" title="Type of token request." alt="" coords="260,56,348,81"/>
+<area shape="rect" id="node20" href="iqm_client.iqm_client.Status.html#iqm_client.iqm_client.Status" target="_top" title="Status of a task." alt="" coords="268,105,340,131"/>
+<area shape="rect" id="node13" href="iqm_client.iqm_client.IQMClient.html#iqm_client.iqm_client.IQMClient" target="_top" title="Provides access to IQM quantum computers." alt="" coords="55,31,142,56"/>
 </map></section>
 
 
@@ -738,7 +759,7 @@ that was the measurement outcome.</p>
     By IQM client developers<br/>
   
       &copy; Copyright 2021-2022, IQM.<br/>
-    Last updated on 2022-07-20.<br/>
+    Last updated on 2022-08-03.<br/>
 </p>
         </footer>
     </div>
