@@ -50,11 +50,11 @@ def credentials():
 
 
 @pytest.fixture(scope='function')
-def mock_server(base_url):
+def mock_server(base_url, sample_circuit):
     """
     Runs mocking separately for each test
     """
-    generate_server_stubs(base_url)
+    generate_server_stubs(base_url, sample_circuit)
     yield  # running test function
     unstub()
 
@@ -116,7 +116,6 @@ def sample_circuit():
         ]
     }
 
-
 class MockJsonResponse:
     def __init__(self, status_code: int, json_data: dict):
         self.status_code = status_code
@@ -134,7 +133,7 @@ class MockJsonResponse:
             raise HTTPError('')
 
 
-def generate_server_stubs(base_url):
+def generate_server_stubs(base_url, sample_circuit):
     """
     Mocking some calls to the server by mocking 'requests'
     """
@@ -143,11 +142,15 @@ def generate_server_stubs(base_url):
     )
 
     when(requests).get(f'{base_url}/jobs/{existing_run}', ...).thenReturn(
-        MockJsonResponse(200, {'status': 'pending'})
+        MockJsonResponse(200, {'status': 'pending', 'metadata': {'shots': 42, 'circuits': [sample_circuit]}})
     ).thenReturn(
         MockJsonResponse(
             200,
-            {'status': 'ready', 'measurements': [{'result': [[1, 0, 1, 1], [1, 0, 0, 1], [1, 0, 1, 1], [1, 0, 1, 1]]}]}
+            {
+                'status': 'ready',
+                'measurements': [{'result': [[1, 0, 1, 1], [1, 0, 0, 1], [1, 0, 1, 1], [1, 0, 1, 1]]}],
+                'metadata': {'shots': 42, 'circuits': [sample_circuit]}
+            }
         )
     )
 
@@ -241,7 +244,7 @@ def expect_status_request(url: str, access_token: Optional[str], times: int = 1)
     job_id = uuid4()
     headers = None if access_token is None else {'Authorization': f'Bearer {access_token}'}
     expect(requests, times=times).get(f'{url}/jobs/{job_id}', headers=headers).thenReturn(
-        MockJsonResponse(200, {'status': 'pending'})
+        MockJsonResponse(200, {'status': 'pending', 'metadata': {'shots': 42, 'circuits': []}})
     )
     return job_id
 

@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 4.3
+===========
+
+* Parse new field metadata for job result requests to the IQM quantum computer. `#37 <https://github.com/iqm-finland/iqm-client/pull/37>`_
+
 Version 4.2
 ===========
 

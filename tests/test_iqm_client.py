@@ -20,7 +20,7 @@ from mockito import when
 from requests import HTTPError
 
 from iqm_client.iqm_client import (Circuit, ClientConfigurationError,
-                                   IQMClient, RunStatus, SingleQubitMapping)
+                                   IQMClient, SingleQubitMapping, Status)
 from tests.conftest import MockJsonResponse, existing_run, missing_run
 
 
@@ -70,9 +70,9 @@ def test_get_run_status_and_results_for_existing_run(mock_server, base_url, sett
     Tests getting the run status
     """
     client = IQMClient(base_url, settings_dict)
-    assert client.get_run(existing_run).status == RunStatus.PENDING
+    assert client.get_run(existing_run).status == Status.PENDING
     ready_run = client.get_run(existing_run)
-    assert ready_run.status == RunStatus.READY
+    assert ready_run.status == Status.READY
     assert ready_run.measurements is not None
 
 
@@ -81,10 +81,9 @@ def test_get_run_status_for_existing_run(mock_server, base_url, settings_dict):
     Tests getting the run status
     """
     client = IQMClient(base_url, settings_dict)
-    assert client.get_run_status(existing_run).status == RunStatus.PENDING
+    assert client.get_run_status(existing_run).status == Status.PENDING
     ready_run = client.get_run_status(existing_run)
-    assert ready_run.status == RunStatus.READY
-    assert ready_run.measurements is None
+    assert ready_run.status == Status.READY
 
 
 def test_get_run_status_and_results_for_missing_run(mock_server, base_url, settings_dict):
@@ -110,14 +109,14 @@ def test_waiting_for_results(mock_server, base_url, settings_dict):
     Tests waiting for results for an existing task
     """
     client = IQMClient(base_url, settings_dict)
-    assert client.wait_for_results(existing_run).status == RunStatus.READY
+    assert client.wait_for_results(existing_run).status == Status.READY
 
 
 def test_user_warning_is_emitted_when_warnings_in_response(base_url, settings_dict, capsys):
     client = IQMClient(base_url, settings_dict)
     msg = 'This is a warning msg'
     with when(requests).get(f'{base_url}/jobs/{existing_run}', headers=None).thenReturn(
-            MockJsonResponse(200, {'status': 'ready', 'warnings': [msg]})
+            MockJsonResponse(200, {'status': 'ready', 'warnings': [msg], 'metadata': {'shots': 42, 'circuits': []}})
     ):
         with pytest.warns(UserWarning, match=msg):
             client.get_run(existing_run)
