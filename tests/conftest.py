@@ -115,6 +115,7 @@ def sample_circuit():
         ]
     }
 
+
 class MockJsonResponse:
     def __init__(self, status_code: int, json_data: dict):
         self.status_code = status_code

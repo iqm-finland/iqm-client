@@ -40,20 +40,49 @@ def test_submit_circuits_returns_id(mock_server, settings_dict, base_url, sample
     assert job_id == existing_run
 
 
-def test_submit_circuit_with_non_existing_qubits(mock_server, settings_dict, base_url, sample_circuit):
+def test_submit_circuit_with_non_injective_qubit_mapping(mock_server, settings_dict, base_url, sample_circuit):
     """
-    Tests sending a circuit
+    Test non-injective qubit mapping.
     """
     client = IQMClient(base_url)
-    with pytest.raises(ValueError, match="[{'QB100', 'QB200'}]|[{'QB200', 'QB100'}] in the qubit mapping"):
+    with pytest.raises(ValueError, match='Multiple logical qubits map to the same physical qubit'):
         client.submit_circuits(
             circuits=[Circuit.parse_obj(sample_circuit)],
             qubit_mapping=[
-                SingleQubitMapping(logical_name='Qubit A', physical_name='QB100'),
+                SingleQubitMapping(logical_name='Qubit A', physical_name='QB1'),
+                SingleQubitMapping(logical_name='Qubit B', physical_name='QB1')
+            ],
+            settings=settings_dict
+        )
+
+
+def test_submit_circuit_with_non_existing_qubits(mock_server, settings_dict, base_url, sample_circuit):
+    """
+    Test qubit mapping containing a physical qubit name not present in the settings.
+    """
+    client = IQMClient(base_url)
+    with pytest.raises(ValueError, match="{'QB200'} in the qubit mapping are not defined in the settings."):
+        client.submit_circuits(
+            circuits=[Circuit.parse_obj(sample_circuit)],
+            qubit_mapping=[
+                SingleQubitMapping(logical_name='Qubit A', physical_name='QB1'),
                 SingleQubitMapping(logical_name='Qubit B', physical_name='QB200')
             ],
-            settings=settings_dict,
-            shots=1000)
+            settings=settings_dict)
+
+
+def test_submit_circuit_with_incomplete_qubit_mapping(mock_server, settings_dict, base_url, sample_circuit):
+    """
+    Test the scenario when circuits contain qubit names that are not present in the provided qubit mapping.
+    """
+    client = IQMClient(base_url)
+    with pytest.raises(ValueError, match="The qubits {'Qubit B'} are not found in the provided qubit mapping."):
+        client.submit_circuits(
+            circuits=[Circuit.parse_obj(sample_circuit)],
+            qubit_mapping=[
+                SingleQubitMapping(logical_name='Qubit A', physical_name='QB1')
+            ],
+            settings=settings_dict)
 
 
 def test_submit_circuits_without_settings_returns_id(mock_server, base_url, sample_circuit):
