@@ -68,7 +68,7 @@ def test_add_authorization_header_when_credentials_are_provided(base_url, creden
     unstub()
 
 
-def test_add_authorization_header_when_external_token_is_provided(base_url, settings_dict, tokens_dict):
+def test_add_authorization_header_when_external_token_is_provided(base_url, tokens_dict):
     """
     Tests that requests are sent with Authorization header when credentials are provided
     """
@@ -80,7 +80,7 @@ def test_add_authorization_header_when_external_token_is_provided(base_url, sett
     unstub()
 
 
-def test_no_authorization_header_when_credentials_are_not_provided(base_url, settings_dict):
+def test_no_authorization_header_when_credentials_are_not_provided(base_url):
     """
     Tests that requests are sent without Authorization header when no credentials are provided
     """
