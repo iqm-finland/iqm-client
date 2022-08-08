@@ -477,6 +477,7 @@ class IQMClient:
     def submit_circuits(
             self,
             circuits: list[Circuit],
+            *,
             qubit_mapping: Optional[list[SingleQubitMapping]] = None,
             settings: Optional[dict[str, Any]] = None,
             shots: int = 1,
@@ -488,8 +489,8 @@ class IQMClient:
             qubit_mapping: Mapping of human-readable (logical) qubit names in to physical qubit names.
                 Can be set to ``None`` if all ``circuits`` already use physical qubit names.
                 Note that the ``qubit_mapping`` is used for all ``circuits``.
-            shots: number of times ``circuit`` is executed
             settings: Settings for the quantum computer, in IQM JSON format.
+            shots: number of times ``circuit`` is executed
 
         Returns:
             ID for the created task. This ID is needed to query the status and the execution results.
@@ -518,7 +519,6 @@ class IQMClient:
 
         data = RunRequest(
             qubit_mapping=qubit_mapping,
-
             circuits=circuits,
             settings=settings,
             shots=shots
