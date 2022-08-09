@@ -184,7 +184,7 @@ class Circuit(BaseModel):
     'instructions comprising the circuit'
 
     def all_qubits(self) -> set[str]:
-        """Return names of all qubits in the circuit
+        """Return the names of all qubits in the circuit.
         """
         qubits = set()
         for instruction in self.instructions:
