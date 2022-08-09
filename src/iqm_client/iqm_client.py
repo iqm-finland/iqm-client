@@ -500,7 +500,7 @@ class IQMClient:
             qubit_mapping: Mapping of human-readable (logical) qubit names in to physical qubit names.
                 Can be set to ``None`` if all ``circuits`` already use physical qubit names.
                 Note that the ``qubit_mapping`` is used for all ``circuits``.
-            settings: Settings for the quantum computer, in IQM JSON format.
+            settings: Settings for the quantum computer.
             shots: number of times ``circuit`` is executed
 
         Returns:
