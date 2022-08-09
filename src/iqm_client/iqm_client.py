@@ -200,8 +200,17 @@ class SingleQubitMapping(BaseModel):
     physical_name: str = Field(..., description='physical qubit name', example='QB1')
     'physical qubit name'
 
-    def __hash__(self):
-        return hash((self.logical_name, self.physical_name))
+
+def serialize_qubit_mapping(qubit_mapping: dict[str, str]) -> list[SingleQubitMapping]:
+    """Serializes a qubit mapping dict into the corresponding IQM data transfer format.
+
+    Args:
+        qubit_mapping: mapping from logical to physical qubit names
+
+    Returns:
+        data transfer object representing the mapping
+    """
+    return [SingleQubitMapping(logical_name=k, physical_name=v) for k, v in qubit_mapping.items()]
 
 
 class RunRequest(BaseModel):
@@ -242,6 +251,7 @@ class Metadata(BaseModel):
     'mapping of logical qubit names to physical qubit names, or None if using physical qubit names'
     circuits: list[Circuit] = Field(..., description='batch of quantum circuit(s) to execute')
     'batch of quantum circuit(s) to execute'
+
 
 class RunResult(BaseModel):
     """Results of executing a batch of circuit(s).
@@ -301,6 +311,7 @@ class RunStatus(BaseModel):
         """
         input_copy = inp.copy()
         return RunStatus(status=Status(input_copy.pop('status')), **input_copy)
+
 
 class GrantType(str, Enum):
     """
@@ -478,7 +489,7 @@ class IQMClient:
             self,
             circuits: list[Circuit],
             *,
-            qubit_mapping: Optional[list[SingleQubitMapping]] = None,
+            qubit_mapping: Optional[dict[str, str]] = None,
             settings: Optional[dict[str, Any]] = None,
             shots: int = 1,
     ) -> UUID:
@@ -496,24 +507,26 @@ class IQMClient:
             ID for the created task. This ID is needed to query the status and the execution results.
         """
         if qubit_mapping is not None:
-            # verify that the given qubit_mapping is injective
-            target_qubits = set(q.physical_name for q in qubit_mapping)
-            if not len(set(target_qubits)) == len(qubit_mapping):
+            # check if qubit mapping is injective
+            target_qubits = set(qubit_mapping.values())
+            if not len(target_qubits) == len(qubit_mapping):
                 raise ValueError('Multiple logical qubits map to the same physical qubit.')
 
-            # verify that all the physical qubit names in qubit_mapping are defined in the settings
-            diff = set()
+            # check if qubit mapping covers all qubits in the circuits
+            for circuit in circuits:
+                circuit_qubits = circuit.all_qubits()
+                diff = circuit_qubits - set(qubit_mapping.keys())
+                if diff:
+                    raise ValueError(f'The qubits {diff} are not found in the provided qubit mapping.')
+
+            # check that all the physical qubit names in qubit_mapping are defined in the settings
             if settings is not None:
                 physical_qubits = set(settings['subtrees'])  # pylint: disable=unsubscriptable-object
                 diff = target_qubits - physical_qubits
-            if diff:
-                raise ValueError(f'The physical qubits {diff} in the qubit mapping are not defined in the settings.')
-
-            for circuit in circuits:
-                circuit_qubits = circuit.all_qubits()
-                diff = circuit_qubits - set(q.logical_name for q in qubit_mapping)
                 if diff:
-                    raise ValueError(f'The qubits {diff} are not found in the provided qubit mapping.')
+                    raise ValueError(f'The physical qubits {diff} in the qubit mapping are not defined in settings.')
+
+            qubit_mapping = serialize_qubit_mapping(qubit_mapping)
 
         bearer_token = self._get_bearer_token()
 
