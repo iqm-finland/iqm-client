@@ -37,7 +37,7 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="iqm_client.iqm_client.AuthRequest" href="iqm_client.iqm_client.AuthRequest.html" />
+    <link rel="next" title="iqm_client.iqm_client.serialize_qubit_mapping" href="iqm_client.iqm_client.serialize_qubit_mapping.html" />
     <link rel="prev" title="iqm_client" href="iqm_client.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="None">
@@ -124,6 +124,11 @@
        </i>
       </label>
       <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.serialize_qubit_mapping.html">
+         iqm_client.iqm_client.serialize_qubit_mapping
+        </a>
+       </li>
        <li class="toctree-l4">
         <a class="reference internal" href="iqm_client.iqm_client.AuthRequest.html">
          iqm_client.iqm_client.AuthRequest
@@ -263,6 +268,9 @@
 <ul class="version_list">
     
       <li class="version_item current_version">dev</li>
+    
+    
+      <li class="version_item"><a href="../versions/5.0/index.html">5.0</a></li>
     
     
       <li class="version_item"><a href="../versions/4.3/index.html">4.3</a></li>
@@ -530,7 +538,7 @@ title="Print to PDF"
   <strong>
     
     You're reading the documentation for a development version.
-    For the latest released version, please have a look at <a href="../versions/4.3/index.html">4.3</a>.
+    For the latest released version, please have a look at <a href="../versions/5.0/index.html">5.0</a>.
     
   </strong>
 </div>
@@ -634,6 +642,18 @@ results, represented as a nested list.
 <p>The results are nonnegative integers representing the computational basis state (for qubits, 0 or 1)
 that was the measurement outcome.</p>
 <hr class="docutils" />
+<p class="rubric">Functions</p>
+<table class="autosummary longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="iqm_client.iqm_client.serialize_qubit_mapping.html#iqm_client.iqm_client.serialize_qubit_mapping" title="iqm_client.iqm_client.serialize_qubit_mapping"><code class="xref py py-obj docutils literal notranslate"><span class="pre">serialize_qubit_mapping</span></code></a>(qubit_mapping)</p></td>
+<td><p>Serializes a qubit mapping dict into the corresponding IQM data transfer format.</p></td>
+</tr>
+</tbody>
+</table>
 <p class="rubric">Classes</p>
 <table class="autosummary longtable table autosummary">
 <colgroup>
@@ -656,7 +676,7 @@ that was the measurement outcome.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="iqm_client.iqm_client.GrantType.html#iqm_client.iqm_client.GrantType" title="iqm_client.iqm_client.GrantType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GrantType</span></code></a>(value)</p></td>
 <td><p>Type of token request.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="iqm_client.iqm_client.IQMClient.html#iqm_client.iqm_client.IQMClient" title="iqm_client.iqm_client.IQMClient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IQMClient</span></code></a>(url[, settings, tokens_file])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="iqm_client.iqm_client.IQMClient.html#iqm_client.iqm_client.IQMClient" title="iqm_client.iqm_client.IQMClient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IQMClient</span></code></a>(url[, tokens_file])</p></td>
 <td><p>Provides access to IQM quantum computers.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="iqm_client.iqm_client.Instruction.html#iqm_client.iqm_client.Instruction" title="iqm_client.iqm_client.Instruction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Instruction</span></code></a>(*, name, qubits, args)</p></td>
@@ -742,10 +762,10 @@ that was the measurement outcome.</p>
             <p class="prev-next-title">iqm_client</p>
         </div>
     </a>
-    <a class='right-next' id="next-link" href="iqm_client.iqm_client.AuthRequest.html" title="next page">
+    <a class='right-next' id="next-link" href="iqm_client.iqm_client.serialize_qubit_mapping.html" title="next page">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">iqm_client.iqm_client.AuthRequest</p>
+        <p class="prev-next-title">iqm_client.iqm_client.serialize_qubit_mapping</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>
@@ -759,7 +779,7 @@ that was the measurement outcome.</p>
     By IQM client developers<br/>
   
       &copy; Copyright 2021-2022, IQM.<br/>
-    Last updated on 2022-08-03.<br/>
+    Last updated on 2022-08-09.<br/>
 </p>
         </footer>
     </div>

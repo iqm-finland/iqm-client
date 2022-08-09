@@ -123,6 +123,11 @@
       </label>
       <ul class="current">
        <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.serialize_qubit_mapping.html">
+         iqm_client.iqm_client.serialize_qubit_mapping
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="iqm_client.iqm_client.AuthRequest.html">
          iqm_client.iqm_client.AuthRequest
         </a>
@@ -261,6 +266,9 @@
 <ul class="version_list">
     
       <li class="version_item current_version">dev</li>
+    
+    
+      <li class="version_item"><a href="../versions/5.0/index.html">5.0</a></li>
     
     
       <li class="version_item"><a href="../versions/4.3/index.html">4.3</a></li>
@@ -433,7 +441,7 @@ title="Print to PDF"
   <strong>
     
     You're reading the documentation for a development version.
-    For the latest released version, please have a look at <a href="../versions/4.3/index.html">4.3</a>.
+    For the latest released version, please have a look at <a href="../versions/5.0/index.html">5.0</a>.
     
   </strong>
 </div>
@@ -443,14 +451,14 @@ title="Print to PDF"
 <h1>iqm_client.iqm_client.IQMClient<a class="headerlink" href="#iqm-client-iqm-client-iqmclient" title="Permalink to this headline">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="iqm_client.iqm_client.IQMClient">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">iqm_client.iqm_client.</span></span><span class="sig-name descname"><span class="pre">IQMClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tokens_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">credentials</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm_client.iqm_client.IQMClient" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">iqm_client.iqm_client.</span></span><span class="sig-name descname"><span class="pre">IQMClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tokens_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">credentials</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm_client.iqm_client.IQMClient" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.9/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Provides access to IQM quantum computers.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Endpoint for accessing the server. Has to start with http or https.</p></li>
-<li><p><strong>settings</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>Any</em><em>]</em><em>]</em>) – Settings for the quantum computer, in IQM JSON format.</p></li>
+<li><p><strong>settings</strong> – Settings for the quantum computer, in IQM JSON format.</p></li>
 <li><p><strong>tokens_file</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – Optional path to a tokens file used for authentication.
 This can also be set in the IQM_TOKENS_FILE environment variable.
 If tokens_file is set, auth_server_url, username and password
@@ -493,7 +501,7 @@ Password must be set if <code class="docutils literal notranslate"><span class="
 <tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.get_run_status" title="iqm_client.iqm_client.IQMClient.get_run_status"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_run_status</span></code></a>(job_id)</p></td>
 <td><p>Query the status of the running task.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.submit_circuits" title="iqm_client.iqm_client.IQMClient.submit_circuits"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit_circuits</span></code></a>(circuits[, qubit_mapping, shots])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.submit_circuits" title="iqm_client.iqm_client.IQMClient.submit_circuits"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit_circuits</span></code></a>(circuits, *[, ...])</p></td>
 <td><p>Submits a batch of quantum circuits for execution on a quantum computer.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.wait_for_results" title="iqm_client.iqm_client.IQMClient.wait_for_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait_for_results</span></code></a>(job_id[, timeout_secs])</p></td>
@@ -503,15 +511,16 @@ Password must be set if <code class="docutils literal notranslate"><span class="
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="iqm_client.iqm_client.IQMClient.submit_circuits">
-<span class="sig-name descname"><span class="pre">submit_circuits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">circuits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit_mapping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm_client.iqm_client.IQMClient.submit_circuits" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">submit_circuits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">circuits</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit_mapping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm_client.iqm_client.IQMClient.submit_circuits" title="Permalink to this definition">#</a></dt>
 <dd><p>Submits a batch of quantum circuits for execution on a quantum computer.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>circuits</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference internal" href="iqm_client.iqm_client.Circuit.html#iqm_client.iqm_client.Circuit" title="iqm_client.iqm_client.Circuit"><em>iqm_client.iqm_client.Circuit</em></a><em>]</em>) – list of circuit to be executed</p></li>
-<li><p><strong>qubit_mapping</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference internal" href="iqm_client.iqm_client.SingleQubitMapping.html#iqm_client.iqm_client.SingleQubitMapping" title="iqm_client.iqm_client.SingleQubitMapping"><em>iqm_client.iqm_client.SingleQubitMapping</em></a><em>]</em><em>]</em>) – Mapping of human-readable (logical) qubit names in to physical qubit names.
+<li><p><strong>qubit_mapping</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em><em>]</em>) – Mapping of human-readable (logical) qubit names in to physical qubit names.
 Can be set to <code class="docutils literal notranslate"><span class="pre">None</span></code> if all <code class="docutils literal notranslate"><span class="pre">circuits</span></code> already use physical qubit names.
 Note that the <code class="docutils literal notranslate"><span class="pre">qubit_mapping</span></code> is used for all <code class="docutils literal notranslate"><span class="pre">circuits</span></code>.</p></li>
+<li><p><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><em>Any</em></a><em>]</em><em>]</em>) – Settings for the quantum computer.</p></li>
 <li><p><strong>shots</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – number of times <code class="docutils literal notranslate"><span class="pre">circuit</span></code> is executed</p></li>
 </ul>
 </dd>
@@ -647,7 +656,7 @@ Note that the <code class="docutils literal notranslate"><span class="pre">qubit
     By IQM client developers<br/>
   
       &copy; Copyright 2021-2022, IQM.<br/>
-    Last updated on 2022-08-03.<br/>
+    Last updated on 2022-08-09.<br/>
 </p>
         </footer>
     </div>
