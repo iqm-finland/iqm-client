@@ -528,6 +528,7 @@ class IQMClient:
 
             qubit_mapping = serialize_qubit_mapping(qubit_mapping)
 
+        # ``bearer_token`` can be ``None`` if cocos we're connecting does not use authentication
         bearer_token = self._get_bearer_token()
 
         data = RunRequest(
@@ -546,6 +547,10 @@ class IQMClient:
             json=data.dict(exclude_none=True),
             headers=headers,
         )
+
+        if result.status_code == 401:
+            raise ClientConfigurationError('Authentication failed.')
+
         result.raise_for_status()
         return UUID(result.json()['id'])
 
