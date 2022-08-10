@@ -455,7 +455,7 @@ class IQMClient:
         tokens_file: Optional path to a tokens file used for authentication.
             This can also be set in the IQM_TOKENS_FILE environment variable.
             If tokens_file is set, auth_server_url, username and password
-            must no be set.
+            must not be set.
 
     Keyword Args:
         auth_server_url: Optional base URL of the authentication server.
@@ -623,7 +623,7 @@ class IQMClient:
         raise APITimeoutError(f"The task didn't finish in {timeout_secs} seconds.")
 
     def close(self) -> bool:
-        """Terminate session with authentication server.
+        """Terminate session with authentication server if there was one created.
 
         Returns:
             True iff session was successfully closed
@@ -631,6 +631,9 @@ class IQMClient:
         Raises:
             ClientAuthenticationError: if logout failed
         """
+        if self._external_token:
+            return False
+
         if self._credentials is None:
             return False
 

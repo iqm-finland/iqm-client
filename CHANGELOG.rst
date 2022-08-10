@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 5.1
+===========
+
+* Fix an exception when using `tokens_file` for authentication. `#39 <https://github.com/iqm-finland/iqm-client/pull/39>`_
+
 Version 5.0
 ===========
 
