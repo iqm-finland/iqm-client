@@ -6,7 +6,7 @@ Version 5.1
 ===========
 
 * Fix an exception when using `tokens_file` for authentication. `#39 <https://github.com/iqm-finland/iqm-client/pull/39>`_
-* Handle CoCoS 401 response and display a suggestion to check `cortex auth status`. `#39 <https://github.com/iqm-finland/iqm-client/pull/39>`_
+* Handle CoCoS 401 response with a more informative error message. `#39 <https://github.com/iqm-finland/iqm-client/pull/39>`_
 
 Version 5.0
 ===========
