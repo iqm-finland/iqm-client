@@ -14,8 +14,6 @@
 """Tests for the IQM client.
 """
 # pylint: disable=unused-argument
-import os
-
 import pytest
 import requests
 from mockito import when
@@ -187,13 +185,3 @@ def test_tokens_and_credentials_combo_invalid(settings_dict, credentials):
     with pytest.raises(ClientConfigurationError) as exc:
         IQMClient(base_url, tokens_file=tokens_file, **credentials)
     assert 'Either external token or credentials must be provided. Both were provided.' == str(exc.value)
-
-
-def test_valid_tokens_file_init_close(settings_dict):
-    base_url = 'https://example.com'
-    tokens_path = os.path.dirname(os.path.realpath(__file__)) + '/resources/tokens.json'
-    client = IQMClient(base_url, tokens_file = tokens_path)
-    try:
-        client.close()
-    except Exception as exc:  # pylint: disable=broad-except
-        assert False, f'client created with tokens_file raised an exception {exc} on .close()'

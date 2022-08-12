@@ -2,11 +2,12 @@
 Changelog
 =========
 
-Version 5.1
+Version 6.0
 ===========
 
-* Fix an exception when using `tokens_file` for authentication. `#39 <https://github.com/iqm-finland/iqm-client/pull/39>`_
-* Handle CoCoS 401 response with a more informative error message. `#39 <https://github.com/iqm-finland/iqm-client/pull/39>`_
+* ``IQMClient.close`` renamed to ``IQMClient.close_auth_session`` and raises an exception when asked to close an externally managed authentication session. `#39 <https://github.com/iqm-finland/iqm-client/pull/39>`_
+* Try to automatically close the authentication session when the client is deleted. `#39 <https://github.com/iqm-finland/iqm-client/pull/39>`_
+* Show CoCoS error on 401 response. `#39 <https://github.com/iqm-finland/iqm-client/pull/39>`_
 
 Version 5.0
 ===========

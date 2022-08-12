@@ -16,8 +16,8 @@
 
 import os
 
+import pytest
 from mockito import unstub
-from pytest import raises
 
 from iqm_client import ClientAuthenticationError, Credentials, IQMClient
 from tests.conftest import expect_logout, expect_status_request, prepare_tokens
@@ -96,7 +96,7 @@ def test_raises_client_authentication_error_if_authentication_fails(base_url, cr
     Tests that authentication failure raises ClientAuthenticationError
     """
     prepare_tokens(300, 3600, status_code=401, **credentials)
-    with raises(ClientAuthenticationError):
+    with pytest.raises(ClientAuthenticationError):
         IQMClient(base_url, **credentials)
     unstub()
 
@@ -165,8 +165,36 @@ def test_tokens_are_cleared_at_logout(base_url, credentials):
     assert client._credentials.access_token == initial_tokens['access_token']
     assert client._credentials.refresh_token == initial_tokens['refresh_token']
 
-    client.close()
+    client.close_auth_session()
     assert client._credentials.access_token is None
     assert client._credentials.refresh_token is None
+
+    unstub()
+
+
+def test_cannot_close_external_auth_session(base_url):
+    """
+    Tests that calling ``close_auth_session`` while initialized with an external auth session
+    raises ClientAuthenticationError
+    """
+    tokens_path = os.path.dirname(os.path.realpath(__file__)) + '/resources/tokens.json'
+    client = IQMClient(base_url, tokens_file=tokens_path)
+    with pytest.raises(ClientAuthenticationError) as exc:
+        client.close_auth_session()
+    assert 'Unable to close externally managed auth session' == str(exc.value)
+
+
+def test_logout_on_client_destruction(base_url, credentials):
+    """
+    Tests that client is trying to terminate the authentication session on destruction
+    """
+    initial_tokens = prepare_tokens(300, 3600, **credentials)
+    expect_logout(credentials['auth_server_url'], initial_tokens['refresh_token'])
+
+    client = IQMClient(base_url, **credentials)
+    assert client._credentials.access_token == initial_tokens['access_token']
+    assert client._credentials.refresh_token == initial_tokens['refresh_token']
+
+    del client
 
     unstub()

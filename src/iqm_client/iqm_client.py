@@ -484,6 +484,15 @@ class IQMClient:
             self._credentials = _get_credentials(credentials)
             self._update_tokens()
 
+    def __del__(self):
+        try:
+            # try our best to close the auth session, doesn't matter if it fails,
+            # refresh token will be re-issued for the same credentials or eventually expire
+            if not self._external_token:
+                self.close_auth_session()
+        except Exception:  # pylint: disable=broad-except
+            pass
+
     def submit_circuits(
             self,
             circuits: list[Circuit],
@@ -548,7 +557,7 @@ class IQMClient:
         )
 
         if result.status_code == 401:
-            raise ClientConfigurationError('Authentication failed.')
+            raise ClientConfigurationError(f'Authentication failed: {result.text}')
 
         result.raise_for_status()
         return UUID(result.json()['id'])
@@ -626,7 +635,7 @@ class IQMClient:
             time.sleep(SECONDS_BETWEEN_CALLS)
         raise APITimeoutError(f"The task didn't finish in {timeout_secs} seconds.")
 
-    def close(self) -> bool:
+    def close_auth_session(self) -> bool:
         """Terminate session with authentication server if there was one created.
 
         Returns:
@@ -634,13 +643,17 @@ class IQMClient:
 
         Raises:
             ClientAuthenticationError: if logout failed
+            ClientAuthenticationError: if asked to close externally managed authentication session
         """
+        # auth session is managed externally, unable to close it here
         if self._external_token:
-            return False
+            raise ClientAuthenticationError('Unable to close externally managed auth session')
 
+        # no auth, nothing to close
         if self._credentials is None:
             return False
 
+        # auth session wasn't started, nothing to close
         if not self._credentials.refresh_token:
             return False
 
