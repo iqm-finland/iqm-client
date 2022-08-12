@@ -451,7 +451,6 @@ class IQMClient:
 
     Args:
         url: Endpoint for accessing the server. Has to start with http or https.
-        settings: Settings for the quantum computer, in IQM JSON format.
         tokens_file: Optional path to a tokens file used for authentication.
             This can also be set in the IQM_TOKENS_FILE environment variable.
             If tokens_file is set, auth_server_url, username and password
