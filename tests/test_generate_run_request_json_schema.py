@@ -31,6 +31,7 @@ def sample_valid_run_request(sample_circuit):
     return RunRequest(
         circuits=[sample_circuit],
         settings={},
+        calibration_set_id=24,
         shots=1000,
         qubit_mapping=[{'logical_name': 'q1', 'physical_name': 'qubit_1'}]
     ).dict()
