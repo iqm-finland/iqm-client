@@ -6,7 +6,6 @@ Version 5.1
 ===========
 
 * Add optional ``calibration_set_id`` parameter to ``IQMClient.submit_circuit``.
-* Requires CoCoS 10.2
 
 Version 5.0
 ===========
