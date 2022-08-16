@@ -451,11 +451,10 @@ class IQMClient:
 
     Args:
         url: Endpoint for accessing the server. Has to start with http or https.
-        settings: Settings for the quantum computer, in IQM JSON format.
         tokens_file: Optional path to a tokens file used for authentication.
             This can also be set in the IQM_TOKENS_FILE environment variable.
             If tokens_file is set, auth_server_url, username and password
-            must no be set.
+            must not be set.
 
     Keyword Args:
         auth_server_url: Optional base URL of the authentication server.
@@ -484,6 +483,15 @@ class IQMClient:
         if not self._external_token:
             self._credentials = _get_credentials(credentials)
             self._update_tokens()
+
+    def __del__(self):
+        try:
+            # try our best to close the auth session, doesn't matter if it fails,
+            # refresh token will be re-issued for the same credentials or eventually expire
+            if not self._external_token:
+                self.close_auth_session()
+        except Exception:  # pylint: disable=broad-except
+            pass
 
     def submit_circuits(
             self,
@@ -528,6 +536,7 @@ class IQMClient:
 
             qubit_mapping = serialize_qubit_mapping(qubit_mapping)
 
+        # ``bearer_token`` can be ``None`` if cocos we're connecting does not use authentication
         bearer_token = self._get_bearer_token()
 
         data = RunRequest(
@@ -546,6 +555,10 @@ class IQMClient:
             json=data.dict(exclude_none=True),
             headers=headers,
         )
+
+        if result.status_code == 401:
+            raise ClientConfigurationError(f'Authentication failed: {result.text}')
+
         result.raise_for_status()
         return UUID(result.json()['id'])
 
@@ -622,18 +635,25 @@ class IQMClient:
             time.sleep(SECONDS_BETWEEN_CALLS)
         raise APITimeoutError(f"The task didn't finish in {timeout_secs} seconds.")
 
-    def close(self) -> bool:
-        """Terminate session with authentication server.
+    def close_auth_session(self) -> bool:
+        """Terminate session with authentication server if there was one created.
 
         Returns:
             True iff session was successfully closed
 
         Raises:
             ClientAuthenticationError: if logout failed
+            ClientAuthenticationError: if asked to close externally managed authentication session
         """
+        # auth session is managed externally, unable to close it here
+        if self._external_token:
+            raise ClientAuthenticationError('Unable to close externally managed auth session')
+
+        # no auth, nothing to close
         if self._credentials is None:
             return False
 
+        # auth session wasn't started, nothing to close
         if not self._credentials.refresh_token:
             return False
 
