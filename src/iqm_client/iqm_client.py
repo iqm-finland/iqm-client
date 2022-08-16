@@ -222,9 +222,9 @@ class RunRequest(BaseModel):
     'batch of quantum circuit(s) to execute'
     settings: Optional[dict[str, Any]] = Field(
         None,
-        description='EXA settings node containing the calibration data, or None to use the latest calibration set'
+        description='IQM hardware settings and calibration data, or None to use the latest calibration set'
     )
-    'EXA settings node containing the calibration data, or None to use the latest calibration set'
+    'IQM hardware settings and calibration data, or None to use the latest calibration set'
     calibration_set_id: Optional[int] = Field(
         None,
         description='ID of the calibration set to use, or None to use the latest calibration set'
