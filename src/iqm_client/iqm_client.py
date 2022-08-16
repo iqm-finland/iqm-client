@@ -222,9 +222,14 @@ class RunRequest(BaseModel):
     'batch of quantum circuit(s) to execute'
     settings: Optional[dict[str, Any]] = Field(
         None,
-        description='EXA settings node containing the calibration data, or None if using default settings'
+        description='IQM hardware settings and calibration data, or None to use the latest calibration set'
     )
-    'EXA settings node containing the calibration data, or None if using default settings'
+    'IQM hardware settings and calibration data, or None to use the latest calibration set'
+    calibration_set_id: Optional[int] = Field(
+        None,
+        description='ID of the calibration set to use, or None to use the latest calibration set'
+    )
+    'ID of the calibration set to use, or None to use the latest calibration set'
     qubit_mapping: Optional[list[SingleQubitMapping]] = Field(
         None,
         description='mapping of logical qubit names to physical qubit names, or None if using physical qubit names'
@@ -499,6 +504,7 @@ class IQMClient:
             *,
             qubit_mapping: Optional[dict[str, str]] = None,
             settings: Optional[dict[str, Any]] = None,
+            calibration_set_id: Optional[int] = None,
             shots: int = 1,
     ) -> UUID:
         """Submits a batch of quantum circuits for execution on a quantum computer.
@@ -508,7 +514,8 @@ class IQMClient:
             qubit_mapping: Mapping of human-readable (logical) qubit names in to physical qubit names.
                 Can be set to ``None`` if all ``circuits`` already use physical qubit names.
                 Note that the ``qubit_mapping`` is used for all ``circuits``.
-            settings: Settings for the quantum computer.
+            settings: settings for the quantum computer
+            calibration_set_id: ID of the calibration set to use instead of ``settings``
             shots: number of times ``circuit`` is executed
 
         Returns:
@@ -543,6 +550,7 @@ class IQMClient:
             qubit_mapping=qubit_mapping,
             circuits=circuits,
             settings=settings,
+            calibration_set_id=calibration_set_id,
             shots=shots
         )
 

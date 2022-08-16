@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 6.1
+===========
+
+* Add optional ``calibration_set_id`` parameter to ``IQMClient.submit_circuit``. `#40 <https://github.com/iqm-finland/iqm-client/pull/40>`_
+
 Version 6.0
 ===========
 

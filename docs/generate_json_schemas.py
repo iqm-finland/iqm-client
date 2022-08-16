@@ -30,6 +30,7 @@ SCHEMAS = {
     'run_request_schema': RunRequest,
 }
 
+
 def generate_json_schema(cls: type[BaseModel], filename: str) -> dict[str, Any]:
     """Generate a JSON schema dictionary from the given Pydantic model.
 
@@ -47,6 +48,7 @@ def generate_json_schema(cls: type[BaseModel], filename: str) -> dict[str, Any]:
         **json_schema,
     }
 
+
 def save_json_schemas_to_docs() -> None:
     """Save the JSON schemas in the docs folder.
     """
@@ -55,6 +57,7 @@ def save_json_schemas_to_docs() -> None:
         json_schema_path = os.path.join(os.getcwd(), 'docs', filename)
         with open(json_schema_path, 'w', encoding='utf-8') as f:
             f.write(json.dumps(generate_json_schema(cls, filename), indent=2))
+
 
 if __name__ == '__main__':
     save_json_schemas_to_docs()

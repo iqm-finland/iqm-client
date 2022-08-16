@@ -68,6 +68,11 @@ def settings_dict():
         return json.loads(f.read())
 
 
+@pytest.fixture()
+def calibration_set_id():
+    return 24
+
+
 @pytest.fixture
 def tokens_dict():
     """
@@ -76,6 +81,7 @@ def tokens_dict():
     tokens_path = os.path.dirname(os.path.realpath(__file__)) + '/resources/tokens.json'
     with open(tokens_path, 'r', encoding='utf-8') as f:
         return json.loads(f.read())
+
 
 @pytest.fixture
 def sample_circuit():
