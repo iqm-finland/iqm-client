@@ -268,6 +268,9 @@
       <li class="version_item current_version">dev</li>
     
     
+      <li class="version_item"><a href="../versions/6.0/index.html">6.0</a></li>
+    
+    
       <li class="version_item"><a href="../versions/5.0/index.html">5.0</a></li>
     
     
@@ -441,7 +444,7 @@ title="Print to PDF"
   <strong>
     
     You're reading the documentation for a development version.
-    For the latest released version, please have a look at <a href="../versions/5.0/index.html">5.0</a>.
+    For the latest released version, please have a look at <a href="../versions/6.0/index.html">6.0</a>.
     
   </strong>
 </div>
@@ -458,11 +461,10 @@ title="Print to PDF"
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Endpoint for accessing the server. Has to start with http or https.</p></li>
-<li><p><strong>settings</strong> – Settings for the quantum computer, in IQM JSON format.</p></li>
 <li><p><strong>tokens_file</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – Optional path to a tokens file used for authentication.
 This can also be set in the IQM_TOKENS_FILE environment variable.
 If tokens_file is set, auth_server_url, username and password
-must no be set.</p></li>
+must not be set.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
@@ -486,25 +488,28 @@ Password must be set if <code class="docutils literal notranslate"><span class="
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_get_bearer_token</span></code>([retries])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__del__</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_get_bearer_token</span></code>([retries])</p></td>
 <td><p>Make a bearer token for Authorization header.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_update_tokens</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_update_tokens</span></code>()</p></td>
 <td><p>Update access token and refresh token.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.close" title="iqm_client.iqm_client.IQMClient.close"><code class="xref py py-obj docutils literal notranslate"><span class="pre">close</span></code></a>()</p></td>
-<td><p>Terminate session with authentication server.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.close_auth_session" title="iqm_client.iqm_client.IQMClient.close_auth_session"><code class="xref py py-obj docutils literal notranslate"><span class="pre">close_auth_session</span></code></a>()</p></td>
+<td><p>Terminate session with authentication server if there was one created.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.get_run" title="iqm_client.iqm_client.IQMClient.get_run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_run</span></code></a>(job_id)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.get_run" title="iqm_client.iqm_client.IQMClient.get_run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_run</span></code></a>(job_id)</p></td>
 <td><p>Query the status and results of the running task.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.get_run_status" title="iqm_client.iqm_client.IQMClient.get_run_status"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_run_status</span></code></a>(job_id)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.get_run_status" title="iqm_client.iqm_client.IQMClient.get_run_status"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_run_status</span></code></a>(job_id)</p></td>
 <td><p>Query the status of the running task.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.submit_circuits" title="iqm_client.iqm_client.IQMClient.submit_circuits"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit_circuits</span></code></a>(circuits, *[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.submit_circuits" title="iqm_client.iqm_client.IQMClient.submit_circuits"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit_circuits</span></code></a>(circuits, *[, ...])</p></td>
 <td><p>Submits a batch of quantum circuits for execution on a quantum computer.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.wait_for_results" title="iqm_client.iqm_client.IQMClient.wait_for_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait_for_results</span></code></a>(job_id[, timeout_secs])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.wait_for_results" title="iqm_client.iqm_client.IQMClient.wait_for_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait_for_results</span></code></a>(job_id[, timeout_secs])</p></td>
 <td><p>Poll results until run is ready, failed, or timed out.</p></td>
 </tr>
 </tbody>
@@ -603,15 +608,18 @@ Note that the <code class="docutils literal notranslate"><span class="pre">qubit
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="iqm_client.iqm_client.IQMClient.close">
-<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#iqm_client.iqm_client.IQMClient.close" title="Permalink to this definition">#</a></dt>
-<dd><p>Terminate session with authentication server.</p>
+<dt class="sig sig-object py" id="iqm_client.iqm_client.IQMClient.close_auth_session">
+<span class="sig-name descname"><span class="pre">close_auth_session</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#iqm_client.iqm_client.IQMClient.close_auth_session" title="Permalink to this definition">#</a></dt>
+<dd><p>Terminate session with authentication server if there was one created.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>True iff session was successfully closed</p>
 </dd>
 <dt class="field-even">Raises</dt>
-<dd class="field-even"><p><a class="reference internal" href="iqm_client.iqm_client.ClientAuthenticationError.html#iqm_client.iqm_client.ClientAuthenticationError" title="iqm_client.iqm_client.ClientAuthenticationError"><strong>ClientAuthenticationError</strong></a> – if logout failed</p>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="iqm_client.iqm_client.ClientAuthenticationError.html#iqm_client.iqm_client.ClientAuthenticationError" title="iqm_client.iqm_client.ClientAuthenticationError"><strong>ClientAuthenticationError</strong></a> – if logout failed</p></li>
+<li><p><a class="reference internal" href="iqm_client.iqm_client.ClientAuthenticationError.html#iqm_client.iqm_client.ClientAuthenticationError" title="iqm_client.iqm_client.ClientAuthenticationError"><strong>ClientAuthenticationError</strong></a> – if asked to close externally managed authentication session</p></li>
+</ul>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
@@ -656,7 +664,7 @@ Note that the <code class="docutils literal notranslate"><span class="pre">qubit
     By IQM client developers<br/>
   
       &copy; Copyright 2021-2022, IQM.<br/>
-    Last updated on 2022-08-09.<br/>
+    Last updated on 2022-08-16.<br/>
 </p>
         </footer>
     </div>
