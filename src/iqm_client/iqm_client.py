@@ -119,6 +119,8 @@ from uuid import UUID
 import requests
 from pydantic import BaseModel, Field
 
+REQUESTS_TIMEOUT = 10
+
 DEFAULT_TIMEOUT_SECONDS = 900
 SECONDS_BETWEEN_CALLS = 1
 REFRESH_MARGIN_SECONDS = 5
@@ -562,6 +564,7 @@ class IQMClient:
             join(self._base_url, 'jobs'),
             json=data.dict(exclude_none=True),
             headers=headers,
+            timeout=REQUESTS_TIMEOUT
         )
 
         if result.status_code == 401:
@@ -586,7 +589,8 @@ class IQMClient:
         bearer_token = self._get_bearer_token()
         result = requests.get(
             join(self._base_url, 'jobs/', str(job_id)),
-            headers=None if not bearer_token else {'Authorization': bearer_token}
+            headers=None if not bearer_token else {'Authorization': bearer_token},
+            timeout=REQUESTS_TIMEOUT
         )
         result.raise_for_status()
         result = RunResult.from_dict(result.json())
@@ -613,7 +617,8 @@ class IQMClient:
         bearer_token = self._get_bearer_token()
         result = requests.get(
             join(self._base_url, 'jobs/', str(job_id), 'status'),
-            headers=None if not bearer_token else {'Authorization': bearer_token}
+            headers=None if not bearer_token else {'Authorization': bearer_token},
+            timeout=REQUESTS_TIMEOUT
         )
         result.raise_for_status()
         result = RunStatus.from_dict(result.json())
@@ -667,7 +672,7 @@ class IQMClient:
 
         url = f'{self._credentials.auth_server_url}/realms/{AUTH_REALM}/protocol/openid-connect/logout'
         data = AuthRequest(client_id=AUTH_CLIENT_ID, refresh_token=self._credentials.refresh_token)
-        result = requests.post(url, data=data.dict(exclude_none=True))
+        result = requests.post(url, data=data.dict(exclude_none=True), timeout=REQUESTS_TIMEOUT)
         if result.status_code not in [200, 204]:
             raise ClientAuthenticationError(f'Logout failed, {result.text}')
         self._credentials.access_token = None
@@ -728,7 +733,7 @@ class IQMClient:
             )
 
         url = f'{self._credentials.auth_server_url}/realms/{AUTH_REALM}/protocol/openid-connect/token'
-        result = requests.post(url, data=data.dict(exclude_none=True))
+        result = requests.post(url, data=data.dict(exclude_none=True), timeout=REQUESTS_TIMEOUT)
         if result.status_code != 200:
             raise ClientAuthenticationError(f'Failed to update tokens, {result.text}')
         tokens = result.json()

@@ -30,6 +30,8 @@ from requests import HTTPError, Response
 
 from iqm_client import AUTH_CLIENT_ID, AUTH_REALM, AuthRequest, GrantType
 
+REQUESTS_TIMEOUT = 10
+
 existing_run = UUID('3c3fcda3-e860-46bf-92a4-bcc59fa76ce9')
 missing_run = UUID('059e4186-50a3-4e6c-ba1f-37fe6afbdfc2')
 
@@ -213,7 +215,8 @@ def prepare_tokens(
     }
     when(requests).post(
         f'{credentials["auth_server_url"]}/realms/{AUTH_REALM}/protocol/openid-connect/token',
-        data=request_data.dict(exclude_none=True)
+        data=request_data.dict(exclude_none=True),
+        timeout=REQUESTS_TIMEOUT
     ).thenReturn(MockJsonResponse(status_code, tokens))
 
     return tokens
@@ -249,7 +252,7 @@ def expect_status_request(url: str, access_token: Optional[str], times: int = 1)
     """
     job_id = uuid4()
     headers = None if access_token is None else {'Authorization': f'Bearer {access_token}'}
-    expect(requests, times=times).get(f'{url}/jobs/{job_id}', headers=headers).thenReturn(
+    expect(requests, times=times).get(f'{url}/jobs/{job_id}', headers=headers, timeout=REQUESTS_TIMEOUT).thenReturn(
         MockJsonResponse(200, {'status': 'pending', 'metadata': {'shots': 42, 'circuits': []}})
     )
     return job_id
@@ -265,7 +268,8 @@ def expect_logout(auth_server_url: str, refresh_token: str):
     request_data = AuthRequest(client_id=AUTH_CLIENT_ID, refresh_token=refresh_token)
     expect(requests, times=1).post(
         f'{auth_server_url}/realms/{AUTH_REALM}/protocol/openid-connect/logout',
-        data=request_data.dict(exclude_none=True)
+        data=request_data.dict(exclude_none=True),
+        timeout=REQUESTS_TIMEOUT
     ).thenReturn(
         mock({'status_code': 204, 'text': '{}'})
     )
