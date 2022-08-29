@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 6.2
+===========
+
+* Add mypy support. `#41 <https://github.com/iqm-finland/iqm-client/pull/41>`_
+
 Version 6.1
 ===========
 
