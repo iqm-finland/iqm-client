@@ -2,6 +2,12 @@
 Changelog
 =========
 
+Version 6.2
+===========
+
+* Enable mypy checks. `#41 <https://github.com/iqm-finland/iqm-client/pull/41>`_
+* Update source code according to new checks in pylint v2.15.0. `#41 <https://github.com/iqm-finland/iqm-client/pull/41>`_
+
 Version 6.1
 ===========
 

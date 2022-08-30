@@ -119,6 +119,8 @@ from uuid import UUID
 import requests
 from pydantic import BaseModel, Field
 
+REQUESTS_TIMEOUT = 10
+
 DEFAULT_TIMEOUT_SECONDS = 900
 SECONDS_BETWEEN_CALLS = 1
 REFRESH_MARGIN_SECONDS = 5
@@ -498,6 +500,7 @@ class IQMClient:
         except Exception:  # pylint: disable=broad-except
             pass
 
+    # pylint: disable=too-many-locals
     def submit_circuits(
             self,
             circuits: list[Circuit],
@@ -521,6 +524,7 @@ class IQMClient:
         Returns:
             ID for the created task. This ID is needed to query the status and the execution results.
         """
+        serialized_qubit_mapping: Optional[list[SingleQubitMapping]] = None
         if qubit_mapping is not None:
             # check if qubit mapping is injective
             target_qubits = set(qubit_mapping.values())
@@ -541,13 +545,13 @@ class IQMClient:
                 if diff:
                     raise ValueError(f'The physical qubits {diff} in the qubit mapping are not defined in settings.')
 
-            qubit_mapping = serialize_qubit_mapping(qubit_mapping)
+            serialized_qubit_mapping = serialize_qubit_mapping(qubit_mapping)
 
         # ``bearer_token`` can be ``None`` if cocos we're connecting does not use authentication
         bearer_token = self._get_bearer_token()
 
         data = RunRequest(
-            qubit_mapping=qubit_mapping,
+            qubit_mapping=serialized_qubit_mapping,
             circuits=circuits,
             settings=settings,
             calibration_set_id=calibration_set_id,
@@ -562,6 +566,7 @@ class IQMClient:
             join(self._base_url, 'jobs'),
             json=data.dict(exclude_none=True),
             headers=headers,
+            timeout=REQUESTS_TIMEOUT
         )
 
         if result.status_code == 401:
@@ -586,16 +591,17 @@ class IQMClient:
         bearer_token = self._get_bearer_token()
         result = requests.get(
             join(self._base_url, 'jobs/', str(job_id)),
-            headers=None if not bearer_token else {'Authorization': bearer_token}
+            headers=None if not bearer_token else {'Authorization': bearer_token},
+            timeout=REQUESTS_TIMEOUT
         )
         result.raise_for_status()
-        result = RunResult.from_dict(result.json())
-        if result.warnings:
-            for warning in result.warnings:
+        run_result = RunResult.from_dict(result.json())
+        if run_result.warnings:
+            for warning in run_result.warnings:
                 warnings.warn(warning)
-        if result.status == Status.FAILED:
-            raise CircuitExecutionError(result.message)
-        return result
+        if run_result.status == Status.FAILED:
+            raise CircuitExecutionError(run_result.message)
+        return run_result
 
     def get_run_status(self, job_id: UUID) -> RunStatus:
         """Query the status of the running task.
@@ -613,14 +619,15 @@ class IQMClient:
         bearer_token = self._get_bearer_token()
         result = requests.get(
             join(self._base_url, 'jobs/', str(job_id), 'status'),
-            headers=None if not bearer_token else {'Authorization': bearer_token}
+            headers=None if not bearer_token else {'Authorization': bearer_token},
+            timeout=REQUESTS_TIMEOUT
         )
         result.raise_for_status()
-        result = RunStatus.from_dict(result.json())
-        if result.warnings:
-            for warning in result.warnings:
+        run_result = RunStatus.from_dict(result.json())
+        if run_result.warnings:
+            for warning in run_result.warnings:
                 warnings.warn(warning)
-        return result
+        return run_result
 
     def wait_for_results(self, job_id: UUID, timeout_secs: float = DEFAULT_TIMEOUT_SECONDS) -> RunResult:
         """Poll results until run is ready, failed, or timed out.
@@ -667,7 +674,7 @@ class IQMClient:
 
         url = f'{self._credentials.auth_server_url}/realms/{AUTH_REALM}/protocol/openid-connect/logout'
         data = AuthRequest(client_id=AUTH_CLIENT_ID, refresh_token=self._credentials.refresh_token)
-        result = requests.post(url, data=data.dict(exclude_none=True))
+        result = requests.post(url, data=data.dict(exclude_none=True), timeout=REQUESTS_TIMEOUT)
         if result.status_code not in [200, 204]:
             raise ClientAuthenticationError(f'Logout failed, {result.text}')
         self._credentials.access_token = None
@@ -728,7 +735,7 @@ class IQMClient:
             )
 
         url = f'{self._credentials.auth_server_url}/realms/{AUTH_REALM}/protocol/openid-connect/token'
-        result = requests.post(url, data=data.dict(exclude_none=True))
+        result = requests.post(url, data=data.dict(exclude_none=True), timeout=REQUESTS_TIMEOUT)
         if result.status_code != 200:
             raise ClientAuthenticationError(f'Failed to update tokens, {result.text}')
         tokens = result.json()

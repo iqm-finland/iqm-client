@@ -23,6 +23,8 @@ from iqm_client import (Circuit, ClientConfigurationError, IQMClient,
                         SingleQubitMapping, Status, serialize_qubit_mapping)
 from tests.conftest import MockJsonResponse, existing_run, missing_run
 
+REQUESTS_TIMEOUT = 10
+
 
 def test_serialize_qubit_mapping():
     qubit_mapping = {'Alice': 'QB1', 'Bob': 'qubit_3', 'Charlie': 'physical 0'}
@@ -170,7 +172,7 @@ def test_waiting_for_results(mock_server, base_url, settings_dict):
 def test_user_warning_is_emitted_when_warnings_in_response(base_url, settings_dict, capsys):
     client = IQMClient(base_url)
     msg = 'This is a warning msg'
-    with when(requests).get(f'{base_url}/jobs/{existing_run}', headers=None).thenReturn(
+    with when(requests).get(f'{base_url}/jobs/{existing_run}', headers=None, timeout=REQUESTS_TIMEOUT).thenReturn(
             MockJsonResponse(200, {'status': 'ready', 'warnings': [msg], 'metadata': {'shots': 42, 'circuits': []}})
     ):
         with pytest.warns(UserWarning, match=msg):
