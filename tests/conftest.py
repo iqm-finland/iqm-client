@@ -32,6 +32,7 @@ from iqm_client import AUTH_CLIENT_ID, AUTH_REALM, AuthRequest, GrantType
 
 REQUESTS_TIMEOUT = 10
 
+calibration_set_id_value = 24
 existing_run = UUID('3c3fcda3-e860-46bf-92a4-bcc59fa76ce9')
 missing_run = UUID('059e4186-50a3-4e6c-ba1f-37fe6afbdfc2')
 
@@ -72,7 +73,7 @@ def settings_dict():
 
 @pytest.fixture()
 def calibration_set_id():
-    return 24
+    return calibration_set_id_value
 
 
 @pytest.fixture
@@ -157,7 +158,7 @@ def generate_server_stubs(base_url, sample_circuit):
             {
                 'status': 'ready',
                 'measurements': [{'result': [[1, 0, 1, 1], [1, 0, 0, 1], [1, 0, 1, 1], [1, 0, 1, 1]]}],
-                'metadata': {'shots': 42, 'circuits': [sample_circuit]}
+                'metadata': {'shots': 42, 'circuits': [sample_circuit], 'calibration_set_id': calibration_set_id_value}
             }
         )
     )
