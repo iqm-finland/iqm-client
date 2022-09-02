@@ -258,6 +258,10 @@ class Metadata(BaseModel):
     'mapping of logical qubit names to physical qubit names, or None if using physical qubit names'
     circuits: list[Circuit] = Field(..., description='batch of quantum circuit(s) to execute')
     'batch of quantum circuit(s) to execute'
+    calibration_set_id: Optional[int] = Field(
+        None,
+        description='ID of the calibration set used, or None if settings were specified'
+    )
 
 
 class RunResult(BaseModel):
