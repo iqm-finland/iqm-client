@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 7.2
+===========
+
+* Add description of calibration set ID of RunResult metadata in the documentation. `#43 <https://github.com/iqm-finland/iqm-client/pull/43>`_
+
 Version 7.1
 ===========
 
