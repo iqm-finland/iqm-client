@@ -262,6 +262,7 @@ class Metadata(BaseModel):
         None,
         description='ID of the calibration set used, or None if settings were specified'
     )
+    'ID of the calibration set used, or None if settings were specified'
 
 
 class RunResult(BaseModel):
