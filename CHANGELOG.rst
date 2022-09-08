@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 7.1
+===========
+
+* Increase timeout of requests. `#43 <https://github.com/iqm-finland/iqm-client/pull/43>`_
+
 Version 7.0
 ===========
 

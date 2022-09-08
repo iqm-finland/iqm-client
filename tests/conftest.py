@@ -30,7 +30,7 @@ from requests import HTTPError, Response
 
 from iqm_client import AUTH_CLIENT_ID, AUTH_REALM, AuthRequest, GrantType
 
-REQUESTS_TIMEOUT = 10
+REQUESTS_TIMEOUT = 60
 
 calibration_set_id_value = 24
 existing_run = UUID('3c3fcda3-e860-46bf-92a4-bcc59fa76ce9')

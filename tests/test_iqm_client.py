@@ -23,7 +23,7 @@ from iqm_client import (Circuit, ClientConfigurationError, IQMClient,
                         SingleQubitMapping, Status, serialize_qubit_mapping)
 from tests.conftest import MockJsonResponse, existing_run, missing_run
 
-REQUESTS_TIMEOUT = 10
+REQUESTS_TIMEOUT = 60
 
 
 def test_serialize_qubit_mapping():
