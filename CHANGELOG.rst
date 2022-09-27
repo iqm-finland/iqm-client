@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 8.0
+===========
+
+* Remove settings from RunRequest, add custom_settings. `#46 <https://github.com/iqm-finland/iqm-client/pull/46>`_
+
 Version 7.2
 ===========
 
