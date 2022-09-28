@@ -5,7 +5,12 @@ Changelog
 Version 8.0
 ===========
 
-* Remove settings from RunRequest, add custom_settings. `#46 <https://github.com/iqm-finland/iqm-client/pull/46>`_
+* Remove settings from RunRequest, add custom_settings. `#48 <https://github.com/iqm-finland/iqm-client/pull/48>`_
+
+Version 7.3
+===========
+
+* Increase job result poll interval while waiting for circuit execution. `#47 <https://github.com/iqm-finland/iqm-client/pull/47>`_
 
 Version 7.2
 ===========
