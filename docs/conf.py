@@ -60,7 +60,7 @@ extensions = [
 templates_path = ['_templates']
 
 # Include extra files in the HTML docs.
-html_extra_path = [f'run_request_schema_v{version}.json']
+html_extra_path = []
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
