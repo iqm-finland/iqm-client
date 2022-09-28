@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 7.3
+===========
+
+* Increase job result poll interval while waiting for circuit execution. `#47 <https://github.com/iqm-finland/iqm-client/pull/47>`_
+
 Version 7.2
 ===========
 
