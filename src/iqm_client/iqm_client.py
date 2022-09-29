@@ -98,7 +98,7 @@ results, represented as a nested list.
 ``qubit_index``'th qubit in measurement operation ``key`` in the shot ``shot`` in the
 ``circuit_index``'th circuit of the batch.
 
-The results are nonnegative integers representing the computational basis state (for qubits, 0 or 1)
+The results are non-negative integers representing the computational basis state (for qubits, 0 or 1)
 that was the measurement outcome.
 
 ----
@@ -222,11 +222,13 @@ class RunRequest(BaseModel):
     """
     circuits: list[Circuit] = Field(..., description='batch of quantum circuit(s) to execute')
     'batch of quantum circuit(s) to execute'
-    settings: Optional[dict[str, Any]] = Field(
+    custom_settings: dict[str, Any] = Field(
         None,
-        description='IQM hardware settings and calibration data, or None to use the latest calibration set'
+        description='''Custom settings to overwrite default IQM hardware settings and calibration data.
+Note: This field should be always None in normal use.'''
     )
-    'IQM hardware settings and calibration data, or None to use the latest calibration set'
+    '''Custom settings to overwrite default IQM hardware settings and calibration data.
+Note: This field should be always None in normal use.'''
     calibration_set_id: Optional[int] = Field(
         None,
         description='ID of the calibration set to use, or None to use the latest calibration set'
@@ -511,7 +513,7 @@ class IQMClient:
             circuits: list[Circuit],
             *,
             qubit_mapping: Optional[dict[str, str]] = None,
-            settings: Optional[dict[str, Any]] = None,
+            custom_settings: Optional[dict[str, Any]] = None,
             calibration_set_id: Optional[int] = None,
             shots: int = 1,
     ) -> UUID:
@@ -522,7 +524,8 @@ class IQMClient:
             qubit_mapping: Mapping of human-readable (logical) qubit names in to physical qubit names.
                 Can be set to ``None`` if all ``circuits`` already use physical qubit names.
                 Note that the ``qubit_mapping`` is used for all ``circuits``.
-            settings: settings for the quantum computer
+            custom_settings: custom settings to overwrite default settings and calibration data.
+                Note: This field should be always None in normal use.
             calibration_set_id: ID of the calibration set to use instead of ``settings``
             shots: number of times ``circuit`` is executed
 
@@ -543,13 +546,6 @@ class IQMClient:
                 if diff:
                     raise ValueError(f'The qubits {diff} are not found in the provided qubit mapping.')
 
-            # check that all the physical qubit names in qubit_mapping are defined in the settings
-            if settings is not None:
-                physical_qubits = set(settings['subtrees'])  # pylint: disable=unsubscriptable-object
-                diff = target_qubits - physical_qubits
-                if diff:
-                    raise ValueError(f'The physical qubits {diff} in the qubit mapping are not defined in settings.')
-
             serialized_qubit_mapping = serialize_qubit_mapping(qubit_mapping)
 
         # ``bearer_token`` can be ``None`` if cocos we're connecting does not use authentication
@@ -558,7 +554,7 @@ class IQMClient:
         data = RunRequest(
             qubit_mapping=serialized_qubit_mapping,
             circuits=circuits,
-            settings=settings,
+            custom_settings=custom_settings,
             calibration_set_id=calibration_set_id,
             shots=shots
         )
