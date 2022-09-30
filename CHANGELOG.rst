@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 8.1
+===========
+
+* Change ``Circuit.instructions`` and ``Instruction.qubits`` from list to tuple. `#49 <https://github.com/iqm-finland/iqm-client/pull/49>`_
+
 Version 8.0
 ===========
 

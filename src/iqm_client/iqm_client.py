@@ -163,7 +163,7 @@ class Instruction(BaseModel):
     """
     name: str = Field(..., description='name of the quantum operation', example='measurement')
     'name of the quantum operation'
-    qubits: list[str] = Field(
+    qubits: tuple[str, ...] = Field(
         ...,
         description='names of the logical qubits the operation acts on',
         example=['alice'],
@@ -182,13 +182,13 @@ class Circuit(BaseModel):
     """
     name: str = Field(..., description='name of the circuit', example='test circuit')
     'name of the circuit'
-    instructions: list[Instruction] = Field(..., description='instructions comprising the circuit')
+    instructions: tuple[Instruction, ...] = Field(..., description='instructions comprising the circuit')
     'instructions comprising the circuit'
 
     def all_qubits(self) -> set[str]:
         """Return the names of all qubits in the circuit.
         """
-        qubits = set()
+        qubits: set[str] = set()
         for instruction in self.instructions:
             qubits.update(instruction.qubits)
         return qubits
