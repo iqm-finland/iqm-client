@@ -182,7 +182,7 @@ class Circuit(BaseModel):
     """
     name: str = Field(..., description='name of the circuit', example='test circuit')
     'name of the circuit'
-    instructions: list[Instruction] = Field(..., description='instructions comprising the circuit')
+    instructions: tuple[Instruction, ...] = Field(..., description='instructions comprising the circuit')
     'instructions comprising the circuit'
 
     def all_qubits(self) -> set[str]:
