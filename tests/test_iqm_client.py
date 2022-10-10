@@ -20,18 +20,26 @@ from mockito import when
 from requests import HTTPError
 
 from iqm_client import (Circuit, ClientConfigurationError, IQMClient,
-                        SingleQubitMapping, Status, serialize_qubit_mapping)
+                        SingleQubitMapping, Status, serialize_qubit_mappings)
 from tests.conftest import MockJsonResponse, existing_run, missing_run
 
 REQUESTS_TIMEOUT = 60
 
 
 def test_serialize_qubit_mapping():
-    qubit_mapping = {'Alice': 'QB1', 'Bob': 'qubit_3', 'Charlie': 'physical 0'}
-    assert serialize_qubit_mapping(qubit_mapping) == [
-        SingleQubitMapping(logical_name='Alice', physical_name='QB1'),
-        SingleQubitMapping(logical_name='Bob', physical_name='qubit_3'),
-        SingleQubitMapping(logical_name='Charlie', physical_name='physical 0'),
+    qubit_mapping_1 = {'Alice': 'QB1', 'Bob': 'qubit_3', 'Charlie': 'physical 0'}
+    qubit_mapping_2 = {'Dave': 'QB7', 'Eve': 'physical 0', 'Frank': 'professor'}
+    assert serialize_qubit_mappings([qubit_mapping_1, qubit_mapping_2]) == [
+        [
+            SingleQubitMapping(logical_name='Alice', physical_name='QB1'),
+            SingleQubitMapping(logical_name='Bob', physical_name='qubit_3'),
+            SingleQubitMapping(logical_name='Charlie', physical_name='physical 0'),
+        ],
+        [
+            SingleQubitMapping(logical_name='Dave', physical_name='QB7'),
+            SingleQubitMapping(logical_name='Eve', physical_name='physical 0'),
+            SingleQubitMapping(logical_name='Frank', physical_name='professor'),
+        ]
     ]
 
 
@@ -42,7 +50,7 @@ def test_submit_circuits_returns_id(mock_server, base_url, sample_circuit):
     client = IQMClient(base_url)
     job_id = client.submit_circuits(
         circuits=[Circuit.parse_obj(sample_circuit)],
-        qubit_mapping={'Qubit A': 'QB1', 'Qubit B': 'QB2'},
+        qubit_mappings=[{'Qubit A': 'QB1', 'Qubit B': 'QB2'}],
         shots=1000
     )
     assert job_id == existing_run
@@ -56,10 +64,44 @@ def test_submit_circuits_with_custom_settings_returns_id(mock_server, settings_d
     job_id = client.submit_circuits(
         circuits=[Circuit.parse_obj(sample_circuit)],
         custom_settings=settings_dict,
-        qubit_mapping={'Qubit A': 'QB1', 'Qubit B': 'QB2'},
+        qubit_mappings=[{'Qubit A': 'QB1', 'Qubit B': 'QB2'}],
         shots=1000
     )
     assert job_id == existing_run
+
+
+def test_submit_circuit_with_wrong_number_of_qubit_mappings(mock_server, base_url, sample_circuit):
+    """
+    Test that using different number of qubit mappings than there are circuits raises error.
+    """
+    client = IQMClient(base_url)
+    with pytest.raises(ValueError, match='The number of qubit mappings does not match the number of circuits'):
+        client.submit_circuits(
+            circuits=[Circuit.parse_obj(sample_circuit), Circuit.parse_obj(sample_circuit)],
+            qubit_mappings=[{'Qubit A': 'QB1', 'Qubit B': 'QB2'}],
+        )
+
+    with pytest.raises(ValueError, match='The number of qubit mappings does not match the number of circuits'):
+        client.submit_circuits(
+            circuits=[Circuit.parse_obj(sample_circuit), Circuit.parse_obj(sample_circuit)],
+            qubit_mappings=[
+                {'Qubit A': 'QB1', 'Qubit B': 'QB2'},
+                {'Qubit A': 'QB1', 'Qubit B': 'QB2'},
+                {'Qubit A': 'QB1', 'Qubit B': 'QB2'}
+            ],
+        )
+
+
+def test_submit_circuit_with_qubit_mappings_to_different_targets(mock_server, base_url, sample_circuit):
+    """
+    Test that using qubit mappings that map to different sets of physical qubits raises error.
+    """
+    client = IQMClient(base_url)
+    with pytest.raises(ValueError, match='All qubit mappings should map to the same set of physical qubits'):
+        client.submit_circuits(
+            circuits=[Circuit.parse_obj(sample_circuit), Circuit.parse_obj(sample_circuit)],
+            qubit_mappings=[{'Qubit A': 'QB1', 'Qubit B': 'QB2'}, {'Qubit A': 'QB2', 'Qubit B': 'QB3'}],
+        )
 
 
 def test_submit_circuit_with_non_injective_qubit_mapping(mock_server, base_url, sample_circuit):
@@ -70,7 +112,7 @@ def test_submit_circuit_with_non_injective_qubit_mapping(mock_server, base_url, 
     with pytest.raises(ValueError, match='Multiple logical qubits map to the same physical qubit'):
         client.submit_circuits(
             circuits=[Circuit.parse_obj(sample_circuit)],
-            qubit_mapping={'Qubit A': 'QB1', 'Qubit B': 'QB1'},
+            qubit_mappings=[{'Qubit A': 'QB1', 'Qubit B': 'QB1'}],
         )
 
 
@@ -82,7 +124,7 @@ def test_submit_circuit_with_incomplete_qubit_mapping(mock_server, base_url, sam
     with pytest.raises(ValueError, match="The qubits {'Qubit B'} are not found in the provided qubit mapping."):
         client.submit_circuits(
             circuits=[Circuit.parse_obj(sample_circuit)],
-            qubit_mapping={'Qubit A': 'QB1'},
+            qubit_mappings=[{'Qubit A': 'QB1'}],
         )
 
 
@@ -92,7 +134,7 @@ def test_submit_circuits_without_settings_returns_id(mock_server, base_url, samp
     """
     client = IQMClient(base_url)
     job_id = client.submit_circuits(
-        qubit_mapping={'Qubit A': 'QB1', 'Qubit B': 'QB2'},
+        qubit_mappings=[{'Qubit A': 'QB1', 'Qubit B': 'QB2'}],
         circuits=[Circuit.parse_obj(sample_circuit)],
         shots=1000
     )
@@ -105,7 +147,7 @@ def test_submit_circuits_with_calibration_set_id_returns_id(mock_server, base_ur
     """
     client = IQMClient(base_url)
     job_id = client.submit_circuits(
-        qubit_mapping={'Qubit A': 'QB1', 'Qubit B': 'QB2'},
+        qubit_mappings=[{'Qubit A': 'QB1', 'Qubit B': 'QB2'}],
         circuits=[Circuit.parse_obj(sample_circuit)],
         calibration_set_id=calibration_set_id,
         shots=1000

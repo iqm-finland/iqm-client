@@ -194,6 +194,10 @@ class Circuit(BaseModel):
         return qubits
 
 
+CircuitBatch = list[Circuit]
+"""Type that represents a list of quantum circuits to be executed together in a single batch."""
+
+
 class SingleQubitMapping(BaseModel):
     """Mapping of a logical qubit name to a physical qubit name.
     """
@@ -203,16 +207,28 @@ class SingleQubitMapping(BaseModel):
     'physical qubit name'
 
 
-def serialize_qubit_mapping(qubit_mapping: dict[str, str]) -> list[SingleQubitMapping]:
-    """Serializes a qubit mapping dict into the corresponding IQM data transfer format.
+QubitMapping = list[SingleQubitMapping]
+"""Type that represents qubit mapping for a circuit, i.e. a list of single qubit mappings
+for all qubits in the circuit."""
+
+
+BatchQubitMapping = list[QubitMapping]
+"""Type that represents list of qubit mappings, one per each circuit in a circuit batch"""
+
+
+def serialize_qubit_mappings(qubit_mappings: list[dict[str, str]]) -> BatchQubitMapping:
+    """Serializes a list of qubit mapping dicts into the corresponding IQM data transfer format.
 
     Args:
-        qubit_mapping: mapping from logical to physical qubit names
+        qubit_mappings: list of dicts, mapping from logical to physical qubit names
 
     Returns:
-        data transfer object representing the mapping
+        data transfer object representing the list of mappings
     """
-    return [SingleQubitMapping(logical_name=k, physical_name=v) for k, v in qubit_mapping.items()]
+    return [
+        [SingleQubitMapping(logical_name=k, physical_name=v) for k, v in qubit_mapping.items()]
+        for qubit_mapping in qubit_mappings
+    ]
 
 
 class RunRequest(BaseModel):
@@ -220,7 +236,7 @@ class RunRequest(BaseModel):
 
     Note: all circuits in a batch must measure the same qubits otherwise batch execution fails.
     """
-    circuits: list[Circuit] = Field(..., description='batch of quantum circuit(s) to execute')
+    circuits: CircuitBatch = Field(..., description='batch of quantum circuit(s) to execute')
     'batch of quantum circuit(s) to execute'
     custom_settings: dict[str, Any] = Field(
         None,
@@ -234,11 +250,13 @@ Note: This field should be always None in normal use.'''
         description='ID of the calibration set to use, or None to use the latest calibration set'
     )
     'ID of the calibration set to use, or None to use the latest calibration set'
-    qubit_mapping: Optional[list[SingleQubitMapping]] = Field(
+    qubit_mappings: Optional[BatchQubitMapping] = Field(
         None,
-        description='mapping of logical qubit names to physical qubit names, or None if using physical qubit names'
+        description='mapping of logical qubit names to physical qubit names for each circuit in the batch, '
+                    'or None if all circuits are using physical qubit names'
     )
-    'mapping of logical qubit names to physical qubit names, or None if using physical qubit names'
+    'mapping of logical qubit names to physical qubit names for each circuit in the batch, ' \
+        'or None if all circuits are using physical qubit names'
     shots: int = Field(..., description='how many times to execute each circuit in the batch')
     'how many times to execute each circuit in the batch'
 
@@ -249,16 +267,22 @@ maps the measurement key to the corresponding results. The outer list elements c
 and the inner list elements to the qubits measured in the measurement operation."""
 
 
+BatchCircuitMeasurementResults = list[CircuitMeasurementResults]
+"""Type that represents measurement results for a batch of circuits."""
+
+
 class Metadata(BaseModel):
-    """Metadata belonging to a job sumission"""
+    """Metadata belonging to a job submission"""
     shots: int = Field(..., description='how many times to execute each circuit in the batch')
     'how many times to execute each circuit in the batch'
-    qubit_mapping: Optional[list[SingleQubitMapping]] = Field(
+    qubit_mappings: Optional[BatchQubitMapping] = Field(
         None,
-        description='mapping of logical qubit names to physical qubit names, or None if using physical qubit names'
+        description='mapping of logical qubit names to physical qubit names for each circuit in the batch, '
+                    'or None if all circuits are using physical qubit names'
     )
-    'mapping of logical qubit names to physical qubit names, or None if using physical qubit names'
-    circuits: list[Circuit] = Field(..., description='batch of quantum circuit(s) to execute')
+    'mapping of logical qubit names to physical qubit names for each circuit in the batch, ' \
+        'or None if all circuits are using physical qubit names'
+    circuits: CircuitBatch = Field(..., description='batch of quantum circuit(s) to execute')
     'batch of quantum circuit(s) to execute'
     calibration_set_id: Optional[int] = Field(
         None,
@@ -276,7 +300,7 @@ class RunResult(BaseModel):
     """
     status: Status = Field(..., description="current status of the run, in ``{'pending', 'ready', 'failed'}``")
     "current status of the run, in ``{'pending', 'ready', 'failed'}``"
-    measurements: Optional[list[CircuitMeasurementResults]] = Field(
+    measurements: Optional[BatchCircuitMeasurementResults] = Field(
         None,
         description='if the run has finished successfully, the measurement results for the circuit(s)'
     )
@@ -304,7 +328,7 @@ class RunResult(BaseModel):
 
 
 class RunStatus(BaseModel):
-    """Status of a batchcircuit execution request."""
+    """Status of a batch circuit execution request."""
     status: Status = Field(..., description="current status of the run, in ``{'pending', 'ready', 'failed'}``")
     "current status of the run, in ``{'pending', 'ready', 'failed'}``"
     message: Optional[str] = Field(None, description='if the run failed, an error message')
@@ -510,9 +534,9 @@ class IQMClient:
     # pylint: disable=too-many-locals
     def submit_circuits(
             self,
-            circuits: list[Circuit],
+            circuits: CircuitBatch,
             *,
-            qubit_mapping: Optional[dict[str, str]] = None,
+            qubit_mappings: Optional[list[dict[str, str]]] = None,
             custom_settings: Optional[dict[str, Any]] = None,
             calibration_set_id: Optional[int] = None,
             shots: int = 1,
@@ -521,7 +545,7 @@ class IQMClient:
 
         Args:
             circuits: list of circuit to be executed
-            qubit_mapping: Mapping of human-readable (logical) qubit names in to physical qubit names.
+            qubit_mappings: Mapping of human-readable (logical) qubit names in to physical qubit names.
                 Can be set to ``None`` if all ``circuits`` already use physical qubit names.
                 Note that the ``qubit_mapping`` is used for all ``circuits``.
             custom_settings: custom settings to overwrite default settings and calibration data.
@@ -532,27 +556,37 @@ class IQMClient:
         Returns:
             ID for the created task. This ID is needed to query the status and the execution results.
         """
-        serialized_qubit_mapping: Optional[list[SingleQubitMapping]] = None
-        if qubit_mapping is not None:
-            # check if qubit mapping is injective
-            target_qubits = set(qubit_mapping.values())
-            if not len(target_qubits) == len(qubit_mapping):
-                raise ValueError('Multiple logical qubits map to the same physical qubit.')
+        serialized_qubit_mappings: Optional[BatchQubitMapping] = None
+        if qubit_mappings is not None:
+            # check that the number of qubit mappings matches the number of circuits
+            if len(qubit_mappings) != len(circuits):
+                raise ValueError('The number of qubit mappings does not match the number of circuits.')
 
-            # check if qubit mapping covers all qubits in the circuits
-            for circuit in circuits:
-                circuit_qubits = circuit.all_qubits()
-                diff = circuit_qubits - set(qubit_mapping.keys())
-                if diff:
-                    raise ValueError(f'The qubits {diff} are not found in the provided qubit mapping.')
+            # check if all qubit mappings map to same physical qubits
+            physical_qubits_0 = set(qubit_mappings[0].values())
+            if not all(set(qubit_mapping.values()) == physical_qubits_0 for qubit_mapping in qubit_mappings):
+                raise ValueError('All qubit mappings should map to the same set of physical qubits.')
 
-            serialized_qubit_mapping = serialize_qubit_mapping(qubit_mapping)
+            # check if all qubit mappings are injective
+            for qubit_mapping in qubit_mappings:
+                target_qubits = set(qubit_mapping.values())
+                if not len(target_qubits) == len(qubit_mapping):
+                    raise ValueError('Multiple logical qubits map to the same physical qubit.')
+
+                # check if qubit mapping covers all qubits in the circuits
+                for circuit in circuits:
+                    circuit_qubits = circuit.all_qubits()
+                    diff = circuit_qubits - set(qubit_mapping.keys())
+                    if diff:
+                        raise ValueError(f'The qubits {diff} are not found in the provided qubit mapping.')
+
+            serialized_qubit_mappings = serialize_qubit_mappings(qubit_mappings)
 
         # ``bearer_token`` can be ``None`` if cocos we're connecting does not use authentication
         bearer_token = self._get_bearer_token()
 
         data = RunRequest(
-            qubit_mapping=serialized_qubit_mapping,
+            qubit_mappings=serialized_qubit_mappings,
             circuits=circuits,
             custom_settings=custom_settings,
             calibration_set_id=calibration_set_id,
