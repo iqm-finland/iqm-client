@@ -124,6 +124,14 @@ def sample_circuit():
         ]
     }
 
+@pytest.fixture
+def sample_quantum_architecture():
+    return {'quantum_architecture': {
+        'name': 'hercules',
+        'qubits': ['QB1', 'QB2'],
+        'qubit_connectivity': [['QB1', 'QB2']],
+        'operations': ['phased_rx', 'CZ']
+    }}
 
 class MockJsonResponse:
     def __init__(self, status_code: int, json_data: dict):

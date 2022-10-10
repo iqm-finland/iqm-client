@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 8.2
+===========
+
+* Add method ``IQMClient.get_quantum_architecture``. `#51 <https://github.com/iqm-finland/iqm-client/pull/51>`_
+
 Version 8.1
 ===========
 
