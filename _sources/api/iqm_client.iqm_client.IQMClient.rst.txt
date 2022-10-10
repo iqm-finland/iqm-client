@@ -22,6 +22,7 @@ iqm\_client.iqm\_client.IQMClient
       ~IQMClient._get_bearer_token
       ~IQMClient._update_tokens
       ~IQMClient.close_auth_session
+      ~IQMClient.get_quantum_architecture
       ~IQMClient.get_run
       ~IQMClient.get_run_status
       ~IQMClient.submit_circuits
