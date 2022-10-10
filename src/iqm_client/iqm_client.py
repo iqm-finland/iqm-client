@@ -670,7 +670,7 @@ class IQMClient:
         raise APITimeoutError(f"The task didn't finish in {timeout_secs} seconds.")
 
     def get_quantum_architecture(self) -> QuantumArchitecture:
-        """Poll results until run is ready, failed, or timed out.
+        """Retrieve quantum architecture from Cortex.
 
         Returns:
             quantum architecture
