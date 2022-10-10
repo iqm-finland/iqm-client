@@ -2,6 +2,12 @@
 Changelog
 =========
 
+Version 9.0
+===========
+
+* Implement per-circuit qubit mapping for batched circuits. `#50 <https://github.com/iqm-finland/iqm-client/pull/50>`_
+
+
 Version 8.1
 ===========
 
