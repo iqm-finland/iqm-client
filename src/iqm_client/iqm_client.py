@@ -545,7 +545,7 @@ class IQMClient:
 
         Args:
             circuits: list of circuit to be executed
-            qubit_mappings: Mapping of human-readable (logical) qubit names in to physical qubit names.
+            qubit_mappings: Mapping of human-readable (logical) qubit names in to physical qubit names for each circuit.
                 Can be set to ``None`` if all ``circuits`` already use physical qubit names.
                 Note that the ``qubit_mapping`` is used for all ``circuits``.
             custom_settings: custom settings to overwrite default settings and calibration data.
@@ -563,8 +563,8 @@ class IQMClient:
                 raise ValueError('The number of qubit mappings does not match the number of circuits.')
 
             # check if all qubit mappings map to same physical qubits
-            physical_qubits_0 = set(qubit_mappings[0].values())
-            if not all(set(qubit_mapping.values()) == physical_qubits_0 for qubit_mapping in qubit_mappings):
+            physical_qubits = set(next(iter(qubit_mappings)).values())
+            if not all(set(qubit_mapping.values()) == physical_qubits for qubit_mapping in qubit_mappings):
                 raise ValueError('All qubit mappings should map to the same set of physical qubits.')
 
             # check if all qubit mappings are injective
@@ -573,12 +573,14 @@ class IQMClient:
                 if not len(target_qubits) == len(qubit_mapping):
                     raise ValueError('Multiple logical qubits map to the same physical qubit.')
 
-                # check if qubit mapping covers all qubits in the circuits
-                for circuit in circuits:
-                    circuit_qubits = circuit.all_qubits()
-                    diff = circuit_qubits - set(qubit_mapping.keys())
-                    if diff:
-                        raise ValueError(f'The qubits {diff} are not found in the provided qubit mapping.')
+            # check if each qubit mapping covers all qubits in the corresponding circuit
+            for i, (qubit_mapping, circuit) in enumerate(zip(qubit_mappings, circuits)):
+                circuit_qubits = circuit.all_qubits()
+                diff = circuit_qubits - set(qubit_mapping.keys())
+                if diff:
+                    raise ValueError(
+                        f'The qubits {diff} are not found in the provided qubit mapping for circuit at index {i}.'
+                    )
 
             serialized_qubit_mappings = serialize_qubit_mappings(qubit_mappings)
 

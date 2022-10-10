@@ -121,10 +121,13 @@ def test_submit_circuit_with_incomplete_qubit_mapping(mock_server, base_url, sam
     Test the scenario when circuits contain qubit names that are not present in the provided qubit mapping.
     """
     client = IQMClient(base_url)
-    with pytest.raises(ValueError, match="The qubits {'Qubit B'} are not found in the provided qubit mapping."):
+    with pytest.raises(
+            ValueError,
+            match="The qubits {'Qubit B'} are not found in the provided qubit mapping for circuit at index 1."
+    ):
         client.submit_circuits(
-            circuits=[Circuit.parse_obj(sample_circuit)],
-            qubit_mappings=[{'Qubit A': 'QB1'}],
+            circuits=[Circuit.parse_obj(sample_circuit), Circuit.parse_obj(sample_circuit)],
+            qubit_mappings=[{'Qubit A': 'QB1', 'Qubit B': 'QB2'}, {'Qubit A': 'QB1', 'Qubit C': 'QB2'}],
         )
 
 
