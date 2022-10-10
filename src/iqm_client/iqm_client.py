@@ -326,6 +326,24 @@ class RunStatus(BaseModel):
         input_copy = inp.copy()
         return RunStatus(status=Status(input_copy.pop('status')), **input_copy)
 
+class QuantumArchitectureSpecification(BaseModel):
+    """Quantum architecture specification."""
+    name: str = Field(..., description='name of the quantum architecture')
+    'name of the quantum architecture'
+    operations: list[str] = Field(..., description='list of operations supported by this quantum architecture')
+    'list of operations supported by this quantum architecture'
+    qubits: list[str] = Field(..., description='list of qubits of this quantum architecture')
+    'list of qubits of this quantum architecture'
+    qubit_connectivity: list[list[str]] = Field(..., description='qubit connectivity of this quantum architecture')
+    'qubit connectivity of this quantum architecture'
+
+class QuantumArchitecture(BaseModel):
+    """Quantum architecture as returned by Cortex."""
+    quantum_architecture: QuantumArchitectureSpecification = Field(
+        ...,
+        description='details about the quantum architecture'
+    )
+    'details about the quantum architecture'
 
 class GrantType(str, Enum):
     """
@@ -650,6 +668,24 @@ class IQMClient:
                 return results
             time.sleep(SECONDS_BETWEEN_CALLS)
         raise APITimeoutError(f"The task didn't finish in {timeout_secs} seconds.")
+
+    def get_quantum_architecture(self) -> QuantumArchitecture:
+        """Retrieve quantum architecture from Cortex.
+
+        Returns:
+            quantum architecture
+
+        Raises:
+            APITimeoutError: time exceeded the set timeout
+        """
+        bearer_token = self._get_bearer_token()
+        result = requests.get(
+            join(self._base_url, 'quantum-architecture'),
+            headers=None if not bearer_token else {'Authorization': bearer_token},
+            timeout=REQUESTS_TIMEOUT
+        )
+        result.raise_for_status()
+        return QuantumArchitecture(**result.json())
 
     def close_auth_session(self) -> bool:
         """Terminate session with authentication server if there was one created.
