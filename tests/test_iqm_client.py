@@ -20,7 +20,8 @@ from mockito import when
 from requests import HTTPError
 
 from iqm_client import (Circuit, ClientConfigurationError, IQMClient,
-                        SingleQubitMapping, Status, serialize_qubit_mappings)
+                        QuantumArchitecture, SingleQubitMapping, Status,
+                        serialize_qubit_mappings)
 from tests.conftest import MockJsonResponse, existing_run, missing_run
 
 REQUESTS_TIMEOUT = 60
@@ -217,6 +218,13 @@ def test_waiting_for_results(mock_server, base_url):
     client = IQMClient(base_url)
     assert client.wait_for_results(existing_run).status == Status.READY
 
+def test_get_quantum_architecture(sample_quantum_architecture, base_url):
+    """Test retrieving the quantum architecture"""
+    client = IQMClient(base_url)
+    when(requests).get(f'{base_url}/quantum-architecture', ...).thenReturn(
+        MockJsonResponse(200, sample_quantum_architecture)
+    )
+    assert client.get_quantum_architecture() == QuantumArchitecture(**sample_quantum_architecture)
 
 def test_user_warning_is_emitted_when_warnings_in_response(base_url):
     client = IQMClient(base_url)
