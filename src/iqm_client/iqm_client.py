@@ -593,7 +593,7 @@ class IQMClient:
             # check if each qubit mapping covers all qubits in the corresponding circuit
             for i, (qubit_mapping, circuit) in enumerate(zip(qubit_mappings, circuits)):
                 circuit_qubits = circuit.all_qubits()
-                diff = circuit_qubits - set(qubit_mapping.keys())
+                diff = circuit_qubits - set(qubit_mapping)
                 if diff:
                     raise ValueError(
                         f'The qubits {diff} are not found in the provided qubit mapping for circuit at index {i}.'
