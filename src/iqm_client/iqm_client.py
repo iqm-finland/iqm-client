@@ -110,6 +110,7 @@ import os
 import time
 import warnings
 from base64 import b64decode
+from collections.abc import Iterable
 from datetime import datetime
 from enum import Enum
 from posixpath import join
@@ -216,7 +217,7 @@ BatchQubitMapping = list[QubitMapping]
 """Type that represents a list of qubit mappings, one per each circuit in a circuit batch"""
 
 
-def serialize_qubit_mappings(qubit_mappings: list[dict[str, str]]) -> BatchQubitMapping:
+def serialize_qubit_mappings(qubit_mappings: Iterable[dict[str, str]]) -> BatchQubitMapping:
     """Serializes a list of qubit mappings into the corresponding IQM data transfer format.
 
     Args:
