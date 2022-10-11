@@ -209,7 +209,7 @@ class SingleQubitMapping(BaseModel):
 
 
 QubitMapping = list[SingleQubitMapping]
-"""Type that represents qubit mapping for a circuit, i.e. a list of single qubit mappings
+"""Type that represents a qubit mapping for a circuit, i.e. a list of single qubit mappings
 for all qubits in the circuit."""
 
 
@@ -329,7 +329,7 @@ class RunResult(BaseModel):
 
 
 class RunStatus(BaseModel):
-    """Status of a batch circuit execution request."""
+    """Status of a circuit execution request."""
     status: Status = Field(..., description="current status of the run, in ``{'pending', 'ready', 'failed'}``")
     "current status of the run, in ``{'pending', 'ready', 'failed'}``"
     message: Optional[str] = Field(None, description='if the run failed, an error message')
