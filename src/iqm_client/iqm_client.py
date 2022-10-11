@@ -596,7 +596,7 @@ class IQMClient:
                 diff = circuit_qubits - set(qubit_mapping)
                 if diff:
                     raise ValueError(
-                        f'The qubits {diff} are not found in the provided qubit mapping for circuit at index {i}.'
+                        f"The qubits {diff} are not found in the qubit mapping for circuit '{circuit.name}' at index {i}."
                     )
 
             serialized_qubit_mappings = serialize_qubit_mappings(qubit_mappings)
