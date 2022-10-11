@@ -208,7 +208,7 @@ class SingleQubitMapping(BaseModel):
 
 
 QubitMapping = list[SingleQubitMapping]
-"""Type that represents qubit mapping for a circuit, i.e. a list of single qubit mappings
+"""Type that represents a qubit mapping for a circuit, i.e. a list of single qubit mappings
 for all qubits in the circuit."""
 
 
