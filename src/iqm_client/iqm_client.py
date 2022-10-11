@@ -581,8 +581,7 @@ class IQMClient:
                 raise ValueError('The number of qubit mappings does not match the number of circuits.')
 
             # check if all qubit mappings map to same physical qubits
-            physical_qubits = set(next(iter(qubit_mappings)).values())
-            if not all(set(qubit_mapping.values()) == physical_qubits for qubit_mapping in qubit_mappings):
+            if len(set(frozenset(m.values()) for m in qubit_mappings)) != 1:
                 raise ValueError('All qubit mappings should map to the same set of physical qubits.')
 
             # check if all qubit mappings are injective
