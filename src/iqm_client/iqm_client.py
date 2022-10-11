@@ -213,11 +213,11 @@ QubitMapping = list[SingleQubitMapping]
 for all qubits in the circuit."""
 
 
-BatchQubitMapping = list[QubitMapping]
+QubitMappingBatch = list[QubitMapping]
 """Type that represents a list of qubit mappings, one per each circuit in a circuit batch"""
 
 
-def serialize_qubit_mappings(qubit_mappings: Iterable[dict[str, str]]) -> BatchQubitMapping:
+def serialize_qubit_mappings(qubit_mappings: Iterable[dict[str, str]]) -> QubitMappingBatch:
     """Serializes a list of qubit mappings into the corresponding IQM data transfer format.
 
     Args:
@@ -251,7 +251,7 @@ Note: This field should be always None in normal use.'''
         description='ID of the calibration set to use, or None to use the latest calibration set'
     )
     'ID of the calibration set to use, or None to use the latest calibration set'
-    qubit_mappings: Optional[BatchQubitMapping] = Field(
+    qubit_mappings: Optional[QubitMappingBatch] = Field(
         None,
         description='mapping of logical qubit names to physical qubit names for each circuit in the batch, '
                     'or None if all circuits are using physical qubit names'
@@ -268,7 +268,7 @@ maps the measurement key to the corresponding results. The outer list elements c
 and the inner list elements to the qubits measured in the measurement operation."""
 
 
-BatchCircuitMeasurementResults = list[CircuitMeasurementResults]
+CircuitMeasurementResultsBatch = list[CircuitMeasurementResults]
 """Type that represents measurement results for a batch of circuits."""
 
 
@@ -276,7 +276,7 @@ class Metadata(BaseModel):
     """Metadata belonging to a job submission"""
     shots: int = Field(..., description='how many times to execute each circuit in the batch')
     'how many times to execute each circuit in the batch'
-    qubit_mappings: Optional[BatchQubitMapping] = Field(
+    qubit_mappings: Optional[QubitMappingBatch] = Field(
         None,
         description='mapping of logical qubit names to physical qubit names for each circuit in the batch, '
                     'or None if all circuits are using physical qubit names'
@@ -301,7 +301,7 @@ class RunResult(BaseModel):
     """
     status: Status = Field(..., description="current status of the run, in ``{'pending', 'ready', 'failed'}``")
     "current status of the run, in ``{'pending', 'ready', 'failed'}``"
-    measurements: Optional[BatchCircuitMeasurementResults] = Field(
+    measurements: Optional[CircuitMeasurementResultsBatch] = Field(
         None,
         description='if the run has finished successfully, the measurement results for the circuit(s)'
     )
@@ -575,7 +575,7 @@ class IQMClient:
         Returns:
             ID for the created task. This ID is needed to query the status and the execution results.
         """
-        serialized_qubit_mappings: Optional[BatchQubitMapping] = None
+        serialized_qubit_mappings: Optional[QubitMappingBatch] = None
         if qubit_mappings is not None:
             # check that the number of qubit mappings matches the number of circuits
             if len(qubit_mappings) != len(circuits):
