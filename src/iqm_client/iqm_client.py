@@ -220,7 +220,7 @@ def serialize_qubit_mappings(qubit_mappings: list[dict[str, str]]) -> BatchQubit
     """Serializes a list of qubit mappings into the corresponding IQM data transfer format.
 
     Args:
-        qubit_mappings: list of dicts, mapping from logical to physical qubit names
+        qubit_mappings: list of mappings from logical to physical qubit names
 
     Returns:
         data transfer object representing the list of mappings
