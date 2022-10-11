@@ -213,7 +213,7 @@ for all qubits in the circuit."""
 
 
 BatchQubitMapping = list[QubitMapping]
-"""Type that represents list of qubit mappings, one per each circuit in a circuit batch"""
+"""Type that represents a list of qubit mappings, one per each circuit in a circuit batch"""
 
 
 def serialize_qubit_mappings(qubit_mappings: list[dict[str, str]]) -> BatchQubitMapping:
