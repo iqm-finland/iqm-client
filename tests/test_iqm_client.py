@@ -13,15 +13,22 @@
 # limitations under the License.
 """Tests for the IQM client.
 """
+from mockito import when
+
 # pylint: disable=unused-argument
 import pytest
 import requests
-from mockito import when
 from requests import HTTPError
 
-from iqm_client import (Circuit, ClientConfigurationError, IQMClient,
-                        QuantumArchitecture, SingleQubitMapping, Status,
-                        serialize_qubit_mapping)
+from iqm_client import (
+    Circuit,
+    ClientConfigurationError,
+    IQMClient,
+    QuantumArchitecture,
+    SingleQubitMapping,
+    Status,
+    serialize_qubit_mapping,
+)
 from tests.conftest import MockJsonResponse, existing_run, missing_run
 
 REQUESTS_TIMEOUT = 60
@@ -42,9 +49,7 @@ def test_submit_circuits_returns_id(mock_server, base_url, sample_circuit):
     """
     client = IQMClient(base_url)
     job_id = client.submit_circuits(
-        circuits=[Circuit.parse_obj(sample_circuit)],
-        qubit_mapping={'Qubit A': 'QB1', 'Qubit B': 'QB2'},
-        shots=1000
+        circuits=[Circuit.parse_obj(sample_circuit)], qubit_mapping={'Qubit A': 'QB1', 'Qubit B': 'QB2'}, shots=1000
     )
     assert job_id == existing_run
 
@@ -58,7 +63,7 @@ def test_submit_circuits_with_custom_settings_returns_id(mock_server, settings_d
         circuits=[Circuit.parse_obj(sample_circuit)],
         custom_settings=settings_dict,
         qubit_mapping={'Qubit A': 'QB1', 'Qubit B': 'QB2'},
-        shots=1000
+        shots=1000,
     )
     assert job_id == existing_run
 
@@ -93,9 +98,7 @@ def test_submit_circuits_without_settings_returns_id(mock_server, base_url, samp
     """
     client = IQMClient(base_url)
     job_id = client.submit_circuits(
-        qubit_mapping={'Qubit A': 'QB1', 'Qubit B': 'QB2'},
-        circuits=[Circuit.parse_obj(sample_circuit)],
-        shots=1000
+        qubit_mapping={'Qubit A': 'QB1', 'Qubit B': 'QB2'}, circuits=[Circuit.parse_obj(sample_circuit)], shots=1000
     )
     assert job_id == existing_run
 
@@ -109,7 +112,7 @@ def test_submit_circuits_with_calibration_set_id_returns_id(mock_server, base_ur
         qubit_mapping={'Qubit A': 'QB1', 'Qubit B': 'QB2'},
         circuits=[Circuit.parse_obj(sample_circuit)],
         calibration_set_id=calibration_set_id,
-        shots=1000
+        shots=1000,
     )
     assert job_id == existing_run
 
@@ -119,10 +122,7 @@ def test_submit_circuits_without_qubit_mapping_returns_id(mock_server, base_url,
     Tests sending a circuit without qubit mapping
     """
     client = IQMClient(base_url)
-    job_id = client.submit_circuits(
-        circuits=[Circuit.parse_obj(sample_circuit)],
-        shots=1000
-    )
+    job_id = client.submit_circuits(circuits=[Circuit.parse_obj(sample_circuit)], shots=1000)
     assert job_id == existing_run
 
 
@@ -173,6 +173,7 @@ def test_waiting_for_results(mock_server, base_url):
     client = IQMClient(base_url)
     assert client.wait_for_results(existing_run).status == Status.READY
 
+
 def test_get_quantum_architecture(sample_quantum_architecture, base_url):
     """Test retrieving the quantum architecture"""
     client = IQMClient(base_url)
@@ -181,11 +182,12 @@ def test_get_quantum_architecture(sample_quantum_architecture, base_url):
     )
     assert client.get_quantum_architecture() == QuantumArchitecture(**sample_quantum_architecture)
 
+
 def test_user_warning_is_emitted_when_warnings_in_response(base_url):
     client = IQMClient(base_url)
     msg = 'This is a warning msg'
     with when(requests).get(f'{base_url}/jobs/{existing_run}', headers=None, timeout=REQUESTS_TIMEOUT).thenReturn(
-            MockJsonResponse(200, {'status': 'ready', 'warnings': [msg], 'metadata': {'shots': 42, 'circuits': []}})
+        MockJsonResponse(200, {'status': 'ready', 'warnings': [msg], 'metadata': {'shots': 42, 'circuits': []}})
     ):
         with pytest.warns(UserWarning, match=msg):
             client.get_run(existing_run)

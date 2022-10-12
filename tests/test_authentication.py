@@ -16,8 +16,8 @@
 
 import os
 
-import pytest
 from mockito import unstub
+import pytest
 
 from iqm_client import ClientAuthenticationError, Credentials, IQMClient
 from tests.conftest import expect_logout, expect_status_request, prepare_tokens
@@ -29,9 +29,7 @@ def test_get_initial_tokens_with_credentials_from_arguments(base_url, credential
     """
     tokens = prepare_tokens(300, 3600, **credentials)
     expected_credentials = Credentials(
-        access_token=tokens['access_token'],
-        refresh_token=tokens['refresh_token'],
-        **credentials
+        access_token=tokens['access_token'], refresh_token=tokens['refresh_token'], **credentials
     )
     client = IQMClient(base_url, **credentials)
     assert client._credentials == expected_credentials
@@ -44,9 +42,7 @@ def test_get_initial_tokens_with_credentials_from_env_variables(base_url, creden
     """
     tokens = prepare_tokens(300, 3600, **credentials)
     expected_credentials = Credentials(
-        access_token=tokens['access_token'],
-        refresh_token=tokens['refresh_token'],
-        **credentials
+        access_token=tokens['access_token'], refresh_token=tokens['refresh_token'], **credentials
     )
     monkeypatch.setenv('IQM_AUTH_SERVER', credentials['auth_server_url'])
     monkeypatch.setenv('IQM_AUTH_USERNAME', credentials['username'])
