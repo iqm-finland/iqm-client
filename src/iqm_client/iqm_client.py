@@ -105,19 +105,19 @@ that was the measurement outcome.
 """
 from __future__ import annotations
 
-import json
-import os
-import time
-import warnings
 from base64 import b64decode
 from datetime import datetime
 from enum import Enum
+import json
+import os
 from posixpath import join
+import time
 from typing import Any, Optional, Union
 from uuid import UUID
+import warnings
 
-import requests
 from pydantic import BaseModel, Field
+import requests
 
 REQUESTS_TIMEOUT = 60
 
@@ -130,37 +130,34 @@ AUTH_REALM = 'cortex'
 
 
 class ClientConfigurationError(RuntimeError):
-    """Wrong configuration provided.
-    """
+    """Wrong configuration provided."""
 
 
 class ClientAuthenticationError(RuntimeError):
-    """Something went wrong with user authentication.
-    """
+    """Something went wrong with user authentication."""
 
 
 class CircuitExecutionError(RuntimeError):
-    """Something went wrong on the server.
-    """
+    """Something went wrong on the server."""
 
 
 class APITimeoutError(CircuitExecutionError):
-    """Exception for when executing a task on the server takes too long.
-    """
+    """Exception for when executing a task on the server takes too long."""
 
 
 class Status(str, Enum):
     """
     Status of a task.
     """
+
     PENDING = 'pending'
     READY = 'ready'
     FAILED = 'failed'
 
 
 class Instruction(BaseModel):
-    """An instruction in a quantum circuit.
-    """
+    """An instruction in a quantum circuit."""
+
     name: str = Field(..., description='name of the quantum operation', example='measurement')
     'name of the quantum operation'
     qubits: tuple[str, ...] = Field(
@@ -178,16 +175,15 @@ class Instruction(BaseModel):
 
 
 class Circuit(BaseModel):
-    """Quantum circuit to be executed.
-    """
+    """Quantum circuit to be executed."""
+
     name: str = Field(..., description='name of the circuit', example='test circuit')
     'name of the circuit'
     instructions: tuple[Instruction, ...] = Field(..., description='instructions comprising the circuit')
     'instructions comprising the circuit'
 
     def all_qubits(self) -> set[str]:
-        """Return the names of all qubits in the circuit.
-        """
+        """Return the names of all qubits in the circuit."""
         qubits: set[str] = set()
         for instruction in self.instructions:
             qubits.update(instruction.qubits)
@@ -195,8 +191,8 @@ class Circuit(BaseModel):
 
 
 class SingleQubitMapping(BaseModel):
-    """Mapping of a logical qubit name to a physical qubit name.
-    """
+    """Mapping of a logical qubit name to a physical qubit name."""
+
     logical_name: str = Field(..., description='logical qubit name', example='alice')
     'logical qubit name'
     physical_name: str = Field(..., description='physical qubit name', example='QB1')
@@ -220,23 +216,23 @@ class RunRequest(BaseModel):
 
     Note: all circuits in a batch must measure the same qubits otherwise batch execution fails.
     """
+
     circuits: list[Circuit] = Field(..., description='batch of quantum circuit(s) to execute')
     'batch of quantum circuit(s) to execute'
     custom_settings: dict[str, Any] = Field(
         None,
         description='''Custom settings to overwrite default IQM hardware settings and calibration data.
-Note: This field should be always None in normal use.'''
+Note: This field should be always None in normal use.''',
     )
     '''Custom settings to overwrite default IQM hardware settings and calibration data.
 Note: This field should be always None in normal use.'''
     calibration_set_id: Optional[int] = Field(
-        None,
-        description='ID of the calibration set to use, or None to use the latest calibration set'
+        None, description='ID of the calibration set to use, or None to use the latest calibration set'
     )
     'ID of the calibration set to use, or None to use the latest calibration set'
     qubit_mapping: Optional[list[SingleQubitMapping]] = Field(
         None,
-        description='mapping of logical qubit names to physical qubit names, or None if using physical qubit names'
+        description='mapping of logical qubit names to physical qubit names, or None if using physical qubit names',
     )
     'mapping of logical qubit names to physical qubit names, or None if using physical qubit names'
     shots: int = Field(..., description='how many times to execute each circuit in the batch')
@@ -251,18 +247,18 @@ and the inner list elements to the qubits measured in the measurement operation.
 
 class Metadata(BaseModel):
     """Metadata belonging to a job sumission"""
+
     shots: int = Field(..., description='how many times to execute each circuit in the batch')
     'how many times to execute each circuit in the batch'
     qubit_mapping: Optional[list[SingleQubitMapping]] = Field(
         None,
-        description='mapping of logical qubit names to physical qubit names, or None if using physical qubit names'
+        description='mapping of logical qubit names to physical qubit names, or None if using physical qubit names',
     )
     'mapping of logical qubit names to physical qubit names, or None if using physical qubit names'
     circuits: list[Circuit] = Field(..., description='batch of quantum circuit(s) to execute')
     'batch of quantum circuit(s) to execute'
     calibration_set_id: Optional[int] = Field(
-        None,
-        description='ID of the calibration set used, or None if settings were specified'
+        None, description='ID of the calibration set used, or None if settings were specified'
     )
     'ID of the calibration set used, or None if settings were specified'
 
@@ -274,11 +270,11 @@ class RunResult(BaseModel):
     * ``message`` carries additional information for the ``'failed'`` status.
     * If the status is ``'pending'``, ``measurements`` and ``message`` are ``None``.
     """
+
     status: Status = Field(..., description="current status of the run, in ``{'pending', 'ready', 'failed'}``")
     "current status of the run, in ``{'pending', 'ready', 'failed'}``"
     measurements: Optional[list[CircuitMeasurementResults]] = Field(
-        None,
-        description='if the run has finished successfully, the measurement results for the circuit(s)'
+        None, description='if the run has finished successfully, the measurement results for the circuit(s)'
     )
     'if the run has finished successfully, the measurement results for the circuit(s)'
     message: Optional[str] = Field(None, description='if the run failed, an error message')
@@ -305,6 +301,7 @@ class RunResult(BaseModel):
 
 class RunStatus(BaseModel):
     """Status of a batchcircuit execution request."""
+
     status: Status = Field(..., description="current status of the run, in ``{'pending', 'ready', 'failed'}``")
     "current status of the run, in ``{'pending', 'ready', 'failed'}``"
     message: Optional[str] = Field(None, description='if the run failed, an error message')
@@ -326,8 +323,10 @@ class RunStatus(BaseModel):
         input_copy = inp.copy()
         return RunStatus(status=Status(input_copy.pop('status')), **input_copy)
 
+
 class QuantumArchitectureSpecification(BaseModel):
     """Quantum architecture specification."""
+
     name: str = Field(..., description='name of the quantum architecture')
     'name of the quantum architecture'
     operations: list[str] = Field(..., description='list of operations supported by this quantum architecture')
@@ -337,18 +336,21 @@ class QuantumArchitectureSpecification(BaseModel):
     qubit_connectivity: list[list[str]] = Field(..., description='qubit connectivity of this quantum architecture')
     'qubit connectivity of this quantum architecture'
 
+
 class QuantumArchitecture(BaseModel):
     """Quantum architecture as returned by Cortex."""
+
     quantum_architecture: QuantumArchitectureSpecification = Field(
-        ...,
-        description='details about the quantum architecture'
+        ..., description='details about the quantum architecture'
     )
     'details about the quantum architecture'
+
 
 class GrantType(str, Enum):
     """
     Type of token request.
     """
+
     PASSWORD = 'password'
     REFRESH = 'refresh_token'
 
@@ -363,11 +365,11 @@ class AuthRequest(BaseModel):
     * Logout request uses only fields ``client_id`` and ``refresh_token``.
 
     """
+
     client_id: str = Field(..., description='name of the client for all request types')
     'name of the client for all request types'
     grant_type: Optional[GrantType] = Field(
-        None,
-        description="type of token request, in ``{'password', 'refresh_token'}``"
+        None, description="type of token request, in ``{'password', 'refresh_token'}``"
     )
     "type of token request, in ``{'password', 'refresh_token'}``"
     username: Optional[str] = Field(None, description="username for grant type ``'password'``")
@@ -375,8 +377,8 @@ class AuthRequest(BaseModel):
     password: Optional[str] = Field(None, description="password for grant type ``'password'``")
     "password for grant type ``'password'``"
     refresh_token: Optional[str] = Field(
-        None,
-        description="refresh token for grant type ``'refresh_token'`` and logout request")
+        None, description="refresh token for grant type ``'refresh_token'`` and logout request"
+    )
     "refresh token for grant type ``'refresh_token'`` and logout request"
 
 
@@ -387,6 +389,7 @@ class Credentials(BaseModel):
     * Fields ``access_token`` and ``refresh_token`` are loaded from the authentication server and
       refreshed periodically.
     """
+
     auth_server_url: str = Field(..., description='Base URL of the authentication server')
     'Base URL of the authentication server'
     username: str = Field(..., description='username for logging in to the server')
@@ -501,10 +504,7 @@ class IQMClient:
     """
 
     def __init__(
-            self,
-            url: str,
-            tokens_file: Optional[str] = None,
-            **credentials  # contains auth_server_url, username, password
+        self, url: str, tokens_file: Optional[str] = None, **credentials  # contains auth_server_url, username, password
     ):
         if not url.startswith(('http:', 'https:')):
             raise ClientConfigurationError(f'The URL schema has to be http or https. Incorrect schema in URL: {url}')
@@ -527,13 +527,13 @@ class IQMClient:
 
     # pylint: disable=too-many-locals
     def submit_circuits(
-            self,
-            circuits: list[Circuit],
-            *,
-            qubit_mapping: Optional[dict[str, str]] = None,
-            custom_settings: Optional[dict[str, Any]] = None,
-            calibration_set_id: Optional[int] = None,
-            shots: int = 1,
+        self,
+        circuits: list[Circuit],
+        *,
+        qubit_mapping: Optional[dict[str, str]] = None,
+        custom_settings: Optional[dict[str, Any]] = None,
+        calibration_set_id: Optional[int] = None,
+        shots: int = 1,
     ) -> UUID:
         """Submits a batch of quantum circuits for execution on a quantum computer.
 
@@ -574,7 +574,7 @@ class IQMClient:
             circuits=circuits,
             custom_settings=custom_settings,
             calibration_set_id=calibration_set_id,
-            shots=shots
+            shots=shots,
         )
 
         headers = {'Expect': '100-Continue'}
@@ -582,10 +582,7 @@ class IQMClient:
             headers['Authorization'] = bearer_token
 
         result = requests.post(
-            join(self._base_url, 'jobs'),
-            json=data.dict(exclude_none=True),
-            headers=headers,
-            timeout=REQUESTS_TIMEOUT
+            join(self._base_url, 'jobs'), json=data.dict(exclude_none=True), headers=headers, timeout=REQUESTS_TIMEOUT
         )
 
         if result.status_code == 401:
@@ -611,7 +608,7 @@ class IQMClient:
         result = requests.get(
             join(self._base_url, 'jobs/', str(job_id)),
             headers=None if not bearer_token else {'Authorization': bearer_token},
-            timeout=REQUESTS_TIMEOUT
+            timeout=REQUESTS_TIMEOUT,
         )
         result.raise_for_status()
         run_result = RunResult.from_dict(result.json())
@@ -639,7 +636,7 @@ class IQMClient:
         result = requests.get(
             join(self._base_url, 'jobs/', str(job_id), 'status'),
             headers=None if not bearer_token else {'Authorization': bearer_token},
-            timeout=REQUESTS_TIMEOUT
+            timeout=REQUESTS_TIMEOUT,
         )
         result.raise_for_status()
         run_result = RunStatus.from_dict(result.json())
@@ -682,7 +679,7 @@ class IQMClient:
         result = requests.get(
             join(self._base_url, 'quantum-architecture'),
             headers=None if not bearer_token else {'Authorization': bearer_token},
-            timeout=REQUESTS_TIMEOUT
+            timeout=REQUESTS_TIMEOUT,
         )
         result.raise_for_status()
         return QuantumArchitecture(**result.json())
@@ -757,18 +754,14 @@ class IQMClient:
         refresh_token = self._credentials.refresh_token
         if refresh_token and _time_left_seconds(refresh_token) > REFRESH_MARGIN_SECONDS:
             # Update tokens using existing refresh_token
-            data = AuthRequest(
-                client_id=AUTH_CLIENT_ID,
-                grant_type=GrantType.REFRESH,
-                refresh_token=refresh_token
-            )
+            data = AuthRequest(client_id=AUTH_CLIENT_ID, grant_type=GrantType.REFRESH, refresh_token=refresh_token)
         else:
             # Update tokens using username and password
             data = AuthRequest(
                 client_id=AUTH_CLIENT_ID,
                 grant_type=GrantType.PASSWORD,
                 username=self._credentials.username,
-                password=self._credentials.password
+                password=self._credentials.password,
             )
 
         url = f'{self._credentials.auth_server_url}/realms/{AUTH_REALM}/protocol/openid-connect/token'
