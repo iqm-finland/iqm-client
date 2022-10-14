@@ -5,7 +5,7 @@ Changelog
 Version 8.3
 ===========
 
-* Improved error message when ``qubit_mapping`` does not cover all qubits. `#53 <https://github.com/iqm-finland/iqm-client/pull/53>`_
+* Improved error message when ``qubit_mapping`` does not cover all qubits in a circuit. `#53 <https://github.com/iqm-finland/iqm-client/pull/53>`_
 * Better type definitions and code cleanup. `#53 <https://github.com/iqm-finland/iqm-client/pull/53>`_, `#52 <https://github.com/iqm-finland/iqm-client/pull/52>`_
 
 Version 8.2
