@@ -271,9 +271,9 @@ class Metadata(BaseModel):
     circuits: CircuitBatch = Field(..., description='batch of quantum circuit(s) to execute')
     """batch of quantum circuit(s) to execute"""
     calibration_set_id: Optional[int] = Field(
-        None, description='ID of the calibration set used, or None if settings were specified'
+        None, description='ID of the calibration set used'
     )
-    """ID of the calibration set used, or None if settings were specified"""
+    """ID of the calibration set used"""
 
 
 class RunResult(BaseModel):
