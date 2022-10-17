@@ -7,7 +7,6 @@ Version 8.4
 
 * Update documentation of Metadata. `#54 <https://github.com/iqm-finland/iqm-client/pull/54>`_
 
-
 Version 8.3
 ===========
 
