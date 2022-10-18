@@ -104,17 +104,6 @@ def test_submit_circuit_with_incomplete_qubit_mapping(mock_server, base_url, sam
         )
 
 
-def test_submit_circuits_without_settings_returns_id(mock_server, base_url, sample_circuit):
-    """
-    Tests sending a circuit without settings
-    """
-    client = IQMClient(base_url)
-    job_id = client.submit_circuits(
-        qubit_mapping={'Qubit A': 'QB1', 'Qubit B': 'QB2'}, circuits=[Circuit.parse_obj(sample_circuit)], shots=1000
-    )
-    assert job_id == existing_run
-
-
 def test_submit_circuits_with_calibration_set_id_returns_id(mock_server, base_url, calibration_set_id, sample_circuit):
     """
     Tests sending a circuit with calibration set id
