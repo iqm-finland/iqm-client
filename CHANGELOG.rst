@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 8.5
+===========
+
+* The method ``IQMClient.get_quantum_architecture`` now return the architecture specification instead of the top level object. `#56 <https://github.com/iqm-finland/iqm-client/pull/56>`_
+
 Version 8.4
 ===========
 
