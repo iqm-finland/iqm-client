@@ -24,7 +24,7 @@ from iqm_client import (
     Circuit,
     ClientConfigurationError,
     IQMClient,
-    QuantumArchitecture,
+    QuantumArchitectureSpecification,
     SingleQubitMapping,
     Status,
     serialize_qubit_mapping,
@@ -181,7 +181,9 @@ def test_get_quantum_architecture(sample_quantum_architecture, base_url):
     when(requests).get(f'{base_url}/quantum-architecture', ...).thenReturn(
         MockJsonResponse(200, sample_quantum_architecture)
     )
-    assert client.get_quantum_architecture() == QuantumArchitecture(**sample_quantum_architecture)
+    assert client.get_quantum_architecture() == QuantumArchitectureSpecification(
+        **sample_quantum_architecture['quantum_architecture']
+    )
 
 
 def test_user_warning_is_emitted_when_warnings_in_response(base_url):
