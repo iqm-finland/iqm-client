@@ -275,6 +275,9 @@
       <li class="version_item current_version">dev</li>
     
     
+      <li class="version_item"><a href="../versions/9.0/index.html">9.0</a></li>
+    
+    
       <li class="version_item"><a href="../versions/8.4/index.html">8.4</a></li>
     
     
@@ -579,7 +582,7 @@ title="Print to PDF"
   <strong>
     
     You're reading the documentation for a development version.
-    For the latest released version, please have a look at <a href="../versions/8.4/index.html">8.4</a>.
+    For the latest released version, please have a look at <a href="../versions/9.0/index.html">9.0</a>.
     
   </strong>
 </div>
@@ -588,7 +591,7 @@ title="Print to PDF"
   <section id="module-iqm_client.iqm_client">
 <span id="iqm-client-iqm-client"></span><h1>iqm_client.iqm_client<a class="headerlink" href="#module-iqm_client.iqm_client" title="Permalink to this headline">#</a></h1>
 <p>Client for connecting to the IQM quantum computer server interface.</p>
-<p>The <a class="reference internal" href="iqm_client.iqm_client.Circuit.html#iqm_client.iqm_client.Circuit" title="iqm_client.iqm_client.Circuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Circuit</span></code></a> class represents quantum circuits to be executed, consisting of a list of
+<p>The <a class="reference internal" href="iqm_client.iqm_client.Circuit.html#iqm_client.iqm_client.Circuit" title="iqm_client.iqm_client.Circuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Circuit</span></code></a> class represents quantum circuits to be executed, consisting of
 native quantum operations, each represented by an instance of the <a class="reference internal" href="iqm_client.iqm_client.Instruction.html#iqm_client.iqm_client.Instruction" title="iqm_client.iqm_client.Instruction"><code class="xref py py-class docutils literal notranslate"><span class="pre">Instruction</span></code></a> class.
 Different Instruction types are distinguished by their <a class="reference internal" href="iqm_client.iqm_client.Instruction.html#iqm_client.iqm_client.Instruction.name" title="iqm_client.iqm_client.Instruction.name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">name</span></code></a>.
 Each Instruction type acts on a number of <a class="reference internal" href="iqm_client.iqm_client.Instruction.html#iqm_client.iqm_client.Instruction.qubits" title="iqm_client.iqm_client.Instruction.qubits"><code class="xref py py-attr docutils literal notranslate"><span class="pre">qubits</span></code></a>, and expects certain
@@ -640,7 +643,7 @@ Takes one string argument, <code class="docutils literal notranslate"><span clas
 All the measurement keys in a circuit must be unique.
 Each qubit may only be measured once.
 The measurement must be the last operation on each qubit, i.e. it cannot be followed by gates.</p>
-<p>Example: <code class="docutils literal notranslate"><span class="pre">Instruction(name='measurement',</span> <span class="pre">qubits=['alice',</span> <span class="pre">'bob',</span> <span class="pre">'charlie'],</span> <span class="pre">args={'key':</span> <span class="pre">'m1'})</span></code></p>
+<p>Example: <code class="docutils literal notranslate"><span class="pre">Instruction(name='measurement',</span> <span class="pre">qubits=('alice',</span> <span class="pre">'bob',</span> <span class="pre">'charlie'),</span> <span class="pre">args={'key':</span> <span class="pre">'m1'})</span></code></p>
 </section>
 <section id="phased-rx">
 <h3>Phased Rx<a class="headerlink" href="#phased-rx" title="Permalink to this headline">#</a></h3>
@@ -653,7 +656,7 @@ The gate is represented in the standard computational basis by the matrix</p>
 = R_z(\phi) R_x(\theta) R_z^\dagger(\phi),\]</div>
 <p>where <span class="math notranslate nohighlight">\(\theta\)</span> = <code class="docutils literal notranslate"><span class="pre">angle_t</span></code>, <span class="math notranslate nohighlight">\(\phi\)</span> = <code class="docutils literal notranslate"><span class="pre">phase_t</span></code>,
 and <span class="math notranslate nohighlight">\(X\)</span> and <span class="math notranslate nohighlight">\(Y\)</span> are Pauli matrices.</p>
-<p>Example: <code class="docutils literal notranslate"><span class="pre">Instruction(name='phased_rx',</span> <span class="pre">qubits=['bob'],</span> <span class="pre">args={'angle_t':</span> <span class="pre">0.7,</span> <span class="pre">'phase_t':</span> <span class="pre">0.25})</span></code></p>
+<p>Example: <code class="docutils literal notranslate"><span class="pre">Instruction(name='phased_rx',</span> <span class="pre">qubits=('bob'),</span> <span class="pre">args={'angle_t':</span> <span class="pre">0.7,</span> <span class="pre">'phase_t':</span> <span class="pre">0.25})</span></code></p>
 </section>
 <section id="cz">
 <h3>CZ<a class="headerlink" href="#cz" title="Permalink to this headline">#</a></h3>
@@ -661,13 +664,13 @@ and <span class="math notranslate nohighlight">\(X\)</span> and <span class="mat
 <div class="math notranslate nohighlight">
 \[\text{CZ} = \text{diag}(1, 1, 1, -1).\]</div>
 <p>Symmetric wrt. the qubits it’s acting on. Takes no arguments.</p>
-<p>Example: <code class="docutils literal notranslate"><span class="pre">Instruction(name='cz',</span> <span class="pre">qubits=['alice',</span> <span class="pre">'bob'],</span> <span class="pre">args={})</span></code></p>
+<p>Example: <code class="docutils literal notranslate"><span class="pre">Instruction(name='cz',</span> <span class="pre">qubits=('alice',</span> <span class="pre">'bob'),</span> <span class="pre">args={})</span></code></p>
 </section>
 <section id="barrier">
 <h3>Barrier<a class="headerlink" href="#barrier" title="Permalink to this headline">#</a></h3>
 <p>Barriers ensure that all operations after the barrier on the qubit subsystems spanned by
 the barrier are only executed when all the operations before the barrier have been completed.</p>
-<p>Example: <code class="docutils literal notranslate"><span class="pre">Instruction(name='barrier',</span> <span class="pre">qubits=['alice',</span> <span class="pre">'bob'],</span> <span class="pre">args={})</span></code></p>
+<p>Example: <code class="docutils literal notranslate"><span class="pre">Instruction(name='barrier',</span> <span class="pre">qubits=('alice',</span> <span class="pre">'bob'),</span> <span class="pre">args={})</span></code></p>
 </section>
 </section>
 <section id="circuit-output">
@@ -828,7 +831,7 @@ that was the measurement outcome.</p>
     By IQM client developers<br/>
   
       &copy; Copyright 2021-2022, IQM.<br/>
-    Last updated on 2022-10-18.<br/>
+    Last updated on 2022-10-19.<br/>
 </p>
         </footer>
     </div>
