@@ -14,7 +14,7 @@
 r"""
 Client for connecting to the IQM quantum computer server interface.
 
-The :class:`Circuit` class represents quantum circuits to be executed, consisting of a list of
+The :class:`Circuit` class represents quantum circuits to be executed, consisting of
 native quantum operations, each represented by an instance of the :class:`Instruction` class.
 Different Instruction types are distinguished by their :attr:`~Instruction.name`.
 Each Instruction type acts on a number of :attr:`~Instruction.qubits`, and expects certain
@@ -44,7 +44,7 @@ All the measurement keys in a circuit must be unique.
 Each qubit may only be measured once.
 The measurement must be the last operation on each qubit, i.e. it cannot be followed by gates.
 
-Example: ``Instruction(name='measurement', qubits=['alice', 'bob', 'charlie'], args={'key': 'm1'})``
+Example: ``Instruction(name='measurement', qubits=('alice', 'bob', 'charlie'), args={'key': 'm1'})``
 
 
 Phased Rx
@@ -62,7 +62,7 @@ The gate is represented in the standard computational basis by the matrix
 where :math:`\theta` = ``angle_t``, :math:`\phi` = ``phase_t``,
 and :math:`X` and :math:`Y` are Pauli matrices.
 
-Example: ``Instruction(name='phased_rx', qubits=['bob'], args={'angle_t': 0.7, 'phase_t': 0.25})``
+Example: ``Instruction(name='phased_rx', qubits=('bob'), args={'angle_t': 0.7, 'phase_t': 0.25})``
 
 
 CZ
@@ -74,7 +74,7 @@ Controlled-Z gate. Represented in the standard computational basis by the matrix
 
 Symmetric wrt. the qubits it's acting on. Takes no arguments.
 
-Example: ``Instruction(name='cz', qubits=['alice', 'bob'], args={})``
+Example: ``Instruction(name='cz', qubits=('alice', 'bob'), args={})``
 
 
 Barrier
@@ -83,7 +83,7 @@ Barrier
 Barriers ensure that all operations after the barrier on the qubit subsystems spanned by
 the barrier are only executed when all the operations before the barrier have been completed.
 
-Example: ``Instruction(name='barrier', qubits=['alice', 'bob'], args={})``
+Example: ``Instruction(name='barrier', qubits=('alice', 'bob'), args={})``
 
 
 Circuit output
