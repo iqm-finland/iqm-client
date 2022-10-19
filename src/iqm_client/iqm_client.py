@@ -679,7 +679,7 @@ class IQMClient:
             time.sleep(SECONDS_BETWEEN_CALLS)
         raise APITimeoutError(f"The task didn't finish in {timeout_secs} seconds.")
 
-    def get_quantum_architecture(self) -> QuantumArchitecture:
+    def get_quantum_architecture(self) -> QuantumArchitectureSpecification:
         """Retrieve quantum architecture from Cortex.
 
         Returns:
@@ -695,7 +695,7 @@ class IQMClient:
             timeout=REQUESTS_TIMEOUT,
         )
         result.raise_for_status()
-        return QuantumArchitecture(**result.json())
+        return QuantumArchitecture(**result.json()).quantum_architecture
 
     def close_auth_session(self) -> bool:
         """Terminate session with authentication server if there was one created.
