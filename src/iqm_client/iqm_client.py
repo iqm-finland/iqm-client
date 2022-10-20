@@ -519,13 +519,13 @@ class IQMClient:
             must not be set.
 
     Keyword Args:
-        auth_server_url: Optional base URL of the authentication server.
+        auth_server_url (str): Optional base URL of the authentication server.
             This can also be set in the IQM_AUTH_SERVER environment variable.
             If unset, requests will be sent unauthenticated.
-        username: Optional username to log in to authentication server.
+        username (str): Optional username to log in to authentication server.
             This can also be set in the IQM_AUTH_USERNAME environment variable.
             Username must be set if ``auth_server_url`` is set.
-        password: Optional password to log in to authentication server.
+        password (str): Optional password to log in to authentication server.
             This can also be set in the IQM_AUTH_PASSWORD environment variable.
             Password must be set if ``auth_server_url`` is set.
     """
