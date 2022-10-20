@@ -16,20 +16,24 @@
 Mocks server calls for testing
 """
 
+from base64 import b64encode
 import json
 import os
 import time
-from base64 import b64encode
 from typing import Optional
 from uuid import UUID, uuid4
 
+from mockito import expect, mock, unstub, when
 import pytest
 import requests
-from mockito import expect, mock, unstub, when
 from requests import HTTPError, Response
 
 from iqm_client import AUTH_CLIENT_ID, AUTH_REALM, AuthRequest, GrantType
 
+
+REQUESTS_TIMEOUT = 60
+
+calibration_set_id_value = 24
 existing_run = UUID('3c3fcda3-e860-46bf-92a4-bcc59fa76ce9')
 missing_run = UUID('059e4186-50a3-4e6c-ba1f-37fe6afbdfc2')
 
@@ -49,11 +53,11 @@ def credentials():
 
 
 @pytest.fixture(scope='function')
-def mock_server(base_url):
+def mock_server(base_url, sample_circuit):
     """
     Runs mocking separately for each test
     """
-    generate_server_stubs(base_url)
+    generate_server_stubs(base_url, sample_circuit)
     yield  # running test function
     unstub()
 
@@ -68,44 +72,45 @@ def settings_dict():
         return json.loads(f.read())
 
 
+@pytest.fixture()
+def calibration_set_id():
+    return calibration_set_id_value
+
+
+@pytest.fixture
+def tokens_dict():
+    """
+    Reads and parses tokens file into a dictionary
+    """
+    tokens_path = os.path.dirname(os.path.realpath(__file__)) + '/resources/tokens.json'
+    with open(tokens_path, 'r', encoding='utf-8') as f:
+        return json.loads(f.read())
+
+
 @pytest.fixture
 def sample_circuit():
     """
     A sample circuit for testing submit_circuit
     """
     return {
-        'name': 'Sample circuit',
-        'instructions': (
-            {
-                'name': 'cz',
-                'qubits': (
-                    'Qubit A',
-                    'Qubit B'
-                ),
-                'args': {}
-            },
-            {
-                'name': 'phased_rx',
-                'qubits': (
-                    'Qubit A',
-                ),
-                'args': {
-                    'phase_t': 1.22,
-                    'angle_t': {
-                        'expr': '{{alpha}}/2'
-                    }
-                }
-            },
-            {
-                'name': 'measurement',
-                'qubits': (
-                    'Qubit A',
-                ),
-                'args': {
-                    'key': 'A'
-                }
-            }
-        )
+        'name': 'The circuit',
+        'instructions': [
+            {'name': 'cz', 'qubits': ['Qubit A', 'Qubit B'], 'args': {}},
+            {'name': 'phased_rx', 'qubits': ['Qubit A'], 'args': {'phase_t': 0.7, 'angle_t': 0.25}},
+            {'name': 'measurement', 'qubits': ['Qubit A'], 'args': {'output_label': 'A'}},
+        ],
+    }
+
+
+@pytest.fixture
+def sample_quantum_architecture():
+    return {
+        'quantum_architecture': {
+            'name': 'hercules',
+            'qubits': ['QB1', 'QB2'],
+            'qubit_connectivity': [['QB1', 'QB2']],
+            'operations': ['phased_rx', 'CZ'],
+        }
     }
 
 
@@ -126,28 +131,28 @@ class MockJsonResponse:
             raise HTTPError('')
 
 
-def generate_server_stubs(base_url):
+def generate_server_stubs(base_url, sample_circuit):
     """
     Mocking some calls to the server by mocking 'requests'
     """
-    when(requests).post(f'{base_url}/jobs', ...).thenReturn(
-        MockJsonResponse(201, {'id': str(existing_run)})
-    )
+    when(requests).post(f'{base_url}/jobs', ...).thenReturn(MockJsonResponse(201, {'id': str(existing_run)}))
 
     when(requests).get(f'{base_url}/jobs/{existing_run}', ...).thenReturn(
-        MockJsonResponse(200, {'status': 'pending'})
+        MockJsonResponse(200, {'status': 'pending', 'metadata': {'shots': 42, 'circuits': [sample_circuit]}})
     ).thenReturn(
         MockJsonResponse(
             200,
-            {'status': 'ready', 'measurements': {'result': [[1, 0, 1, 1], [1, 0, 0, 1], [1, 0, 1, 1], [1, 0, 1, 1]]}}
+            {
+                'status': 'ready',
+                'measurements': [{'result': [[1, 0, 1, 1], [1, 0, 0, 1], [1, 0, 1, 1], [1, 0, 1, 1]]}],
+                'metadata': {'shots': 42, 'circuits': [sample_circuit], 'calibration_set_id': calibration_set_id_value},
+            },
         )
     )
 
     when(requests).get(f'{base_url}/jobs/{existing_run}/status', ...).thenReturn(
         MockJsonResponse(200, {'status': 'pending'})
-    ).thenReturn(
-        MockJsonResponse(200, {'status': 'ready'})
-    )
+    ).thenReturn(MockJsonResponse(200, {'status': 'ready'}))
 
     # 'run was not created' response
     no_run_response = Response()
@@ -158,11 +163,11 @@ def generate_server_stubs(base_url):
 
 
 def prepare_tokens(
-        access_token_lifetime: int,
-        refresh_token_lifetime: int,
-        previous_refresh_token: Optional[str] = None,
-        status_code: int = 200,
-        **credentials
+    access_token_lifetime: int,
+    refresh_token_lifetime: int,
+    previous_refresh_token: Optional[str] = None,
+    status_code: int = 200,
+    **credentials,
 ) -> dict[str, str]:
     """Prepare tokens and set them to be returned for a token request.
 
@@ -181,22 +186,21 @@ def prepare_tokens(
             client_id=AUTH_CLIENT_ID,
             grant_type=GrantType.PASSWORD,
             username=credentials['username'],
-            password=credentials['password']
+            password=credentials['password'],
         )
     else:
         request_data = AuthRequest(
-            client_id=AUTH_CLIENT_ID,
-            grant_type=GrantType.REFRESH,
-            refresh_token=previous_refresh_token
+            client_id=AUTH_CLIENT_ID, grant_type=GrantType.REFRESH, refresh_token=previous_refresh_token
         )
 
     tokens = {
         'access_token': make_token('Bearer', access_token_lifetime),
-        'refresh_token': make_token('Refresh', refresh_token_lifetime)
+        'refresh_token': make_token('Refresh', refresh_token_lifetime),
     }
     when(requests).post(
         f'{credentials["auth_server_url"]}/realms/{AUTH_REALM}/protocol/openid-connect/token',
-        data=request_data.dict(exclude_none=True)
+        data=request_data.dict(exclude_none=True),
+        timeout=REQUESTS_TIMEOUT,
     ).thenReturn(MockJsonResponse(status_code, tokens))
 
     return tokens
@@ -232,8 +236,8 @@ def expect_status_request(url: str, access_token: Optional[str], times: int = 1)
     """
     job_id = uuid4()
     headers = None if access_token is None else {'Authorization': f'Bearer {access_token}'}
-    expect(requests, times=times).get(f'{url}/jobs/{job_id}', headers=headers).thenReturn(
-        MockJsonResponse(200, {'status': 'pending'})
+    expect(requests, times=times).get(f'{url}/jobs/{job_id}', headers=headers, timeout=REQUESTS_TIMEOUT).thenReturn(
+        MockJsonResponse(200, {'status': 'pending', 'metadata': {'shots': 42, 'circuits': []}})
     )
     return job_id
 
@@ -248,7 +252,6 @@ def expect_logout(auth_server_url: str, refresh_token: str):
     request_data = AuthRequest(client_id=AUTH_CLIENT_ID, refresh_token=refresh_token)
     expect(requests, times=1).post(
         f'{auth_server_url}/realms/{AUTH_REALM}/protocol/openid-connect/logout',
-        data=request_data.dict(exclude_none=True)
-    ).thenReturn(
-        mock({'status_code': 204, 'text': '{}'})
-    )
+        data=request_data.dict(exclude_none=True),
+        timeout=REQUESTS_TIMEOUT,
+    ).thenReturn(mock({'status_code': 204, 'text': '{}'}))

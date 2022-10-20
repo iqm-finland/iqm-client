@@ -14,8 +14,10 @@
 """Tests for user authentication and token management in IQM client.
 """
 
+import os
+
 from mockito import unstub
-from pytest import raises
+import pytest
 
 from iqm_client import ClientAuthenticationError, Credentials, IQMClient
 from tests.conftest import expect_logout, expect_status_request, prepare_tokens
@@ -27,9 +29,7 @@ def test_get_initial_tokens_with_credentials_from_arguments(base_url, credential
     """
     tokens = prepare_tokens(300, 3600, **credentials)
     expected_credentials = Credentials(
-        access_token=tokens['access_token'],
-        refresh_token=tokens['refresh_token'],
-        **credentials
+        access_token=tokens['access_token'], refresh_token=tokens['refresh_token'], **credentials
     )
     client = IQMClient(base_url, **credentials)
     assert client._credentials == expected_credentials
@@ -42,9 +42,7 @@ def test_get_initial_tokens_with_credentials_from_env_variables(base_url, creden
     """
     tokens = prepare_tokens(300, 3600, **credentials)
     expected_credentials = Credentials(
-        access_token=tokens['access_token'],
-        refresh_token=tokens['refresh_token'],
-        **credentials
+        access_token=tokens['access_token'], refresh_token=tokens['refresh_token'], **credentials
     )
     monkeypatch.setenv('IQM_AUTH_SERVER', credentials['auth_server_url'])
     monkeypatch.setenv('IQM_AUTH_USERNAME', credentials['username'])
@@ -66,6 +64,18 @@ def test_add_authorization_header_when_credentials_are_provided(base_url, creden
     unstub()
 
 
+def test_add_authorization_header_when_external_token_is_provided(base_url, tokens_dict):
+    """
+    Tests that requests are sent with Authorization header when credentials are provided
+    """
+    tokens_path = os.path.dirname(os.path.realpath(__file__)) + '/resources/tokens.json'
+    job_id = expect_status_request(base_url, tokens_dict['access_token'])
+    client = IQMClient(base_url, tokens_file=tokens_path)
+    result = client.get_run(job_id)
+    assert result.status == 'pending'
+    unstub()
+
+
 def test_no_authorization_header_when_credentials_are_not_provided(base_url):
     """
     Tests that requests are sent without Authorization header when no credentials are provided
@@ -82,7 +92,7 @@ def test_raises_client_authentication_error_if_authentication_fails(base_url, cr
     Tests that authentication failure raises ClientAuthenticationError
     """
     prepare_tokens(300, 3600, status_code=401, **credentials)
-    with raises(ClientAuthenticationError):
+    with pytest.raises(ClientAuthenticationError):
         IQMClient(base_url, **credentials)
     unstub()
 
@@ -151,8 +161,36 @@ def test_tokens_are_cleared_at_logout(base_url, credentials):
     assert client._credentials.access_token == initial_tokens['access_token']
     assert client._credentials.refresh_token == initial_tokens['refresh_token']
 
-    client.close()
+    client.close_auth_session()
     assert client._credentials.access_token is None
     assert client._credentials.refresh_token is None
+
+    unstub()
+
+
+def test_cannot_close_external_auth_session(base_url):
+    """
+    Tests that calling ``close_auth_session`` while initialized with an external auth session
+    raises ClientAuthenticationError
+    """
+    tokens_path = os.path.dirname(os.path.realpath(__file__)) + '/resources/tokens.json'
+    client = IQMClient(base_url, tokens_file=tokens_path)
+    with pytest.raises(ClientAuthenticationError) as exc:
+        client.close_auth_session()
+    assert 'Unable to close externally managed auth session' == str(exc.value)
+
+
+def test_logout_on_client_destruction(base_url, credentials):
+    """
+    Tests that client is trying to terminate the authentication session on destruction
+    """
+    initial_tokens = prepare_tokens(300, 3600, **credentials)
+    expect_logout(credentials['auth_server_url'], initial_tokens['refresh_token'])
+
+    client = IQMClient(base_url, **credentials)
+    assert client._credentials.access_token == initial_tokens['access_token']
+    assert client._credentials.refresh_token == initial_tokens['refresh_token']
+
+    del client
 
     unstub()
