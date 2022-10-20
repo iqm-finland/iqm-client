@@ -555,7 +555,7 @@ class IQMClient:
                 Note that the ``qubit_mapping`` is used for all ``circuits``.
             custom_settings: custom settings to overwrite default settings and calibration data.
                 Note: This field should be always None in normal use.
-            calibration_set_id: ID of the calibration set to use instead of ``settings``
+            calibration_set_id: ID of the calibration set to use
             shots: number of times ``circuit`` is executed
 
         Returns:
