@@ -246,10 +246,10 @@ class RunRequest(BaseModel):
     """batch of quantum circuit(s) to execute"""
     custom_settings: dict[str, Any] = Field(
         None,
-        description="""Custom settings to overwrite default IQM hardware settings and calibration data.
+        description="""Custom settings to override default IQM hardware settings and calibration data.
 Note: This field should be always None in normal use.""",
     )
-    """Custom settings to overwrite default IQM hardware settings and calibration data.
+    """Custom settings to override default IQM hardware settings and calibration data.
 Note: This field should be always None in normal use."""
     calibration_set_id: Optional[int] = Field(
         None, description='ID of the calibration set to use, or None to use the latest calibration set'
@@ -565,15 +565,14 @@ class IQMClient:
         """Submits a batch of quantum circuits for execution on a quantum computer.
 
         Args:
-            circuits: list of circuit to be executed
+            circuits: list of circuits to be executed
             qubit_mapping: Mapping of human-readable (logical) qubit names in to physical qubit names.
                 Can be set to ``None`` if all ``circuits`` already use physical qubit names.
                 Note that the ``qubit_mapping`` is used for all ``circuits``.
-            custom_settings: custom settings to overwrite default settings and calibration data.
-                Note: This field should be always None in normal use.
-            calibration_set_id: ID of the calibration set to use instead of ``settings``
-            shots: number of times ``circuit`` is executed
-            settings: Settings for the quantum computer, in IQM JSON format.
+            custom_settings: custom settings to override default settings and calibration data.
+                Note: This field should be always ``None`` in normal use.
+            calibration_set_id: ID of the calibration set to use, or ``None`` to use the latest one
+            shots: number of times ``circuits`` are executed
 
         Returns:
             ID for the created task. This ID is needed to query the status and the execution results.
