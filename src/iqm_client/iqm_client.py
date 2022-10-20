@@ -105,8 +105,8 @@ It takes no arguments, and has no other effect.
 Circuit output
 ==============
 
-The :class:`RunResult` class represents the results of the quantum circuit execution.
-If the run succeeded, :attr:`RunResult.measurements` contains the output of the batch of circuits,
+The :class:`RunResult` class represents the results of the quantum circuit execution job.
+If the job succeeded, :attr:`RunResult.measurements` contains the output of the batch of circuits,
 consisting of the results of the measurement operations in each circuit.
 It is a list of dictionaries, where each dict maps each measurement key to a 2D array of measurement
 results, represented as a nested list.
@@ -158,12 +158,12 @@ class CircuitExecutionError(RuntimeError):
 
 
 class APITimeoutError(CircuitExecutionError):
-    """Exception for when executing a task on the server takes too long."""
+    """Exception for when executing a job on the server takes too long."""
 
 
 class Status(str, Enum):
     """
-    Status of a task.
+    Status of a job.
     """
 
     PENDING = 'pending'
@@ -237,7 +237,7 @@ def serialize_qubit_mapping(qubit_mapping: dict[str, str]) -> list[SingleQubitMa
 
 
 class RunRequest(BaseModel):
-    """Request for an IQM quantum computer to execute a batch of quantum circuits.
+    """Request for an IQM quantum computer to run job that executes a batch of quantum circuits.
 
     Note: all circuits in a batch must measure the same qubits otherwise batch execution fails.
     """
@@ -275,7 +275,7 @@ CircuitMeasurementResultsBatch = list[CircuitMeasurementResults]
 
 
 class Metadata(BaseModel):
-    """Metadata belonging to a job sumission"""
+    """Metadata describing a circuit execution job."""
 
     shots: int = Field(..., description='how many times to execute each circuit in the batch')
     """how many times to execute each circuit in the batch"""
@@ -291,23 +291,23 @@ class Metadata(BaseModel):
 
 
 class RunResult(BaseModel):
-    """Results of executing a batch of circuit(s).
+    """Results of a circuit execution job.
 
     * ``measurements`` is present iff the status is ``'ready'``.
     * ``message`` carries additional information for the ``'failed'`` status.
     * If the status is ``'pending'``, ``measurements`` and ``message`` are ``None``.
     """
 
-    status: Status = Field(..., description="current status of the run, in ``{'pending', 'ready', 'failed'}``")
-    """current status of the run, in ``{'pending', 'ready', 'failed'}``"""
+    status: Status = Field(..., description="current status of the job, in ``{'pending', 'ready', 'failed'}``")
+    """current status of the job, in ``{'pending', 'ready', 'failed'}``"""
     measurements: Optional[CircuitMeasurementResultsBatch] = Field(
-        None, description='if the run has finished successfully, the measurement results for the circuit(s)'
+        None, description='if the job has finished successfully, the measurement results for the circuit(s)'
     )
-    """if the run has finished successfully, the measurement results for the circuit(s)"""
-    message: Optional[str] = Field(None, description='if the run failed, an error message')
-    """if the run failed, an error message"""
-    metadata: Metadata = Field(..., description='metadata about the underlying job request')
-    """metadata about the underlying job request"""
+    """if the job has finished successfully, the measurement results for the circuit(s)"""
+    message: Optional[str] = Field(None, description='if the job failed, an error message')
+    """if the job failed, an error message"""
+    metadata: Metadata = Field(..., description='metadata about the job')
+    """metadata about the job"""
     warnings: Optional[list[str]] = Field(None, description='list of warning messages')
     """list of warning messages"""
 
@@ -319,7 +319,7 @@ class RunResult(BaseModel):
             inp: value to parse, has to map to RunResult
 
         Returns:
-            parsed run result
+            parsed job result
 
         """
         input_copy = inp.copy()
@@ -327,12 +327,12 @@ class RunResult(BaseModel):
 
 
 class RunStatus(BaseModel):
-    """Status of a circuit execution request."""
+    """Status of a circuit execution job."""
 
-    status: Status = Field(..., description="current status of the run, in ``{'pending', 'ready', 'failed'}``")
-    """current status of the run, in ``{'pending', 'ready', 'failed'}``"""
-    message: Optional[str] = Field(None, description='if the run failed, an error message')
-    """if the run failed, an error message"""
+    status: Status = Field(..., description="current status of the job, in ``{'pending', 'ready', 'failed'}``")
+    """current status of the job, in ``{'pending', 'ready', 'failed'}``"""
+    message: Optional[str] = Field(None, description='if the job failed, an error message')
+    """if the job failed, an error message"""
     warnings: Optional[list[str]] = Field(None, description='list of warning messages')
     """list of warning messages"""
 
@@ -344,7 +344,7 @@ class RunStatus(BaseModel):
             inp: value to parse, has to map to RunResult
 
         Returns:
-            parsed run result
+            parsed job status
 
         """
         input_copy = inp.copy()
@@ -575,7 +575,7 @@ class IQMClient:
             shots: number of times ``circuits`` are executed
 
         Returns:
-            ID for the created task. This ID is needed to query the status and the execution results.
+            ID for the created job. This ID is needed to query the job status and the execution results.
         """
         serialized_qubit_mapping: Optional[list[SingleQubitMapping]] = None
         if qubit_mapping is not None:
@@ -621,13 +621,13 @@ class IQMClient:
         return UUID(result.json()['id'])
 
     def get_run(self, job_id: UUID) -> RunResult:
-        """Query the status and results of the running task.
+        """Query the status and results of a submitted job.
 
         Args:
-            job_id: id of the task
+            job_id: id of the job to query
 
         Returns:
-            result of the run (can be pending)
+            result of the job (can be pending)
 
         Raises:
             HTTPException: http exceptions
@@ -649,13 +649,13 @@ class IQMClient:
         return run_result
 
     def get_run_status(self, job_id: UUID) -> RunStatus:
-        """Query the status of the running task.
+        """Query the status of a submitted job.
 
         Args:
-            job_id: id of the task
+            job_id: id of the job to query
 
         Returns:
-            status of the run
+            status of the job
 
         Raises:
             HTTPException: http exceptions
@@ -675,14 +675,14 @@ class IQMClient:
         return run_result
 
     def wait_for_results(self, job_id: UUID, timeout_secs: float = DEFAULT_TIMEOUT_SECONDS) -> RunResult:
-        """Poll results until run is ready, failed, or timed out.
+        """Poll results until a job is either ready, failed, or timed out.
 
         Args:
-            job_id: id of the task to wait
+            job_id: id of the job to wait for
             timeout_secs: how long to wait for a response before raising an APITimeoutError
 
         Returns:
-            run result
+            job result
 
         Raises:
             APITimeoutError: time exceeded the set timeout
@@ -693,7 +693,7 @@ class IQMClient:
             if results.status != Status.PENDING:
                 return results
             time.sleep(SECONDS_BETWEEN_CALLS)
-        raise APITimeoutError(f"The task didn't finish in {timeout_secs} seconds.")
+        raise APITimeoutError(f"The job didn't finish in {timeout_secs} seconds.")
 
     def get_quantum_architecture(self) -> QuantumArchitectureSpecification:
         """Retrieve quantum architecture from Cortex.
