@@ -5,7 +5,7 @@ Changelog
 Version 9.1
 ===========
 
-* Update description of ``IQMClient.submit_circuits``. `#57 <https://github.com/iqm-finland/iqm-client/pull/57>`_
+* Update documentation. `#57 <https://github.com/iqm-finland/iqm-client/pull/57>`_
 
 Version 9.0
 ===========
