@@ -24,7 +24,7 @@ Each Instruction type acts on a number of :attr:`~Instruction.qubits`, and expec
 Instructions
 ============
 
-We currently support three native instruction types:
+We currently support the following native instruction types:
 
 ================ =========== ====================================== ===========
 name             # of qubits args                                   description
@@ -32,7 +32,7 @@ name             # of qubits args                                   description
 measurement      >= 1        ``key: str``                           Measurement in the Z basis.
 phased_rx        1           ``angle_t: float``, ``phase_t: float`` Phased x-rotation gate.
 cz               2                                                  Controlled-Z gate.
-barrier          >= 2                                               Barrier instruction.
+barrier          >= 2                                               Execution barrier.
 ================ =========== ====================================== ===========
 
 Measurement
@@ -44,7 +44,10 @@ All the measurement keys in a circuit must be unique.
 Each qubit may only be measured once.
 The measurement must be the last operation on each qubit, i.e. it cannot be followed by gates.
 
-Example: ``Instruction(name='measurement', qubits=('alice', 'bob', 'charlie'), args={'key': 'm1'})``
+.. code-block:: python
+   :caption: Example
+
+   Instruction(name='measurement', qubits=('alice', 'bob', 'charlie'), args={'key': 'm1'})
 
 
 Phased Rx
@@ -62,7 +65,10 @@ The gate is represented in the standard computational basis by the matrix
 where :math:`\theta` = ``angle_t``, :math:`\phi` = ``phase_t``,
 and :math:`X` and :math:`Y` are Pauli matrices.
 
-Example: ``Instruction(name='phased_rx', qubits=('bob',), args={'angle_t': 0.7, 'phase_t': 0.25})``
+.. code-block:: python
+   :caption: Example
+
+   Instruction(name='phased_rx', qubits=('bob',), args={'angle_t': 0.7, 'phase_t': 0.25})
 
 
 CZ
@@ -72,18 +78,28 @@ Controlled-Z gate. Represented in the standard computational basis by the matrix
 
 .. math:: \text{CZ} = \text{diag}(1, 1, 1, -1).
 
-Symmetric wrt. the qubits it's acting on. Takes no arguments.
+It is symmetric wrt. the qubits it's acting on, and takes no arguments.
 
-Example: ``Instruction(name='cz', qubits=('alice', 'bob'), args={})``
+.. code-block:: python
+   :caption: Example
+
+   Instruction(name='cz', qubits=('alice', 'bob'), args={})
 
 
 Barrier
 -------
 
-Barriers ensure that all operations after the barrier on the qubit subsystems spanned by
-the barrier are only executed when all the operations before the barrier have been completed.
+A barrier instruction affects the physical execution order of the instructions elsewhere in the
+circuit that act on qubits spanned by the barrier.
+It ensures that any such instructions that succeed the barrier are only executed after
+all such instructions that precede the barrier have been completed.
+Hence it can be used to guarantee a specific causal order for the other instructions.
+It takes no arguments, and has no other effect.
 
-Example: ``Instruction(name='barrier', qubits=('alice', 'bob'), args={})``
+.. code-block:: python
+   :caption: Example
+
+   Instruction(name='barrier', qubits=('alice', 'bob'), args={})
 
 
 Circuit output
@@ -163,7 +179,7 @@ class Instruction(BaseModel):
     qubits: tuple[str, ...] = Field(
         ...,
         description='names of the logical qubits the operation acts on',
-        example=['alice'],
+        example=('alice',),
     )
     """names of the logical qubits the operation acts on"""
     args: dict[str, Any] = Field(
@@ -230,10 +246,10 @@ class RunRequest(BaseModel):
     """batch of quantum circuit(s) to execute"""
     custom_settings: dict[str, Any] = Field(
         None,
-        description="""Custom settings to overwrite default IQM hardware settings and calibration data.
+        description="""Custom settings to override default IQM hardware settings and calibration data.
 Note: This field should be always None in normal use.""",
     )
-    """Custom settings to overwrite default IQM hardware settings and calibration data.
+    """Custom settings to override default IQM hardware settings and calibration data.
 Note: This field should be always None in normal use."""
     calibration_set_id: Optional[int] = Field(
         None, description='ID of the calibration set to use, or None to use the latest calibration set'
@@ -549,14 +565,14 @@ class IQMClient:
         """Submits a batch of quantum circuits for execution on a quantum computer.
 
         Args:
-            circuits: list of circuit to be executed
+            circuits: list of circuits to be executed
             qubit_mapping: Mapping of human-readable (logical) qubit names in to physical qubit names.
                 Can be set to ``None`` if all ``circuits`` already use physical qubit names.
                 Note that the ``qubit_mapping`` is used for all ``circuits``.
-            custom_settings: custom settings to overwrite default settings and calibration data.
-                Note: This field should be always None in normal use.
-            calibration_set_id: ID of the calibration set to use
-            shots: number of times ``circuit`` is executed
+            custom_settings: Custom settings to override default settings and calibration data.
+                Note: This field should always be ``None`` in normal use.
+            calibration_set_id: ID of the calibration set to use, or ``None`` to use the latest one
+            shots: number of times ``circuits`` are executed
 
         Returns:
             ID for the created task. This ID is needed to query the status and the execution results.
