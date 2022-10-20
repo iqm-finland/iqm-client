@@ -235,9 +235,6 @@ def serialize_qubit_mapping(qubit_mapping: dict[str, str]) -> list[SingleQubitMa
     """
     return [SingleQubitMapping(logical_name=k, physical_name=v) for k, v in qubit_mapping.items()]
 
-    def __hash__(self):
-        return hash((self.logical_name, self.physical_name))
-
 
 class RunRequest(BaseModel):
     """Request for an IQM quantum computer to execute a batch of quantum circuits.
@@ -623,7 +620,6 @@ class IQMClient:
 
         result.raise_for_status()
         return UUID(result.json()['id'])
-
 
     def get_run(self, job_id: UUID) -> RunResult:
         """Query the status and results of the running task.

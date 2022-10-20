@@ -30,7 +30,6 @@ from requests import HTTPError, Response
 
 from iqm_client import AUTH_CLIENT_ID, AUTH_REALM, AuthRequest, GrantType
 
-
 REQUESTS_TIMEOUT = 60
 
 calibration_set_id_value = 24
