@@ -237,7 +237,7 @@ def serialize_qubit_mapping(qubit_mapping: dict[str, str]) -> list[SingleQubitMa
 
 
 class RunRequest(BaseModel):
-    """Request for an IQM quantum computer to run job that executes a batch of quantum circuits.
+    """Request for an IQM quantum computer to run a job that executes a batch of quantum circuits.
 
     Note: all circuits in a batch must measure the same qubits otherwise batch execution fails.
     """
