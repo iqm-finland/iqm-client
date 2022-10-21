@@ -21,7 +21,7 @@
     href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -31,7 +31,7 @@
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -273,6 +273,9 @@
       <li class="version_item current_version">dev</li>
     
     
+      <li class="version_item"><a href="../versions/9.1/index.html">9.1</a></li>
+    
+    
       <li class="version_item"><a href="../versions/9.0/index.html">9.0</a></li>
     
     
@@ -485,7 +488,7 @@ title="Print to PDF"
   <strong>
     
     You're reading the documentation for a development version.
-    For the latest released version, please have a look at <a href="../versions/9.0/index.html">9.0</a>.
+    For the latest released version, please have a look at <a href="../versions/9.1/index.html">9.1</a>.
     
   </strong>
 </div>
@@ -497,7 +500,7 @@ title="Print to PDF"
 <dt class="sig sig-object py" id="iqm_client.iqm_client.RunResult">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">iqm_client.iqm_client.</span></span><span class="sig-name descname"><span class="pre">RunResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurements</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warnings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm_client.iqm_client.RunResult" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pydantic.main.BaseModel</span></code></p>
-<p>Results of executing a batch of circuit(s).</p>
+<p>Results of a circuit execution job.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">measurements</span></code> is present iff the status is <code class="docutils literal notranslate"><span class="pre">'ready'</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">message</span></code> carries additional information for the <code class="docutils literal notranslate"><span class="pre">'failed'</span></code> status.</p></li>
@@ -513,16 +516,16 @@ title="Print to PDF"
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.RunResult.status" title="iqm_client.iqm_client.RunResult.status"><code class="xref py py-obj docutils literal notranslate"><span class="pre">status</span></code></a></p></td>
-<td><p>current status of the run, in <code class="docutils literal notranslate"><span class="pre">{'pending',</span> <span class="pre">'ready',</span> <span class="pre">'failed'}</span></code></p></td>
+<td><p>current status of the job, in <code class="docutils literal notranslate"><span class="pre">{'pending',</span> <span class="pre">'ready',</span> <span class="pre">'failed'}</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#iqm_client.iqm_client.RunResult.measurements" title="iqm_client.iqm_client.RunResult.measurements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">measurements</span></code></a></p></td>
-<td><p>if the run has finished successfully, the measurement results for the circuit(s)</p></td>
+<td><p>if the job has finished successfully, the measurement results for the circuit(s)</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.RunResult.message" title="iqm_client.iqm_client.RunResult.message"><code class="xref py py-obj docutils literal notranslate"><span class="pre">message</span></code></a></p></td>
-<td><p>if the run failed, an error message</p></td>
+<td><p>if the job failed, an error message</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#iqm_client.iqm_client.RunResult.metadata" title="iqm_client.iqm_client.RunResult.metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metadata</span></code></a></p></td>
-<td><p>metadata about the underlying job request</p></td>
+<td><p>metadata about the job</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.RunResult.warnings" title="iqm_client.iqm_client.RunResult.warnings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">warnings</span></code></a></p></td>
 <td><p>list of warning messages</p></td>
@@ -561,25 +564,25 @@ title="Print to PDF"
 <dl class="py attribute">
 <dt class="sig sig-object py" id="iqm_client.iqm_client.RunResult.status">
 <span class="sig-name descname"><span class="pre">status</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="iqm_client.iqm_client.Status.html#iqm_client.iqm_client.Status" title="iqm_client.iqm_client.Status"><span class="pre">iqm_client.iqm_client.Status</span></a></em><a class="headerlink" href="#iqm_client.iqm_client.RunResult.status" title="Permalink to this definition">#</a></dt>
-<dd><p>current status of the run, in <code class="docutils literal notranslate"><span class="pre">{'pending',</span> <span class="pre">'ready',</span> <span class="pre">'failed'}</span></code></p>
+<dd><p>current status of the job, in <code class="docutils literal notranslate"><span class="pre">{'pending',</span> <span class="pre">'ready',</span> <span class="pre">'failed'}</span></code></p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="iqm_client.iqm_client.RunResult.measurements">
 <span class="sig-name descname"><span class="pre">measurements</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#iqm_client.iqm_client.RunResult.measurements" title="Permalink to this definition">#</a></dt>
-<dd><p>if the run has finished successfully, the measurement results for the circuit(s)</p>
+<dd><p>if the job has finished successfully, the measurement results for the circuit(s)</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="iqm_client.iqm_client.RunResult.message">
 <span class="sig-name descname"><span class="pre">message</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#iqm_client.iqm_client.RunResult.message" title="Permalink to this definition">#</a></dt>
-<dd><p>if the run failed, an error message</p>
+<dd><p>if the job failed, an error message</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="iqm_client.iqm_client.RunResult.metadata">
 <span class="sig-name descname"><span class="pre">metadata</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="iqm_client.iqm_client.Metadata.html#iqm_client.iqm_client.Metadata" title="iqm_client.iqm_client.Metadata"><span class="pre">iqm_client.iqm_client.Metadata</span></a></em><a class="headerlink" href="#iqm_client.iqm_client.RunResult.metadata" title="Permalink to this definition">#</a></dt>
-<dd><p>metadata about the underlying job request</p>
+<dd><p>metadata about the job</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -597,7 +600,7 @@ title="Print to PDF"
 <dd class="field-odd"><p><strong>inp</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Union" title="(in Python v3.9)"><em>Union</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>]</em><em>]</em>) – value to parse, has to map to RunResult</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>parsed run result</p>
+<dd class="field-even"><p>parsed job result</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#iqm_client.iqm_client.RunResult" title="iqm_client.iqm_client.RunResult">iqm_client.iqm_client.RunResult</a></p>
@@ -642,7 +645,7 @@ title="Print to PDF"
     By IQM client developers<br/>
   
       &copy; Copyright 2021-2022, IQM.<br/>
-    Last updated on 2022-10-19.<br/>
+    Last updated on 2022-10-21.<br/>
 </p>
         </footer>
     </div>

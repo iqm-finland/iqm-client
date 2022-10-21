@@ -21,7 +21,7 @@
     href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=62ba249389abaaa9ffc34bf36a076bdc1d65ee18" type="text/css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
     
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -31,7 +31,7 @@
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?digest=f31d14ad54b65d19161ba51d4ffff3a77ae00456"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -273,6 +273,9 @@
       <li class="version_item current_version">dev</li>
     
     
+      <li class="version_item"><a href="../versions/9.1/index.html">9.1</a></li>
+    
+    
       <li class="version_item"><a href="../versions/9.0/index.html">9.0</a></li>
     
     
@@ -485,7 +488,7 @@ title="Print to PDF"
   <strong>
     
     You're reading the documentation for a development version.
-    For the latest released version, please have a look at <a href="../versions/9.0/index.html">9.0</a>.
+    For the latest released version, please have a look at <a href="../versions/9.1/index.html">9.1</a>.
     
   </strong>
 </div>
@@ -510,13 +513,13 @@ must not be set.</p></li>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>auth_server_url</strong> – Optional base URL of the authentication server.
+<li><p><strong>auth_server_url</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Optional base URL of the authentication server.
 This can also be set in the IQM_AUTH_SERVER environment variable.
 If unset, requests will be sent unauthenticated.</p></li>
-<li><p><strong>username</strong> – Optional username to log in to authentication server.
+<li><p><strong>username</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Optional username to log in to authentication server.
 This can also be set in the IQM_AUTH_USERNAME environment variable.
 Username must be set if <code class="docutils literal notranslate"><span class="pre">auth_server_url</span></code> is set.</p></li>
-<li><p><strong>password</strong> – Optional password to log in to authentication server.
+<li><p><strong>password</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Optional password to log in to authentication server.
 This can also be set in the IQM_AUTH_PASSWORD environment variable.
 Password must be set if <code class="docutils literal notranslate"><span class="pre">auth_server_url</span></code> is set.</p></li>
 </ul>
@@ -545,16 +548,16 @@ Password must be set if <code class="docutils literal notranslate"><span class="
 <td><p>Retrieve quantum architecture from Cortex.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.get_run" title="iqm_client.iqm_client.IQMClient.get_run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_run</span></code></a>(job_id)</p></td>
-<td><p>Query the status and results of the running task.</p></td>
+<td><p>Query the status and results of a submitted job.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.get_run_status" title="iqm_client.iqm_client.IQMClient.get_run_status"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_run_status</span></code></a>(job_id)</p></td>
-<td><p>Query the status of the running task.</p></td>
+<td><p>Query the status of a submitted job.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.submit_circuits" title="iqm_client.iqm_client.IQMClient.submit_circuits"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit_circuits</span></code></a>(circuits, *[, ...])</p></td>
 <td><p>Submits a batch of quantum circuits for execution on a quantum computer.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.wait_for_results" title="iqm_client.iqm_client.IQMClient.wait_for_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait_for_results</span></code></a>(job_id[, timeout_secs])</p></td>
-<td><p>Poll results until run is ready, failed, or timed out.</p></td>
+<td><p>Poll results until a job is either ready, failed, or timed out.</p></td>
 </tr>
 </tbody>
 </table>
@@ -565,18 +568,18 @@ Password must be set if <code class="docutils literal notranslate"><span class="
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>circuits</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference internal" href="iqm_client.iqm_client.Circuit.html#iqm_client.iqm_client.Circuit" title="iqm_client.iqm_client.Circuit"><em>iqm_client.iqm_client.Circuit</em></a><em>]</em>) – list of circuit to be executed</p></li>
+<li><p><strong>circuits</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference internal" href="iqm_client.iqm_client.Circuit.html#iqm_client.iqm_client.Circuit" title="iqm_client.iqm_client.Circuit"><em>iqm_client.iqm_client.Circuit</em></a><em>]</em>) – list of circuits to be executed</p></li>
 <li><p><strong>qubit_mapping</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em><em>]</em>) – Mapping of human-readable (logical) qubit names in to physical qubit names.
 Can be set to <code class="docutils literal notranslate"><span class="pre">None</span></code> if all <code class="docutils literal notranslate"><span class="pre">circuits</span></code> already use physical qubit names.
 Note that the <code class="docutils literal notranslate"><span class="pre">qubit_mapping</span></code> is used for all <code class="docutils literal notranslate"><span class="pre">circuits</span></code>.</p></li>
-<li><p><strong>custom_settings</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><em>Any</em></a><em>]</em><em>]</em>) – custom settings to overwrite default settings and calibration data.
-Note: This field should be always None in normal use.</p></li>
-<li><p><strong>calibration_set_id</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – ID of the calibration set to use instead of <code class="docutils literal notranslate"><span class="pre">settings</span></code></p></li>
-<li><p><strong>shots</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – number of times <code class="docutils literal notranslate"><span class="pre">circuit</span></code> is executed</p></li>
+<li><p><strong>custom_settings</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><em>Any</em></a><em>]</em><em>]</em>) – Custom settings to override default settings and calibration data.
+Note: This field should always be <code class="docutils literal notranslate"><span class="pre">None</span></code> in normal use.</p></li>
+<li><p><strong>calibration_set_id</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – ID of the calibration set to use, or <code class="docutils literal notranslate"><span class="pre">None</span></code> to use the latest one</p></li>
+<li><p><strong>shots</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – number of times <code class="docutils literal notranslate"><span class="pre">circuits</span></code> are executed</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>ID for the created task. This ID is needed to query the status and the execution results.</p>
+<dd class="field-even"><p>ID for the created job. This ID is needed to query the job status and the execution results.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/uuid.html#uuid.UUID" title="(in Python v3.9)">uuid.UUID</a></p>
@@ -587,13 +590,13 @@ Note: This field should be always None in normal use.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="iqm_client.iqm_client.IQMClient.get_run">
 <span class="sig-name descname"><span class="pre">get_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm_client.iqm_client.IQMClient.get_run" title="Permalink to this definition">#</a></dt>
-<dd><p>Query the status and results of the running task.</p>
+<dd><p>Query the status and results of a submitted job.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>job_id</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><em>uuid.UUID</em></a>) – id of the task</p>
+<dd class="field-odd"><p><strong>job_id</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><em>uuid.UUID</em></a>) – id of the job to query</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>result of the run (can be pending)</p>
+<dd class="field-even"><p>result of the job (can be pending)</p>
 </dd>
 <dt class="field-odd">Raises</dt>
 <dd class="field-odd"><ul class="simple">
@@ -610,13 +613,13 @@ Note: This field should be always None in normal use.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="iqm_client.iqm_client.IQMClient.get_run_status">
 <span class="sig-name descname"><span class="pre">get_run_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm_client.iqm_client.IQMClient.get_run_status" title="Permalink to this definition">#</a></dt>
-<dd><p>Query the status of the running task.</p>
+<dd><p>Query the status of a submitted job.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>job_id</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><em>uuid.UUID</em></a>) – id of the task</p>
+<dd class="field-odd"><p><strong>job_id</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><em>uuid.UUID</em></a>) – id of the job to query</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>status of the run</p>
+<dd class="field-even"><p>status of the job</p>
 </dd>
 <dt class="field-odd">Raises</dt>
 <dd class="field-odd"><ul class="simple">
@@ -633,16 +636,16 @@ Note: This field should be always None in normal use.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="iqm_client.iqm_client.IQMClient.wait_for_results">
 <span class="sig-name descname"><span class="pre">wait_for_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout_secs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">900</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm_client.iqm_client.IQMClient.wait_for_results" title="Permalink to this definition">#</a></dt>
-<dd><p>Poll results until run is ready, failed, or timed out.</p>
+<dd><p>Poll results until a job is either ready, failed, or timed out.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>job_id</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><em>uuid.UUID</em></a>) – id of the task to wait</p></li>
+<li><p><strong>job_id</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><em>uuid.UUID</em></a>) – id of the job to wait for</p></li>
 <li><p><strong>timeout_secs</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – how long to wait for a response before raising an APITimeoutError</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>run result</p>
+<dd class="field-even"><p>job result</p>
 </dd>
 <dt class="field-odd">Raises</dt>
 <dd class="field-odd"><p><a class="reference internal" href="iqm_client.iqm_client.APITimeoutError.html#iqm_client.iqm_client.APITimeoutError" title="iqm_client.iqm_client.APITimeoutError"><strong>APITimeoutError</strong></a> – time exceeded the set timeout</p>
@@ -727,7 +730,7 @@ Note: This field should be always None in normal use.</p></li>
     By IQM client developers<br/>
   
       &copy; Copyright 2021-2022, IQM.<br/>
-    Last updated on 2022-10-19.<br/>
+    Last updated on 2022-10-21.<br/>
 </p>
         </footer>
     </div>
