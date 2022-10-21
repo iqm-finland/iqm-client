@@ -24,7 +24,7 @@ Each Instruction type acts on a number of :attr:`~Instruction.qubits`, and expec
 Instructions
 ============
 
-We currently support three native instruction types:
+We currently support the following native instruction types:
 
 ================ =========== ====================================== ===========
 name             # of qubits args                                   description
@@ -32,7 +32,7 @@ name             # of qubits args                                   description
 measurement      >= 1        ``key: str``                           Measurement in the Z basis.
 phased_rx        1           ``angle_t: float``, ``phase_t: float`` Phased x-rotation gate.
 cz               2                                                  Controlled-Z gate.
-barrier          >= 2                                               Barrier instruction.
+barrier          >= 2                                               Execution barrier.
 ================ =========== ====================================== ===========
 
 Measurement
@@ -44,7 +44,10 @@ All the measurement keys in a circuit must be unique.
 Each qubit may only be measured once.
 The measurement must be the last operation on each qubit, i.e. it cannot be followed by gates.
 
-Example: ``Instruction(name='measurement', qubits=('alice', 'bob', 'charlie'), args={'key': 'm1'})``
+.. code-block:: python
+   :caption: Example
+
+   Instruction(name='measurement', qubits=('alice', 'bob', 'charlie'), args={'key': 'm1'})
 
 
 Phased Rx
@@ -62,7 +65,10 @@ The gate is represented in the standard computational basis by the matrix
 where :math:`\theta` = ``angle_t``, :math:`\phi` = ``phase_t``,
 and :math:`X` and :math:`Y` are Pauli matrices.
 
-Example: ``Instruction(name='phased_rx', qubits=('bob'), args={'angle_t': 0.7, 'phase_t': 0.25})``
+.. code-block:: python
+   :caption: Example
+
+   Instruction(name='phased_rx', qubits=('bob',), args={'angle_t': 0.7, 'phase_t': 0.25})
 
 
 CZ
@@ -72,25 +78,35 @@ Controlled-Z gate. Represented in the standard computational basis by the matrix
 
 .. math:: \text{CZ} = \text{diag}(1, 1, 1, -1).
 
-Symmetric wrt. the qubits it's acting on. Takes no arguments.
+It is symmetric wrt. the qubits it's acting on, and takes no arguments.
 
-Example: ``Instruction(name='cz', qubits=('alice', 'bob'), args={})``
+.. code-block:: python
+   :caption: Example
+
+   Instruction(name='cz', qubits=('alice', 'bob'), args={})
 
 
 Barrier
 -------
 
-Barriers ensure that all operations after the barrier on the qubit subsystems spanned by
-the barrier are only executed when all the operations before the barrier have been completed.
+A barrier instruction affects the physical execution order of the instructions elsewhere in the
+circuit that act on qubits spanned by the barrier.
+It ensures that any such instructions that succeed the barrier are only executed after
+all such instructions that precede the barrier have been completed.
+Hence it can be used to guarantee a specific causal order for the other instructions.
+It takes no arguments, and has no other effect.
 
-Example: ``Instruction(name='barrier', qubits=('alice', 'bob'), args={})``
+.. code-block:: python
+   :caption: Example
+
+   Instruction(name='barrier', qubits=('alice', 'bob'), args={})
 
 
 Circuit output
 ==============
 
-The :class:`RunResult` class represents the results of the quantum circuit execution.
-If the run succeeded, :attr:`RunResult.measurements` contains the output of the batch of circuits,
+The :class:`RunResult` class represents the results of the quantum circuit execution job.
+If the job succeeded, :attr:`RunResult.measurements` contains the output of the batch of circuits,
 consisting of the results of the measurement operations in each circuit.
 It is a list of dictionaries, where each dict maps each measurement key to a 2D array of measurement
 results, represented as a nested list.
@@ -142,12 +158,12 @@ class CircuitExecutionError(RuntimeError):
 
 
 class APITimeoutError(CircuitExecutionError):
-    """Exception for when executing a task on the server takes too long."""
+    """Exception for when executing a job on the server takes too long."""
 
 
 class Status(str, Enum):
     """
-    Status of a task.
+    Status of a job.
     """
 
     PENDING = 'pending'
@@ -163,7 +179,7 @@ class Instruction(BaseModel):
     qubits: tuple[str, ...] = Field(
         ...,
         description='names of the logical qubits the operation acts on',
-        example=['alice'],
+        example=('alice',),
     )
     """names of the logical qubits the operation acts on"""
     args: dict[str, Any] = Field(
@@ -221,7 +237,7 @@ def serialize_qubit_mapping(qubit_mapping: dict[str, str]) -> list[SingleQubitMa
 
 
 class RunRequest(BaseModel):
-    """Request for an IQM quantum computer to execute a batch of quantum circuits.
+    """Request for an IQM quantum computer to run a job that executes a batch of quantum circuits.
 
     Note: all circuits in a batch must measure the same qubits otherwise batch execution fails.
     """
@@ -230,10 +246,10 @@ class RunRequest(BaseModel):
     """batch of quantum circuit(s) to execute"""
     custom_settings: dict[str, Any] = Field(
         None,
-        description="""Custom settings to overwrite default IQM hardware settings and calibration data.
+        description="""Custom settings to override default IQM hardware settings and calibration data.
 Note: This field should be always None in normal use.""",
     )
-    """Custom settings to overwrite default IQM hardware settings and calibration data.
+    """Custom settings to override default IQM hardware settings and calibration data.
 Note: This field should be always None in normal use."""
     calibration_set_id: Optional[int] = Field(
         None, description='ID of the calibration set to use, or None to use the latest calibration set'
@@ -259,7 +275,7 @@ CircuitMeasurementResultsBatch = list[CircuitMeasurementResults]
 
 
 class Metadata(BaseModel):
-    """Metadata belonging to a job sumission"""
+    """Metadata describing a circuit execution job."""
 
     shots: int = Field(..., description='how many times to execute each circuit in the batch')
     """how many times to execute each circuit in the batch"""
@@ -275,23 +291,23 @@ class Metadata(BaseModel):
 
 
 class RunResult(BaseModel):
-    """Results of executing a batch of circuit(s).
+    """Results of a circuit execution job.
 
     * ``measurements`` is present iff the status is ``'ready'``.
     * ``message`` carries additional information for the ``'failed'`` status.
     * If the status is ``'pending'``, ``measurements`` and ``message`` are ``None``.
     """
 
-    status: Status = Field(..., description="current status of the run, in ``{'pending', 'ready', 'failed'}``")
-    """current status of the run, in ``{'pending', 'ready', 'failed'}``"""
+    status: Status = Field(..., description="current status of the job, in ``{'pending', 'ready', 'failed'}``")
+    """current status of the job, in ``{'pending', 'ready', 'failed'}``"""
     measurements: Optional[CircuitMeasurementResultsBatch] = Field(
-        None, description='if the run has finished successfully, the measurement results for the circuit(s)'
+        None, description='if the job has finished successfully, the measurement results for the circuit(s)'
     )
-    """if the run has finished successfully, the measurement results for the circuit(s)"""
-    message: Optional[str] = Field(None, description='if the run failed, an error message')
-    """if the run failed, an error message"""
-    metadata: Metadata = Field(..., description='metadata about the underlying job request')
-    """metadata about the underlying job request"""
+    """if the job has finished successfully, the measurement results for the circuit(s)"""
+    message: Optional[str] = Field(None, description='if the job failed, an error message')
+    """if the job failed, an error message"""
+    metadata: Metadata = Field(..., description='metadata about the job')
+    """metadata about the job"""
     warnings: Optional[list[str]] = Field(None, description='list of warning messages')
     """list of warning messages"""
 
@@ -303,7 +319,7 @@ class RunResult(BaseModel):
             inp: value to parse, has to map to RunResult
 
         Returns:
-            parsed run result
+            parsed job result
 
         """
         input_copy = inp.copy()
@@ -311,12 +327,12 @@ class RunResult(BaseModel):
 
 
 class RunStatus(BaseModel):
-    """Status of a circuit execution request."""
+    """Status of a circuit execution job."""
 
-    status: Status = Field(..., description="current status of the run, in ``{'pending', 'ready', 'failed'}``")
-    """current status of the run, in ``{'pending', 'ready', 'failed'}``"""
-    message: Optional[str] = Field(None, description='if the run failed, an error message')
-    """if the run failed, an error message"""
+    status: Status = Field(..., description="current status of the job, in ``{'pending', 'ready', 'failed'}``")
+    """current status of the job, in ``{'pending', 'ready', 'failed'}``"""
+    message: Optional[str] = Field(None, description='if the job failed, an error message')
+    """if the job failed, an error message"""
     warnings: Optional[list[str]] = Field(None, description='list of warning messages')
     """list of warning messages"""
 
@@ -328,7 +344,7 @@ class RunStatus(BaseModel):
             inp: value to parse, has to map to RunResult
 
         Returns:
-            parsed run result
+            parsed job status
 
         """
         input_copy = inp.copy()
@@ -503,13 +519,13 @@ class IQMClient:
             must not be set.
 
     Keyword Args:
-        auth_server_url: Optional base URL of the authentication server.
+        auth_server_url (str): Optional base URL of the authentication server.
             This can also be set in the IQM_AUTH_SERVER environment variable.
             If unset, requests will be sent unauthenticated.
-        username: Optional username to log in to authentication server.
+        username (str): Optional username to log in to authentication server.
             This can also be set in the IQM_AUTH_USERNAME environment variable.
             Username must be set if ``auth_server_url`` is set.
-        password: Optional password to log in to authentication server.
+        password (str): Optional password to log in to authentication server.
             This can also be set in the IQM_AUTH_PASSWORD environment variable.
             Password must be set if ``auth_server_url`` is set.
     """
@@ -549,17 +565,17 @@ class IQMClient:
         """Submits a batch of quantum circuits for execution on a quantum computer.
 
         Args:
-            circuits: list of circuit to be executed
+            circuits: list of circuits to be executed
             qubit_mapping: Mapping of human-readable (logical) qubit names in to physical qubit names.
                 Can be set to ``None`` if all ``circuits`` already use physical qubit names.
                 Note that the ``qubit_mapping`` is used for all ``circuits``.
-            custom_settings: custom settings to overwrite default settings and calibration data.
-                Note: This field should be always None in normal use.
-            calibration_set_id: ID of the calibration set to use instead of ``settings``
-            shots: number of times ``circuit`` is executed
+            custom_settings: Custom settings to override default settings and calibration data.
+                Note: This field should always be ``None`` in normal use.
+            calibration_set_id: ID of the calibration set to use, or ``None`` to use the latest one
+            shots: number of times ``circuits`` are executed
 
         Returns:
-            ID for the created task. This ID is needed to query the status and the execution results.
+            ID for the created job. This ID is needed to query the job status and the execution results.
         """
         serialized_qubit_mapping: Optional[list[SingleQubitMapping]] = None
         if qubit_mapping is not None:
@@ -605,13 +621,13 @@ class IQMClient:
         return UUID(result.json()['id'])
 
     def get_run(self, job_id: UUID) -> RunResult:
-        """Query the status and results of the running task.
+        """Query the status and results of a submitted job.
 
         Args:
-            job_id: id of the task
+            job_id: id of the job to query
 
         Returns:
-            result of the run (can be pending)
+            result of the job (can be pending)
 
         Raises:
             HTTPException: http exceptions
@@ -633,13 +649,13 @@ class IQMClient:
         return run_result
 
     def get_run_status(self, job_id: UUID) -> RunStatus:
-        """Query the status of the running task.
+        """Query the status of a submitted job.
 
         Args:
-            job_id: id of the task
+            job_id: id of the job to query
 
         Returns:
-            status of the run
+            status of the job
 
         Raises:
             HTTPException: http exceptions
@@ -659,14 +675,14 @@ class IQMClient:
         return run_result
 
     def wait_for_results(self, job_id: UUID, timeout_secs: float = DEFAULT_TIMEOUT_SECONDS) -> RunResult:
-        """Poll results until run is ready, failed, or timed out.
+        """Poll results until a job is either ready, failed, or timed out.
 
         Args:
-            job_id: id of the task to wait
+            job_id: id of the job to wait for
             timeout_secs: how long to wait for a response before raising an APITimeoutError
 
         Returns:
-            run result
+            job result
 
         Raises:
             APITimeoutError: time exceeded the set timeout
@@ -677,7 +693,7 @@ class IQMClient:
             if results.status != Status.PENDING:
                 return results
             time.sleep(SECONDS_BETWEEN_CALLS)
-        raise APITimeoutError(f"The task didn't finish in {timeout_secs} seconds.")
+        raise APITimeoutError(f"The job didn't finish in {timeout_secs} seconds.")
 
     def get_quantum_architecture(self) -> QuantumArchitectureSpecification:
         """Retrieve quantum architecture from Cortex.

@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 9.1
+===========
+
+* Update documentation. `#57 <https://github.com/iqm-finland/iqm-client/pull/57>`_
+
 Version 9.0
 ===========
 
