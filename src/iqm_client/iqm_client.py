@@ -538,6 +538,7 @@ class IQMClient:
         if tokens_file and credentials:
             raise ClientConfigurationError('Either external token or credentials must be provided. Both were provided.')
         self._base_url = url
+        self._tokens_file = tokens_file
         self._external_token = _get_external_token(tokens_file)
         if not self._external_token:
             self._credentials = _get_credentials(credentials)
@@ -755,6 +756,11 @@ class IQMClient:
             is not available.
         """
         if self._external_token:
+            # If access token obtained from external tokens file expires soon, get updated token from the tokens file
+            if _time_left_seconds(self._external_token.access_token) < REFRESH_MARGIN_SECONDS:
+                self._external_token = _get_external_token(self._tokens_file)
+                if not self._external_token:
+                    return None
             return f'Bearer {self._external_token.access_token}'
         if self._credentials is None or not self._credentials.access_token:
             return None
