@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 9.2
+===========
+
+* New external token is now obtained from tokens file if old token expired. `#58 <https://github.com/iqm-finland/iqm-client/pull/58>`_
+
 Version 9.1
 ===========
 
@@ -117,7 +122,7 @@ Version 3.1
 ===========
 
 * Update documentation to mention barriers. `#28 <https://github.com/iqm-finland/iqm-client/pull/28>`_
-  
+
 Version 3.0
 ===========
 
