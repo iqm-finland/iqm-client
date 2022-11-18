@@ -14,13 +14,18 @@
 """Tests for user authentication and token management in IQM client.
 """
 
+import builtins
+import io
+import json
 import os
+from time import sleep
 
-from mockito import unstub
+from mockito import unstub, when
 import pytest
 
 from iqm_client import ClientAuthenticationError, Credentials, IQMClient
-from tests.conftest import expect_logout, expect_status_request, prepare_tokens
+from iqm_client.iqm_client import _time_left_seconds
+from tests.conftest import expect_logout, expect_status_request, make_token, prepare_tokens
 
 
 def test_get_initial_tokens_with_credentials_from_arguments(base_url, credentials):
@@ -66,7 +71,7 @@ def test_add_authorization_header_when_credentials_are_provided(base_url, creden
 
 def test_add_authorization_header_when_external_token_is_provided(base_url, tokens_dict):
     """
-    Tests that requests are sent with Authorization header when credentials are provided
+    Tests that requests are sent with Authorization header when external token is provided
     """
     tokens_path = os.path.dirname(os.path.realpath(__file__)) + '/resources/tokens.json'
     job_id = expect_status_request(base_url, tokens_dict['access_token'])
@@ -193,4 +198,25 @@ def test_logout_on_client_destruction(base_url, credentials):
 
     del client
 
+    unstub()
+
+
+def test_external_token_updated_if_expired(base_url):
+    """
+    Tests that client gets updated token from tokens file if old external token has expired
+    """
+    tokens_path = 'dummy_path'
+
+    def setup_tokens_file(access_token_lifetime):
+        access_token = make_token('Bearer', access_token_lifetime)
+        tokens_file_contents = json.dumps({'auth_server_url': base_url + '/auth', 'access_token': access_token})
+        when(builtins).open(tokens_path, 'r', encoding='utf-8').thenReturn(io.StringIO(tokens_file_contents))
+
+    setup_tokens_file(1)
+    client = IQMClient(base_url, tokens_file=tokens_path)
+    sleep(2)
+    setup_tokens_file(300)
+    bearer_token = client._get_bearer_token()
+    assert bearer_token is not None
+    assert _time_left_seconds(bearer_token.removeprefix('Bearer ')) > 0
     unstub()
