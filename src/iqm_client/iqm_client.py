@@ -567,7 +567,7 @@ class IQMClient:
 
         Args:
             circuits: list of circuits to be executed
-            qubit_mapping: Mapping of human-readable (logical) qubit names in to physical qubit names.
+            qubit_mapping: Mapping of logical qubit names to physical qubit names.
                 Can be set to ``None`` if all ``circuits`` already use physical qubit names.
                 Note that the ``qubit_mapping`` is used for all ``circuits``.
             custom_settings: Custom settings to override default settings and calibration data.

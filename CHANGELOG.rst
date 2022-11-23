@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 9.3
+===========
+
+* Add integration guide. `#59 <https://github.com/iqm-finland/iqm-client/pull/59>`_
+
 Version 9.2
 ===========
 
