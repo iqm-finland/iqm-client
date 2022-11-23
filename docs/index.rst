@@ -15,6 +15,7 @@ Contents
 
    readme
    API
+   integration_guide
    license
    authors
    changelog

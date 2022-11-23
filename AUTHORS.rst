@@ -9,3 +9,4 @@ Contributors
 * Maxim Smirnov <dc914337@gmail.com>
 * Olli Tyrkkö <otyrkko@meetiqm.com>
 * Rakhim Davletkaliyev <rakhim.davletkaliyev@meetiqm.com>
+* Matthias Beuerle <matthias.beuerle@meetiqm.com>

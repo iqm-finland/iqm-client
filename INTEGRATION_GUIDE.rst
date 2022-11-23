@@ -13,14 +13,14 @@ Authentication
 --------------
 
 IQM uses OAuth 2.0 authentication to manage access to quantum computers. 
-For easy token management we have developed `Cortex CLI<https://github.com/iqm-finland/cortex-cli>`_ which is the recommended way to generate and refresh tokens.
+For easy token management we have developed `Cortex CLI <https://github.com/iqm-finland/cortex-cli>`_ which is the recommended way to generate and refresh tokens.
 IQM client can read these tokens by providing the environment variable ``IQM_TOKENS_FILE`` pointing to the tokens file managed by Cortex CLI.
 
 Circuit compilation
 -------------------
 
 IQM does not provide an open source circuit transpilation library so this will have to be supplied by the quantum computing framework or a third party library.
-To provide the necessary information to do circuit transpilation :method:`IQMClient.get_quantum_architecture` returns the qubits, qubit connectivity and native operations.
+To provide the necessary information to do circuit transpilation :meth:`IQMClient.get_quantum_architecture` returns the qubits, qubit connectivity and native operations.
 This information should enable circuit transpilation for IQM quantum architectures.
 
 Note on qubit mapping
