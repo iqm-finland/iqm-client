@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 9.3
+===========
+
+* Support OpenTelemetry trace propagation. `#59 <https://github.com/iqm-finland/iqm-client/pull/59>`_
+
 Version 9.2
 ===========
 
