@@ -9,6 +9,45 @@ IQM client offers the functionality to submit circuits to an IQM quantum compute
 
 The following sections give some information on how to integrate IQM quantum computers into your quantum computing framework.
 
+Code example
+------------
+
+Initialising the IQM client is simple and in case you perform authentication as described below requires only the URL to the IQM quantum computer.
+
+.. code-block:: python
+
+    from iqm_client import IQMClient
+
+    server_url = "https://my_iqm.qc.fi"
+
+    iqm_client = IQMClient(server_url)
+
+To submit a circuit the circuit has to be specified in the IQM transfer format.
+
+.. code-block:: python
+
+    from iqm_client import Circuit, Instruction
+
+    instructions = (
+        Instruction(
+            name="phased_rx", qubits=("QB1",), args={"phase_t": 0.7, "angle_t": 0.25}
+        ),
+        Instruction(name="cz", qubits=("QB1", "QB2"), args={}),
+        Instruction(name="measurement", qubits=("QB2",), args={"key": "Qubit 2"}),
+    )
+
+    circuit = Circuit(name="quantum_circuit", instructions=instructions)
+
+Then the circuit can be submitted and its status and result can be queried with the job id.
+
+.. code-block:: python
+
+    job_id = iqm_client.submit_circuits([circuit])
+
+    job_status = iqm_client.get_run_status(job_id)
+
+    job = iqm_client.wait_for_results(job_id)
+
 Authentication
 --------------
 
