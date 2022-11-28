@@ -611,6 +611,17 @@ class IQMClient:
         if bearer_token:
             headers['Authorization'] = bearer_token
 
+        try:
+            # check if someone is trying to profile us with OpenTelemetry
+            # pylint: disable=import-outside-toplevel
+            # pylint: disable=import-error
+            from opentelemetry import propagate
+
+            propagate.inject(headers)
+        except ImportError as _:
+            # no OpenTelemetry, no problem
+            pass
+
         result = requests.post(
             join(self._base_url, 'jobs'), json=data.dict(exclude_none=True), headers=headers, timeout=REQUESTS_TIMEOUT
         )
