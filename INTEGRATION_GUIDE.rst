@@ -2,10 +2,10 @@
 Integration Guide
 =================
 
-IQM client is designed to be the python adapter to IQMs quantum computers for application level quantum computing libraries.
+IQM client is designed to be the python adapter to IQMs quantum computers for application level quantum computing frameworks.
 For example integrations maintained by IQM please refer to the `Qiskit <https://github.com/iqm-finland/qiskit-on-iqm>`_ and `Cirq <https://github.com/iqm-finland/cirq-on-iqm>`_ integrations.
 
-IQM client offers the functionality to submit circuits to an IQM quantum computer, query a job or a job status and retrieving the quantum architecture of the quantum computer being used.
+IQM client offers the functionality to submit circuits to an IQM quantum computer, query a job or a job status and retrieve the quantum architecture of the quantum computer being used.
 
 The following sections give some information on how to integrate IQM quantum computers into your quantum computing framework.
 
@@ -66,7 +66,9 @@ Note on qubit mapping
 ---------------------
 
 We encourage to transpile circuits to use the physical IQM qubit names before submitting them to IQM quantum computers.
-In case the quantum computing framework does not allow for this, providing a qubmit mapping can do the translation from the framework qubit names to IQM qubit names.
+In case the quantum computing framework does not allow for this, providing a qubit mapping can do the translation from the framework qubit names to IQM qubit names.
+Note, that qubit mapping is not supposed to be associated with individual circuits, but rather with the entire job request to IQM server.
+Typically, you would have some local representation of the QPU and transpile the circuits against that representation, then use qubit mapping along with the generated circuits to map from the local representation to the IQM representation of qubit names.
 We discourage exposing this feature to end users of the quantum computing framework.
 
 Integration testing
