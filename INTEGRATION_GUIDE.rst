@@ -53,7 +53,7 @@ Authentication
 
 IQM uses OAuth 2.0 authentication to manage access to quantum computers. 
 For easy token management we have developed `Cortex CLI <https://github.com/iqm-finland/cortex-cli>`_ which is the recommended way to generate and refresh tokens.
-IQM client can read these tokens by providing the environment variable ``IQM_TOKENS_FILE`` pointing to the tokens file managed by Cortex CLI.
+IQM client can use these tokens by reading an environment variable ``IQM_TOKENS_FILE`` pointing to the tokens file managed by Cortex CLI.
 
 Circuit compilation
 -------------------
