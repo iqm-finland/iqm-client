@@ -229,6 +229,11 @@
   </ul>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="../integration_guide.html">
+   Integration Guide
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="../license.html">
    License
   </a>
@@ -271,6 +276,9 @@
 <ul class="version_list">
     
       <li class="version_item current_version">dev</li>
+    
+    
+      <li class="version_item"><a href="../versions/9.4/index.html">9.4</a></li>
     
     
       <li class="version_item"><a href="../versions/9.3/index.html">9.3</a></li>
@@ -494,7 +502,7 @@ title="Print to PDF"
   <strong>
     
     You're reading the documentation for a development version.
-    For the latest released version, please have a look at <a href="../versions/9.3/index.html">9.3</a>.
+    For the latest released version, please have a look at <a href="../versions/9.4/index.html">9.4</a>.
     
   </strong>
 </div>
@@ -575,7 +583,7 @@ Password must be set if <code class="docutils literal notranslate"><span class="
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>circuits</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference internal" href="iqm_client.iqm_client.Circuit.html#iqm_client.iqm_client.Circuit" title="iqm_client.iqm_client.Circuit"><em>iqm_client.iqm_client.Circuit</em></a><em>]</em>) – list of circuits to be executed</p></li>
-<li><p><strong>qubit_mapping</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em><em>]</em>) – Mapping of human-readable (logical) qubit names in to physical qubit names.
+<li><p><strong>qubit_mapping</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em><em>]</em>) – Mapping of logical qubit names to physical qubit names.
 Can be set to <code class="docutils literal notranslate"><span class="pre">None</span></code> if all <code class="docutils literal notranslate"><span class="pre">circuits</span></code> already use physical qubit names.
 Note that the <code class="docutils literal notranslate"><span class="pre">qubit_mapping</span></code> is used for all <code class="docutils literal notranslate"><span class="pre">circuits</span></code>.</p></li>
 <li><p><strong>custom_settings</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><em>Any</em></a><em>]</em><em>]</em>) – Custom settings to override default settings and calibration data.
@@ -736,7 +744,7 @@ Note: This field should always be <code class="docutils literal notranslate"><sp
     By IQM client developers<br/>
   
       &copy; Copyright 2021-2022, IQM.<br/>
-    Last updated on 2022-11-25.<br/>
+    Last updated on 2022-11-30.<br/>
 </p>
         </footer>
     </div>
