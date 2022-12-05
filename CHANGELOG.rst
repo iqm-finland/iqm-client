@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 9.5
+===========
+
+* Retry requests to the IQM Server if the server is busy. `#61 <https://github.com/iqm-finland/iqm-client/pull/61>`_
+
 Version 9.4
 ===========
 

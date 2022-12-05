@@ -128,7 +128,7 @@ import json
 import os
 from posixpath import join
 import time
-from typing import Any, Optional, Union
+from typing import Any, Callable, Optional, Union
 from uuid import UUID
 import warnings
 
@@ -553,6 +553,20 @@ class IQMClient:
         except Exception:  # pylint: disable=broad-except
             pass
 
+    def _retry_request_on_error(self, request: Callable[[], requests.Response]) -> requests.Response:
+        """This is a temporary workaround for 502 errors.
+        The current implementation of the server side can run out of network connections
+        and silently drop incoming connections making IQM Client to fail with 502 errors."""
+
+        while True:
+            result = request()
+            if result.status_code == 502:
+                time.sleep(SECONDS_BETWEEN_CALLS)
+                continue
+            break
+
+        return result
+
     # pylint: disable=too-many-locals
     def submit_circuits(
         self,
@@ -622,8 +636,13 @@ class IQMClient:
             # no OpenTelemetry, no problem
             pass
 
-        result = requests.post(
-            join(self._base_url, 'jobs'), json=data.dict(exclude_none=True), headers=headers, timeout=REQUESTS_TIMEOUT
+        result = self._retry_request_on_error(
+            lambda: requests.post(
+                join(self._base_url, 'jobs'),
+                json=data.dict(exclude_none=True),
+                headers=headers,
+                timeout=REQUESTS_TIMEOUT,
+            )
         )
 
         if result.status_code == 401:
@@ -646,11 +665,15 @@ class IQMClient:
             CircuitExecutionError: IQM server specific exceptions
         """
         bearer_token = self._get_bearer_token()
-        result = requests.get(
-            join(self._base_url, 'jobs/', str(job_id)),
-            headers=None if not bearer_token else {'Authorization': bearer_token},
-            timeout=REQUESTS_TIMEOUT,
+
+        result = self._retry_request_on_error(
+            lambda: requests.get(
+                join(self._base_url, 'jobs/', str(job_id)),
+                headers=None if not bearer_token else {'Authorization': bearer_token},
+                timeout=REQUESTS_TIMEOUT,
+            )
         )
+
         result.raise_for_status()
         run_result = RunResult.from_dict(result.json())
         if run_result.warnings:
@@ -674,11 +697,15 @@ class IQMClient:
             CircuitExecutionError: IQM server specific exceptions
         """
         bearer_token = self._get_bearer_token()
-        result = requests.get(
-            join(self._base_url, 'jobs/', str(job_id), 'status'),
-            headers=None if not bearer_token else {'Authorization': bearer_token},
-            timeout=REQUESTS_TIMEOUT,
+
+        result = self._retry_request_on_error(
+            lambda: requests.get(
+                join(self._base_url, 'jobs/', str(job_id), 'status'),
+                headers=None if not bearer_token else {'Authorization': bearer_token},
+                timeout=REQUESTS_TIMEOUT,
+            )
         )
+
         result.raise_for_status()
         run_result = RunStatus.from_dict(result.json())
         if run_result.warnings:
