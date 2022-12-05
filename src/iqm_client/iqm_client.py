@@ -554,10 +554,9 @@ class IQMClient:
             pass
 
     def _retry_request_on_error(self, request: Callable[[], requests.Response]) -> requests.Response:
-        """This is a workaround for 502 errors.
-        Currnet implementation of the server side CoCoS can run out of network connections
-        and silently drop incoming connections making IQM Client to fail with 502 errors.
-        This is a temporary workaround to retry the request in case of 502 errors."""
+        """This is a temporary workaround for 502 errors.
+        The current implementation of the server side can run out of network connections
+        and silently drop incoming connections making IQM Client to fail with 502 errors."""
 
         while True:
             result = request()
