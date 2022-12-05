@@ -622,9 +622,21 @@ class IQMClient:
             # no OpenTelemetry, no problem
             pass
 
-        result = requests.post(
-            join(self._base_url, 'jobs'), json=data.dict(exclude_none=True), headers=headers, timeout=REQUESTS_TIMEOUT
-        )
+        # this is a workaround for 502 errors.
+        # Currnet implementation of the server side CoCoS can run out of network connections
+        # and silently drop incoming connections making IQM Client to fail with 502 errors.
+        # This is a temporary workaround to retry the request in case of 502 errors.
+        while True:
+            result = requests.post(
+                join(self._base_url, 'jobs'),
+                json=data.dict(exclude_none=True),
+                headers=headers,
+                timeout=REQUESTS_TIMEOUT,
+            )
+            if result.status_code == 502:
+                time.sleep(SECONDS_BETWEEN_CALLS)
+                continue
+            break
 
         if result.status_code == 401:
             raise ClientConfigurationError(f'Authentication failed: {result.text}')
@@ -646,11 +658,22 @@ class IQMClient:
             CircuitExecutionError: IQM server specific exceptions
         """
         bearer_token = self._get_bearer_token()
-        result = requests.get(
-            join(self._base_url, 'jobs/', str(job_id)),
-            headers=None if not bearer_token else {'Authorization': bearer_token},
-            timeout=REQUESTS_TIMEOUT,
-        )
+
+        # this is a workaround for 502 errors.
+        # Currnet implementation of the server side CoCoS can run out of network connections
+        # and silently drop incoming connections making IQM Client to fail with 502 errors.
+        # This is a temporary workaround to retry the request in case of 502 errors.
+        while True:
+            result = requests.get(
+                join(self._base_url, 'jobs/', str(job_id)),
+                headers=None if not bearer_token else {'Authorization': bearer_token},
+                timeout=REQUESTS_TIMEOUT,
+            )
+            if result.status_code == 502:
+                time.sleep(SECONDS_BETWEEN_CALLS)
+                continue
+            break
+
         result.raise_for_status()
         run_result = RunResult.from_dict(result.json())
         if run_result.warnings:
@@ -674,11 +697,22 @@ class IQMClient:
             CircuitExecutionError: IQM server specific exceptions
         """
         bearer_token = self._get_bearer_token()
-        result = requests.get(
-            join(self._base_url, 'jobs/', str(job_id), 'status'),
-            headers=None if not bearer_token else {'Authorization': bearer_token},
-            timeout=REQUESTS_TIMEOUT,
-        )
+
+        # this is a workaround for 502 errors.
+        # Currnet implementation of the server side CoCoS can run out of network connections
+        # and silently drop incoming connections making IQM Client to fail with 502 errors.
+        # This is a temporary workaround to retry the request in case of 502 errors.
+        while True:
+            result = requests.get(
+                join(self._base_url, 'jobs/', str(job_id), 'status'),
+                headers=None if not bearer_token else {'Authorization': bearer_token},
+                timeout=REQUESTS_TIMEOUT,
+            )
+            if result.status_code == 502:
+                time.sleep(SECONDS_BETWEEN_CALLS)
+                continue
+            break
+
         result.raise_for_status()
         run_result = RunStatus.from_dict(result.json())
         if run_result.warnings:
