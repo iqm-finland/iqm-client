@@ -128,7 +128,7 @@ import json
 import os
 from posixpath import join
 import time
-from typing import Any, Optional, Union
+from typing import Any, Callable, Optional, Union
 from uuid import UUID
 import warnings
 
@@ -553,6 +553,21 @@ class IQMClient:
         except Exception:  # pylint: disable=broad-except
             pass
 
+    def _retry_request_on_error(self, request: Callable[[], requests.Response]) -> requests.Response:
+        """This is a workaround for 502 errors.
+        Currnet implementation of the server side CoCoS can run out of network connections
+        and silently drop incoming connections making IQM Client to fail with 502 errors.
+        This is a temporary workaround to retry the request in case of 502 errors."""
+
+        while True:
+            result = request()
+            if result.status_code == 502:
+                time.sleep(SECONDS_BETWEEN_CALLS)
+                continue
+            break
+
+        return result
+
     # pylint: disable=too-many-locals
     def submit_circuits(
         self,
@@ -622,21 +637,14 @@ class IQMClient:
             # no OpenTelemetry, no problem
             pass
 
-        # this is a workaround for 502 errors.
-        # Currnet implementation of the server side CoCoS can run out of network connections
-        # and silently drop incoming connections making IQM Client to fail with 502 errors.
-        # This is a temporary workaround to retry the request in case of 502 errors.
-        while True:
-            result = requests.post(
+        result = self._retry_request_on_error(
+            lambda: requests.post(
                 join(self._base_url, 'jobs'),
                 json=data.dict(exclude_none=True),
                 headers=headers,
                 timeout=REQUESTS_TIMEOUT,
             )
-            if result.status_code == 502:
-                time.sleep(SECONDS_BETWEEN_CALLS)
-                continue
-            break
+        )
 
         if result.status_code == 401:
             raise ClientConfigurationError(f'Authentication failed: {result.text}')
@@ -659,20 +667,13 @@ class IQMClient:
         """
         bearer_token = self._get_bearer_token()
 
-        # this is a workaround for 502 errors.
-        # Currnet implementation of the server side CoCoS can run out of network connections
-        # and silently drop incoming connections making IQM Client to fail with 502 errors.
-        # This is a temporary workaround to retry the request in case of 502 errors.
-        while True:
-            result = requests.get(
+        result = self._retry_request_on_error(
+            lambda: requests.get(
                 join(self._base_url, 'jobs/', str(job_id)),
                 headers=None if not bearer_token else {'Authorization': bearer_token},
                 timeout=REQUESTS_TIMEOUT,
             )
-            if result.status_code == 502:
-                time.sleep(SECONDS_BETWEEN_CALLS)
-                continue
-            break
+        )
 
         result.raise_for_status()
         run_result = RunResult.from_dict(result.json())
@@ -698,20 +699,13 @@ class IQMClient:
         """
         bearer_token = self._get_bearer_token()
 
-        # this is a workaround for 502 errors.
-        # Currnet implementation of the server side CoCoS can run out of network connections
-        # and silently drop incoming connections making IQM Client to fail with 502 errors.
-        # This is a temporary workaround to retry the request in case of 502 errors.
-        while True:
-            result = requests.get(
+        result = self._retry_request_on_error(
+            lambda: requests.get(
                 join(self._base_url, 'jobs/', str(job_id), 'status'),
                 headers=None if not bearer_token else {'Authorization': bearer_token},
                 timeout=REQUESTS_TIMEOUT,
             )
-            if result.status_code == 502:
-                time.sleep(SECONDS_BETWEEN_CALLS)
-                continue
-            break
+        )
 
         result.raise_for_status()
         run_result = RunStatus.from_dict(result.json())
