@@ -278,6 +278,9 @@
       <li class="version_item current_version">dev</li>
     
     
+      <li class="version_item"><a href="../versions/9.5/index.html">9.5</a></li>
+    
+    
       <li class="version_item"><a href="../versions/9.4/index.html">9.4</a></li>
     
     
@@ -502,7 +505,7 @@ title="Print to PDF"
   <strong>
     
     You're reading the documentation for a development version.
-    For the latest released version, please have a look at <a href="../versions/9.4/index.html">9.4</a>.
+    For the latest released version, please have a look at <a href="../versions/9.5/index.html">9.5</a>.
     
   </strong>
 </div>
@@ -552,25 +555,28 @@ Password must be set if <code class="docutils literal notranslate"><span class="
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_get_bearer_token</span></code>([retries])</p></td>
 <td><p>Make a bearer token for Authorization header.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_update_tokens</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_retry_request_on_error</span></code>(request)</p></td>
+<td><p>This is a temporary workaround for 502 errors.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_update_tokens</span></code>()</p></td>
 <td><p>Update access token and refresh token.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.close_auth_session" title="iqm_client.iqm_client.IQMClient.close_auth_session"><code class="xref py py-obj docutils literal notranslate"><span class="pre">close_auth_session</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.close_auth_session" title="iqm_client.iqm_client.IQMClient.close_auth_session"><code class="xref py py-obj docutils literal notranslate"><span class="pre">close_auth_session</span></code></a>()</p></td>
 <td><p>Terminate session with authentication server if there was one created.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.get_quantum_architecture" title="iqm_client.iqm_client.IQMClient.get_quantum_architecture"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_quantum_architecture</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.get_quantum_architecture" title="iqm_client.iqm_client.IQMClient.get_quantum_architecture"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_quantum_architecture</span></code></a>()</p></td>
 <td><p>Retrieve quantum architecture from Cortex.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.get_run" title="iqm_client.iqm_client.IQMClient.get_run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_run</span></code></a>(job_id)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.get_run" title="iqm_client.iqm_client.IQMClient.get_run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_run</span></code></a>(job_id)</p></td>
 <td><p>Query the status and results of a submitted job.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.get_run_status" title="iqm_client.iqm_client.IQMClient.get_run_status"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_run_status</span></code></a>(job_id)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.get_run_status" title="iqm_client.iqm_client.IQMClient.get_run_status"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_run_status</span></code></a>(job_id)</p></td>
 <td><p>Query the status of a submitted job.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.submit_circuits" title="iqm_client.iqm_client.IQMClient.submit_circuits"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit_circuits</span></code></a>(circuits, *[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.submit_circuits" title="iqm_client.iqm_client.IQMClient.submit_circuits"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit_circuits</span></code></a>(circuits, *[, ...])</p></td>
 <td><p>Submits a batch of quantum circuits for execution on a quantum computer.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.wait_for_results" title="iqm_client.iqm_client.IQMClient.wait_for_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait_for_results</span></code></a>(job_id[, timeout_secs])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.wait_for_results" title="iqm_client.iqm_client.IQMClient.wait_for_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait_for_results</span></code></a>(job_id[, timeout_secs])</p></td>
 <td><p>Poll results until a job is either ready, failed, or timed out.</p></td>
 </tr>
 </tbody>
@@ -744,7 +750,7 @@ Note: This field should always be <code class="docutils literal notranslate"><sp
     By IQM client developers<br/>
   
       &copy; Copyright 2021-2022, IQM.<br/>
-    Last updated on 2022-11-30.<br/>
+    Last updated on 2022-12-05.<br/>
 </p>
         </footer>
     </div>
