@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 9.6
+===========
+
+* Reduce wait interval between requests to the IQM Server and make it configurable with the ``IQM_CLIENT_SECONDS_BETWEEN_CALLS`` environment var. `#62 <https://github.com/iqm-finland/iqm-client/pull/66>`_
+
 Version 9.5
 ===========
 
