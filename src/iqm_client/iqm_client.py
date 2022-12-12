@@ -716,7 +716,8 @@ class IQMClient:
     def wait_for_results(self, job_id: UUID, timeout_secs: float = DEFAULT_TIMEOUT_SECONDS) -> RunResult:
         """Poll results until a job is either ready, failed, or timed out.
            Note, that jobs handling on the server side is async and if we try to request the results
-           right after submitting the job (which is usually the case) we will find the job is still pending at least for the first query.
+           right after submitting the job (which is usually the case)
+           we will find the job is still pending at least for the first query.
 
         Args:
             job_id: id of the job to wait for
