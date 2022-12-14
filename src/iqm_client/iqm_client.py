@@ -138,7 +138,7 @@ import requests
 REQUESTS_TIMEOUT = 60
 
 DEFAULT_TIMEOUT_SECONDS = 900
-SECONDS_BETWEEN_CALLS = 3
+SECONDS_BETWEEN_CALLS = float(os.environ.get('IQM_CLIENT_SECONDS_BETWEEN_CALLS', 1.0))
 REFRESH_MARGIN_SECONDS = REQUESTS_TIMEOUT
 
 AUTH_CLIENT_ID = 'iqm_client'
@@ -715,6 +715,9 @@ class IQMClient:
 
     def wait_for_results(self, job_id: UUID, timeout_secs: float = DEFAULT_TIMEOUT_SECONDS) -> RunResult:
         """Poll results until a job is either ready, failed, or timed out.
+           Note, that jobs handling on the server side is async and if we try to request the results
+           right after submitting the job (which is usually the case)
+           we will find the job is still pending at least for the first query.
 
         Args:
             job_id: id of the job to wait for
