@@ -278,6 +278,9 @@
       <li class="version_item current_version">dev</li>
     
     
+      <li class="version_item"><a href="../versions/9.6/index.html">9.6</a></li>
+    
+    
       <li class="version_item"><a href="../versions/9.5/index.html">9.5</a></li>
     
     
@@ -505,7 +508,7 @@ title="Print to PDF"
   <strong>
     
     You're reading the documentation for a development version.
-    For the latest released version, please have a look at <a href="../versions/9.5/index.html">9.5</a>.
+    For the latest released version, please have a look at <a href="../versions/9.6/index.html">9.6</a>.
     
   </strong>
 </div>
@@ -656,7 +659,12 @@ Note: This field should always be <code class="docutils literal notranslate"><sp
 <dl class="py method">
 <dt class="sig sig-object py" id="iqm_client.iqm_client.IQMClient.wait_for_results">
 <span class="sig-name descname"><span class="pre">wait_for_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout_secs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">900</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm_client.iqm_client.IQMClient.wait_for_results" title="Permalink to this definition">#</a></dt>
-<dd><p>Poll results until a job is either ready, failed, or timed out.</p>
+<dd><dl class="simple">
+<dt>Poll results until a job is either ready, failed, or timed out.</dt><dd><p>Note, that jobs handling on the server side is async and if we try to request the results
+right after submitting the job (which is usually the case)
+we will find the job is still pending at least for the first query.</p>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -750,7 +758,7 @@ Note: This field should always be <code class="docutils literal notranslate"><sp
     By IQM client developers<br/>
   
       &copy; Copyright 2021-2022, IQM.<br/>
-    Last updated on 2022-12-05.<br/>
+    Last updated on 2022-12-14.<br/>
 </p>
         </footer>
     </div>
