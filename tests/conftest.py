@@ -35,7 +35,6 @@ REQUESTS_TIMEOUT = 60
 calibration_set_id_value = 24
 existing_run = UUID('3c3fcda3-e860-46bf-92a4-bcc59fa76ce9')
 missing_run = UUID('059e4186-50a3-4e6c-ba1f-37fe6afbdfc2')
-oversized_run = UUID('7e1b4eb4-804e-11ed-a1eb-0242ac120002')
 
 
 @pytest.fixture()
@@ -161,13 +160,6 @@ def generate_server_stubs(base_url, sample_circuit):
     no_run_response.reason = 'Run not found'
     when(requests).get(f'{base_url}/jobs/{missing_run}', ...).thenReturn(no_run_response)
     when(requests).get(f'{base_url}/jobs/{missing_run}/status', ...).thenReturn(no_run_response)
-
-    # 'run failed because circuit metadata exceeds allowed size limit' response
-    oversized_run_response = Response()
-    oversized_run_response.status_code = 422
-    oversized_run_response.reason = 'Circuit metadata size exceeds limit'
-    when(requests).get(f'{base_url}/jobs/{oversized_run}', ...).thenReturn(oversized_run_response)
-    when(requests).get(f'{base_url}/jobs/{oversized_run}/status', ...).thenReturn(oversized_run_response)
 
 
 def prepare_tokens(
