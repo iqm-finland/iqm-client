@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 9.8
+===========
+
+* Bugfix: ``Circuit.metadata`` Pydantic field needs default value. `#64 <https://github.com/iqm-finland/iqm-client/pull/64>`_
+
 Version 9.7
 ===========
 
