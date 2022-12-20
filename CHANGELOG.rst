@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 9.7
+===========
+
+* Add optional ``metadata`` field to ``Circuit``. `#63 <https://github.com/iqm-finland/iqm-client/pull/63>`_
+
 Version 9.6
 ===========
 

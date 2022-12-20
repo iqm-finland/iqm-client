@@ -127,7 +127,7 @@ def test_submit_circuits_without_qubit_mapping_returns_id(mock_server, base_url,
     assert job_id == existing_run
 
 
-def test_get_run_status_and_results_for_existing_run(mock_server, base_url, calibration_set_id):
+def test_get_run_status_and_results_for_existing_run(mock_server, base_url, calibration_set_id, sample_circuit):
     """
     Tests getting the run status
     """
@@ -137,6 +137,7 @@ def test_get_run_status_and_results_for_existing_run(mock_server, base_url, cali
     assert ready_run.status == Status.READY
     assert ready_run.measurements is not None
     assert ready_run.metadata.calibration_set_id == calibration_set_id
+    assert ready_run.metadata.circuits[0].metadata == sample_circuit['metadata']
 
 
 def test_get_run_status_for_existing_run(mock_server, base_url):

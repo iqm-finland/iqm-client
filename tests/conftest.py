@@ -98,6 +98,7 @@ def sample_circuit():
             {'name': 'phased_rx', 'qubits': ['Qubit A'], 'args': {'phase_t': 0.7, 'angle_t': 0.25}},
             {'name': 'measurement', 'qubits': ['Qubit A'], 'args': {'output_label': 'A'}},
         ],
+        'metadata': {'experiment_type': 'test', 'qubits': (0, 1), 'values': [0.01686514, 0.05760602]},
     }
 
 
