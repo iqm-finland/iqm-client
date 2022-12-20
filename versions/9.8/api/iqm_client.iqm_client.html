@@ -1,0 +1,887 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>iqm_client.iqm_client &#8212; IQM client 9.8 documentation</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
+    <script>window.MathJax = {"tex": {"macros": {"vr": "\\vec{r}", "ket": ["\\left| #1 \\right\\rangle", 1], "iprod": ["\\left\\langle #1 | #2 \\right\\rangle", 2]}}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="iqm_client.iqm_client.serialize_qubit_mapping" href="iqm_client.iqm_client.serialize_qubit_mapping.html" />
+    <link rel="prev" title="iqm_client" href="iqm_client.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+<!-- Checkboxes to toggle the left sidebar -->
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
+<label class="overlay overlay-navbar" for="__navigation">
+    <div class="visually-hidden">Toggle navigation sidebar</div>
+</label>
+<!-- Checkboxes to toggle the in-page toc -->
+<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
+<label class="overlay overlay-pagetoc" for="__page-toc">
+    <div class="visually-hidden">Toggle in-page Table of Contents</div>
+</label>
+<!-- Headers at the top -->
+<div class="announcement header-item noprint"></div>
+<div class="header header-item noprint"></div>
+
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<!-- Sidebar -->
+<div class="bd-sidebar noprint" id="site-navigation">
+    <div class="bd-sidebar__content">
+        <div class="bd-sidebar__top"><div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="../index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
+      
+      <img src="../_static/logo.png" class="logo" alt="logo">
+      
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../readme.html">
+   IQM Client
+  </a>
+ </li>
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="../API.html">
+   API Reference
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2 current active has-children">
+    <a class="reference internal" href="iqm_client.html">
+     iqm_client
+    </a>
+    <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+    <label for="toctree-checkbox-2">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul class="current">
+     <li class="toctree-l3 current active has-children">
+      <a class="current reference internal" href="#">
+       iqm_client.iqm_client
+      </a>
+      <input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+      <label for="toctree-checkbox-3">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.serialize_qubit_mapping.html">
+         iqm_client.iqm_client.serialize_qubit_mapping
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.AuthRequest.html">
+         iqm_client.iqm_client.AuthRequest
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.Circuit.html">
+         iqm_client.iqm_client.Circuit
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.Credentials.html">
+         iqm_client.iqm_client.Credentials
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.ExternalToken.html">
+         iqm_client.iqm_client.ExternalToken
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.GrantType.html">
+         iqm_client.iqm_client.GrantType
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.IQMClient.html">
+         iqm_client.iqm_client.IQMClient
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.Instruction.html">
+         iqm_client.iqm_client.Instruction
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.Metadata.html">
+         iqm_client.iqm_client.Metadata
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.QuantumArchitecture.html">
+         iqm_client.iqm_client.QuantumArchitecture
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.QuantumArchitectureSpecification.html">
+         iqm_client.iqm_client.QuantumArchitectureSpecification
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.RunRequest.html">
+         iqm_client.iqm_client.RunRequest
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.RunResult.html">
+         iqm_client.iqm_client.RunResult
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.RunStatus.html">
+         iqm_client.iqm_client.RunStatus
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.SingleQubitMapping.html">
+         iqm_client.iqm_client.SingleQubitMapping
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.Status.html">
+         iqm_client.iqm_client.Status
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.APITimeoutError.html">
+         iqm_client.iqm_client.APITimeoutError
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.CircuitExecutionError.html">
+         iqm_client.iqm_client.CircuitExecutionError
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.ClientAuthenticationError.html">
+         iqm_client.iqm_client.ClientAuthenticationError
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.ClientConfigurationError.html">
+         iqm_client.iqm_client.ClientConfigurationError
+        </a>
+       </li>
+      </ul>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../integration_guide.html">
+   Integration Guide
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../license.html">
+   License
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../authors.html">
+   Contributors
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../changelog.html">
+   Changelog
+  </a>
+ </li>
+</ul>
+
+    </div>
+</nav>
+<style type="text/css">
+  ul.version_list { padding-left: 0; }
+  ul.version_list li.version_item { display: inline; }
+  li.version_item a {
+    color: white;
+    background-color: #097aba;
+    padding: 0.12rem 0.45rem;
+    border-radius: 0.35rem;
+  }
+  li.version_item a:hover {
+    background-color: #064061;
+    text-decoration: none;
+  }
+  li.version_item.current_version {
+    color: white;
+    background-color: #064061;
+    padding: 0.12rem 0.45rem;
+    border-radius: 0.35rem;
+  }
+</style>
+<h3>Versions</h3>
+<ul class="version_list">
+    
+      <li class="version_item"><a href="../../../index.html">dev</a></li>
+    
+    
+      <li class="version_item current_version">9.8</li>
+    
+    
+      <li class="version_item"><a href="../../9.7/index.html">9.7</a></li>
+    
+    
+      <li class="version_item"><a href="../../9.6/index.html">9.6</a></li>
+    
+    
+      <li class="version_item"><a href="../../9.5/index.html">9.5</a></li>
+    
+    
+      <li class="version_item"><a href="../../9.4/index.html">9.4</a></li>
+    
+    
+      <li class="version_item"><a href="../../9.3/index.html">9.3</a></li>
+    
+    
+      <li class="version_item"><a href="../../9.2/index.html">9.2</a></li>
+    
+    
+      <li class="version_item"><a href="../../9.1/index.html">9.1</a></li>
+    
+    
+      <li class="version_item"><a href="../../9.0/index.html">9.0</a></li>
+    
+    
+      <li class="version_item"><a href="../../8.4/index.html">8.4</a></li>
+    
+    
+      <li class="version_item"><a href="../../8.3/index.html">8.3</a></li>
+    
+    
+      <li class="version_item"><a href="../../8.2/index.html">8.2</a></li>
+    
+    
+      <li class="version_item"><a href="../../8.1/index.html">8.1</a></li>
+    
+    
+      <li class="version_item"><a href="../../8.0/index.html">8.0</a></li>
+    
+    
+      <li class="version_item"><a href="../../7.3/index.html">7.3</a></li>
+    
+    
+      <li class="version_item"><a href="../../7.2/index.html">7.2</a></li>
+    
+    
+      <li class="version_item"><a href="../../7.1/index.html">7.1</a></li>
+    
+    
+      <li class="version_item"><a href="../../7.0/index.html">7.0</a></li>
+    
+    
+      <li class="version_item"><a href="../../6.2/index.html">6.2</a></li>
+    
+    
+      <li class="version_item"><a href="../../6.1/index.html">6.1</a></li>
+    
+    
+      <li class="version_item"><a href="../../6.0/index.html">6.0</a></li>
+    
+    
+      <li class="version_item"><a href="../../5.0/index.html">5.0</a></li>
+    
+    
+      <li class="version_item"><a href="../../4.3/index.html">4.3</a></li>
+    
+    
+      <li class="version_item"><a href="../../4.2/index.html">4.2</a></li>
+    
+    
+      <li class="version_item"><a href="../../4.0/index.html">4.0</a></li>
+    
+    
+      <li class="version_item"><a href="../../3.3/index.html">3.3</a></li>
+    
+    
+      <li class="version_item"><a href="../../3.2/index.html">3.2</a></li>
+    
+    
+      <li class="version_item"><a href="../../3.1/index.html">3.1</a></li>
+    
+    
+      <li class="version_item"><a href="../../3.0/index.html">3.0</a></li>
+    
+    
+      <li class="version_item"><a href="../../2.2/index.html">2.2</a></li>
+    
+    
+      <li class="version_item"><a href="../../1.10/index.html">1.10</a></li>
+    
+</ul>
+</div>
+        <div class="bd-sidebar__bottom">
+             <!-- To handle the deprecated key -->
+            
+            <div class="navbar_extra_footer">
+            Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
+            </div>
+            
+        </div>
+    </div>
+    <div id="rtd-footer-container"></div>
+</div>
+
+
+          
+
+
+          
+<!-- A tiny helper pixel to detect if we've scrolled -->
+<div class="sbt-scroll-pixel-helper"></div>
+<!-- Main content -->
+<div class="col py-0 content-container">
+    
+    <div class="header-article row sticky-top noprint">
+        
+
+
+
+<div class="col py-1 d-flex header-article-main">
+    <div class="header-article__left">
+        
+        <label for="__navigation"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="right"
+title="Toggle navigation"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-bars"></i>
+  </span>
+
+</label>
+
+        
+    </div>
+    <div class="header-article__right">
+<button onclick="toggleFullScreen()"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="bottom"
+title="Fullscreen mode"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+<div class="menu-dropdown menu-dropdown-download-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Download this page">
+      <i class="fas fa-download"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="../_sources/api/iqm_client.iqm_client.rst.txt"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Download source file"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="headerbtn__text-container">.rst</span>
+</a>
+
+      </li>
+      
+      <li>
+        
+<button onclick="printPdf(this)"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="left"
+title="Print to PDF"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="headerbtn__text-container">.pdf</span>
+</button>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+<label for="__page-toc"
+  class="headerbtn headerbtn-page-toc"
+  
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-list"></i>
+  </span>
+
+</label>
+
+    </div>
+</div>
+
+<!-- Table of contents -->
+<div class="col-md-3 bd-toc show noprint">
+    <div class="tocsection onthispage pt-5 pb-3">
+        <i class="fas fa-list"></i> Contents
+    </div>
+    <nav id="bd-toc-nav" aria-label="Page">
+        <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#instructions">
+   Instructions
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#measurement">
+     Measurement
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#phased-rx">
+     Phased Rx
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#cz">
+     CZ
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#barrier">
+     Barrier
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#circuit-output">
+   Circuit output
+  </a>
+  <ul class="nav section-nav flex-column">
+  </ul>
+ </li>
+</ul>
+
+    </nav>
+</div>
+    </div>
+    <div class="article row">
+        <div class="col pl-md-3 pl-lg-5 content-container">
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>iqm_client.iqm_client</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#instructions">
+   Instructions
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#measurement">
+     Measurement
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#phased-rx">
+     Phased Rx
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#cz">
+     CZ
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#barrier">
+     Barrier
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#circuit-output">
+   Circuit output
+  </a>
+  <ul class="nav section-nav flex-column">
+  </ul>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <main id="main-content" role="main">
+                
+              <div>
+                
+
+
+  <section id="module-iqm_client.iqm_client">
+<span id="iqm-client-iqm-client"></span><h1>iqm_client.iqm_client<a class="headerlink" href="#module-iqm_client.iqm_client" title="Permalink to this headline">#</a></h1>
+<p>Client for connecting to the IQM quantum computer server interface.</p>
+<p>The <a class="reference internal" href="iqm_client.iqm_client.Circuit.html#iqm_client.iqm_client.Circuit" title="iqm_client.iqm_client.Circuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Circuit</span></code></a> class represents quantum circuits to be executed, consisting of
+native quantum operations, each represented by an instance of the <a class="reference internal" href="iqm_client.iqm_client.Instruction.html#iqm_client.iqm_client.Instruction" title="iqm_client.iqm_client.Instruction"><code class="xref py py-class docutils literal notranslate"><span class="pre">Instruction</span></code></a> class.
+Different Instruction types are distinguished by their <a class="reference internal" href="iqm_client.iqm_client.Instruction.html#iqm_client.iqm_client.Instruction.name" title="iqm_client.iqm_client.Instruction.name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">name</span></code></a>.
+Each Instruction type acts on a number of <a class="reference internal" href="iqm_client.iqm_client.Instruction.html#iqm_client.iqm_client.Instruction.qubits" title="iqm_client.iqm_client.Instruction.qubits"><code class="xref py py-attr docutils literal notranslate"><span class="pre">qubits</span></code></a>, and expects certain
+<a class="reference internal" href="iqm_client.iqm_client.Instruction.html#iqm_client.iqm_client.Instruction.args" title="iqm_client.iqm_client.Instruction.args"><code class="xref py py-attr docutils literal notranslate"><span class="pre">args</span></code></a>.</p>
+<section id="instructions">
+<h2>Instructions<a class="headerlink" href="#instructions" title="Permalink to this headline">#</a></h2>
+<p>We currently support the following native instruction types:</p>
+<table class="table">
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 12%" />
+<col style="width: 41%" />
+<col style="width: 29%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>name</p></th>
+<th class="head"><p># of qubits</p></th>
+<th class="head"><p>args</p></th>
+<th class="head"><p>description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>measurement</p></td>
+<td><p>&gt;= 1</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">key:</span> <span class="pre">str</span></code></p></td>
+<td><p>Measurement in the Z basis.</p></td>
+</tr>
+<tr class="row-odd"><td><p>phased_rx</p></td>
+<td><p>1</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">angle_t:</span> <span class="pre">float</span></code>, <code class="docutils literal notranslate"><span class="pre">phase_t:</span> <span class="pre">float</span></code></p></td>
+<td><p>Phased x-rotation gate.</p></td>
+</tr>
+<tr class="row-even"><td><p>cz</p></td>
+<td><p>2</p></td>
+<td></td>
+<td><p>Controlled-Z gate.</p></td>
+</tr>
+<tr class="row-odd"><td><p>barrier</p></td>
+<td><p>&gt;= 2</p></td>
+<td></td>
+<td><p>Execution barrier.</p></td>
+</tr>
+</tbody>
+</table>
+<section id="measurement">
+<h3>Measurement<a class="headerlink" href="#measurement" title="Permalink to this headline">#</a></h3>
+<p>Measurement in the computational (Z) basis. The measurement results are the output of the circuit.
+Takes one string argument, <code class="docutils literal notranslate"><span class="pre">key</span></code>, denoting the measurement key the results are labeled with.
+All the measurement keys in a circuit must be unique.
+Each qubit may only be measured once.
+The measurement must be the last operation on each qubit, i.e. it cannot be followed by gates.</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">Example</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Instruction</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;measurement&#39;</span><span class="p">,</span> <span class="n">qubits</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;alice&#39;</span><span class="p">,</span> <span class="s1">&#39;bob&#39;</span><span class="p">,</span> <span class="s1">&#39;charlie&#39;</span><span class="p">),</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="s1">&#39;m1&#39;</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="phased-rx">
+<h3>Phased Rx<a class="headerlink" href="#phased-rx" title="Permalink to this headline">#</a></h3>
+<p>Phased x-rotation gate, i.e. an x-rotation conjugated by a z-rotation.
+Takes two arguments, the rotation angle <code class="docutils literal notranslate"><span class="pre">angle_t</span></code> and the phase angle <code class="docutils literal notranslate"><span class="pre">phase_t</span></code>,
+both measured in units of full turns (<span class="math notranslate nohighlight">\(2\pi\)</span> radians).
+The gate is represented in the standard computational basis by the matrix</p>
+<div class="math notranslate nohighlight">
+\[R(\theta, \phi) = \exp(-i (X \cos (2 \pi \; \phi) + Y \sin (2 \pi \; \phi)) \: \pi \; \theta)
+= R_z(\phi) R_x(\theta) R_z^\dagger(\phi),\]</div>
+<p>where <span class="math notranslate nohighlight">\(\theta\)</span> = <code class="docutils literal notranslate"><span class="pre">angle_t</span></code>, <span class="math notranslate nohighlight">\(\phi\)</span> = <code class="docutils literal notranslate"><span class="pre">phase_t</span></code>,
+and <span class="math notranslate nohighlight">\(X\)</span> and <span class="math notranslate nohighlight">\(Y\)</span> are Pauli matrices.</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">Example</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Instruction</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;phased_rx&#39;</span><span class="p">,</span> <span class="n">qubits</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;bob&#39;</span><span class="p">,),</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;angle_t&#39;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span> <span class="s1">&#39;phase_t&#39;</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="cz">
+<h3>CZ<a class="headerlink" href="#cz" title="Permalink to this headline">#</a></h3>
+<p>Controlled-Z gate. Represented in the standard computational basis by the matrix</p>
+<div class="math notranslate nohighlight">
+\[\text{CZ} = \text{diag}(1, 1, 1, -1).\]</div>
+<p>It is symmetric wrt. the qubits it’s acting on, and takes no arguments.</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">Example</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Instruction</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;cz&#39;</span><span class="p">,</span> <span class="n">qubits</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;alice&#39;</span><span class="p">,</span> <span class="s1">&#39;bob&#39;</span><span class="p">),</span> <span class="n">args</span><span class="o">=</span><span class="p">{})</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="barrier">
+<h3>Barrier<a class="headerlink" href="#barrier" title="Permalink to this headline">#</a></h3>
+<p>A barrier instruction affects the physical execution order of the instructions elsewhere in the
+circuit that act on qubits spanned by the barrier.
+It ensures that any such instructions that succeed the barrier are only executed after
+all such instructions that precede the barrier have been completed.
+Hence it can be used to guarantee a specific causal order for the other instructions.
+It takes no arguments, and has no other effect.</p>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">Example</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Instruction</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;barrier&#39;</span><span class="p">,</span> <span class="n">qubits</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;alice&#39;</span><span class="p">,</span> <span class="s1">&#39;bob&#39;</span><span class="p">),</span> <span class="n">args</span><span class="o">=</span><span class="p">{})</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="circuit-output">
+<h2>Circuit output<a class="headerlink" href="#circuit-output" title="Permalink to this headline">#</a></h2>
+<p>The <a class="reference internal" href="iqm_client.iqm_client.RunResult.html#iqm_client.iqm_client.RunResult" title="iqm_client.iqm_client.RunResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunResult</span></code></a> class represents the results of the quantum circuit execution job.
+If the job succeeded, <a class="reference internal" href="iqm_client.iqm_client.RunResult.html#iqm_client.iqm_client.RunResult.measurements" title="iqm_client.iqm_client.RunResult.measurements"><code class="xref py py-attr docutils literal notranslate"><span class="pre">RunResult.measurements</span></code></a> contains the output of the batch of circuits,
+consisting of the results of the measurement operations in each circuit.
+It is a list of dictionaries, where each dict maps each measurement key to a 2D array of measurement
+results, represented as a nested list.
+<code class="docutils literal notranslate"><span class="pre">RunResult.measurements[circuit_index][key][shot][qubit_index]</span></code> is the result of measuring the
+<code class="docutils literal notranslate"><span class="pre">qubit_index</span></code>’th qubit in measurement operation <code class="docutils literal notranslate"><span class="pre">key</span></code> in the shot <code class="docutils literal notranslate"><span class="pre">shot</span></code> in the
+<code class="docutils literal notranslate"><span class="pre">circuit_index</span></code>’th circuit of the batch.</p>
+<p>The results are non-negative integers representing the computational basis state (for qubits, 0 or 1)
+that was the measurement outcome.</p>
+<hr class="docutils" />
+<p class="rubric">Functions</p>
+<table class="autosummary longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="iqm_client.iqm_client.serialize_qubit_mapping.html#iqm_client.iqm_client.serialize_qubit_mapping" title="iqm_client.iqm_client.serialize_qubit_mapping"><code class="xref py py-obj docutils literal notranslate"><span class="pre">serialize_qubit_mapping</span></code></a>(qubit_mapping)</p></td>
+<td><p>Serializes a qubit mapping dict into the corresponding IQM data transfer format.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table class="autosummary longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="iqm_client.iqm_client.AuthRequest.html#iqm_client.iqm_client.AuthRequest" title="iqm_client.iqm_client.AuthRequest"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AuthRequest</span></code></a>(*, client_id[, grant_type, ...])</p></td>
+<td><p>Request sent to authentication server for access token and refresh token, or for terminating the session.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="iqm_client.iqm_client.Circuit.html#iqm_client.iqm_client.Circuit" title="iqm_client.iqm_client.Circuit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Circuit</span></code></a>(*, name, instructions[, metadata])</p></td>
+<td><p>Quantum circuit to be executed.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="iqm_client.iqm_client.Credentials.html#iqm_client.iqm_client.Credentials" title="iqm_client.iqm_client.Credentials"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Credentials</span></code></a>(*, auth_server_url, username, ...)</p></td>
+<td><p>Credentials and tokens for maintaining a session with the authentication server.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="iqm_client.iqm_client.ExternalToken.html#iqm_client.iqm_client.ExternalToken" title="iqm_client.iqm_client.ExternalToken"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ExternalToken</span></code></a>(*, auth_server_url[, access_token])</p></td>
+<td><p>Externally managed token for maintaining a session with the authentication server.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="iqm_client.iqm_client.GrantType.html#iqm_client.iqm_client.GrantType" title="iqm_client.iqm_client.GrantType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GrantType</span></code></a>(value)</p></td>
+<td><p>Type of token request.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="iqm_client.iqm_client.IQMClient.html#iqm_client.iqm_client.IQMClient" title="iqm_client.iqm_client.IQMClient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IQMClient</span></code></a>(url[, tokens_file])</p></td>
+<td><p>Provides access to IQM quantum computers.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="iqm_client.iqm_client.Instruction.html#iqm_client.iqm_client.Instruction" title="iqm_client.iqm_client.Instruction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Instruction</span></code></a>(*, name, qubits, args)</p></td>
+<td><p>An instruction in a quantum circuit.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="iqm_client.iqm_client.Metadata.html#iqm_client.iqm_client.Metadata" title="iqm_client.iqm_client.Metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Metadata</span></code></a>(*, shots[, qubit_mapping, ...])</p></td>
+<td><p>Metadata describing a circuit execution job.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="iqm_client.iqm_client.QuantumArchitecture.html#iqm_client.iqm_client.QuantumArchitecture" title="iqm_client.iqm_client.QuantumArchitecture"><code class="xref py py-obj docutils literal notranslate"><span class="pre">QuantumArchitecture</span></code></a>(*, quantum_architecture)</p></td>
+<td><p>Quantum architecture as returned by Cortex.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="iqm_client.iqm_client.QuantumArchitectureSpecification.html#iqm_client.iqm_client.QuantumArchitectureSpecification" title="iqm_client.iqm_client.QuantumArchitectureSpecification"><code class="xref py py-obj docutils literal notranslate"><span class="pre">QuantumArchitectureSpecification</span></code></a>(*, name, ...)</p></td>
+<td><p>Quantum architecture specification.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="iqm_client.iqm_client.RunRequest.html#iqm_client.iqm_client.RunRequest" title="iqm_client.iqm_client.RunRequest"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RunRequest</span></code></a>(*, circuits[, custom_settings, ...])</p></td>
+<td><p>Request for an IQM quantum computer to run a job that executes a batch of quantum circuits.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="iqm_client.iqm_client.RunResult.html#iqm_client.iqm_client.RunResult" title="iqm_client.iqm_client.RunResult"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RunResult</span></code></a>(*, status[, measurements, ...])</p></td>
+<td><p>Results of a circuit execution job.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="iqm_client.iqm_client.RunStatus.html#iqm_client.iqm_client.RunStatus" title="iqm_client.iqm_client.RunStatus"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RunStatus</span></code></a>(*, status[, message, warnings])</p></td>
+<td><p>Status of a circuit execution job.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="iqm_client.iqm_client.SingleQubitMapping.html#iqm_client.iqm_client.SingleQubitMapping" title="iqm_client.iqm_client.SingleQubitMapping"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SingleQubitMapping</span></code></a>(*, logical_name, ...)</p></td>
+<td><p>Mapping of a logical qubit name to a physical qubit name.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="iqm_client.iqm_client.Status.html#iqm_client.iqm_client.Status" title="iqm_client.iqm_client.Status"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Status</span></code></a>(value)</p></td>
+<td><p>Status of a job.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Exceptions</p>
+<table class="autosummary longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="iqm_client.iqm_client.APITimeoutError.html#iqm_client.iqm_client.APITimeoutError" title="iqm_client.iqm_client.APITimeoutError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">APITimeoutError</span></code></a></p></td>
+<td><p>Exception for when executing a job on the server takes too long.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="iqm_client.iqm_client.CircuitExecutionError.html#iqm_client.iqm_client.CircuitExecutionError" title="iqm_client.iqm_client.CircuitExecutionError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CircuitExecutionError</span></code></a></p></td>
+<td><p>Something went wrong on the server.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="iqm_client.iqm_client.ClientAuthenticationError.html#iqm_client.iqm_client.ClientAuthenticationError" title="iqm_client.iqm_client.ClientAuthenticationError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ClientAuthenticationError</span></code></a></p></td>
+<td><p>Something went wrong with user authentication.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="iqm_client.iqm_client.ClientConfigurationError.html#iqm_client.iqm_client.ClientConfigurationError" title="iqm_client.iqm_client.ClientConfigurationError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ClientConfigurationError</span></code></a></p></td>
+<td><p>Wrong configuration provided.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<p class="rubric">Inheritance</p>
+<div class="graphviz"><img src="../_images/inheritance-f9f9fa2dfcf32d88cc3eca2eebb712d4965d7298.png" alt="Inheritance diagram of iqm_client.iqm_client" usemap="#inheritanceccd5403770" class="inheritance graphviz" /></div>
+<map id="inheritanceccd5403770" name="inheritanceccd5403770">
+<area shape="rect" id="node1" href="iqm_client.iqm_client.APITimeoutError.html#iqm_client.iqm_client.APITimeoutError" target="_top" title="Exception for when executing a job on the server takes too long." alt="" coords="240,327,368,352"/>
+<area shape="rect" id="node2" href="iqm_client.iqm_client.CircuitExecutionError.html#iqm_client.iqm_client.CircuitExecutionError" target="_top" title="Something went wrong on the server." alt="" coords="19,327,178,352"/>
+<area shape="rect" id="node3" href="iqm_client.iqm_client.AuthRequest.html#iqm_client.iqm_client.AuthRequest" target="_top" title="Request sent to authentication server for access token and refresh token, or for terminating the session." alt="" coords="485,5,591,31"/>
+<area shape="rect" id="node6" href="iqm_client.iqm_client.Circuit.html#iqm_client.iqm_client.Circuit" target="_top" title="Quantum circuit to be executed." alt="" coords="502,55,574,80"/>
+<area shape="rect" id="node9" href="iqm_client.iqm_client.Credentials.html#iqm_client.iqm_client.Credentials" target="_top" title="Credentials and tokens for maintaining a session with the authentication server." alt="" coords="490,104,586,129"/>
+<area shape="rect" id="node11" href="iqm_client.iqm_client.ExternalToken.html#iqm_client.iqm_client.ExternalToken" target="_top" title="Externally managed token for maintaining a session with the authentication server." alt="" coords="481,153,595,179"/>
+<area shape="rect" id="node14" href="iqm_client.iqm_client.Instruction.html#iqm_client.iqm_client.Instruction" target="_top" title="An instruction in a quantum circuit." alt="" coords="493,203,583,228"/>
+<area shape="rect" id="node15" href="iqm_client.iqm_client.Metadata.html#iqm_client.iqm_client.Metadata" target="_top" title="Metadata describing a circuit execution job." alt="" coords="496,252,580,277"/>
+<area shape="rect" id="node16" href="iqm_client.iqm_client.QuantumArchitecture.html#iqm_client.iqm_client.QuantumArchitecture" target="_top" title="Quantum architecture as returned by Cortex." alt="" coords="457,301,619,327"/>
+<area shape="rect" id="node17" href="iqm_client.iqm_client.QuantumArchitectureSpecification.html#iqm_client.iqm_client.QuantumArchitectureSpecification" target="_top" title="Quantum architecture specification." alt="" coords="416,351,660,376"/>
+<area shape="rect" id="node18" href="iqm_client.iqm_client.RunRequest.html#iqm_client.iqm_client.RunRequest" target="_top" title="Request for an IQM quantum computer to run a job that executes a batch of quantum circuits." alt="" coords="488,400,588,425"/>
+<area shape="rect" id="node19" href="iqm_client.iqm_client.RunResult.html#iqm_client.iqm_client.RunResult" target="_top" title="Results of a circuit execution job." alt="" coords="494,449,582,475"/>
+<area shape="rect" id="node20" href="iqm_client.iqm_client.RunStatus.html#iqm_client.iqm_client.RunStatus" target="_top" title="Status of a circuit execution job." alt="" coords="494,499,582,524"/>
+<area shape="rect" id="node21" href="iqm_client.iqm_client.SingleQubitMapping.html#iqm_client.iqm_client.SingleQubitMapping" target="_top" title="Mapping of a logical qubit name to a physical qubit name." alt="" coords="461,548,615,573"/>
+<area shape="rect" id="node7" href="iqm_client.iqm_client.ClientAuthenticationError.html#iqm_client.iqm_client.ClientAuthenticationError" target="_top" title="Something went wrong with user authentication." alt="" coords="5,228,192,253"/>
+<area shape="rect" id="node8" href="iqm_client.iqm_client.ClientConfigurationError.html#iqm_client.iqm_client.ClientConfigurationError" target="_top" title="Wrong configuration provided." alt="" coords="9,179,188,204"/>
+<area shape="rect" id="node12" href="iqm_client.iqm_client.GrantType.html#iqm_client.iqm_client.GrantType" target="_top" title="Type of token request." alt="" coords="260,105,348,131"/>
+<area shape="rect" id="node22" href="iqm_client.iqm_client.Status.html#iqm_client.iqm_client.Status" target="_top" title="Status of a job." alt="" coords="268,155,340,180"/>
+<area shape="rect" id="node13" href="iqm_client.iqm_client.IQMClient.html#iqm_client.iqm_client.IQMClient" target="_top" title="Provides access to IQM quantum computers." alt="" coords="55,80,142,105"/>
+</map></section>
+
+
+
+              </div>
+              
+            </main>
+            <footer class="footer-article noprint">
+                
+    <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="iqm_client.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">iqm_client</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="iqm_client.iqm_client.serialize_qubit_mapping.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">iqm_client.iqm_client.serialize_qubit_mapping</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+            </footer>
+        </div>
+    </div>
+    <div class="footer-content row">
+        <footer class="col footer"><p>
+  
+    By IQM client developers<br/>
+  
+      &copy; Copyright 2021-2022, IQM.<br/>
+    Last updated on 2022-12-20.<br/>
+</p>
+        </footer>
+    </div>
+    
+</div>
+
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
+
+  </body>
+</html>
