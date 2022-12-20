@@ -29,7 +29,7 @@ from iqm_client import (
     Status,
     serialize_qubit_mapping,
 )
-from tests.conftest import MockJsonResponse, existing_run, missing_run
+from tests.conftest import MockJsonResponse, existing_run, missing_run, oversized_run
 
 REQUESTS_TIMEOUT = 60
 
@@ -127,7 +127,7 @@ def test_submit_circuits_without_qubit_mapping_returns_id(mock_server, base_url,
     assert job_id == existing_run
 
 
-def test_get_run_status_and_results_for_existing_run(mock_server, base_url, calibration_set_id):
+def test_get_run_status_and_results_for_existing_run(mock_server, base_url, calibration_set_id, sample_circuit):
     """
     Tests getting the run status
     """
@@ -137,6 +137,7 @@ def test_get_run_status_and_results_for_existing_run(mock_server, base_url, cali
     assert ready_run.status == Status.READY
     assert ready_run.measurements is not None
     assert ready_run.metadata.calibration_set_id == calibration_set_id
+    assert ready_run.metadata.circuits[0].metadata == sample_circuit['metadata']
 
 
 def test_get_run_status_for_existing_run(mock_server, base_url):
@@ -165,6 +166,15 @@ def test_get_run_status_for_missing_run(mock_server, base_url):
     client = IQMClient(base_url)
     with pytest.raises(HTTPError):
         assert client.get_run_status(missing_run)
+
+
+def test_get_run_status_for_oversized_run(mock_server, base_url):
+    """
+    Tests getting a task that contained circuit metadata whose size exceeded the limit.
+    """
+    client = IQMClient(base_url)
+    with pytest.raises(HTTPError):
+        assert client.get_run_status(oversized_run)
 
 
 def test_waiting_for_results(mock_server, base_url):
