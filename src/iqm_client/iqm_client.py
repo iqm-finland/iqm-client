@@ -197,7 +197,7 @@ class Circuit(BaseModel):
     """name of the circuit"""
     instructions: tuple[Instruction, ...] = Field(..., description='instructions comprising the circuit')
     """instructions comprising the circuit"""
-    metadata: Optional[dict[str, Any]] = Field(..., description='arbitrary metadata associated with the circuit')
+    metadata: Optional[dict[str, Any]] = Field(None, description='arbitrary metadata associated with the circuit')
     """arbitrary metadata associated with the circuit"""
 
     def all_qubits(self) -> set[str]:
