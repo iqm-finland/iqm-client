@@ -279,17 +279,8 @@ CircuitMeasurementResultsBatch = list[CircuitMeasurementResults]
 class Metadata(BaseModel):
     """Metadata describing a circuit execution job."""
 
-    shots: int = Field(..., description='how many times to execute each circuit in the batch')
-    """how many times to execute each circuit in the batch"""
-    qubit_mapping: Optional[list[SingleQubitMapping]] = Field(
-        None,
-        description='mapping of logical qubit names to physical qubit names, or None if using physical qubit names',
-    )
-    """mapping of logical qubit names to physical qubit names, or None if using physical qubit names"""
-    circuits: CircuitBatch = Field(..., description='batch of quantum circuit(s) to execute')
-    """batch of quantum circuit(s) to execute"""
-    calibration_set_id: Optional[int] = Field(None, description='ID of the calibration set used')
-    """ID of the calibration set used"""
+    request: RunRequest = Field(..., description='copy of the original RunRequest sent to the server')
+    """copy of the original RunRequest sent to the server"""
 
 
 class RunResult(BaseModel):

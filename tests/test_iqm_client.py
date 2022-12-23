@@ -136,8 +136,8 @@ def test_get_run_status_and_results_for_existing_run(mock_server, base_url, cali
     ready_run = client.get_run(existing_run)
     assert ready_run.status == Status.READY
     assert ready_run.measurements is not None
-    assert ready_run.metadata.calibration_set_id == calibration_set_id
-    assert ready_run.metadata.circuits[0].metadata == sample_circuit['metadata']
+    assert ready_run.metadata.request.calibration_set_id == calibration_set_id
+    assert ready_run.metadata.request.circuits[0].metadata == sample_circuit['metadata']
 
 
 def test_get_run_status_for_existing_run(mock_server, base_url):
@@ -191,7 +191,9 @@ def test_user_warning_is_emitted_when_warnings_in_response(base_url):
     client = IQMClient(base_url)
     msg = 'This is a warning msg'
     with when(requests).get(f'{base_url}/jobs/{existing_run}', headers=None, timeout=REQUESTS_TIMEOUT).thenReturn(
-        MockJsonResponse(200, {'status': 'ready', 'warnings': [msg], 'metadata': {'shots': 42, 'circuits': []}})
+        MockJsonResponse(
+            200, {'status': 'ready', 'warnings': [msg], 'metadata': {'request': {'shots': 42, 'circuits': []}}}
+        )
     ):
         with pytest.warns(UserWarning, match=msg):
             client.get_run(existing_run)

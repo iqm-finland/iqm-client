@@ -138,14 +138,22 @@ def generate_server_stubs(base_url, sample_circuit):
     when(requests).post(f'{base_url}/jobs', ...).thenReturn(MockJsonResponse(201, {'id': str(existing_run)}))
 
     when(requests).get(f'{base_url}/jobs/{existing_run}', ...).thenReturn(
-        MockJsonResponse(200, {'status': 'pending', 'metadata': {'shots': 42, 'circuits': [sample_circuit]}})
+        MockJsonResponse(
+            200, {'status': 'pending', 'metadata': {'request': {'shots': 42, 'circuits': [sample_circuit]}}}
+        )
     ).thenReturn(
         MockJsonResponse(
             200,
             {
                 'status': 'ready',
                 'measurements': [{'result': [[1, 0, 1, 1], [1, 0, 0, 1], [1, 0, 1, 1], [1, 0, 1, 1]]}],
-                'metadata': {'shots': 42, 'circuits': [sample_circuit], 'calibration_set_id': calibration_set_id_value},
+                'metadata': {
+                    'request': {
+                        'shots': 42,
+                        'circuits': [sample_circuit],
+                        'calibration_set_id': calibration_set_id_value,
+                    }
+                },
             },
         )
     )
@@ -237,7 +245,7 @@ def expect_status_request(url: str, access_token: Optional[str], times: int = 1)
     job_id = uuid4()
     headers = None if access_token is None else {'Authorization': f'Bearer {access_token}'}
     expect(requests, times=times).get(f'{url}/jobs/{job_id}', headers=headers, timeout=REQUESTS_TIMEOUT).thenReturn(
-        MockJsonResponse(200, {'status': 'pending', 'metadata': {'shots': 42, 'circuits': []}})
+        MockJsonResponse(200, {'status': 'pending', 'metadata': {'request': {'shots': 42, 'circuits': []}}})
     )
     return job_id
 
