@@ -148,11 +148,12 @@ def generate_server_stubs(base_url, sample_circuit):
                 'status': 'ready',
                 'measurements': [{'result': [[1, 0, 1, 1], [1, 0, 0, 1], [1, 0, 1, 1], [1, 0, 1, 1]]}],
                 'metadata': {
+                    'calibration_set_id': calibration_set_id_value,
                     'request': {
                         'shots': 42,
                         'circuits': [sample_circuit],
                         'calibration_set_id': calibration_set_id_value,
-                    }
+                    },
                 },
             },
         )

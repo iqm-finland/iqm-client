@@ -187,12 +187,17 @@ def test_get_quantum_architecture(sample_quantum_architecture, base_url):
     )
 
 
-def test_user_warning_is_emitted_when_warnings_in_response(base_url):
+def test_user_warning_is_emitted_when_warnings_in_response(base_url, calibration_set_id):
     client = IQMClient(base_url)
     msg = 'This is a warning msg'
     with when(requests).get(f'{base_url}/jobs/{existing_run}', headers=None, timeout=REQUESTS_TIMEOUT).thenReturn(
         MockJsonResponse(
-            200, {'status': 'ready', 'warnings': [msg], 'metadata': {'request': {'shots': 42, 'circuits': []}}}
+            200,
+            {
+                'status': 'ready',
+                'warnings': [msg],
+                'metadata': {'calibration_set_id': calibration_set_id, 'request': {'shots': 42, 'circuits': []}},
+            },
         )
     ):
         with pytest.warns(UserWarning, match=msg):

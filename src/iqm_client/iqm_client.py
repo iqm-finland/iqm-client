@@ -279,6 +279,8 @@ CircuitMeasurementResultsBatch = list[CircuitMeasurementResults]
 class Metadata(BaseModel):
     """Metadata describing a circuit execution job."""
 
+    calibration_set_id: Optional[int] = Field(None, description='ID of the calibration set used')
+    """ID of the calibration set used"""
     request: RunRequest = Field(..., description='copy of the original RunRequest sent to the server')
     """copy of the original RunRequest sent to the server"""
 
