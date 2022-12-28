@@ -641,7 +641,7 @@ class IQMClient:
         )
 
         if result.status_code == 401:
-            raise ClientConfigurationError(f'Authentication failed: {result.text}')
+            raise ClientAuthenticationError(f'Authentication failed: {result.text}')
 
         result.raise_for_status()
         return UUID(result.json()['id'])
@@ -740,6 +740,7 @@ class IQMClient:
 
         Raises:
             APITimeoutError: time exceeded the set timeout
+            ClientConfigurationError: if no valid authentication is provided
         """
         bearer_token = self._get_bearer_token()
         result = requests.get(
@@ -747,6 +748,16 @@ class IQMClient:
             headers=None if not bearer_token else {'Authorization': bearer_token},
             timeout=REQUESTS_TIMEOUT,
         )
+
+        # /quantum_architecture is not a strictly authenticated endpoint,
+        # so we need to handle 302 redirects to the auth server login page
+        if result.history and any(
+            response.status_code == 302 for response in result.history
+        ):  # pragma: no cover (generators are broken in coverage)
+            raise ClientConfigurationError('Authentication is required.')
+        if result.status_code == 401:
+            raise ClientAuthenticationError(f'Authentication failed: {result.text}')
+
         result.raise_for_status()
         return QuantumArchitecture(**result.json()).quantum_architecture
 

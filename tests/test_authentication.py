@@ -22,10 +22,18 @@ from time import sleep
 
 from mockito import unstub, when
 import pytest
+import requests
 
-from iqm_client import ClientAuthenticationError, Credentials, IQMClient
+from iqm_client import Circuit, ClientAuthenticationError, ClientConfigurationError, Credentials, IQMClient
 from iqm_client.iqm_client import _time_left_seconds
-from tests.conftest import expect_logout, expect_status_request, make_token, prepare_tokens
+from tests.conftest import (
+    MockJsonResponse,
+    expect_logout,
+    expect_status_request,
+    expect_submit_circuits_request,
+    make_token,
+    prepare_tokens,
+)
 
 
 def test_get_initial_tokens_with_credentials_from_arguments(base_url, credentials):
@@ -57,6 +65,17 @@ def test_get_initial_tokens_with_credentials_from_env_variables(base_url, creden
     unstub()
 
 
+def test_get_initial_tokens_with_incomplete_credentials_from_env_variables(base_url, credentials, monkeypatch):
+    """
+    Tests configuration error is reported if IQM_AUTH_SERVER is set, but no credentials provided
+    """
+    monkeypatch.setenv('IQM_AUTH_SERVER', credentials['auth_server_url'])
+    with pytest.raises(ClientConfigurationError) as e:
+        IQMClient(base_url)
+    assert str(e.value) == 'Auth server URL is set but no username or password'
+    unstub()
+
+
 def test_add_authorization_header_when_credentials_are_provided(base_url, credentials):
     """
     Tests that requests are sent with Authorization header when credentials are provided
@@ -67,6 +86,52 @@ def test_add_authorization_header_when_credentials_are_provided(base_url, creden
     result = client.get_run(job_id)
     assert result.status == 'pending'
     unstub()
+
+
+def test_add_authorization_header_on_submit_circuits_when_credentials_are_provided(
+    base_url, credentials, sample_circuit
+):
+    """
+    Tests that requests are sent with Authorization header when credentials are provided
+    """
+    tokens = prepare_tokens(300, 3600, **credentials)
+    expect_submit_circuits_request(base_url, tokens['access_token'], response_status=200)
+    client = IQMClient(base_url, **credentials)
+    client.submit_circuits(
+        circuits=[Circuit.parse_obj(sample_circuit)],
+        qubit_mapping={'Qubit A': 'QB1', 'Qubit B': 'QB2'},
+        shots=1000,
+    )
+
+
+def test_submit_circuits_raises_when_no_credentials_are_provided(base_url, credentials, sample_circuit):
+    """
+    Tests that requests are sent with Authorization header when credentials are provided
+    """
+    tokens = prepare_tokens(300, 3600, **credentials)
+    expect_submit_circuits_request(base_url, tokens['access_token'], response_status=200)
+    client = IQMClient(base_url, **credentials)
+    client.submit_circuits(
+        circuits=[Circuit.parse_obj(sample_circuit)],
+        qubit_mapping={'Qubit A': 'QB1', 'Qubit B': 'QB2'},
+        shots=1000,
+    )
+
+
+def test_submit_circuits_when_no_credentials_are_provided(base_url, credentials, sample_circuit):
+    """
+    Tests that requests are sent with Authorization header when credentials are provided
+    """
+    tokens = prepare_tokens(300, 3600, **credentials)
+    expect_submit_circuits_request(base_url, tokens['access_token'], response_status=401)
+    client = IQMClient(base_url, **credentials)
+    with pytest.raises(ClientAuthenticationError) as e:
+        client.submit_circuits(
+            circuits=[Circuit.parse_obj(sample_circuit)],
+            qubit_mapping={'Qubit A': 'QB1', 'Qubit B': 'QB2'},
+            shots=1000,
+        )
+    assert str(e.value).startswith('Authentication failed')
 
 
 def test_add_authorization_header_when_external_token_is_provided(base_url, tokens_dict):
@@ -100,6 +165,30 @@ def test_raises_client_authentication_error_if_authentication_fails(base_url, cr
     with pytest.raises(ClientAuthenticationError):
         IQMClient(base_url, **credentials)
     unstub()
+
+
+def test_get_quantum_architecture_raises_if_no_auth_provided(base_url):
+    """Test retrieving the quantum architecture if server responded with redirect"""
+    client = IQMClient(base_url)
+    redirection_response = requests.Response()
+    redirection_response.status_code = 302
+    when(requests).get(f'{base_url}/quantum-architecture', ...).thenReturn(
+        MockJsonResponse(200, 'not a valid json', [redirection_response])
+    )
+    with pytest.raises(ClientConfigurationError) as e:
+        client.get_quantum_architecture()
+    assert str(e.value) == 'Authentication is required.'
+
+
+def test_get_quantum_architecture_raises_if_wrong_auth_provided(base_url):
+    """Test retrieving the quantum architecture if server responded with auth error"""
+    client = IQMClient(base_url)
+    when(requests).get(f'{base_url}/quantum-architecture', ...).thenReturn(
+        MockJsonResponse(401, {'details': 'failed to authenticate'})
+    )
+    with pytest.raises(ClientAuthenticationError) as e:
+        client.get_quantum_architecture()
+    assert str(e.value).startswith('Authentication failed')
 
 
 def test_access_token_is_not_refreshed_if_it_has_not_expired(base_url, credentials):
