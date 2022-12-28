@@ -252,7 +252,9 @@ def expect_status_request(url: str, access_token: Optional[str], times: int = 1)
     return job_id
 
 
-def expect_submit_circuits_request(url: str, access_token: Optional[str], times: int = 1, response_status: int = 200):
+def expect_submit_circuits_request(
+    url: str, access_token: Optional[str], times: int = 1, response_status: int = 200
+) -> UUID:
     """Prepare for submit_circuits request.
 
     Args:
@@ -262,10 +264,12 @@ def expect_submit_circuits_request(url: str, access_token: Optional[str], times:
         times: number of times the status request is expected to be made
         response_status: status code to return in the response
     """
+    job_id = uuid4()
     headers = None if access_token is None else {'Authorization': f'Bearer {access_token}', 'Expect': '100-Continue'}
     expect(requests, times=times).post(
         f'{url}/jobs', json=ANY(dict), headers=headers, timeout=REQUESTS_TIMEOUT
-    ).thenReturn(MockJsonResponse(response_status, {'id': str(uuid4())}))
+    ).thenReturn(MockJsonResponse(response_status, {'id': str(job_id)}))
+    return job_id
 
 
 def expect_logout(auth_server_url: str, refresh_token: str):

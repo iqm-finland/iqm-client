@@ -78,7 +78,7 @@ def test_get_initial_tokens_with_incomplete_credentials_from_env_variables(base_
 
 def test_add_authorization_header_when_credentials_are_provided(base_url, credentials):
     """
-    Tests that requests are sent with Authorization header when credentials are provided
+    Tests that `get_run` requests are sent with Authorization header when credentials are provided
     """
     tokens = prepare_tokens(300, 3600, **credentials)
     job_id = expect_status_request(base_url, tokens['access_token'])
@@ -92,35 +92,23 @@ def test_add_authorization_header_on_submit_circuits_when_credentials_are_provid
     base_url, credentials, sample_circuit
 ):
     """
-    Tests that requests are sent with Authorization header when credentials are provided
+    Tests that `submit_circuits` requests are sent with Authorization header when credentials are provided
     """
     tokens = prepare_tokens(300, 3600, **credentials)
-    expect_submit_circuits_request(base_url, tokens['access_token'], response_status=200)
+    expected_job_id = expect_submit_circuits_request(base_url, tokens['access_token'], response_status=200)
     client = IQMClient(base_url, **credentials)
-    client.submit_circuits(
+    created_job_id = client.submit_circuits(
         circuits=[Circuit.parse_obj(sample_circuit)],
         qubit_mapping={'Qubit A': 'QB1', 'Qubit B': 'QB2'},
         shots=1000,
     )
+    assert expected_job_id == created_job_id
+    unstub()
 
 
-def test_submit_circuits_raises_when_no_credentials_are_provided(base_url, credentials, sample_circuit):
+def test_submit_circuits_raises_when_auth_failed(base_url, credentials, sample_circuit):
     """
-    Tests that requests are sent with Authorization header when credentials are provided
-    """
-    tokens = prepare_tokens(300, 3600, **credentials)
-    expect_submit_circuits_request(base_url, tokens['access_token'], response_status=200)
-    client = IQMClient(base_url, **credentials)
-    client.submit_circuits(
-        circuits=[Circuit.parse_obj(sample_circuit)],
-        qubit_mapping={'Qubit A': 'QB1', 'Qubit B': 'QB2'},
-        shots=1000,
-    )
-
-
-def test_submit_circuits_when_no_credentials_are_provided(base_url, credentials, sample_circuit):
-    """
-    Tests that requests are sent with Authorization header when credentials are provided
+    Tests that submit_circuits raises when authentication fails
     """
     tokens = prepare_tokens(300, 3600, **credentials)
     expect_submit_circuits_request(base_url, tokens['access_token'], response_status=401)
@@ -132,6 +120,7 @@ def test_submit_circuits_when_no_credentials_are_provided(base_url, credentials,
             shots=1000,
         )
     assert str(e.value).startswith('Authentication failed')
+    unstub()
 
 
 def test_add_authorization_header_when_external_token_is_provided(base_url, tokens_dict):
