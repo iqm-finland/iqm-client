@@ -78,7 +78,7 @@ def test_get_initial_tokens_with_incomplete_credentials_from_env_variables(base_
 
 def test_add_authorization_header_when_credentials_are_provided(base_url, credentials):
     """
-    Tests that `get_run` requests are sent with Authorization header when credentials are provided
+    Tests that ``get_run`` requests are sent with Authorization header when credentials are provided
     """
     tokens = prepare_tokens(300, 3600, **credentials)
     job_id = expect_status_request(base_url, tokens['access_token'])
