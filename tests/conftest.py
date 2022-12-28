@@ -23,7 +23,7 @@ import time
 from typing import Optional
 from uuid import UUID, uuid4
 
-from mockito import expect, mock, unstub, when
+from mockito import ANY, expect, mock, unstub, when
 import pytest
 import requests
 from requests import HTTPError, Response
@@ -115,9 +115,10 @@ def sample_quantum_architecture():
 
 
 class MockJsonResponse:
-    def __init__(self, status_code: int, json_data: dict):
+    def __init__(self, status_code: int, json_data: dict, history: Optional[list[Response]] = None):
         self.status_code = status_code
         self.json_data = json_data
+        self.history = history
 
     @property
     def text(self):
@@ -248,6 +249,26 @@ def expect_status_request(url: str, access_token: Optional[str], times: int = 1)
     expect(requests, times=times).get(f'{url}/jobs/{job_id}', headers=headers, timeout=REQUESTS_TIMEOUT).thenReturn(
         MockJsonResponse(200, {'status': 'pending', 'metadata': {'request': {'shots': 42, 'circuits': []}}})
     )
+    return job_id
+
+
+def expect_submit_circuits_request(
+    url: str, access_token: Optional[str], times: int = 1, response_status: int = 200
+) -> UUID:
+    """Prepare for submit_circuits request.
+
+    Args:
+        url: server URL for the status request
+        access_token: access token to use in Authorization header
+            If not set, expect request to have no Authorization header
+        times: number of times the status request is expected to be made
+        response_status: status code to return in the response
+    """
+    job_id = uuid4()
+    headers = None if access_token is None else {'Authorization': f'Bearer {access_token}', 'Expect': '100-Continue'}
+    expect(requests, times=times).post(
+        f'{url}/jobs', json=ANY(dict), headers=headers, timeout=REQUESTS_TIMEOUT
+    ).thenReturn(MockJsonResponse(response_status, {'id': str(job_id)}))
     return job_id
 
 
