@@ -92,7 +92,7 @@ def test_add_authorization_header_on_submit_circuits_when_credentials_are_provid
     base_url, credentials, sample_circuit
 ):
     """
-    Tests that `submit_circuits` requests are sent with Authorization header when credentials are provided
+    Tests that ``submit_circuits`` requests are sent with Authorization header when credentials are provided
     """
     tokens = prepare_tokens(300, 3600, **credentials)
     expected_job_id = expect_submit_circuits_request(base_url, tokens['access_token'], response_status=200)
