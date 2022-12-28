@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 10.0
+============
+
+* ``RunResult.metadata.request`` now contains a copy of the original request. `#65 <https://github.com/iqm-finland/iqm-client/pull/65>`_
+
 Version 9.8
 ===========
 
