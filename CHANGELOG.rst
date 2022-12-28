@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 10.1
+============
+
+* Rais an error while fetching quantum architecture if authentication is not provided. `#66 <https://github.com/iqm-finland/iqm-client/pull/66>`_
+
 Version 10.0
 ============
 
