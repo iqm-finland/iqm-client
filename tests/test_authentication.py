@@ -108,7 +108,7 @@ def test_add_authorization_header_on_submit_circuits_when_credentials_are_provid
 
 def test_submit_circuits_raises_when_auth_failed(base_url, credentials, sample_circuit):
     """
-    Tests that submit_circuits raises when authentication fails
+    Tests that ``submit_circuits`` raises ClientAuthenticationError when authentication fails
     """
     tokens = prepare_tokens(300, 3600, **credentials)
     expect_submit_circuits_request(base_url, tokens['access_token'], response_status=401)
