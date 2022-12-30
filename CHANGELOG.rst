@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 10.2
+============
+
+* Add optional ``implementation`` field to ``Instruction``. `#67 <https://github.com/iqm-finland/iqm-client/pull/67>`_
+
 Version 10.1
 ============
 

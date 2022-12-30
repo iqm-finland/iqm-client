@@ -95,7 +95,12 @@ def sample_circuit():
         'name': 'The circuit',
         'instructions': [
             {'name': 'cz', 'qubits': ['Qubit A', 'Qubit B'], 'args': {}},
-            {'name': 'phased_rx', 'qubits': ['Qubit A'], 'args': {'phase_t': 0.7, 'angle_t': 0.25}},
+            {
+                'name': 'phased_rx',
+                'implementation': 'drag_gaussian',
+                'qubits': ['Qubit A'],
+                'args': {'phase_t': 0.7, 'angle_t': 0.25},
+            },
             {'name': 'measurement', 'qubits': ['Qubit A'], 'args': {'output_label': 'A'}},
         ],
         'metadata': {'experiment_type': 'test', 'qubits': (0, 1), 'values': [0.01686514, 0.05760602]},

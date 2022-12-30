@@ -35,6 +35,12 @@ cz               2                                                  Controlled-Z
 barrier          >= 2                                               Execution barrier.
 ================ =========== ====================================== ===========
 
+Instructions can be further specified by adding an ``implementation`` field with
+a name for the implementation of the instruction. The default value for this field is
+an empty string which selects the default implementation.
+Support for multiple implementations is currently experimental and in normal use the
+field should be omitted. This selects the default implementation for the instruction.
+
 Measurement
 -----------
 
@@ -176,6 +182,8 @@ class Instruction(BaseModel):
 
     name: str = Field(..., description='name of the quantum operation', example='measurement')
     """name of the quantum operation"""
+    implementation: Optional[str] = Field(None, description='name of the implementation, for experimental use only')
+    """name of the implementation, for experimental use only"""
     qubits: tuple[str, ...] = Field(
         ...,
         description='names of the logical qubits the operation acts on',
