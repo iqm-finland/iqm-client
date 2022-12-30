@@ -368,6 +368,9 @@
       <li class="version_item"><a href="../versions/2.2/index.html">2.2</a></li>
     
     
+      <li class="version_item"><a href="../versions/10.2/index.html">10.2</a></li>
+    
+    
       <li class="version_item"><a href="../versions/10.1/index.html">10.1</a></li>
     
     
@@ -530,7 +533,7 @@ title="Print to PDF"
 <h1>iqm_client.iqm_client.Instruction<a class="headerlink" href="#iqm-client-iqm-client-instruction" title="Permalink to this headline">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="iqm_client.iqm_client.Instruction">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">iqm_client.iqm_client.</span></span><span class="sig-name descname"><span class="pre">Instruction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm_client.iqm_client.Instruction" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">iqm_client.iqm_client.</span></span><span class="sig-name descname"><span class="pre">Instruction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">implementation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm_client.iqm_client.Instruction" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pydantic.main.BaseModel</span></code></p>
 <p>An instruction in a quantum circuit.</p>
 <p>Create a new model by parsing and validating input data from keyword arguments.</p>
@@ -545,10 +548,13 @@ title="Print to PDF"
 <tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.Instruction.name" title="iqm_client.iqm_client.Instruction.name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></a></p></td>
 <td><p>name of the quantum operation</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#iqm_client.iqm_client.Instruction.qubits" title="iqm_client.iqm_client.Instruction.qubits"><code class="xref py py-obj docutils literal notranslate"><span class="pre">qubits</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm_client.iqm_client.Instruction.implementation" title="iqm_client.iqm_client.Instruction.implementation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">implementation</span></code></a></p></td>
+<td><p>name of the implementation, for experimental use only</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.Instruction.qubits" title="iqm_client.iqm_client.Instruction.qubits"><code class="xref py py-obj docutils literal notranslate"><span class="pre">qubits</span></code></a></p></td>
 <td><p>names of the logical qubits the operation acts on</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.Instruction.args" title="iqm_client.iqm_client.Instruction.args"><code class="xref py py-obj docutils literal notranslate"><span class="pre">args</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm_client.iqm_client.Instruction.args" title="iqm_client.iqm_client.Instruction.args"><code class="xref py py-obj docutils literal notranslate"><span class="pre">args</span></code></a></p></td>
 <td><p>arguments for the operation</p></td>
 </tr>
 </tbody>
@@ -569,6 +575,7 @@ title="Print to PDF"
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – </p></li>
+<li><p><strong>implementation</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – </p></li>
 <li><p><strong>qubits</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#tuple" title="(in Python v3.9)"><em>tuple</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>...</em><em>]</em>) – </p></li>
 <li><p><strong>args</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><em>Any</em></a><em>]</em>) – </p></li>
 </ul>
@@ -581,6 +588,12 @@ title="Print to PDF"
 <dt class="sig sig-object py" id="iqm_client.iqm_client.Instruction.name">
 <span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></em><a class="headerlink" href="#iqm_client.iqm_client.Instruction.name" title="Permalink to this definition">#</a></dt>
 <dd><p>name of the quantum operation</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="iqm_client.iqm_client.Instruction.implementation">
+<span class="sig-name descname"><span class="pre">implementation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#iqm_client.iqm_client.Instruction.implementation" title="Permalink to this definition">#</a></dt>
+<dd><p>name of the implementation, for experimental use only</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -632,7 +645,7 @@ title="Print to PDF"
     By IQM client developers<br/>
   
       &copy; Copyright 2021-2022, IQM.<br/>
-    Last updated on 2022-12-28.<br/>
+    Last updated on 2022-12-30.<br/>
 </p>
         </footer>
     </div>

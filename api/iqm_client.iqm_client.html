@@ -370,6 +370,9 @@
       <li class="version_item"><a href="../versions/2.2/index.html">2.2</a></li>
     
     
+      <li class="version_item"><a href="../versions/10.2/index.html">10.2</a></li>
+    
+    
       <li class="version_item"><a href="../versions/10.1/index.html">10.1</a></li>
     
     
@@ -671,6 +674,11 @@ Each Instruction type acts on a number of <a class="reference internal" href="iq
 </tr>
 </tbody>
 </table>
+<p>Instructions can be further specified by adding an <code class="docutils literal notranslate"><span class="pre">implementation</span></code> field with
+a name for the implementation of the instruction. The default value for this field is
+an empty string which selects the default implementation.
+Support for multiple implementations is currently experimental and in normal use the
+field should be omitted. This selects the default implementation for the instruction.</p>
 <section id="measurement">
 <h3>Measurement<a class="headerlink" href="#measurement" title="Permalink to this headline">#</a></h3>
 <p>Measurement in the computational (Z) basis. The measurement results are the output of the circuit.
@@ -782,7 +790,7 @@ that was the measurement outcome.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="iqm_client.iqm_client.IQMClient.html#iqm_client.iqm_client.IQMClient" title="iqm_client.iqm_client.IQMClient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IQMClient</span></code></a>(url[, tokens_file])</p></td>
 <td><p>Provides access to IQM quantum computers.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="iqm_client.iqm_client.Instruction.html#iqm_client.iqm_client.Instruction" title="iqm_client.iqm_client.Instruction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Instruction</span></code></a>(*, name, qubits, args)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="iqm_client.iqm_client.Instruction.html#iqm_client.iqm_client.Instruction" title="iqm_client.iqm_client.Instruction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Instruction</span></code></a>(*, name[, implementation])</p></td>
 <td><p>An instruction in a quantum circuit.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="iqm_client.iqm_client.Metadata.html#iqm_client.iqm_client.Metadata" title="iqm_client.iqm_client.Metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Metadata</span></code></a>(*[, calibration_set_id])</p></td>
@@ -890,7 +898,7 @@ that was the measurement outcome.</p>
     By IQM client developers<br/>
   
       &copy; Copyright 2021-2022, IQM.<br/>
-    Last updated on 2022-12-28.<br/>
+    Last updated on 2022-12-30.<br/>
 </p>
         </footer>
     </div>
