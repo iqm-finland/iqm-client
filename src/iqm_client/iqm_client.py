@@ -180,32 +180,24 @@ class Status(str, Enum):
 class Instruction(BaseModel):
     """An instruction in a quantum circuit."""
 
-    name: str = Field(..., description='name of the quantum operation', example='measurement')
+    name: str = Field(..., example='measurement')
     """name of the quantum operation"""
-    implementation: Optional[str] = Field(None, description='name of the implementation, for experimental use only')
+    implementation: Optional[str] = Field(None)
     """name of the implementation, for experimental use only"""
-    qubits: tuple[str, ...] = Field(
-        ...,
-        description='names of the logical qubits the operation acts on',
-        example=('alice',),
-    )
+    qubits: tuple[str, ...] = Field(..., example=('alice',))
     """names of the logical qubits the operation acts on"""
-    args: dict[str, Any] = Field(
-        ...,
-        description='arguments for the operation',
-        example={'key': 'm'},
-    )
+    args: dict[str, Any] = Field(..., example={'key': 'm'})
     """arguments for the operation"""
 
 
 class Circuit(BaseModel):
     """Quantum circuit to be executed."""
 
-    name: str = Field(..., description='name of the circuit', example='test circuit')
+    name: str = Field(..., example='test circuit')
     """name of the circuit"""
-    instructions: tuple[Instruction, ...] = Field(..., description='instructions comprising the circuit')
+    instructions: tuple[Instruction, ...] = Field(...)
     """instructions comprising the circuit"""
-    metadata: Optional[dict[str, Any]] = Field(None, description='arbitrary metadata associated with the circuit')
+    metadata: Optional[dict[str, Any]] = Field(None)
     """arbitrary metadata associated with the circuit"""
 
     def all_qubits(self) -> set[str]:
@@ -223,9 +215,9 @@ CircuitBatch = list[Circuit]
 class SingleQubitMapping(BaseModel):
     """Mapping of a logical qubit name to a physical qubit name."""
 
-    logical_name: str = Field(..., description='logical qubit name', example='alice')
+    logical_name: str = Field(..., example='alice')
     """logical qubit name"""
-    physical_name: str = Field(..., description='physical qubit name', example='QB1')
+    physical_name: str = Field(..., example='QB1')
     """physical qubit name"""
 
 
@@ -252,25 +244,16 @@ class RunRequest(BaseModel):
     Note: all circuits in a batch must measure the same qubits otherwise batch execution fails.
     """
 
-    circuits: CircuitBatch = Field(..., description='batch of quantum circuit(s) to execute')
+    circuits: CircuitBatch = Field(...)
     """batch of quantum circuit(s) to execute"""
-    custom_settings: dict[str, Any] = Field(
-        None,
-        description="""Custom settings to override default IQM hardware settings and calibration data.
-Note: This field should be always None in normal use.""",
-    )
+    custom_settings: dict[str, Any] = Field(None)
     """Custom settings to override default IQM hardware settings and calibration data.
 Note: This field should be always None in normal use."""
-    calibration_set_id: Optional[int] = Field(
-        None, description='ID of the calibration set to use, or None to use the latest calibration set'
-    )
+    calibration_set_id: Optional[int] = Field(None)
     """ID of the calibration set to use, or None to use the latest calibration set"""
-    qubit_mapping: Optional[list[SingleQubitMapping]] = Field(
-        None,
-        description='mapping of logical qubit names to physical qubit names, or None if using physical qubit names',
-    )
+    qubit_mapping: Optional[list[SingleQubitMapping]] = Field(None)
     """mapping of logical qubit names to physical qubit names, or None if using physical qubit names"""
-    shots: int = Field(..., description='how many times to execute each circuit in the batch')
+    shots: int = Field(...)
     """how many times to execute each circuit in the batch"""
 
 
@@ -287,9 +270,9 @@ CircuitMeasurementResultsBatch = list[CircuitMeasurementResults]
 class Metadata(BaseModel):
     """Metadata describing a circuit execution job."""
 
-    calibration_set_id: Optional[int] = Field(None, description='ID of the calibration set used')
+    calibration_set_id: Optional[int] = Field(None)
     """ID of the calibration set used"""
-    request: RunRequest = Field(..., description='copy of the original RunRequest sent to the server')
+    request: RunRequest = Field(...)
     """copy of the original RunRequest sent to the server"""
 
 
@@ -301,17 +284,15 @@ class RunResult(BaseModel):
     * If the status is ``'pending'``, ``measurements`` and ``message`` are ``None``.
     """
 
-    status: Status = Field(..., description="current status of the job, in ``{'pending', 'ready', 'failed'}``")
+    status: Status = Field(...)
     """current status of the job, in ``{'pending', 'ready', 'failed'}``"""
-    measurements: Optional[CircuitMeasurementResultsBatch] = Field(
-        None, description='if the job has finished successfully, the measurement results for the circuit(s)'
-    )
+    measurements: Optional[CircuitMeasurementResultsBatch] = Field(None)
     """if the job has finished successfully, the measurement results for the circuit(s)"""
-    message: Optional[str] = Field(None, description='if the job failed, an error message')
+    message: Optional[str] = Field(None)
     """if the job failed, an error message"""
-    metadata: Metadata = Field(..., description='metadata about the job')
+    metadata: Metadata = Field(...)
     """metadata about the job"""
-    warnings: Optional[list[str]] = Field(None, description='list of warning messages')
+    warnings: Optional[list[str]] = Field(None)
     """list of warning messages"""
 
     @staticmethod
@@ -332,11 +313,11 @@ class RunResult(BaseModel):
 class RunStatus(BaseModel):
     """Status of a circuit execution job."""
 
-    status: Status = Field(..., description="current status of the job, in ``{'pending', 'ready', 'failed'}``")
+    status: Status = Field(...)
     """current status of the job, in ``{'pending', 'ready', 'failed'}``"""
-    message: Optional[str] = Field(None, description='if the job failed, an error message')
+    message: Optional[str] = Field(None)
     """if the job failed, an error message"""
-    warnings: Optional[list[str]] = Field(None, description='list of warning messages')
+    warnings: Optional[list[str]] = Field(None)
     """list of warning messages"""
 
     @staticmethod
@@ -357,22 +338,20 @@ class RunStatus(BaseModel):
 class QuantumArchitectureSpecification(BaseModel):
     """Quantum architecture specification."""
 
-    name: str = Field(..., description='name of the quantum architecture')
+    name: str = Field(...)
     """name of the quantum architecture"""
-    operations: list[str] = Field(..., description='list of operations supported by this quantum architecture')
+    operations: list[str] = Field(...)
     """list of operations supported by this quantum architecture"""
-    qubits: list[str] = Field(..., description='list of qubits of this quantum architecture')
+    qubits: list[str] = Field(...)
     """list of qubits of this quantum architecture"""
-    qubit_connectivity: list[list[str]] = Field(..., description='qubit connectivity of this quantum architecture')
+    qubit_connectivity: list[list[str]] = Field(...)
     """qubit connectivity of this quantum architecture"""
 
 
 class QuantumArchitecture(BaseModel):
     """Quantum architecture as returned by Cortex."""
 
-    quantum_architecture: QuantumArchitectureSpecification = Field(
-        ..., description='details about the quantum architecture'
-    )
+    quantum_architecture: QuantumArchitectureSpecification = Field(...)
     """details about the quantum architecture"""
 
 
@@ -396,19 +375,15 @@ class AuthRequest(BaseModel):
 
     """
 
-    client_id: str = Field(..., description='name of the client for all request types')
+    client_id: str = Field(...)
     """name of the client for all request types"""
-    grant_type: Optional[GrantType] = Field(
-        None, description="type of token request, in ``{'password', 'refresh_token'}``"
-    )
+    grant_type: Optional[GrantType] = Field(None)
     """type of token request, in ``{'password', 'refresh_token'}``"""
-    username: Optional[str] = Field(None, description="username for grant type ``'password'``")
+    username: Optional[str] = Field(None)
     """username for grant type ``'password'``"""
-    password: Optional[str] = Field(None, description="password for grant type ``'password'``")
+    password: Optional[str] = Field(None)
     """password for grant type ``'password'``"""
-    refresh_token: Optional[str] = Field(
-        None, description="refresh token for grant type ``'refresh_token'`` and logout request"
-    )
+    refresh_token: Optional[str] = Field(None)
     """refresh token for grant type ``'refresh_token'`` and logout request"""
 
 
@@ -420,15 +395,15 @@ class Credentials(BaseModel):
       refreshed periodically.
     """
 
-    auth_server_url: str = Field(..., description='Base URL of the authentication server')
+    auth_server_url: str = Field(...)
     """Base URL of the authentication server"""
-    username: str = Field(..., description='username for logging in to the server')
+    username: str = Field(...)
     """username for logging in to the server"""
-    password: str = Field(..., description='password for logging in to the server')
+    password: str = Field(...)
     """password for logging in to the server"""
-    access_token: Optional[str] = Field(None, description='current access token of the session')
+    access_token: Optional[str] = Field(None)
     """current access token of the session"""
-    refresh_token: Optional[str] = Field(None, description='current refresh token of the session')
+    refresh_token: Optional[str] = Field(None)
     """current refresh token of the session"""
 
 
@@ -439,9 +414,9 @@ class ExternalToken(BaseModel):
       external resource, e.g. file generated by Cortex CLI's token manager.
     """
 
-    auth_server_url: str = Field(..., description='Base URL of the authentication server')
+    auth_server_url: str = Field(...)
     """Base URL of the authentication server"""
-    access_token: str = Field(None, description='current access token of the session')
+    access_token: str = Field(None)
     """current access token of the session"""
 
 

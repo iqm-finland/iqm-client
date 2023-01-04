@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 10.3
+============
+
+* Remove ``description`` from pydantic model fields. `#68 <https://github.com/iqm-finland/iqm-client/pull/68>`_
+
 Version 10.2
 ============
 
