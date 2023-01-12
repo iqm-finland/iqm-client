@@ -249,7 +249,7 @@ class RunRequest(BaseModel):
     custom_settings: dict[str, Any] = Field(None)
     """Custom settings to override default IQM hardware settings and calibration data.
 Note: This field should be always None in normal use."""
-    calibration_set_id: Optional[int] = Field(None)
+    calibration_set_id: Optional[UUID] = Field(None)
     """ID of the calibration set to use, or None to use the latest calibration set"""
     qubit_mapping: Optional[list[SingleQubitMapping]] = Field(None)
     """mapping of logical qubit names to physical qubit names, or None if using physical qubit names"""
@@ -270,7 +270,7 @@ CircuitMeasurementResultsBatch = list[CircuitMeasurementResults]
 class Metadata(BaseModel):
     """Metadata describing a circuit execution job."""
 
-    calibration_set_id: Optional[int] = Field(None)
+    calibration_set_id: Optional[UUID] = Field(None)
     """ID of the calibration set used"""
     request: RunRequest = Field(...)
     """copy of the original RunRequest sent to the server"""
@@ -552,7 +552,7 @@ class IQMClient:
         *,
         qubit_mapping: Optional[dict[str, str]] = None,
         custom_settings: Optional[dict[str, Any]] = None,
-        calibration_set_id: Optional[int] = None,
+        calibration_set_id: Optional[UUID] = None,
         shots: int = 1,
     ) -> UUID:
         """Submits a batch of quantum circuits for execution on a quantum computer.

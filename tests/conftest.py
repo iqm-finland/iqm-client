@@ -32,7 +32,7 @@ from iqm_client import AUTH_CLIENT_ID, AUTH_REALM, AuthRequest, GrantType
 
 REQUESTS_TIMEOUT = 60
 
-calibration_set_id_value = 24
+calibration_set_id_value = UUID('9ddb9586-8f27-49a9-90ed-41086b47f6bd')
 existing_run = UUID('3c3fcda3-e860-46bf-92a4-bcc59fa76ce9')
 missing_run = UUID('059e4186-50a3-4e6c-ba1f-37fe6afbdfc2')
 
