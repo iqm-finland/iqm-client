@@ -617,7 +617,7 @@ class IQMClient:
         result = self._retry_request_on_error(
             lambda: requests.post(
                 join(self._base_url, 'jobs'),
-                json=data.dict(exclude_none=True),
+                json=json.loads(data.json(exclude_none=True)),
                 headers=headers,
                 timeout=REQUESTS_TIMEOUT,
             )
