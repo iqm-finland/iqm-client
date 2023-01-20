@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 11.0
+============
+
+* Change type of ``calibration_set_id`` to be opaque UUID. `#69 <https://github.com/iqm-finland/iqm-client/pull/69>`_
+
 Version 10.3
 ============
 
