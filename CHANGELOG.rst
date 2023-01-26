@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 11.1
+============
+
+* Fix docs version sort. `#70 <https://github.com/iqm-finland/iqm-client/pull/70>`_
+
 Version 11.0
 ============
 
