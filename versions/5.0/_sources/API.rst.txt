@@ -1,9 +1,1 @@
-API Reference
-=============
-
-.. autosummary::
-   :toctree: api
-   :template: autosummary-module-template.rst
-   :recursive:
-
-   iqm_client
+/home/runner/work/iqm-client/iqm-client/build/sphinx/html/_sources/API.rst.txt

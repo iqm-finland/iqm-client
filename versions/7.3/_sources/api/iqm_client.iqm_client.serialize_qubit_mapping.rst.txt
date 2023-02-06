@@ -1,6 +1,1 @@
-iqm\_client.iqm\_client.serialize\_qubit\_mapping
-=================================================
-
-.. currentmodule:: iqm_client.iqm_client
-
-.. autofunction:: serialize_qubit_mapping
+/home/runner/work/iqm-client/iqm-client/build/sphinx/html/_sources/api/iqm_client.iqm_client.serialize_qubit_mapping.rst.txt

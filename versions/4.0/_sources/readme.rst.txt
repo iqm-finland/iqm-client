@@ -1,2 +1,1 @@
-.. _readme:
-.. include:: ../README.rst
+/home/runner/work/iqm-client/iqm-client/build/sphinx/html/_sources/readme.rst.txt
