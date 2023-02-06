@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 11.2
+============
+
+* Reduce docs size. `#71 <https://github.com/iqm-finland/iqm-client/pull/71>`_
+
 Version 11.1
 ============
 
