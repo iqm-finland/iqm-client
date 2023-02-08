@@ -2,6 +2,12 @@
 Changelog
 =========
 
+Version 11.3
+============
+
+* Add user agent header to requests. `#72 <https://github.com/iqm-finland/iqm-client/pull/72>`_
+
+
 Version 11.2
 ============
 
