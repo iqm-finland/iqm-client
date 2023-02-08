@@ -65,17 +65,17 @@ def test_submit_circuits_adds_user_agent_with_client_signature(mock_server, base
     """
     Tests that submit_circuit with client signature adds correct User-Agent header
     """
-    client = IQMClient(base_url)
+    client = IQMClient(base_url, client_signature='some-client-signature')
+    assert 'some-client-signature' in client._signature
     client.submit_circuits(
         circuits=[Circuit.parse_obj(sample_circuit)],
         qubit_mapping={'Qubit A': 'QB1', 'Qubit B': 'QB2'},
         shots=1000,
-        client_signature='some-client-signature',
     )
     verify(requests).post(
         f'{base_url}/jobs',
         json=ANY,
-        headers={'Expect': '100-Continue', 'User-Agent': client._signature + ', some-client-signature'},
+        headers={'Expect': '100-Continue', 'User-Agent': client._signature},
         timeout=REQUESTS_TIMEOUT,
     )
 
@@ -181,11 +181,12 @@ def test_get_run_adds_user_agent_with_client_signature(mock_server, base_url, ca
     """
     Tests that get_run with client signature adds the correct User-Agent header
     """
-    client = IQMClient(base_url)
-    client.get_run(existing_run, client_signature='some-client-signature')
+    client = IQMClient(base_url, client_signature='some-client-signature')
+    assert 'some-client-signature' in client._signature
+    client.get_run(existing_run)
     verify(requests).get(
         f'{base_url}/jobs/{existing_run}',
-        headers={'User-Agent': client._signature + ', some-client-signature'},
+        headers={'User-Agent': client._signature},
         timeout=REQUESTS_TIMEOUT,
     )
 
@@ -256,11 +257,12 @@ def test_wait_for_results_adds_user_agent_with_client_signature(mock_server, bas
     """
     Tests that wait_for_results with client signature adds the correct User-Agent header
     """
-    client = IQMClient(base_url)
-    client.wait_for_results(existing_run, client_signature='some-client-signature')
+    client = IQMClient(base_url, client_signature='some-client-signature')
+    client.wait_for_results(existing_run)
+    assert 'some-client-signature' in client._signature
     verify(requests, times=2).get(
         f'{base_url}/jobs/{existing_run}',
-        headers={'User-Agent': client._signature + ', some-client-signature'},
+        headers={'User-Agent': client._signature},
         timeout=REQUESTS_TIMEOUT,
     )
 

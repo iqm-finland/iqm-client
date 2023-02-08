@@ -492,6 +492,10 @@ class IQMClient:
 
     Args:
         url: Endpoint for accessing the server. Has to start with http or https.
+        client_signature: String that IQMClient adds to User-Agent header of requests
+            it sends to the server. The signature is appended to IQMClients own version
+            information and is intended to carry additional version information,
+            for example the version information of the caller.
         tokens_file: Optional path to a tokens file used for authentication.
             This can also be set in the IQM_TOKENS_FILE environment variable.
             If tokens_file is set, auth_server_url, username and password
@@ -510,7 +514,12 @@ class IQMClient:
     """
 
     def __init__(
-        self, url: str, tokens_file: Optional[str] = None, **credentials  # contains auth_server_url, username, password
+        self,
+        url: str,
+        *,
+        client_signature: Optional[str] = None,
+        tokens_file: Optional[str] = None,
+        **credentials,  # contains auth_server_url, username, password
     ):
         if not url.startswith(('http:', 'https:')):
             raise ClientConfigurationError(f'The URL schema has to be http or https. Incorrect schema in URL: {url}')
@@ -518,6 +527,8 @@ class IQMClient:
             raise ClientConfigurationError('Either external token or credentials must be provided. Both were provided.')
         self._base_url = url
         self._signature = f'iqm-client {version("iqm-client")}'
+        if client_signature:
+            self._signature += f', {client_signature}'
         self._tokens_file = tokens_file
         self._external_token = _get_external_token(tokens_file)
         if not self._external_token:
@@ -556,7 +567,6 @@ class IQMClient:
         custom_settings: Optional[dict[str, Any]] = None,
         calibration_set_id: Optional[UUID] = None,
         shots: int = 1,
-        client_signature: Optional[str] = None,
     ) -> UUID:
         """Submits a batch of quantum circuits for execution on a quantum computer.
 
@@ -569,7 +579,6 @@ class IQMClient:
                 Note: This field should always be ``None`` in normal use.
             calibration_set_id: ID of the calibration set to use, or ``None`` to use the latest one
             shots: number of times ``circuits`` are executed
-            client_signature: string to append to user agent header, if any
 
         Returns:
             ID for the created job. This ID is needed to query the job status and the execution results.
@@ -603,7 +612,7 @@ class IQMClient:
             shots=shots,
         )
 
-        headers = {'Expect': '100-Continue', 'User-Agent': self._get_user_agent(client_signature)}
+        headers = {'Expect': '100-Continue', 'User-Agent': self._signature}
         if bearer_token:
             headers['Authorization'] = bearer_token
 
@@ -633,12 +642,11 @@ class IQMClient:
         result.raise_for_status()
         return UUID(result.json()['id'])
 
-    def get_run(self, job_id: UUID, client_signature: Optional[str] = None) -> RunResult:
+    def get_run(self, job_id: UUID) -> RunResult:
         """Query the status and results of a submitted job.
 
         Args:
             job_id: id of the job to query
-            client_signature: string to append to user agent header, if any
 
         Returns:
             result of the job (can be pending)
@@ -647,7 +655,7 @@ class IQMClient:
             HTTPException: http exceptions
             CircuitExecutionError: IQM server specific exceptions
         """
-        headers = {'User-Agent': self._get_user_agent(client_signature)}
+        headers = {'User-Agent': self._signature}
         bearer_token = self._get_bearer_token()
         if bearer_token:
             headers['Authorization'] = bearer_token
@@ -669,12 +677,11 @@ class IQMClient:
             raise CircuitExecutionError(run_result.message)
         return run_result
 
-    def get_run_status(self, job_id: UUID, client_signature: Optional[str] = None) -> RunStatus:
+    def get_run_status(self, job_id: UUID) -> RunStatus:
         """Query the status of a submitted job.
 
         Args:
             job_id: id of the job to query
-            client_signature: string to append to user agent header, if any
 
         Returns:
             status of the job
@@ -683,7 +690,7 @@ class IQMClient:
             HTTPException: http exceptions
             CircuitExecutionError: IQM server specific exceptions
         """
-        headers = {'User-Agent': self._get_user_agent(client_signature)}
+        headers = {'User-Agent': self._signature}
         bearer_token = self._get_bearer_token()
         if bearer_token:
             headers['Authorization'] = bearer_token
@@ -703,9 +710,7 @@ class IQMClient:
                 warnings.warn(warning)
         return run_result
 
-    def wait_for_results(
-        self, job_id: UUID, timeout_secs: float = DEFAULT_TIMEOUT_SECONDS, client_signature: Optional[str] = None
-    ) -> RunResult:
+    def wait_for_results(self, job_id: UUID, timeout_secs: float = DEFAULT_TIMEOUT_SECONDS) -> RunResult:
         """Poll results until a job is either ready, failed, or timed out.
            Note, that jobs handling on the server side is async and if we try to request the results
            right after submitting the job (which is usually the case)
@@ -714,7 +719,6 @@ class IQMClient:
         Args:
             job_id: id of the job to wait for
             timeout_secs: how long to wait for a response before raising an APITimeoutError
-            client_signature: string to append to user agent header, if any
 
         Returns:
             job result
@@ -724,17 +728,14 @@ class IQMClient:
         """
         start_time = datetime.now()
         while (datetime.now() - start_time).total_seconds() < timeout_secs:
-            results = self.get_run(job_id, client_signature)
+            results = self.get_run(job_id)
             if results.status != Status.PENDING:
                 return results
             time.sleep(SECONDS_BETWEEN_CALLS)
         raise APITimeoutError(f"The job didn't finish in {timeout_secs} seconds.")
 
-    def get_quantum_architecture(self, client_signature: Optional[str] = None) -> QuantumArchitectureSpecification:
+    def get_quantum_architecture(self) -> QuantumArchitectureSpecification:
         """Retrieve quantum architecture from Cortex.
-
-        Args:
-            client_signature: string to append to user agent header, if any
 
         Returns:
             quantum architecture
@@ -743,7 +744,7 @@ class IQMClient:
             APITimeoutError: time exceeded the set timeout
             ClientConfigurationError: if no valid authentication is provided
         """
-        headers = {'User-Agent': self._get_user_agent(client_signature)}
+        headers = {'User-Agent': self._signature}
         bearer_token = self._get_bearer_token()
         if bearer_token:
             headers['Authorization'] = bearer_token
@@ -796,12 +797,6 @@ class IQMClient:
         self._credentials.access_token = None
         self._credentials.refresh_token = None
         return True
-
-    def _get_user_agent(self, client_signature: Optional[str] = None) -> str:
-        """Return user agent header for requests"""
-        user_agent = self._signature
-        user_agent += f', {client_signature}' if client_signature else ''
-        return user_agent
 
     def _get_bearer_token(self, retries: int = 1) -> Optional[str]:
         """Make a bearer token for Authorization header. If access token is about to expire refresh it first.
