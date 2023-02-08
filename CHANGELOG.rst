@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 11.3
+============
+
+* Fix multiversion docs publication. `#73 <https://github.com/iqm-finland/iqm-client/pull/73>`_
+
 Version 11.2
 ============
 
