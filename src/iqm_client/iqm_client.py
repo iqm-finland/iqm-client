@@ -662,7 +662,7 @@ class IQMClient:
 
         result = self._retry_request_on_error(
             lambda: requests.get(
-                join(self._base_url, 'jobs/', str(job_id)),
+                join(self._base_url, 'jobs', str(job_id)),
                 headers=headers,
                 timeout=REQUESTS_TIMEOUT,
             )
@@ -697,7 +697,7 @@ class IQMClient:
 
         result = self._retry_request_on_error(
             lambda: requests.get(
-                join(self._base_url, 'jobs/', str(job_id), 'status'),
+                join(self._base_url, 'jobs', str(job_id), 'status'),
                 headers=headers,
                 timeout=REQUESTS_TIMEOUT,
             )
