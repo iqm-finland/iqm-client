@@ -21,12 +21,14 @@ import requests
 from requests import HTTPError
 
 from iqm_client import (
+    DIST_NAME,
     Circuit,
     ClientConfigurationError,
     IQMClient,
     QuantumArchitectureSpecification,
     SingleQubitMapping,
     Status,
+    __version__,
     serialize_qubit_mapping,
 )
 from tests.conftest import MockJsonResponse, existing_run, missing_run
@@ -56,7 +58,7 @@ def test_submit_circuits_adds_user_agent(mock_server, base_url, sample_circuit):
     verify(requests).post(
         f'{base_url}/jobs',
         json=ANY,
-        headers={'Expect': '100-Continue', 'User-Agent': client._signature},
+        headers={'Expect': '100-Continue', 'User-Agent': f'{DIST_NAME} {__version__}'},
         timeout=ANY,
     )
 
@@ -75,7 +77,7 @@ def test_submit_circuits_adds_user_agent_with_client_signature(mock_server, base
     verify(requests).post(
         f'{base_url}/jobs',
         json=ANY,
-        headers={'Expect': '100-Continue', 'User-Agent': client._signature},
+        headers={'Expect': '100-Continue', 'User-Agent': f'{DIST_NAME} {__version__}, some-client-signature'},
         timeout=REQUESTS_TIMEOUT,
     )
 
@@ -172,7 +174,7 @@ def test_get_run_adds_user_agent(mock_server, base_url, calibration_set_id, samp
     client.get_run(existing_run)
     verify(requests).get(
         f'{base_url}/jobs/{existing_run}',
-        headers={'User-Agent': client._signature},
+        headers={'User-Agent': f'{DIST_NAME} {__version__}'},
         timeout=REQUESTS_TIMEOUT,
     )
 
@@ -186,7 +188,7 @@ def test_get_run_adds_user_agent_with_client_signature(mock_server, base_url, ca
     client.get_run(existing_run)
     verify(requests).get(
         f'{base_url}/jobs/{existing_run}',
-        headers={'User-Agent': client._signature},
+        headers={'User-Agent': f'{DIST_NAME} {__version__}, some-client-signature'},
         timeout=REQUESTS_TIMEOUT,
     )
 
@@ -248,7 +250,7 @@ def test_wait_for_results_adds_user_agent(mock_server, base_url):
     client.wait_for_results(existing_run)
     verify(requests, times=2).get(
         f'{base_url}/jobs/{existing_run}',
-        headers={'User-Agent': client._signature},
+        headers={'User-Agent': f'{DIST_NAME} {__version__}'},
         timeout=REQUESTS_TIMEOUT,
     )
 
@@ -262,7 +264,7 @@ def test_wait_for_results_adds_user_agent_with_client_signature(mock_server, bas
     assert 'some-client-signature' in client._signature
     verify(requests, times=2).get(
         f'{base_url}/jobs/{existing_run}',
-        headers={'User-Agent': client._signature},
+        headers={'User-Agent': f'{DIST_NAME} {__version__}, some-client-signature'},
         timeout=REQUESTS_TIMEOUT,
     )
 
