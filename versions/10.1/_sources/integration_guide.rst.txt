@@ -1,1 +1,2 @@
-/home/runner/work/iqm-client/iqm-client/build/sphinx/html/_sources/integration_guide.rst.txt
+.. _integration_guide:
+.. include:: ../INTEGRATION_GUIDE.rst

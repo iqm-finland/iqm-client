@@ -1,1 +1,0 @@
-/home/runner/work/iqm-client/iqm-client/build/sphinx/html/_static/locales/zh_CN/LC_MESSAGES/booktheme.po

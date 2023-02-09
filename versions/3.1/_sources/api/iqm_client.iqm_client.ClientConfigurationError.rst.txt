@@ -1,1 +1,6 @@
-/home/runner/work/iqm-client/iqm-client/build/sphinx/html/_sources/api/iqm_client.iqm_client.ClientConfigurationError.rst.txt
+iqm\_client.iqm\_client.ClientConfigurationError
+================================================
+
+.. currentmodule:: iqm_client.iqm_client
+
+.. autoexception:: ClientConfigurationError

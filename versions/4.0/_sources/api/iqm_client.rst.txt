@@ -1,1 +1,36 @@
-/home/runner/work/iqm-client/iqm-client/build/sphinx/html/_sources/api/iqm_client.rst.txt
+﻿iqm\_client
+===========
+
+.. automodule:: iqm_client
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Subpackages and modules
+
+.. autosummary::
+   :toctree:
+   :template: autosummary-module-template.rst
+   :recursive:
+
+   ~iqm_client.iqm_client
+
+
+
+
+

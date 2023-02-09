@@ -1,1 +1,0 @@
-/home/runner/work/iqm-client/iqm-client/build/sphinx/html/_static/jquery-3.5.1.js
