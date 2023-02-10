@@ -237,56 +237,93 @@ def make_token(token_type: str, lifetime: int) -> str:
     return f'{empty}.{body}.{empty}'
 
 
-def expect_status_request(url: str, access_token: Optional[str], times: int = 1) -> UUID:
+def expected_headers(user_agent: Optional[str] = None, access_token: Optional[str] = None, **others) -> Optional[dict]:
+    """Prepare expected headers
+
+    Args:
+        user_agent: expected user agent header, if any
+        access_token: expected access token in Authorization header, if any
+        others: any other headers
+
+    Returns:
+        Headers dict or None if no headers are expected
+    """
+    headers = others
+    if user_agent:
+        headers['User-Agent'] = user_agent
+    if access_token:
+        headers['Authorization'] = f'Bearer {access_token}'
+    return headers or None
+
+
+def expect_status_request(
+    url: str,
+    user_agent: Optional[str] = None,
+    access_token: Optional[str] = None,
+    timeout: int = ANY(int),
+    times: int = 1,
+) -> UUID:
     """Prepare for status request.
 
     Args:
         url: server URL for the status request
-        access_token: access token to use in Authorization header
-            If not set, expect request to have no Authorization header
+        user_agent: expected user agent header, if any
+        access_token: expected access token in Authorization header, if any
+        timeout: expected timeout value, if any
         times: number of times the status request is expected to be made
 
     Returns:
         Expected job ID to be used in the request
     """
     job_id = uuid4()
-    headers = None if access_token is None else {'Authorization': f'Bearer {access_token}'}
-    expect(requests, times=times).get(f'{url}/jobs/{job_id}', headers=headers, timeout=REQUESTS_TIMEOUT).thenReturn(
-        MockJsonResponse(200, {'status': 'pending', 'metadata': {'request': {'shots': 42, 'circuits': []}}})
-    )
+    expect(requests, times=times).get(
+        f'{url}/jobs/{job_id}',
+        headers=expected_headers(user_agent, access_token),
+        timeout=timeout,
+    ).thenReturn(MockJsonResponse(200, {'status': 'pending', 'metadata': {'request': {'shots': 42, 'circuits': []}}}))
     return job_id
 
 
+# pylint: disable=too-many-arguments
 def expect_submit_circuits_request(
-    url: str, access_token: Optional[str], times: int = 1, response_status: int = 200
+    url: str,
+    user_agent: Optional[str] = None,
+    access_token: Optional[str] = None,
+    timeout: int = ANY(int),
+    times: int = 1,
+    response_status: int = 200,
 ) -> UUID:
     """Prepare for submit_circuits request.
 
     Args:
         url: server URL for the status request
-        access_token: access token to use in Authorization header
-            If not set, expect request to have no Authorization header
+        user_agent: expected user agent header, if any
+        access_token: expected access token in Authorization header, if any
+        timeout: expected timeout value, if any
         times: number of times the status request is expected to be made
         response_status: status code to return in the response
     """
     job_id = uuid4()
-    headers = None if access_token is None else {'Authorization': f'Bearer {access_token}', 'Expect': '100-Continue'}
     expect(requests, times=times).post(
-        f'{url}/jobs', json=ANY(dict), headers=headers, timeout=REQUESTS_TIMEOUT
+        f'{url}/jobs',
+        json=ANY(dict),
+        headers=expected_headers(user_agent, access_token, **{'Expect': '100-Continue'}),
+        timeout=timeout,
     ).thenReturn(MockJsonResponse(response_status, {'id': str(job_id)}))
     return job_id
 
 
-def expect_logout(auth_server_url: str, refresh_token: str):
+def expect_logout(auth_server_url: str, refresh_token: str, timeout: int = ANY(int)):
     """Prepare for logout request.
 
     Args:
         auth_server_url: base URL of the authentication server
         refresh_token: refresh token expected to be used in the request
+        timeout: expected timeout value, if any
     """
     request_data = AuthRequest(client_id=AUTH_CLIENT_ID, refresh_token=refresh_token)
     expect(requests, times=1).post(
         f'{auth_server_url}/realms/{AUTH_REALM}/protocol/openid-connect/logout',
         data=request_data.dict(exclude_none=True),
-        timeout=REQUESTS_TIMEOUT,
+        timeout=timeout,
     ).thenReturn(mock({'status_code': 204, 'text': '{}'}))

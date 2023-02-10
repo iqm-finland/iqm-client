@@ -13,7 +13,7 @@
 # limitations under the License.
 """Tests for the IQM client.
 """
-from mockito import when
+from mockito import ANY, verify, when
 
 # pylint: disable=unused-argument
 import pytest
@@ -21,12 +21,14 @@ import requests
 from requests import HTTPError
 
 from iqm_client import (
+    DIST_NAME,
     Circuit,
     ClientConfigurationError,
     IQMClient,
     QuantumArchitectureSpecification,
     SingleQubitMapping,
     Status,
+    __version__,
     serialize_qubit_mapping,
 )
 from tests.conftest import MockJsonResponse, existing_run, missing_run
@@ -41,6 +43,43 @@ def test_serialize_qubit_mapping():
         SingleQubitMapping(logical_name='Bob', physical_name='qubit_3'),
         SingleQubitMapping(logical_name='Charlie', physical_name='physical 0'),
     ]
+
+
+def test_submit_circuits_adds_user_agent(mock_server, base_url, sample_circuit):
+    """
+    Tests that submit_circuit without client signature adds correct User-Agent header
+    """
+    client = IQMClient(base_url)
+    client.submit_circuits(
+        circuits=[Circuit.parse_obj(sample_circuit)],
+        qubit_mapping={'Qubit A': 'QB1', 'Qubit B': 'QB2'},
+        shots=1000,
+    )
+    verify(requests).post(
+        f'{base_url}/jobs',
+        json=ANY,
+        headers={'Expect': '100-Continue', 'User-Agent': f'{DIST_NAME} {__version__}'},
+        timeout=ANY,
+    )
+
+
+def test_submit_circuits_adds_user_agent_with_client_signature(mock_server, base_url, sample_circuit):
+    """
+    Tests that submit_circuit with client signature adds correct User-Agent header
+    """
+    client = IQMClient(base_url, client_signature='some-client-signature')
+    assert 'some-client-signature' in client._signature
+    client.submit_circuits(
+        circuits=[Circuit.parse_obj(sample_circuit)],
+        qubit_mapping={'Qubit A': 'QB1', 'Qubit B': 'QB2'},
+        shots=1000,
+    )
+    verify(requests).post(
+        f'{base_url}/jobs',
+        json=ANY,
+        headers={'Expect': '100-Continue', 'User-Agent': f'{DIST_NAME} {__version__}, some-client-signature'},
+        timeout=REQUESTS_TIMEOUT,
+    )
 
 
 def test_submit_circuits_returns_id(mock_server, base_url, sample_circuit):
@@ -127,6 +166,33 @@ def test_submit_circuits_without_qubit_mapping_returns_id(mock_server, base_url,
     assert job_id == existing_run
 
 
+def test_get_run_adds_user_agent(mock_server, base_url, calibration_set_id, sample_circuit):
+    """
+    Tests that get_run without client signature adds the correct User-Agent header
+    """
+    client = IQMClient(base_url)
+    client.get_run(existing_run)
+    verify(requests).get(
+        f'{base_url}/jobs/{existing_run}',
+        headers={'User-Agent': f'{DIST_NAME} {__version__}'},
+        timeout=REQUESTS_TIMEOUT,
+    )
+
+
+def test_get_run_adds_user_agent_with_client_signature(mock_server, base_url, calibration_set_id, sample_circuit):
+    """
+    Tests that get_run with client signature adds the correct User-Agent header
+    """
+    client = IQMClient(base_url, client_signature='some-client-signature')
+    assert 'some-client-signature' in client._signature
+    client.get_run(existing_run)
+    verify(requests).get(
+        f'{base_url}/jobs/{existing_run}',
+        headers={'User-Agent': f'{DIST_NAME} {__version__}, some-client-signature'},
+        timeout=REQUESTS_TIMEOUT,
+    )
+
+
 def test_get_run_status_and_results_for_existing_run(mock_server, base_url, calibration_set_id, sample_circuit):
     """
     Tests getting the run status
@@ -176,6 +242,33 @@ def test_waiting_for_results(mock_server, base_url):
     assert client.wait_for_results(existing_run).status == Status.READY
 
 
+def test_wait_for_results_adds_user_agent(mock_server, base_url):
+    """
+    Tests that wait_for_results without client signature adds the correct User-Agent header
+    """
+    client = IQMClient(base_url)
+    client.wait_for_results(existing_run)
+    verify(requests, times=2).get(
+        f'{base_url}/jobs/{existing_run}',
+        headers={'User-Agent': f'{DIST_NAME} {__version__}'},
+        timeout=REQUESTS_TIMEOUT,
+    )
+
+
+def test_wait_for_results_adds_user_agent_with_client_signature(mock_server, base_url):
+    """
+    Tests that wait_for_results with client signature adds the correct User-Agent header
+    """
+    client = IQMClient(base_url, client_signature='some-client-signature')
+    client.wait_for_results(existing_run)
+    assert 'some-client-signature' in client._signature
+    verify(requests, times=2).get(
+        f'{base_url}/jobs/{existing_run}',
+        headers={'User-Agent': f'{DIST_NAME} {__version__}, some-client-signature'},
+        timeout=REQUESTS_TIMEOUT,
+    )
+
+
 def test_get_quantum_architecture(sample_quantum_architecture, base_url):
     """Test retrieving the quantum architecture"""
     client = IQMClient(base_url)
@@ -190,7 +283,7 @@ def test_get_quantum_architecture(sample_quantum_architecture, base_url):
 def test_user_warning_is_emitted_when_warnings_in_response(base_url, calibration_set_id):
     client = IQMClient(base_url)
     msg = 'This is a warning msg'
-    with when(requests).get(f'{base_url}/jobs/{existing_run}', headers=None, timeout=REQUESTS_TIMEOUT).thenReturn(
+    with when(requests).get(f'{base_url}/jobs/{existing_run}', headers=ANY, timeout=ANY).thenReturn(
         MockJsonResponse(
             200,
             {

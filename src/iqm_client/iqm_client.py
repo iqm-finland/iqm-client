@@ -130,6 +130,7 @@ from __future__ import annotations
 from base64 import b64decode
 from datetime import datetime
 from enum import Enum
+from importlib.metadata import version
 import json
 import os
 from posixpath import join
@@ -491,6 +492,10 @@ class IQMClient:
 
     Args:
         url: Endpoint for accessing the server. Has to start with http or https.
+        client_signature: String that IQMClient adds to User-Agent header of requests
+            it sends to the server. The signature is appended to IQMClients own version
+            information and is intended to carry additional version information,
+            for example the version information of the caller.
         tokens_file: Optional path to a tokens file used for authentication.
             This can also be set in the IQM_TOKENS_FILE environment variable.
             If tokens_file is set, auth_server_url, username and password
@@ -509,13 +514,21 @@ class IQMClient:
     """
 
     def __init__(
-        self, url: str, tokens_file: Optional[str] = None, **credentials  # contains auth_server_url, username, password
+        self,
+        url: str,
+        *,
+        client_signature: Optional[str] = None,
+        tokens_file: Optional[str] = None,
+        **credentials,  # contains auth_server_url, username, password
     ):
         if not url.startswith(('http:', 'https:')):
             raise ClientConfigurationError(f'The URL schema has to be http or https. Incorrect schema in URL: {url}')
         if tokens_file and credentials:
             raise ClientConfigurationError('Either external token or credentials must be provided. Both were provided.')
         self._base_url = url
+        self._signature = f'iqm-client {version("iqm-client")}'
+        if client_signature:
+            self._signature += f', {client_signature}'
         self._tokens_file = tokens_file
         self._external_token = _get_external_token(tokens_file)
         if not self._external_token:
@@ -599,7 +612,7 @@ class IQMClient:
             shots=shots,
         )
 
-        headers = {'Expect': '100-Continue'}
+        headers = {'Expect': '100-Continue', 'User-Agent': self._signature}
         if bearer_token:
             headers['Authorization'] = bearer_token
 
@@ -642,12 +655,15 @@ class IQMClient:
             HTTPException: http exceptions
             CircuitExecutionError: IQM server specific exceptions
         """
+        headers = {'User-Agent': self._signature}
         bearer_token = self._get_bearer_token()
+        if bearer_token:
+            headers['Authorization'] = bearer_token
 
         result = self._retry_request_on_error(
             lambda: requests.get(
-                join(self._base_url, 'jobs/', str(job_id)),
-                headers=None if not bearer_token else {'Authorization': bearer_token},
+                join(self._base_url, 'jobs', str(job_id)),
+                headers=headers,
                 timeout=REQUESTS_TIMEOUT,
             )
         )
@@ -674,12 +690,15 @@ class IQMClient:
             HTTPException: http exceptions
             CircuitExecutionError: IQM server specific exceptions
         """
+        headers = {'User-Agent': self._signature}
         bearer_token = self._get_bearer_token()
+        if bearer_token:
+            headers['Authorization'] = bearer_token
 
         result = self._retry_request_on_error(
             lambda: requests.get(
-                join(self._base_url, 'jobs/', str(job_id), 'status'),
-                headers=None if not bearer_token else {'Authorization': bearer_token},
+                join(self._base_url, 'jobs', str(job_id), 'status'),
+                headers=headers,
                 timeout=REQUESTS_TIMEOUT,
             )
         )
@@ -725,10 +744,14 @@ class IQMClient:
             APITimeoutError: time exceeded the set timeout
             ClientConfigurationError: if no valid authentication is provided
         """
+        headers = {'User-Agent': self._signature}
         bearer_token = self._get_bearer_token()
+        if bearer_token:
+            headers['Authorization'] = bearer_token
+
         result = requests.get(
             join(self._base_url, 'quantum-architecture'),
-            headers=None if not bearer_token else {'Authorization': bearer_token},
+            headers=headers,
             timeout=REQUESTS_TIMEOUT,
         )
 

@@ -81,8 +81,8 @@ def test_add_authorization_header_when_credentials_are_provided(base_url, creden
     Tests that ``get_run`` requests are sent with Authorization header when credentials are provided
     """
     tokens = prepare_tokens(300, 3600, **credentials)
-    job_id = expect_status_request(base_url, tokens['access_token'])
     client = IQMClient(base_url, **credentials)
+    job_id = expect_status_request(base_url, user_agent=client._signature, access_token=tokens['access_token'])
     result = client.get_run(job_id)
     assert result.status == 'pending'
     unstub()
@@ -95,8 +95,10 @@ def test_add_authorization_header_on_submit_circuits_when_credentials_are_provid
     Tests that ``submit_circuits`` requests are sent with Authorization header when credentials are provided
     """
     tokens = prepare_tokens(300, 3600, **credentials)
-    expected_job_id = expect_submit_circuits_request(base_url, tokens['access_token'], response_status=200)
     client = IQMClient(base_url, **credentials)
+    expected_job_id = expect_submit_circuits_request(
+        base_url, user_agent=client._signature, access_token=tokens['access_token'], response_status=200
+    )
     created_job_id = client.submit_circuits(
         circuits=[Circuit.parse_obj(sample_circuit)],
         qubit_mapping={'Qubit A': 'QB1', 'Qubit B': 'QB2'},
@@ -111,8 +113,10 @@ def test_submit_circuits_raises_when_auth_failed(base_url, credentials, sample_c
     Tests that ``submit_circuits`` raises ClientAuthenticationError when authentication fails
     """
     tokens = prepare_tokens(300, 3600, **credentials)
-    expect_submit_circuits_request(base_url, tokens['access_token'], response_status=401)
     client = IQMClient(base_url, **credentials)
+    expect_submit_circuits_request(
+        base_url, user_agent=client._signature, access_token=tokens['access_token'], response_status=401
+    )
     with pytest.raises(ClientAuthenticationError) as e:
         client.submit_circuits(
             circuits=[Circuit.parse_obj(sample_circuit)],
@@ -128,8 +132,8 @@ def test_add_authorization_header_when_external_token_is_provided(base_url, toke
     Tests that requests are sent with Authorization header when external token is provided
     """
     tokens_path = os.path.dirname(os.path.realpath(__file__)) + '/resources/tokens.json'
-    job_id = expect_status_request(base_url, tokens_dict['access_token'])
     client = IQMClient(base_url, tokens_file=tokens_path)
+    job_id = expect_status_request(base_url, user_agent=client._signature, access_token=tokens_dict['access_token'])
     result = client.get_run(job_id)
     assert result.status == 'pending'
     unstub()
@@ -139,8 +143,8 @@ def test_no_authorization_header_when_credentials_are_not_provided(base_url):
     """
     Tests that requests are sent without Authorization header when no credentials are provided
     """
-    job_id = expect_status_request(base_url, None)
     client = IQMClient(base_url)
+    job_id = expect_status_request(base_url, user_agent=client._signature, access_token=None)
     result = client.get_run(job_id)
     assert result.status == 'pending'
     unstub()
@@ -188,7 +192,7 @@ def test_access_token_is_not_refreshed_if_it_has_not_expired(base_url, credentia
     client = IQMClient(base_url, **credentials)
     assert client._credentials.access_token == tokens['access_token']
 
-    job_id = expect_status_request(base_url, tokens['access_token'], 3)
+    job_id = expect_status_request(base_url, user_agent=client._signature, access_token=tokens['access_token'], times=3)
     client.get_run(job_id)
     client.get_run(job_id)
     client.get_run(job_id)
@@ -199,11 +203,13 @@ def test_expired_access_token_is_refreshed_automatically(base_url, credentials):
     Test that access token is refreshed automatically if it has expired
     """
     initial_tokens = prepare_tokens(-300, 3600, **credentials)  # expired initial access token
+    client = IQMClient(base_url, **credentials)
     refreshed_tokens = prepare_tokens(300, 4200, initial_tokens['refresh_token'], **credentials)
-    job_id = expect_status_request(base_url, refreshed_tokens['access_token'])
+    job_id = expect_status_request(
+        base_url, user_agent=client._signature, access_token=refreshed_tokens['access_token']
+    )
 
     # Check initial access token
-    client = IQMClient(base_url, **credentials)
     assert client._credentials.access_token == initial_tokens['access_token']
 
     # Check that assert token is refreshed
@@ -225,7 +231,9 @@ def test_start_new_session_when_refresh_token_has_expired(base_url, credentials)
     assert client._credentials.refresh_token == initial_tokens['refresh_token']
 
     refreshed_tokens = prepare_tokens(300, 3600, **credentials)  # refreshed access token and refresh token
-    job_id = expect_status_request(base_url, refreshed_tokens['access_token'])
+    job_id = expect_status_request(
+        base_url, user_agent=client._signature, access_token=refreshed_tokens['access_token']
+    )
     result = client.get_run(job_id)
     assert client._credentials.access_token == refreshed_tokens['access_token']
     assert result.status == 'pending'
