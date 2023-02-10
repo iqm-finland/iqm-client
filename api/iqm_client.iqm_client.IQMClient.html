@@ -278,6 +278,9 @@
       <li class="version_item current_version">dev</li>
     
     
+      <li class="version_item"><a href="../versions/11.4/index.html">11.4</a></li>
+    
+    
       <li class="version_item"><a href="../versions/11.3/index.html">11.3</a></li>
     
     
@@ -538,7 +541,7 @@ title="Print to PDF"
   <strong>
     
     You're reading the documentation for a development version.
-    For the latest released version, please have a look at <a href="../versions/11.3/index.html">11.3</a>.
+    For the latest released version, please have a look at <a href="../versions/11.4/index.html">11.4</a>.
     
   </strong>
 </div>
@@ -548,13 +551,17 @@ title="Print to PDF"
 <h1>iqm_client.iqm_client.IQMClient<a class="headerlink" href="#iqm-client-iqm-client-iqmclient" title="Permalink to this headline">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="iqm_client.iqm_client.IQMClient">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">iqm_client.iqm_client.</span></span><span class="sig-name descname"><span class="pre">IQMClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tokens_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">credentials</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm_client.iqm_client.IQMClient" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">iqm_client.iqm_client.</span></span><span class="sig-name descname"><span class="pre">IQMClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_signature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tokens_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">credentials</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm_client.iqm_client.IQMClient" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.9/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Provides access to IQM quantum computers.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Endpoint for accessing the server. Has to start with http or https.</p></li>
+<li><p><strong>client_signature</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – String that IQMClient adds to User-Agent header of requests
+it sends to the server. The signature is appended to IQMClients own version
+information and is intended to carry additional version information,
+for example the version information of the caller.</p></li>
 <li><p><strong>tokens_file</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – Optional path to a tokens file used for authentication.
 This can also be set in the IQM_TOKENS_FILE environment variable.
 If tokens_file is set, auth_server_url, username and password
@@ -791,7 +798,7 @@ we will find the job is still pending at least for the first query.</p>
     By IQM client developers<br/>
   
       &copy; Copyright 2021-2022, IQM.<br/>
-    Last updated on 2023-02-09.<br/>
+    Last updated on 2023-02-10.<br/>
 </p>
         </footer>
     </div>
