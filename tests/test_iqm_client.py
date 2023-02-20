@@ -23,6 +23,7 @@ from requests import HTTPError
 from iqm_client import (
     DIST_NAME,
     Circuit,
+    CircuitExecutionError,
     ClientConfigurationError,
     IQMClient,
     QuantumArchitectureSpecification,
@@ -31,12 +32,15 @@ from iqm_client import (
     __version__,
     serialize_qubit_mapping,
 )
-from tests.conftest import MockJsonResponse, existing_run, missing_run
+from tests.conftest import MockJsonResponse, MockTextResponse, existing_run, missing_run
 
 REQUESTS_TIMEOUT = 60
 
 
 def test_serialize_qubit_mapping():
+    """
+    Tests that serialize_qubit_mapping returns a list of SingleQubitMapping objects
+    """
     qubit_mapping = {'Alice': 'QB1', 'Bob': 'qubit_3', 'Charlie': 'physical 0'}
     assert serialize_qubit_mapping(qubit_mapping) == [
         SingleQubitMapping(logical_name='Alice', physical_name='QB1'),
@@ -281,6 +285,7 @@ def test_get_quantum_architecture(sample_quantum_architecture, base_url):
 
 
 def test_user_warning_is_emitted_when_warnings_in_response(base_url, calibration_set_id):
+    """Test that a warning is emitted when warnings are present in the response"""
     client = IQMClient(base_url)
     msg = 'This is a warning msg'
     with when(requests).get(f'{base_url}/jobs/{existing_run}', headers=ANY, timeout=ANY).thenReturn(
@@ -298,6 +303,7 @@ def test_user_warning_is_emitted_when_warnings_in_response(base_url, calibration
 
 
 def test_base_url_is_invalid():
+    """Test that an exception is raised when the base URL is invalid"""
     invalid_base_url = 'https//example.com'
     with pytest.raises(ClientConfigurationError) as exc:
         IQMClient(invalid_base_url)
@@ -305,6 +311,7 @@ def test_base_url_is_invalid():
 
 
 def test_tokens_file_not_found():
+    """Test that an exception is raised when the tokens file is not found"""
     base_url = 'https://example.com'
     tokens_file = '/home/iqm/tokens.json'
     with pytest.raises(ClientConfigurationError) as exc:
@@ -313,8 +320,49 @@ def test_tokens_file_not_found():
 
 
 def test_tokens_and_credentials_combo_invalid(credentials):
+    """Test that an exception is raised when both tokens and credentials are provided"""
     tokens_file = '/home/iqm/tokens.json'
     base_url = 'https://example.com'
     with pytest.raises(ClientConfigurationError) as exc:
         IQMClient(base_url, tokens_file=tokens_file, **credentials)
     assert 'Either external token or credentials must be provided. Both were provided.' == str(exc.value)
+
+
+def test_run_result_throws_json_decode_error_if_received_not_json(base_url):
+    """Test that an exception is raised when the response is not a valid JSON"""
+    client = IQMClient(base_url)
+    with when(requests).get(f'{base_url}/jobs/{existing_run}', headers=ANY, timeout=ANY).thenReturn(
+        MockTextResponse(200, 'not a valid json')
+    ):
+        with pytest.raises(CircuitExecutionError):
+            client.get_run(existing_run)
+
+
+def test_run_result_status_throws_json_decode_error_if_received_not_json(base_url):
+    """Test that an exception is raised when the response is not a valid JSON"""
+    client = IQMClient(base_url)
+    with when(requests).get(f'{base_url}/jobs/{existing_run}/status', headers=ANY, timeout=ANY).thenReturn(
+        MockTextResponse(200, 'not a valid json')
+    ):
+        with pytest.raises(CircuitExecutionError):
+            client.get_run_status(existing_run)
+
+
+def test_quantum_architecture_throws_json_decode_error_if_received_not_json(base_url):
+    """Test that an exception is raised when the response is not a valid JSON"""
+    client = IQMClient(base_url)
+    with when(requests).get(f'{base_url}/quantum-architecture', headers=ANY, timeout=ANY).thenReturn(
+        MockTextResponse(200, 'not a valid json')
+    ):
+        with pytest.raises(CircuitExecutionError):
+            client.get_quantum_architecture()
+
+
+def test_submit_circuits_throws_json_decode_error_if_received_not_json(base_url):
+    """Test that an exception is raised when the response is not a valid JSON"""
+    client = IQMClient(base_url)
+    with when(requests).post(f'{base_url}/jobs', json=ANY, headers=ANY, timeout=ANY).thenReturn(
+        MockTextResponse(200, 'not a valid json')
+    ):
+        with pytest.raises(CircuitExecutionError):
+            client.submit_circuits([])
