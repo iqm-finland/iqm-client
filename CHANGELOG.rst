@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 11.5
+============
+
+* Improve multiversion docs builds. `#75 <https://github.com/iqm-finland/iqm-client/pull/75>`_
+
 Version 11.4
 ============
 
