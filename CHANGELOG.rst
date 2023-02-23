@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 11.6
+============
+
+* Improve error reporting on unexpected server responses. `#74 <https://github.com/iqm-finland/iqm-client/pull/74>`_
+
 Version 11.5
 ============
 

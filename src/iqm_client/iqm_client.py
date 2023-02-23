@@ -640,7 +640,12 @@ class IQMClient:
             raise ClientAuthenticationError(f'Authentication failed: {result.text}')
 
         result.raise_for_status()
-        return UUID(result.json()['id'])
+
+        try:
+            job_id = UUID(result.json()['id'])
+            return job_id
+        except (json.decoder.JSONDecodeError, KeyError) as e:
+            raise CircuitExecutionError(f'Invalid response: {result.text}, {e}') from e
 
     def get_run(self, job_id: UUID) -> RunResult:
         """Query the status and results of a submitted job.
@@ -669,7 +674,11 @@ class IQMClient:
         )
 
         result.raise_for_status()
-        run_result = RunResult.from_dict(result.json())
+        try:
+            run_result = RunResult.from_dict(result.json())
+        except (json.decoder.JSONDecodeError, KeyError) as e:
+            raise CircuitExecutionError(f'Invalid response: {result.text}, {e}') from e
+
         if run_result.warnings:
             for warning in run_result.warnings:
                 warnings.warn(warning)
@@ -704,7 +713,11 @@ class IQMClient:
         )
 
         result.raise_for_status()
-        run_result = RunStatus.from_dict(result.json())
+        try:
+            run_result = RunStatus.from_dict(result.json())
+        except (json.decoder.JSONDecodeError, KeyError) as e:
+            raise CircuitExecutionError(f'Invalid response: {result.text}, {e}') from e
+
         if run_result.warnings:
             for warning in run_result.warnings:
                 warnings.warn(warning)
@@ -765,7 +778,11 @@ class IQMClient:
             raise ClientAuthenticationError(f'Authentication failed: {result.text}')
 
         result.raise_for_status()
-        return QuantumArchitecture(**result.json()).quantum_architecture
+        try:
+            qa = QuantumArchitecture(**result.json()).quantum_architecture
+        except (json.decoder.JSONDecodeError, KeyError) as e:
+            raise CircuitExecutionError(f'Invalid response: {result.text}, {e}') from e
+        return qa
 
     def close_auth_session(self) -> bool:
         """Terminate session with authentication server if there was one created.

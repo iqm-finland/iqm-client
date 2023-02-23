@@ -119,6 +119,20 @@ def sample_quantum_architecture():
     }
 
 
+class MockTextResponse:
+    def __init__(self, status_code: int, text: str, history: Optional[list[Response]] = None):
+        self.status_code = status_code
+        self.text = text
+        self.history = history
+
+    def json(self):
+        return json.loads(self.text)
+
+    def raise_for_status(self):
+        if 400 <= self.status_code < 600:
+            raise HTTPError('')
+
+
 class MockJsonResponse:
     def __init__(self, status_code: int, json_data: dict, history: Optional[list[Response]] = None):
         self.status_code = status_code
