@@ -14,17 +14,17 @@ VERSIONS_DIR_PATH = os.path.join('build', 'sphinx', 'html', 'versions')
 
 
 def get_versions(base_path: str) -> list[str]:
-    """ Given a path to a directory with ``sphinx-multiversion`` documentation
-        builds, extract documentation version numbers from sub-directory names
-        and return them sorted in descending order """
+    """Given a path to a directory with ``sphinx-multiversion`` documentation
+    builds, extract documentation version numbers from sub-directory names
+    and return them sorted in descending order"""
     versions = os.listdir(base_path)
     versions.sort(key=version_parser, reverse=True)
     return versions
 
 
 def get_html_file_paths(base_path: str) -> list[str]:
-    """ Search given directory recursively and return a list of HTML file
-        paths """
+    """Search given directory recursively and return a list of HTML file
+    paths"""
     paths = []
     for dirpath, _, filenames in os.walk(base_path):
         for filename in filenames:
@@ -35,9 +35,9 @@ def get_html_file_paths(base_path: str) -> list[str]:
 
 
 def get_path_to_parent_dir(filepath: str, processed_version: str) -> str:
-    """ Get path to the parent dir of a file, determined by documentation
-        version. The path is obtained by calculating the nesting level of
-        a file in the inner folder structure of a documentation release """
+    """Get path to the parent dir of a file, determined by documentation
+    version. The path is obtained by calculating the nesting level of
+    a file in the inner folder structure of a documentation release"""
     dirpath = os.path.split(filepath)[0]
     inner_dirpath = dirpath.split(processed_version)[1]
     inner_dirs = inner_dirpath.split(os.sep)
@@ -46,14 +46,15 @@ def get_path_to_parent_dir(filepath: str, processed_version: str) -> str:
 
 
 def generate_version_list_markup(processed_version: str, all_versions: list[str], path_to_parent: str) -> str:
-    """ Generate HTML markup for UL element with links to all versions of
-        documentation as LI elements """
-
+    """Generate HTML markup for UL element with links to all versions of
+    documentation as LI elements"""
 
     UL_TEMPLATE = '<ul class="version_list">{}</ul>'
     DEV_VERSION_LI_TEMPLATE = '<li class="version_item"><a href="{path_to_parent}../index.html">dev</a></li>'
     PROCESSED_VERSION_LI_TEMPLATE = '<li class="version_item current_version">{version}</li>'
-    OTHER_VERSION_LI_TEMPLATE = '<li class="version_item"><a href="{path_to_parent}{version}/index.html">{version}</a></li>'
+    OTHER_VERSION_LI_TEMPLATE = (
+        '<li class="version_item"><a href="{path_to_parent}{version}/index.html">{version}</a></li>'
+    )
 
     li_markup = []
     li_markup.append(DEV_VERSION_LI_TEMPLATE.format(path_to_parent=path_to_parent))
@@ -69,8 +70,7 @@ def generate_version_list_markup(processed_version: str, all_versions: list[str]
 
 
 def generate_version_notice_markup(latest_version: str, path_to_parent: str) -> tuple[str]:
-    STYLE_TEMPLATE = \
-    '''
+    STYLE_TEMPLATE = '''
     <style type="text/css">
       .version_notice {
         background-color: #ffc107;
@@ -80,8 +80,7 @@ def generate_version_notice_markup(latest_version: str, path_to_parent: str) -> 
     </style>
     '''
 
-    VERSION_NOTICE_DIV_TEMPLATE = \
-    '''
+    VERSION_NOTICE_DIV_TEMPLATE = '''
     <div class="version_notice">
         <strong>
     
@@ -117,7 +116,9 @@ for version in all_versions:
             outdated_version_list_element.replace_with(updated_version_list_element)
 
         # Update version notice
-        updated_notice_style_markup, updated_version_notice_markup = generate_version_notice_markup(latest_version, path_to_parent)
+        updated_notice_style_markup, updated_version_notice_markup = generate_version_notice_markup(
+            latest_version, path_to_parent
+        )
         updated_notice_style_element = BeautifulSoup(updated_notice_style_markup, 'html.parser').style
         updated_version_notice_element = BeautifulSoup(updated_version_notice_markup, 'html.parser').div
         if version != latest_version:
