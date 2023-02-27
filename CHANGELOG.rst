@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 11.8
+============
+
+* Bugfix: multiversion documentation has incomplete lists to available documentation versions `#76 <https://github.com/iqm-finland/iqm-client/pull/76>`_
+
 Version 11.7
 ============
 
