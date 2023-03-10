@@ -30,9 +30,16 @@ class IQMJSONEncoder(JSONEncoder):
 
 
 def to_json_dict(obj: dict[str, Any]) -> dict:
-    """Dump a dict as a string and load it back as JSON dict
+    """Convert a dict to JSON serializable dict
 
-    Raises ValueError if obj contains unsupported values"""
+    Args:
+        obj: dict to convert
+
+    Returns:
+        dict containing converted data
+
+    Raises:
+        ValueError if the original dict contains unsupported datatypes"""
     try:
         return loads(dumps(obj, allow_nan=False, cls=IQMJSONEncoder))
     except (ValueError, TypeError) as e:
