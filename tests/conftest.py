@@ -159,7 +159,11 @@ def generate_server_stubs(base_url, sample_circuit):
 
     when(requests).get(f'{base_url}/jobs/{existing_run}', ...).thenReturn(
         MockJsonResponse(
-            200, {'status': 'pending', 'metadata': {'request': {'shots': 42, 'circuits': [sample_circuit]}}}
+            200, {'status': 'pending_compilation', 'metadata': {'request': {'shots': 42, 'circuits': [sample_circuit]}}}
+        )
+    ).thenReturn(
+        MockJsonResponse(
+            200, {'status': 'pending_execution', 'metadata': {'request': {'shots': 42, 'circuits': [sample_circuit]}}}
         )
     ).thenReturn(
         MockJsonResponse(
@@ -180,8 +184,10 @@ def generate_server_stubs(base_url, sample_circuit):
     )
 
     when(requests).get(f'{base_url}/jobs/{existing_run}/status', ...).thenReturn(
-        MockJsonResponse(200, {'status': 'pending'})
-    ).thenReturn(MockJsonResponse(200, {'status': 'ready'}))
+        MockJsonResponse(200, {'status': 'pending_compilation'})
+    ).thenReturn(MockJsonResponse(200, {'status': 'pending_execution'})).thenReturn(
+        MockJsonResponse(200, {'status': 'ready'})
+    )
 
     # 'run was not created' response
     no_run_response = Response()
@@ -294,7 +300,9 @@ def expect_status_request(
         f'{url}/jobs/{job_id}',
         headers=expected_headers(user_agent, access_token),
         timeout=timeout,
-    ).thenReturn(MockJsonResponse(200, {'status': 'pending', 'metadata': {'request': {'shots': 42, 'circuits': []}}}))
+    ).thenReturn(
+        MockJsonResponse(200, {'status': 'pending_compilation', 'metadata': {'request': {'shots': 42, 'circuits': []}}})
+    )
     return job_id
 
 

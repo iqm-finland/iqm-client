@@ -173,7 +173,8 @@ class Status(str, Enum):
     Status of a job.
     """
 
-    PENDING = 'pending'
+    PENDING_COMPILATION = 'pending_compilation'
+    PENDING_EXECUTION = 'pending_execution'
     READY = 'ready'
     FAILED = 'failed'
 
@@ -723,6 +724,27 @@ class IQMClient:
                 warnings.warn(warning)
         return run_result
 
+    def wait_for_compilation(self, job_id: UUID, timeout_secs: float = DEFAULT_TIMEOUT_SECONDS) -> RunResult:
+        """Poll results until a job is either pending_execution, ready, failed, or timed out.
+
+        Args:
+            job_id: id of the job to wait for
+            timeout_secs: how long to wait for a response before raising an APITimeoutError
+
+        Returns:
+            job result
+
+        Raises:
+            APITimeoutError: time exceeded the set timeout
+        """
+        start_time = datetime.now()
+        while (datetime.now() - start_time).total_seconds() < timeout_secs:
+            results = self.get_run(job_id)
+            if results.status != Status.PENDING_COMPILATION:
+                return results
+            time.sleep(SECONDS_BETWEEN_CALLS)
+        raise APITimeoutError(f"The job compilation didn't finish in {timeout_secs} seconds.")
+
     def wait_for_results(self, job_id: UUID, timeout_secs: float = DEFAULT_TIMEOUT_SECONDS) -> RunResult:
         """Poll results until a job is either ready, failed, or timed out.
            Note, that jobs handling on the server side is async and if we try to request the results
@@ -742,7 +764,7 @@ class IQMClient:
         start_time = datetime.now()
         while (datetime.now() - start_time).total_seconds() < timeout_secs:
             results = self.get_run(job_id)
-            if results.status != Status.PENDING:
+            if results.status not in (Status.PENDING_COMPILATION, Status.PENDING_EXECUTION):
                 return results
             time.sleep(SECONDS_BETWEEN_CALLS)
         raise APITimeoutError(f"The job didn't finish in {timeout_secs} seconds.")
