@@ -36,7 +36,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="License" href="license.html" />
-    <link rel="prev" title="iqm_client.iqm_client.ClientConfigurationError" href="api/iqm_client.iqm_client.ClientConfigurationError.html" />
+    <link rel="prev" title="iqm_client.util.IQMJSONEncoder" href="api/iqm_client.util.IQMJSONEncoder.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="None">
     
@@ -224,6 +224,28 @@
        </li>
       </ul>
      </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="api/iqm_client.util.html">
+       iqm_client.util
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+      <label for="toctree-checkbox-4">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="api/iqm_client.util.to_json_dict.html">
+         iqm_client.util.to_json_dict
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="api/iqm_client.util.IQMJSONEncoder.html">
+         iqm_client.util.IQMJSONEncoder
+        </a>
+       </li>
+      </ul>
+     </li>
     </ul>
    </li>
   </ul>
@@ -276,6 +298,9 @@
 <ul class="version_list">
     
       <li class="version_item current_version">dev</li>
+    
+    
+      <li class="version_item"><a href="versions/11.7/integration_guide.html">11.7</a></li>
     
     
       <li class="version_item"><a href="versions/11.6/integration_guide.html">11.6</a></li>
@@ -624,7 +649,7 @@ title="Print to PDF"
   <strong>
     
     You're reading the documentation for a development version.
-    For the latest released version, please have a look at <a href="versions/11.6/integration_guide.html">11.6</a>.
+    For the latest released version, please have a look at <a href="versions/11.7/integration_guide.html">11.7</a>.
     
   </strong>
 </div>
@@ -668,6 +693,10 @@ For example integrations maintained by IQM please refer to the <a class="referen
 <span class="n">job</span> <span class="o">=</span> <span class="n">iqm_client</span><span class="o">.</span><span class="n">wait_for_results</span><span class="p">(</span><span class="n">job_id</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>A dict containing arbitrary metadata an be attached to the circuit before submitting it for
+execution. The attached metadata should consist only of values of JSON serializable datatypes.
+An utility function <code class="docutils literal notranslate"><span class="pre">util.to_json_dict</span></code> can be used to convert supported datatypes,
+e.g. <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, to equivalent JSON serializable types.</p>
 </section>
 <section id="authentication">
 <h2>Authentication<a class="headerlink" href="#authentication" title="Permalink to this headline">#</a></h2>
@@ -704,11 +733,11 @@ We discourage exposing this feature to end users of the quantum computing framew
                 
     <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="api/iqm_client.iqm_client.ClientConfigurationError.html" title="previous page">
+    <a class='left-prev' id="prev-link" href="api/iqm_client.util.IQMJSONEncoder.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">iqm_client.iqm_client.ClientConfigurationError</p>
+            <p class="prev-next-title">iqm_client.util.IQMJSONEncoder</p>
         </div>
     </a>
     <a class='right-next' id="next-link" href="license.html" title="next page">
@@ -728,7 +757,7 @@ We discourage exposing this feature to end users of the quantum computing framew
     By IQM client developers<br/>
   
       &copy; Copyright 2021-2022, IQM.<br/>
-    Last updated on 2023-02-23.<br/>
+    Last updated on 2023-03-21.<br/>
 </p>
         </footer>
     </div>
