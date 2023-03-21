@@ -48,6 +48,11 @@ Then the circuit can be submitted and its status and result can be queried with 
 
     job = iqm_client.wait_for_results(job_id)
 
+A dict containing arbitrary metadata an be attached to the circuit before submitting it for
+execution. The attached metadata should consist only of values of JSON serializable datatypes.
+An utility function ``util.to_json_dict`` can be used to convert supported datatypes,
+e.g. ``numpy.ndarray``, to equivalent JSON serializable types.
+
 Authentication
 --------------
 

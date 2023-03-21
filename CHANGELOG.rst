@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 11.7
+============
+
+* Add utility function ``to_json_dict`` to convert a dict to a JSON dict. `#77 <https://github.com/iqm-finland/iqm-client/pull/77>`_
+
 Version 11.6
 ============
 
