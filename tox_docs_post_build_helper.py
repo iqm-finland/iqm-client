@@ -1,7 +1,9 @@
 # Tox docs post-build helper file. It iterates through all HTML files and
 # updates sections that contain information about available documentation
 # versions. The script is needed in case we have a new documentation version,
-# and we want to avoid rebuilding old versions from scratch
+# and we want to avoid rebuilding the old versions from scratch.
+#
+# NB: The script is designed and tested to work with "sphinx_book_theme" v0.3.3
 
 import os
 
