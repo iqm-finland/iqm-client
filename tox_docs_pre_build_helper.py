@@ -3,6 +3,7 @@
 # versions can be skipped by ``sphinx-multiversion-contrib`` using flag
 # ``--skip-if-outputdir-exists``
 
+import argparse
 import os
 import shutil
 import tarfile
@@ -10,14 +11,23 @@ import tarfile
 from subprocess import Popen, PIPE
 
 
+# Get documentation path parameters from command line arguments
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--build_dir', required=True, help='Path to Sphinx documentation build directory')
+parser.add_argument('--build_type', required=True, help='Sphinx documentation build type')
+args = parser.parse_args()
+DOCS_BUILD_DIR = args.build_dir
+DOCS_BUILD_TYPE = args.build_type
+
+# Set paths
+
 TEMP_DIR = 'temp'
-DOCS_BUILD_DIR = 'build'
 DOCS_VERSIONS_DIR = 'versions'
-DOCS_BUILD_INNER_PATH = os.path.join(DOCS_BUILD_DIR, 'sphinx', 'html')
+DOCS_BUILD_INNER_PATH = os.path.join(DOCS_BUILD_DIR, DOCS_BUILD_TYPE)
 TEMP_ARCHIVE_FILE = 'temp_archive.tar'
 
 DOCS_BRANCH = 'remotes/origin/gh-pages'
-
 
 # Delete stale directories if any
 
