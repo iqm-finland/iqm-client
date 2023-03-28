@@ -5,6 +5,7 @@
 #
 # NB: The script is designed and tested to work with "sphinx_book_theme" v0.3.3
 
+import argparse
 import os
 
 from packaging.version import parse as version_parser
@@ -12,7 +13,14 @@ from packaging.version import parse as version_parser
 from bs4 import BeautifulSoup
 
 
-VERSIONS_DIR_PATH = os.path.join('build', 'sphinx', 'html', 'versions')
+parser = argparse.ArgumentParser()
+parser.add_argument('--build_dir', required=True, help='Path to Sphinx documentation build directory')
+parser.add_argument('--build_type', required=True, help='Sphinx documentation build type')
+args = parser.parse_args()
+DOCS_BUILD_DIR = args.build_dir
+DOCS_BUILD_TYPE = args.build_type
+
+VERSIONS_DIR_PATH = os.path.join(DOCS_BUILD_DIR, DOCS_BUILD_TYPE, 'versions')
 
 
 def get_versions(base_path: str) -> list[str]:
