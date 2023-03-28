@@ -53,31 +53,31 @@ def get_path_to_parent_dir(filepath: str, processed_version: str) -> str:
     return (os.path.pardir + os.path.sep) * inner_nesting_levels
 
 
-def generate_version_list_markup(processed_version: str, all_versions: list[str], path_to_parent: str) -> str:
+def generate_version_list_markup(processed_version: str, versions: list[str], parent_path: str) -> str:
     """Generate HTML markup for UL element with links to all versions of
     documentation as LI elements"""
 
     UL_TEMPLATE = '<ul class="version_list">{}</ul>'
-    DEV_VERSION_LI_TEMPLATE = '<li class="version_item"><a href="{path_to_parent}../index.html">dev</a></li>'
+    DEV_VERSION_LI_TEMPLATE = '<li class="version_item"><a href="{parent_path}../index.html">dev</a></li>'
     PROCESSED_VERSION_LI_TEMPLATE = '<li class="version_item current_version">{version}</li>'
     OTHER_VERSION_LI_TEMPLATE = (
-        '<li class="version_item"><a href="{path_to_parent}{version}/index.html">{version}</a></li>'
+        '<li class="version_item"><a href="{parent_path}{version}/index.html">{version}</a></li>'
     )
 
     li_markup = []
-    li_markup.append(DEV_VERSION_LI_TEMPLATE.format(path_to_parent=path_to_parent))
+    li_markup.append(DEV_VERSION_LI_TEMPLATE.format(parent_path=parent_path))
 
-    for version in all_versions:
-        if version == processed_version:
-            li_markup.append(PROCESSED_VERSION_LI_TEMPLATE.format(version=version))
+    for ver in versions:
+        if ver == processed_version:
+            li_markup.append(PROCESSED_VERSION_LI_TEMPLATE.format(version=ver))
         else:
-            li_markup.append(OTHER_VERSION_LI_TEMPLATE.format(path_to_parent=path_to_parent, version=version))
+            li_markup.append(OTHER_VERSION_LI_TEMPLATE.format(parent_path=parent_path, version=ver))
 
     ul_markup = UL_TEMPLATE.format('\n'.join(li_markup))
     return ul_markup
 
 
-def generate_version_notice_markup(latest_version: str, path_to_parent: str) -> tuple[str, str]:
+def generate_version_notice_markup(latest_ver: str, parent_path: str) -> tuple[str, str]:
     """Generate HTML markup with styling for version notice element for a given
     version"""
     STYLE_TEMPLATE = '''
@@ -95,14 +95,14 @@ def generate_version_notice_markup(latest_version: str, path_to_parent: str) -> 
         <strong>
     
             You're reading an old version of this documentation.
-            If you want up-to-date information, please have a look at <a href="{path_to_parent}{version}/index.html">{version}</a>.
+            If you want up-to-date information, please have a look at <a href="{parent_path}{version}/index.html">{version}</a>.
     
         </strong>
     </div>
     '''
 
     style_markup = STYLE_TEMPLATE
-    div_markup = VERSION_NOTICE_DIV_TEMPLATE.format(path_to_parent=path_to_parent, version=latest_version)
+    div_markup = VERSION_NOTICE_DIV_TEMPLATE.format(parent_path=parent_path, version=latest_ver)
     return style_markup, div_markup
 
 
@@ -126,9 +126,8 @@ for version in all_versions:
             outdated_version_list_element.replace_with(updated_version_list_element)
 
         # Update version notice
-        updated_notice_style_markup, updated_version_notice_markup = generate_version_notice_markup(
-            latest_version, path_to_parent
-        )
+        updated_notice_style_markup, updated_version_notice_markup = generate_version_notice_markup(latest_version,
+                                                                                                    path_to_parent)
         updated_notice_style_element = BeautifulSoup(updated_notice_style_markup, 'html.parser').style
         updated_version_notice_element = BeautifulSoup(updated_version_notice_markup, 'html.parser').div
         if version != latest_version:
