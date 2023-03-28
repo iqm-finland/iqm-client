@@ -1,15 +1,13 @@
-# Tox helper file. Checks out the documentation branch and copies available
-# documentation versions to the build directory. Then, rebuilding the existing
-# versions can be skipped by ``sphinx-multiversion-contrib`` using flag
-# ``--skip-if-outputdir-exists``
+"""Tox docs pre-build helper file. Checks out the documentation branch and
+copies available documentation versions to the build directory. Then,
+rebuilding the existing versions can be skipped by
+``sphinx-multiversion-contrib`` using flag ``--skip-if-outputdir-exists``"""
 
 import argparse
 import os
 import shutil
+from subprocess import PIPE, Popen
 import tarfile
-
-from subprocess import Popen, PIPE
-
 
 # Get documentation path parameters from command line arguments
 
@@ -44,7 +42,10 @@ os.makedirs(DOCS_BUILD_INNER_PATH, exist_ok=True)
 
 # Get available versions of documentation from Git branch as TAR archive
 
-Popen(['git', 'archive', DOCS_BRANCH, '-o', os.path.join(TEMP_DIR, TEMP_ARCHIVE_FILE)], stdout=PIPE, stderr=PIPE).wait()
+with Popen(
+    ['git', 'archive', DOCS_BRANCH, '-o', os.path.join(TEMP_DIR, TEMP_ARCHIVE_FILE)], stdout=PIPE, stderr=PIPE
+) as p:
+    p.wait()
 
 with tarfile.open(os.path.join(TEMP_DIR, TEMP_ARCHIVE_FILE), 'r') as f:
     f.extractall(path=TEMP_DIR)

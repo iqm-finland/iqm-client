@@ -1,17 +1,15 @@
-# Tox docs post-build helper file. It iterates through all HTML files and
-# updates sections that contain information about available documentation
-# versions. The script is needed in case we have a new documentation version,
-# and we want to avoid rebuilding the old versions from scratch.
-#
-# NB: The script is designed and tested to work with "sphinx_book_theme" v0.3.3
+"""Tox docs post-build helper file. It iterates through all HTML files and
+updates sections that contain information about available documentation
+versions. The script is needed in case we have a new documentation version,
+and we want to avoid rebuilding the old versions from scratch.
+
+NB: The script is designed and tested to work with "sphinx_book_theme" v0.3.3"""
 
 import argparse
 import os
 
-from packaging.version import parse as version_parser
-
 from bs4 import BeautifulSoup
-
+from packaging.version import parse as version_parser
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--build_dir', required=True, help='Path to Sphinx documentation build directory')
@@ -79,7 +77,9 @@ def generate_version_list_markup(processed_version: str, all_versions: list[str]
     return ul_markup
 
 
-def generate_version_notice_markup(latest_version: str, path_to_parent: str) -> tuple[str]:
+def generate_version_notice_markup(latest_version: str, path_to_parent: str) -> tuple[str, str]:
+    """Generate HTML markup with styling for version notice element for a given
+    version"""
     STYLE_TEMPLATE = '''
     <style type="text/css">
       .version_notice {
@@ -113,7 +113,7 @@ for version in all_versions:
     html_file_paths = get_html_file_paths(os.path.join(VERSIONS_DIR_PATH, version))
 
     for html_file_path in html_file_paths:
-        with open(html_file_path, 'r') as f:
+        with open(html_file_path, 'r', encoding='utf-8') as f:
             html_dom = BeautifulSoup(f, 'html.parser')
 
         path_to_parent = get_path_to_parent_dir(html_file_path, version)
@@ -141,7 +141,7 @@ for version in all_versions:
                     section.insert_before(updated_notice_style_element)
                     section.insert_before(updated_version_notice_element)
 
-        with open(html_file_path, 'w') as f:
+        with open(html_file_path, 'w', encoding='utf-8') as f:
             # Do not prettify HTML markup with BeautifulSoup as it will change
             # the appearance (spacing and layout) of rendered page slightly
             f.write(str(html_dom))
