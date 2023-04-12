@@ -1,4 +1,4 @@
-# Copyright 2021-2022 IQM client developers
+# Copyright 2021-2023 IQM client developers
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ from iqm_client import (
     DIST_NAME,
     Circuit,
     CircuitExecutionError,
+    CircuitValidationError,
     ClientConfigurationError,
     IQMClient,
     QuantumArchitectureSpecification,
@@ -366,3 +367,15 @@ def test_submit_circuits_throws_json_decode_error_if_received_not_json(base_url)
     ):
         with pytest.raises(CircuitExecutionError):
             client.submit_circuits([])
+
+
+def test_submit_circuits_validates_circuits(base_url, sample_circuit):
+    """
+    Tests that every submitted circuit is validated.
+    """
+    client = IQMClient(base_url)
+    valid_circuit = Circuit.parse_obj(sample_circuit)
+    invalid_circuit = Circuit.parse_obj(sample_circuit)
+    invalid_circuit.name = ''  # Invalidate the circuit on purpose
+    with pytest.raises(CircuitValidationError):
+        client.submit_circuits(circuits=[valid_circuit, invalid_circuit])

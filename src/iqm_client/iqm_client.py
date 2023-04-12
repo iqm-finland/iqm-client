@@ -1,4 +1,4 @@
-# Copyright 2021-2022 IQM client developers
+# Copyright 2021-2023 IQM client developers
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -129,18 +129,34 @@ from __future__ import annotations
 
 from base64 import b64decode
 from datetime import datetime
-from enum import Enum
 from importlib.metadata import version
 import json
 import os
 from posixpath import join
 import time
-from typing import Any, Callable, Optional, Union
+from typing import Any, Callable, Optional
 from uuid import UUID
 import warnings
 
-from pydantic import BaseModel, Field
+import humanize
+from pydantic import validate_model
 import requests
+
+from iqm_client.models import (
+    AuthRequest,
+    Circuit,
+    CircuitBatch,
+    Credentials,
+    ExternalToken,
+    GrantType,
+    QuantumArchitecture,
+    QuantumArchitectureSpecification,
+    RunRequest,
+    RunResult,
+    RunStatus,
+    SingleQubitMapping,
+    Status,
+)
 
 REQUESTS_TIMEOUT = 60
 
@@ -160,71 +176,16 @@ class ClientAuthenticationError(RuntimeError):
     """Something went wrong with user authentication."""
 
 
+class CircuitValidationError(RuntimeError):
+    """Circuit validation failed."""
+
+
 class CircuitExecutionError(RuntimeError):
     """Something went wrong on the server."""
 
 
 class APITimeoutError(CircuitExecutionError):
     """Exception for when executing a job on the server takes too long."""
-
-
-class Status(str, Enum):
-    """
-    Status of a job.
-    """
-
-    PENDING = 'pending'
-    READY = 'ready'
-    FAILED = 'failed'
-
-
-class Instruction(BaseModel):
-    """An instruction in a quantum circuit."""
-
-    name: str = Field(..., example='measurement')
-    """name of the quantum operation"""
-    implementation: Optional[str] = Field(None)
-    """name of the implementation, for experimental use only"""
-    qubits: tuple[str, ...] = Field(..., example=('alice',))
-    """names of the logical qubits the operation acts on"""
-    args: dict[str, Any] = Field(..., example={'key': 'm'})
-    """arguments for the operation"""
-
-
-class Circuit(BaseModel):
-    """Quantum circuit to be executed."""
-
-    name: str = Field(..., example='test circuit')
-    """name of the circuit"""
-    instructions: tuple[Instruction, ...] = Field(...)
-    """instructions comprising the circuit"""
-    metadata: Optional[dict[str, Any]] = Field(None)
-    """arbitrary metadata associated with the circuit"""
-
-    def all_qubits(self) -> set[str]:
-        """Return the names of all qubits in the circuit."""
-        qubits: set[str] = set()
-        for instruction in self.instructions:
-            qubits.update(instruction.qubits)
-        return qubits
-
-
-CircuitBatch = list[Circuit]
-"""Type that represents a list of quantum circuits to be executed together in a single batch."""
-
-
-class SingleQubitMapping(BaseModel):
-    """Mapping of a logical qubit name to a physical qubit name."""
-
-    logical_name: str = Field(..., example='alice')
-    """logical qubit name"""
-    physical_name: str = Field(..., example='QB1')
-    """physical qubit name"""
-
-
-QubitMapping = list[SingleQubitMapping]
-"""Type that represents a qubit mapping for a circuit, i.e. a list of single qubit mappings
-for all qubits in the circuit."""
 
 
 def serialize_qubit_mapping(qubit_mapping: dict[str, str]) -> list[SingleQubitMapping]:
@@ -239,186 +200,19 @@ def serialize_qubit_mapping(qubit_mapping: dict[str, str]) -> list[SingleQubitMa
     return [SingleQubitMapping(logical_name=k, physical_name=v) for k, v in qubit_mapping.items()]
 
 
-class RunRequest(BaseModel):
-    """Request for an IQM quantum computer to run a job that executes a batch of quantum circuits.
+def validate_circuit(circuit: Circuit) -> None:
+    """Validates a submitted quantum circuit using Pydantic tooling. If the
+    validation of the circuit fails, an exception is raised.
 
-    Note: all circuits in a batch must measure the same qubits otherwise batch execution fails.
+    Args:
+        circuit: a circuit that needs validation
+
+    Returns:
+         None
     """
-
-    circuits: CircuitBatch = Field(...)
-    """batch of quantum circuit(s) to execute"""
-    custom_settings: dict[str, Any] = Field(None)
-    """Custom settings to override default IQM hardware settings and calibration data.
-Note: This field should be always None in normal use."""
-    calibration_set_id: Optional[UUID] = Field(None)
-    """ID of the calibration set to use, or None to use the latest calibration set"""
-    qubit_mapping: Optional[list[SingleQubitMapping]] = Field(None)
-    """mapping of logical qubit names to physical qubit names, or None if using physical qubit names"""
-    shots: int = Field(...)
-    """how many times to execute each circuit in the batch"""
-
-
-CircuitMeasurementResults = dict[str, list[list[int]]]
-"""Measurement results from a single circuit. For each measurement operation in the circuit,
-maps the measurement key to the corresponding results. The outer list elements correspond to shots,
-and the inner list elements to the qubits measured in the measurement operation."""
-
-
-CircuitMeasurementResultsBatch = list[CircuitMeasurementResults]
-"""Type that represents measurement results for a batch of circuits."""
-
-
-class Metadata(BaseModel):
-    """Metadata describing a circuit execution job."""
-
-    calibration_set_id: Optional[UUID] = Field(None)
-    """ID of the calibration set used"""
-    request: RunRequest = Field(...)
-    """copy of the original RunRequest sent to the server"""
-
-
-class RunResult(BaseModel):
-    """Results of a circuit execution job.
-
-    * ``measurements`` is present iff the status is ``'ready'``.
-    * ``message`` carries additional information for the ``'failed'`` status.
-    * If the status is ``'pending'``, ``measurements`` and ``message`` are ``None``.
-    """
-
-    status: Status = Field(...)
-    """current status of the job, in ``{'pending', 'ready', 'failed'}``"""
-    measurements: Optional[CircuitMeasurementResultsBatch] = Field(None)
-    """if the job has finished successfully, the measurement results for the circuit(s)"""
-    message: Optional[str] = Field(None)
-    """if the job failed, an error message"""
-    metadata: Metadata = Field(...)
-    """metadata about the job"""
-    warnings: Optional[list[str]] = Field(None)
-    """list of warning messages"""
-
-    @staticmethod
-    def from_dict(inp: dict[str, Union[str, dict]]) -> RunResult:
-        """Parses the result from a dict.
-
-        Args:
-            inp: value to parse, has to map to RunResult
-
-        Returns:
-            parsed job result
-
-        """
-        input_copy = inp.copy()
-        return RunResult(status=Status(input_copy.pop('status')), **input_copy)
-
-
-class RunStatus(BaseModel):
-    """Status of a circuit execution job."""
-
-    status: Status = Field(...)
-    """current status of the job, in ``{'pending', 'ready', 'failed'}``"""
-    message: Optional[str] = Field(None)
-    """if the job failed, an error message"""
-    warnings: Optional[list[str]] = Field(None)
-    """list of warning messages"""
-
-    @staticmethod
-    def from_dict(inp: dict[str, Union[str, dict]]) -> RunStatus:
-        """Parses the result from a dict.
-
-        Args:
-            inp: value to parse, has to map to RunResult
-
-        Returns:
-            parsed job status
-
-        """
-        input_copy = inp.copy()
-        return RunStatus(status=Status(input_copy.pop('status')), **input_copy)
-
-
-class QuantumArchitectureSpecification(BaseModel):
-    """Quantum architecture specification."""
-
-    name: str = Field(...)
-    """name of the quantum architecture"""
-    operations: list[str] = Field(...)
-    """list of operations supported by this quantum architecture"""
-    qubits: list[str] = Field(...)
-    """list of qubits of this quantum architecture"""
-    qubit_connectivity: list[list[str]] = Field(...)
-    """qubit connectivity of this quantum architecture"""
-
-
-class QuantumArchitecture(BaseModel):
-    """Quantum architecture as returned by Cortex."""
-
-    quantum_architecture: QuantumArchitectureSpecification = Field(...)
-    """details about the quantum architecture"""
-
-
-class GrantType(str, Enum):
-    """
-    Type of token request.
-    """
-
-    PASSWORD = 'password'
-    REFRESH = 'refresh_token'
-
-
-class AuthRequest(BaseModel):
-    """Request sent to authentication server for access token and refresh token, or for terminating the session.
-
-    * Token request with grant type ``'password'`` starts a new session in the authentication server.
-      It uses fields ``client_id``, ``grant_type``, ``username`` and ``password``.
-    * Token request with grant type ``'refresh_token'`` is used for maintaining an existing session.
-      It uses field ``client_id``, ``grant_type``, ``refresh_token``.
-    * Logout request uses only fields ``client_id`` and ``refresh_token``.
-
-    """
-
-    client_id: str = Field(...)
-    """name of the client for all request types"""
-    grant_type: Optional[GrantType] = Field(None)
-    """type of token request, in ``{'password', 'refresh_token'}``"""
-    username: Optional[str] = Field(None)
-    """username for grant type ``'password'``"""
-    password: Optional[str] = Field(None)
-    """password for grant type ``'password'``"""
-    refresh_token: Optional[str] = Field(None)
-    """refresh token for grant type ``'refresh_token'`` and logout request"""
-
-
-class Credentials(BaseModel):
-    """Credentials and tokens for maintaining a session with the authentication server.
-
-    * Fields ``auth_server_url``, ``username`` and ``password`` are provided by the user.
-    * Fields ``access_token`` and ``refresh_token`` are loaded from the authentication server and
-      refreshed periodically.
-    """
-
-    auth_server_url: str = Field(...)
-    """Base URL of the authentication server"""
-    username: str = Field(...)
-    """username for logging in to the server"""
-    password: str = Field(...)
-    """password for logging in to the server"""
-    access_token: Optional[str] = Field(None)
-    """current access token of the session"""
-    refresh_token: Optional[str] = Field(None)
-    """current refresh token of the session"""
-
-
-class ExternalToken(BaseModel):
-    """Externally managed token for maintaining a session with the authentication server.
-
-    * Fields ``auth_server_url`` and ``access_token`` are loaded from an
-      external resource, e.g. file generated by Cortex CLI's token manager.
-    """
-
-    auth_server_url: str = Field(...)
-    """Base URL of the authentication server"""
-    access_token: str = Field(None)
-    """current access token of the session"""
+    *_, validation_error = validate_model(Circuit, circuit.__dict__)
+    if validation_error:
+        raise validation_error
 
 
 def _get_credentials(credentials: dict[str, str]) -> Optional[Credentials]:
@@ -583,6 +377,15 @@ class IQMClient:
         Returns:
             ID for the created job. This ID is needed to query the job status and the execution results.
         """
+
+        for i, circuit in enumerate(circuits, start=1):
+            try:
+                validate_circuit(circuit)
+            except ValueError as e:
+                raise CircuitValidationError(
+                    f'The {humanize.ordinal(i)} circuit in the batch failed the validation'
+                ).with_traceback(e.__traceback__)
+
         serialized_qubit_mapping: Optional[list[SingleQubitMapping]] = None
         if qubit_mapping is not None:
             # check if qubit mapping is injective
