@@ -209,6 +209,9 @@ def validate_circuit(circuit: Circuit) -> None:
 
     Returns:
          None
+
+    Raises:
+            pydantic.error_wrappers.ValidationError
     """
     *_, validation_error = validate_model(Circuit, circuit.__dict__)
     if validation_error:
