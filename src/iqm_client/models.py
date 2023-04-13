@@ -24,24 +24,20 @@ from pydantic import BaseModel, Field, StrictStr, validate_model, validator
 
 SUPPORTED_INSTRUCTIONS = {
     'barrier': {
-        'implementations': (),
         'arity': -1,
         'args': {},
     },
     'cz': {
-        'implementations': ('erfsquare',),
         'arity': 2,
         'args': {},
     },
     'measurement': {
-        'implementations': (),
         'arity': -1,
         'args': {
             'key': (str,),
         },
     },
     'phased_rx': {
-        'implementations': ('drag_gaussian',),
         'arity': 1,
         'args': {
             'angle_t': (
@@ -127,7 +123,8 @@ class Instruction(BaseModel):
         supported_arg_names = set(SUPPORTED_INSTRUCTIONS[name]['args'].keys())
         if submitted_arg_names != supported_arg_names:
             raise ValueError(
-                f'The instruction "{name}" requires {tuple(supported_arg_names) if supported_arg_names else "no"} argument(s), '
+                f'The instruction "{name}" requires '
+                f'{tuple(supported_arg_names) if supported_arg_names else "no"} argument(s), '
                 f'but {tuple(submitted_arg_names)} were given'
             )
 
