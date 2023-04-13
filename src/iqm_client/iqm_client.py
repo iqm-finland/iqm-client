@@ -138,7 +138,6 @@ from typing import Any, Callable, Optional
 from uuid import UUID
 import warnings
 
-import humanize
 from pydantic import validate_model
 import requests
 
@@ -381,13 +380,13 @@ class IQMClient:
             ID for the created job. This ID is needed to query the job status and the execution results.
         """
 
-        for i, circuit in enumerate(circuits, start=1):
+        for i, circuit in enumerate(circuits):
             try:
                 validate_circuit(circuit)
             except ValueError as e:
-                raise CircuitValidationError(
-                    f'The {humanize.ordinal(i)} circuit in the batch failed the validation'
-                ).with_traceback(e.__traceback__)
+                raise CircuitValidationError(f'The circuit at index {i} failed the validation').with_traceback(
+                    e.__traceback__
+                )
 
         serialized_qubit_mapping: Optional[list[SingleQubitMapping]] = None
         if qubit_mapping is not None:
