@@ -72,7 +72,7 @@ class Instruction(BaseModel):
 
     name: str = Field(..., example='measurement')
     """name of the quantum operation"""
-    implementation: Optional[str] = Field(None)
+    implementation: Optional[StrictStr] = Field(None)
     """name of the implementation, for experimental use only"""
     qubits: tuple[StrictStr, ...] = Field(..., example=('alice',))
     """names of the logical qubits the operation acts on"""
@@ -89,6 +89,15 @@ class Instruction(BaseModel):
                 f'Supported instructions are \"{", ".join(SUPPORTED_INSTRUCTIONS.keys())}\"'
             )
         return name
+
+    @validator('implementation')
+    def implementation_validator(cls, value):
+        """Check if the implementation of the instruction is set to a non-empty string"""
+        implementation = value
+        if isinstance(implementation, str):
+            if not implementation:
+                raise ValueError('Implementation of the instruction should be set to a non-empty string')
+        return implementation
 
     @validator('qubits')
     def qubits_validator(cls, value, values):
