@@ -479,7 +479,7 @@ def test_validate_circuit_checks_instruction_qubit_count(sample_circuit):
     """
     circuit = Circuit.parse_obj(sample_circuit)
     circuit.instructions[0].qubits += ('Qubit C',)
-    with pytest.raises(ValueError, match='The "cz" instruction acts on 2 qubit\(s\), but 3 were given'):
+    with pytest.raises(ValueError, match=r'The "cz" instruction acts on 2 qubit\(s\), but 3 were given'):
         validate_circuit(circuit)
 
 
