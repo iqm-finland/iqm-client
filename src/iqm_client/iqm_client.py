@@ -173,8 +173,8 @@ class Status(str, Enum):
     Status of a job.
     """
 
-    PENDING_COMPILATION = 'pending_compilation'
-    PENDING_EXECUTION = 'pending_execution'
+    PENDING_COMPILATION = 'pending compilation'
+    PENDING_EXECUTION = 'pending execution'
     READY = 'ready'
     FAILED = 'failed'
 
@@ -725,7 +725,7 @@ class IQMClient:
         return run_result
 
     def wait_for_compilation(self, job_id: UUID, timeout_secs: float = DEFAULT_TIMEOUT_SECONDS) -> RunResult:
-        """Poll results until a job is either pending_execution, ready, failed, or timed out.
+        """Poll results until a job is either pending execution, ready, failed, or timed out.
 
         Args:
             job_id: id of the job to wait for

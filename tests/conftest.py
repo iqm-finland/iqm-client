@@ -159,11 +159,11 @@ def generate_server_stubs(base_url, sample_circuit):
 
     when(requests).get(f'{base_url}/jobs/{existing_run}', ...).thenReturn(
         MockJsonResponse(
-            200, {'status': 'pending_compilation', 'metadata': {'request': {'shots': 42, 'circuits': [sample_circuit]}}}
+            200, {'status': 'pending compilation', 'metadata': {'request': {'shots': 42, 'circuits': [sample_circuit]}}}
         )
     ).thenReturn(
         MockJsonResponse(
-            200, {'status': 'pending_execution', 'metadata': {'request': {'shots': 42, 'circuits': [sample_circuit]}}}
+            200, {'status': 'pending execution', 'metadata': {'request': {'shots': 42, 'circuits': [sample_circuit]}}}
         )
     ).thenReturn(
         MockJsonResponse(
@@ -184,8 +184,8 @@ def generate_server_stubs(base_url, sample_circuit):
     )
 
     when(requests).get(f'{base_url}/jobs/{existing_run}/status', ...).thenReturn(
-        MockJsonResponse(200, {'status': 'pending_compilation'})
-    ).thenReturn(MockJsonResponse(200, {'status': 'pending_execution'})).thenReturn(
+        MockJsonResponse(200, {'status': 'pending compilation'})
+    ).thenReturn(MockJsonResponse(200, {'status': 'pending execution'})).thenReturn(
         MockJsonResponse(200, {'status': 'ready'})
     )
 
@@ -301,7 +301,7 @@ def expect_status_request(
         headers=expected_headers(user_agent, access_token),
         timeout=timeout,
     ).thenReturn(
-        MockJsonResponse(200, {'status': 'pending_compilation', 'metadata': {'request': {'shots': 42, 'circuits': []}}})
+        MockJsonResponse(200, {'status': 'pending compilation', 'metadata': {'request': {'shots': 42, 'circuits': []}}})
     )
     return job_id
 
