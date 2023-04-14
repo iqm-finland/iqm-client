@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 11.9
+============
+
+* Add function ``validate_circuit`` to validate a submitted circuit for argument correctness
+
 Version 11.8
 ============
 
