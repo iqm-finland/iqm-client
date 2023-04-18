@@ -300,6 +300,9 @@
       <li class="version_item current_version">dev</li>
     
     
+      <li class="version_item"><a href="../versions/12.0/index.html">12.0</a></li>
+    
+    
       <li class="version_item"><a href="../versions/11.8/index.html">11.8</a></li>
     
     
@@ -575,7 +578,7 @@ title="Print to PDF"
   <strong>
     
     You're reading the documentation for a development version.
-    For the latest released version, please have a look at <a href="../versions/11.8/index.html">11.8</a>.
+    For the latest released version, please have a look at <a href="../versions/12.0/index.html">12.0</a>.
     
   </strong>
 </div>
@@ -650,7 +653,10 @@ Password must be set if <code class="docutils literal notranslate"><span class="
 <tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.submit_circuits" title="iqm_client.iqm_client.IQMClient.submit_circuits"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit_circuits</span></code></a>(circuits, *[, ...])</p></td>
 <td><p>Submits a batch of quantum circuits for execution on a quantum computer.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.wait_for_results" title="iqm_client.iqm_client.IQMClient.wait_for_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait_for_results</span></code></a>(job_id[, timeout_secs])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.wait_for_compilation" title="iqm_client.iqm_client.IQMClient.wait_for_compilation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait_for_compilation</span></code></a>(job_id[, timeout_secs])</p></td>
+<td><p>Poll results until a job is either pending execution, ready, failed, or timed out.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.wait_for_results" title="iqm_client.iqm_client.IQMClient.wait_for_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait_for_results</span></code></a>(job_id[, timeout_secs])</p></td>
 <td><p>Poll results until a job is either ready, failed, or timed out.</p></td>
 </tr>
 </tbody>
@@ -723,6 +729,29 @@ Note: This field should always be <code class="docutils literal notranslate"><sp
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><a class="reference internal" href="iqm_client.iqm_client.RunStatus.html#iqm_client.iqm_client.RunStatus" title="iqm_client.iqm_client.RunStatus">iqm_client.iqm_client.RunStatus</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="iqm_client.iqm_client.IQMClient.wait_for_compilation">
+<span class="sig-name descname"><span class="pre">wait_for_compilation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout_secs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">900</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm_client.iqm_client.IQMClient.wait_for_compilation" title="Permalink to this definition">#</a></dt>
+<dd><p>Poll results until a job is either pending execution, ready, failed, or timed out.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>job_id</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><em>uuid.UUID</em></a>) – id of the job to wait for</p></li>
+<li><p><strong>timeout_secs</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – how long to wait for a response before raising an APITimeoutError</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>job result</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="iqm_client.iqm_client.APITimeoutError.html#iqm_client.iqm_client.APITimeoutError" title="iqm_client.iqm_client.APITimeoutError"><strong>APITimeoutError</strong></a> – time exceeded the set timeout</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="iqm_client.iqm_client.RunResult.html#iqm_client.iqm_client.RunResult" title="iqm_client.iqm_client.RunResult">iqm_client.iqm_client.RunResult</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -832,7 +861,7 @@ we will find the job is still pending at least for the first query.</p>
     By IQM client developers<br/>
   
       &copy; Copyright 2021-2022, IQM.<br/>
-    Last updated on 2023-03-29.<br/>
+    Last updated on 2023-04-18.<br/>
 </p>
         </footer>
     </div>
