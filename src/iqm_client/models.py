@@ -58,7 +58,8 @@ class Status(str, Enum):
     Status of a job.
     """
 
-    PENDING = 'pending'
+    PENDING_COMPILATION = 'pending compilation'
+    PENDING_EXECUTION = 'pending execution'
     READY = 'ready'
     FAILED = 'failed'
 

@@ -204,7 +204,9 @@ def test_get_run_status_and_results_for_existing_run(mock_server, base_url, cali
     Tests getting the run status
     """
     client = IQMClient(base_url)
-    assert client.get_run(existing_run).status == Status.PENDING
+    assert client.get_run(existing_run).status == Status.PENDING_COMPILATION
+    compiled_run = client.get_run(existing_run)
+    assert compiled_run.status == Status.PENDING_EXECUTION
     ready_run = client.get_run(existing_run)
     assert ready_run.status == Status.READY
     assert ready_run.measurements is not None
@@ -217,7 +219,9 @@ def test_get_run_status_for_existing_run(mock_server, base_url):
     Tests getting the run status
     """
     client = IQMClient(base_url)
-    assert client.get_run_status(existing_run).status == Status.PENDING
+    assert client.get_run_status(existing_run).status == Status.PENDING_COMPILATION
+    compiled_run = client.get_run_status(existing_run)
+    assert compiled_run.status == Status.PENDING_EXECUTION
     ready_run = client.get_run_status(existing_run)
     assert ready_run.status == Status.READY
 
@@ -240,6 +244,41 @@ def test_get_run_status_for_missing_run(mock_server, base_url):
         assert client.get_run_status(missing_run)
 
 
+def test_waiting_for_compilation(mock_server, base_url):
+    """
+    Tests waiting for compilation for an existing task
+    """
+    client = IQMClient(base_url)
+    assert client.wait_for_compilation(existing_run).status == Status.PENDING_EXECUTION
+
+
+def test_wait_for_compilation_adds_user_agent(mock_server, base_url):
+    """
+    Tests that wait_for_compilation without client signature adds the correct User-Agent header
+    """
+    client = IQMClient(base_url)
+    client.wait_for_compilation(existing_run)
+    verify(requests, times=2).get(
+        f'{base_url}/jobs/{existing_run}',
+        headers={'User-Agent': f'{DIST_NAME} {__version__}'},
+        timeout=REQUESTS_TIMEOUT,
+    )
+
+
+def test_wait_for_compilation_adds_user_agent_with_client_signature(mock_server, base_url):
+    """
+    Tests that wait_for_compilation with client signature adds the correct User-Agent header
+    """
+    client = IQMClient(base_url, client_signature='some-client-signature')
+    client.wait_for_compilation(existing_run)
+    assert 'some-client-signature' in client._signature
+    verify(requests, times=2).get(
+        f'{base_url}/jobs/{existing_run}',
+        headers={'User-Agent': f'{DIST_NAME} {__version__}, some-client-signature'},
+        timeout=REQUESTS_TIMEOUT,
+    )
+
+
 def test_waiting_for_results(mock_server, base_url):
     """
     Tests waiting for results for an existing task
@@ -254,7 +293,7 @@ def test_wait_for_results_adds_user_agent(mock_server, base_url):
     """
     client = IQMClient(base_url)
     client.wait_for_results(existing_run)
-    verify(requests, times=2).get(
+    verify(requests, times=3).get(
         f'{base_url}/jobs/{existing_run}',
         headers={'User-Agent': f'{DIST_NAME} {__version__}'},
         timeout=REQUESTS_TIMEOUT,
@@ -268,7 +307,7 @@ def test_wait_for_results_adds_user_agent_with_client_signature(mock_server, bas
     client = IQMClient(base_url, client_signature='some-client-signature')
     client.wait_for_results(existing_run)
     assert 'some-client-signature' in client._signature
-    verify(requests, times=2).get(
+    verify(requests, times=3).get(
         f'{base_url}/jobs/{existing_run}',
         headers={'User-Agent': f'{DIST_NAME} {__version__}, some-client-signature'},
         timeout=REQUESTS_TIMEOUT,

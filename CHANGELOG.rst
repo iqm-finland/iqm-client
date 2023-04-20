@@ -2,10 +2,16 @@
 Changelog
 =========
 
-Version 11.9
+Version 12.1
 ============
 
-* Add function ``validate_circuit`` to validate a submitted circuit for argument correctness
+* Add function ``validate_circuit`` to validate a submitted circuit for input argument correctness. `#80 <https://github.com/iqm-finland/iqm-client/pull/80>`_
+
+Version 12.0
+============
+
+* Split ``PENDING`` job status into ``PENDING_COMPILATION`` and ``PENDING_EXECUTION`` `#79 <https://github.com/iqm-finland/iqm-client/pull/79>`_
+* Add ``wait_for_compilation`` method. `#79 <https://github.com/iqm-finland/iqm-client/pull/79>`_
 
 Version 11.8
 ============

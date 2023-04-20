@@ -84,7 +84,7 @@ def test_add_authorization_header_when_credentials_are_provided(base_url, creden
     client = IQMClient(base_url, **credentials)
     job_id = expect_status_request(base_url, user_agent=client._signature, access_token=tokens['access_token'])
     result = client.get_run(job_id)
-    assert result.status == 'pending'
+    assert result.status == 'pending compilation'
     unstub()
 
 
@@ -135,7 +135,7 @@ def test_add_authorization_header_when_external_token_is_provided(base_url, toke
     client = IQMClient(base_url, tokens_file=tokens_path)
     job_id = expect_status_request(base_url, user_agent=client._signature, access_token=tokens_dict['access_token'])
     result = client.get_run(job_id)
-    assert result.status == 'pending'
+    assert result.status == 'pending compilation'
     unstub()
 
 
@@ -146,7 +146,7 @@ def test_no_authorization_header_when_credentials_are_not_provided(base_url):
     client = IQMClient(base_url)
     job_id = expect_status_request(base_url, user_agent=client._signature, access_token=None)
     result = client.get_run(job_id)
-    assert result.status == 'pending'
+    assert result.status == 'pending compilation'
     unstub()
 
 
@@ -215,7 +215,7 @@ def test_expired_access_token_is_refreshed_automatically(base_url, credentials):
     # Check that assert token is refreshed
     result = client.get_run(job_id)
     assert client._credentials.access_token == refreshed_tokens['access_token']
-    assert result.status == 'pending'
+    assert result.status == 'pending compilation'
 
     unstub()
 
@@ -236,7 +236,7 @@ def test_start_new_session_when_refresh_token_has_expired(base_url, credentials)
     )
     result = client.get_run(job_id)
     assert client._credentials.access_token == refreshed_tokens['access_token']
-    assert result.status == 'pending'
+    assert result.status == 'pending compilation'
 
     unstub()
 
