@@ -1,0 +1,8 @@
+<map id="inheritanceccd5403770" name="inheritanceccd5403770">
+<area shape="rect" id="node1" href="iqm_client.iqm_client.APITimeoutError.html#iqm_client.iqm_client.APITimeoutError" target="_top" title="Exception for when executing a job on the server takes too long." alt="" coords="240,203,368,228"/>
+<area shape="rect" id="node2" href="iqm_client.iqm_client.CircuitExecutionError.html#iqm_client.iqm_client.CircuitExecutionError" target="_top" title="Something went wrong on the server." alt="" coords="19,203,178,228"/>
+<area shape="rect" id="node3" href="iqm_client.iqm_client.CircuitValidationError.html#iqm_client.iqm_client.CircuitValidationError" target="_top" title="Circuit validation failed." alt="" coords="19,153,179,179"/>
+<area shape="rect" id="node4" href="iqm_client.iqm_client.ClientAuthenticationError.html#iqm_client.iqm_client.ClientAuthenticationError" target="_top" title="Something went wrong with user authentication." alt="" coords="5,104,192,129"/>
+<area shape="rect" id="node5" href="iqm_client.iqm_client.ClientConfigurationError.html#iqm_client.iqm_client.ClientConfigurationError" target="_top" title="Wrong configuration provided." alt="" coords="9,55,188,80"/>
+<area shape="rect" id="node6" href="iqm_client.iqm_client.IQMClient.html#iqm_client.iqm_client.IQMClient" target="_top" title="Provides access to IQM quantum computers." alt="" coords="55,5,142,31"/>
+</map>
