@@ -1,4 +1,4 @@
-# Copyright 2021-2022 IQM client developers
+# Copyright 2021-2023 IQM client developers
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ from iqm_client import (
     DIST_NAME,
     Circuit,
     CircuitExecutionError,
+    CircuitValidationError,
     ClientConfigurationError,
     IQMClient,
     QuantumArchitectureSpecification,
@@ -31,6 +32,7 @@ from iqm_client import (
     Status,
     __version__,
     serialize_qubit_mapping,
+    validate_circuit,
 )
 from tests.conftest import MockJsonResponse, MockTextResponse, existing_run, missing_run
 
@@ -405,3 +407,138 @@ def test_submit_circuits_throws_json_decode_error_if_received_not_json(base_url)
     ):
         with pytest.raises(CircuitExecutionError):
             client.submit_circuits([])
+
+
+def test_submit_circuits_validates_circuits(base_url, sample_circuit):
+    """
+    Tests that <submit_circuits> validates the batch of provided circuits
+    before submitting them for execution
+    """
+    client = IQMClient(base_url)
+    valid_circuit = Circuit.parse_obj(sample_circuit)
+    invalid_circuit = Circuit.parse_obj(sample_circuit)
+    invalid_circuit.name = ''  # Invalidate the circuit on purpose
+    with pytest.raises(CircuitValidationError, match='The circuit at index 1 failed the validation'):
+        client.submit_circuits(circuits=[valid_circuit, invalid_circuit])
+
+
+def test_validate_circuit_detects_circuit_name_is_empty_string(sample_circuit):
+    """
+    Tests that custom Pydantic validator (triggered via <validate_circuit>)
+    catches empty name of a circuit
+    """
+    circuit = Circuit.parse_obj(sample_circuit)
+    circuit.name = ''
+    with pytest.raises(ValueError, match='A circuit should have a non-empty string for a name'):
+        validate_circuit(circuit)
+
+
+def test_validate_circuit_detects_circuit_metadata_is_wrong_type(sample_circuit):
+    """
+    Tests that custom Pydantic validator (triggered via <validate_circuit>)
+    catches invalid type of circuit metadata
+    """
+    circuit = Circuit.parse_obj(sample_circuit)
+    circuit.metadata = []
+    with pytest.raises(ValueError, match='Circuit metadata should be a dictionary'):
+        validate_circuit(circuit)
+
+
+def test_validate_circuit_detects_circuit_metadata_keys_are_wrong_type(sample_circuit):
+    """
+    Tests that custom Pydantic validator (triggered via <validate_circuit>)
+    catches invalid type of circuit metadata
+    """
+    circuit = Circuit.parse_obj(sample_circuit)
+    circuit.metadata = {'1': 'string key is ok', 2: 'int key is not ok'}
+    with pytest.raises(ValueError, match='Metadata dictionary should use strings for all root-level keys'):
+        validate_circuit(circuit)
+
+
+def test_validate_circuit_checks_circuit_instructions_container_type(sample_circuit):
+    """
+    Tests that custom Pydantic validator (triggered via <validate_circuit>)
+    catches invalid type of instruction container of a circuit
+    """
+    circuit = Circuit.parse_obj(sample_circuit)
+    circuit.instructions = {}
+    with pytest.raises(ValueError, match='Instructions of a circuit should be packed in a tuple'):
+        validate_circuit(circuit)
+
+
+def test_validate_circuit_checks_circuit_has_at_least_one_instruction(sample_circuit):
+    """
+    Tests that custom Pydantic validator (triggered via <validate_circuit>)
+    catches when circuit instructions container has 0 instructions
+    """
+    circuit = Circuit.parse_obj(sample_circuit)
+    circuit.instructions = tuple()
+    with pytest.raises(ValueError, match='Each circuit should have at least one instruction'):
+        validate_circuit(circuit)
+
+
+def test_validate_circuit_checks_circuit_instructions_container_content(sample_circuit):
+    """
+    Tests that custom Pydantic validator (triggered via <validate_circuit>)
+    catches when circuit instructions container has items of incorrect type
+    """
+    circuit = Circuit.parse_obj(sample_circuit)
+    circuit.instructions += ('I am not an instruction!',)
+    with pytest.raises(ValueError, match='Every instruction in a circuit should be of type <Instruction>'):
+        validate_circuit(circuit)
+
+
+def test_validate_circuit_checks_instruction_name_is_supported(sample_circuit):
+    """
+    Tests that custom Pydantic validator (triggered via <validate_circuit>)
+    catches when instruction name is set to an unknown instruction type
+    """
+    circuit = Circuit.parse_obj(sample_circuit)
+    circuit.instructions[0].name = 'kaboom'
+    with pytest.raises(ValueError, match='Unknown instruction "kaboom"'):
+        validate_circuit(circuit)
+
+
+def test_validate_circuit_checks_instruction_implementation_is_string(sample_circuit):
+    """
+    Tests that custom Pydantic validator (triggered via <validate_circuit>)
+    catches when instruction implementation is set to an empty string
+    """
+    circuit = Circuit.parse_obj(sample_circuit)
+    circuit.instructions[0].implementation = ''
+    with pytest.raises(ValueError, match='Implementation of the instruction should be set to a non-empty string'):
+        validate_circuit(circuit)
+
+
+def test_validate_circuit_checks_instruction_qubit_count(sample_circuit):
+    """
+    Tests that custom Pydantic validator (triggered via <validate_circuit>)
+    catches when qubit count of the instruction does not match the arity of
+    that instruction
+    """
+    circuit = Circuit.parse_obj(sample_circuit)
+    circuit.instructions[0].qubits += ('Qubit C',)
+    with pytest.raises(ValueError, match=r'The "cz" instruction acts on 2 qubit\(s\), but 3 were given'):
+        validate_circuit(circuit)
+
+
+def test_validate_circuit_checks_instruction_argument_names(sample_circuit):
+    """
+    Tests that custom Pydantic validator (triggered via <validate_circuit>)
+    catches when submitted argument names of the instruction are not supported
+    """
+    circuit = Circuit.parse_obj(sample_circuit)
+    circuit.instructions[1].args['arg_x'] = 'This argument name is not supported by the instruction'
+    with pytest.raises(ValueError, match='The instruction "phased_rx" requires'):
+        validate_circuit(circuit)
+
+
+def test_validate_circuit_checks_instruction_argument_types(sample_circuit):
+    """
+    Tests that custom Pydantic validator (triggered via <validate_circuit>)
+    catches when submitted argument types of the instruction are not supported
+    """
+    circuit = Circuit.parse_obj(sample_circuit)
+    circuit.instructions[1].args['phase_t'] = '0.7'
+    with pytest.raises(ValueError, match='The argument "phase_t" should be of one of the following supported types'):
+        validate_circuit(circuit)

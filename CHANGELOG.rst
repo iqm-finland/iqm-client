@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 12.1
+============
+
+* Add function ``validate_circuit`` to validate a submitted circuit for input argument correctness. `#80 <https://github.com/iqm-finland/iqm-client/pull/80>`_
+
 Version 12.0
 ============
 
