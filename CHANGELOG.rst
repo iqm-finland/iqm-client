@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 12.2
+============
+
+* Revert moving Pydantic model definitions into ``models.py`` file. `#81 <https://github.com/iqm-finland/iqm-client/pull/81>`_
+
 Version 12.1
 ============
 
