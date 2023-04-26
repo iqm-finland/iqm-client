@@ -28,4 +28,4 @@ Copyright
 
 IQM client is free software, released under the Apache License, version 2.0.
 
-Copyright 2021-2022 IQM client developers.
+Copyright 2021-2023 IQM client developers.

@@ -32,7 +32,7 @@ name             # of qubits args                                   description
 measurement      >= 1        ``key: str``                           Measurement in the Z basis.
 phased_rx        1           ``angle_t: float``, ``phase_t: float`` Phased x-rotation gate.
 cz               2                                                  Controlled-Z gate.
-barrier          >= 2                                               Execution barrier.
+barrier          >= 1                                               Execution barrier.
 ================ =========== ====================================== ===========
 
 Instructions can be further specified by adding an ``implementation`` field with
@@ -107,6 +107,9 @@ It takes no arguments, and has no other effect.
 
    Instruction(name='barrier', qubits=('alice', 'bob'), args={})
 
+*Note*
+1-qubit barriers will not have any effect on circuit's compilation and execution. Higher layers that sit on top of
+IQM Client can make actual use of 1-qubit barriers (e.g. during circuit optimization), therefore having them is allowed.
 
 Circuit output
 ==============
