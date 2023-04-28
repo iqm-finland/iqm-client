@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 12.3
+============
+
+* Generate license information for dependencies on every release `#84 <https://github.com/iqm-finland/iqm-client/pull/84>`_
+
 Version 12.2
 ============
 
