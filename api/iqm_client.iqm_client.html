@@ -312,6 +312,9 @@
       <li class="version_item current_version">dev</li>
     
     
+      <li class="version_item"><a href="../versions/12.3/index.html">12.3</a></li>
+    
+    
       <li class="version_item"><a href="../versions/12.2/index.html">12.2</a></li>
     
     
@@ -691,7 +694,7 @@ title="Print to PDF"
   <strong>
     
     You're reading the documentation for a development version.
-    For the latest released version, please have a look at <a href="../versions/12.2/index.html">12.2</a>.
+    For the latest released version, please have a look at <a href="../versions/12.3/index.html">12.3</a>.
     
   </strong>
 </div>
@@ -739,7 +742,7 @@ Each Instruction type acts on a number of <a class="reference internal" href="iq
 <td><p>Controlled-Z gate.</p></td>
 </tr>
 <tr class="row-odd"><td><p>barrier</p></td>
-<td><p>&gt;= 2</p></td>
+<td><p>&gt;= 1</p></td>
 <td></td>
 <td><p>Execution barrier.</p></td>
 </tr>
@@ -809,6 +812,9 @@ It takes no arguments, and has no other effect.</p>
 </pre></div>
 </div>
 </div>
+<p><em>Note</em>
+1-qubit barriers will not have any effect on circuit’s compilation and execution. Higher layers that sit on top of
+IQM Client can make actual use of 1-qubit barriers (e.g. during circuit optimization), therefore having them is allowed.</p>
 </section>
 </section>
 <section id="circuit-output">
@@ -976,7 +982,7 @@ that was the measurement outcome.</p>
     By IQM client developers<br/>
   
       &copy; Copyright 2021-2022, IQM.<br/>
-    Last updated on 2023-04-21.<br/>
+    Last updated on 2023-05-03.<br/>
 </p>
         </footer>
     </div>
