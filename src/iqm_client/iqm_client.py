@@ -136,9 +136,15 @@ import os
 from posixpath import join
 import time
 from typing import Any, Callable, Optional, Union
-from uuid import UUID
+from uuid import UUID, uuid4
+from google.protobuf.any_pb2 import Any as AnyProto
 import warnings
 
+from iqm.data_definitions.station_control.v1.circuit_request_pb2 import CircuitRequest
+from iqm.data_definitions.station_control.v1.task_service_pb2 import CircuitResultsResponse, CircuitTaskRequest
+from iqm.data_definitions.common.v1.circuit_pb2 import Circuit as CircuitProto
+from iqm.data_definitions.common.v1.circuit_pb2 import Instruction as InstructionProto
+from iqm.data_definitions.common.v1.circuit_pb2 import Measurment, PhasedRx, Barrier, CZ
 from pydantic import BaseModel, Field
 import requests
 
@@ -291,7 +297,7 @@ class RunResult(BaseModel):
     """if the job has finished successfully, the measurement results for the circuit(s)"""
     message: Optional[str] = Field(None)
     """if the job failed, an error message"""
-    metadata: Metadata = Field(...)
+    metadata: Optional[Metadata] = Field(None)
     """metadata about the job"""
     warnings: Optional[list[str]] = Field(None)
     """list of warning messages"""
@@ -562,10 +568,10 @@ class IQMClient:
     def submit_circuits(
         self,
         circuits: CircuitBatch,
+        calibration_set_id: UUID,
         *,
         qubit_mapping: Optional[dict[str, str]] = None,
         custom_settings: Optional[dict[str, Any]] = None,
-        calibration_set_id: Optional[UUID] = None,
         shots: int = 1,
     ) -> UUID:
         """Submits a batch of quantum circuits for execution on a quantum computer.
@@ -583,36 +589,53 @@ class IQMClient:
         Returns:
             ID for the created job. This ID is needed to query the job status and the execution results.
         """
-        serialized_qubit_mapping: Optional[list[SingleQubitMapping]] = None
-        if qubit_mapping is not None:
-            # check if qubit mapping is injective
-            target_qubits = set(qubit_mapping.values())
-            if not len(target_qubits) == len(qubit_mapping):
-                raise ValueError('Multiple logical qubits map to the same physical qubit.')
 
-            # check if qubit mapping covers all qubits in the circuits
-            for i, circuit in enumerate(circuits):
-                diff = circuit.all_qubits() - set(qubit_mapping)
-                if diff:
-                    raise ValueError(
-                        f"The qubits {diff} in circuit '{circuit.name}' at index {i} "
-                        f'are not found in the provided qubit mapping.'
+        def pack_circuits(circuit: Circuit) -> CircuitProto:
+            instructions = []
+            for instruction in circuit.instructions:
+                if instruction.name == "measurement":
+                    instructions.append(
+                        InstructionProto(measurement=Measurment(qubits=instruction.qubits, key=instruction.args["key"]))
                     )
+                elif instruction.name == "phased_rx":
+                    instructions.append(
+                        InstructionProto(
+                            phased_rx=PhasedRx(
+                                qubit=instruction.qubits[0],
+                                angle_t=instruction.args["angle_t"],
+                                phase_t=instruction.args["phase_t"],
+                            )
+                        )
+                    )
+                elif instruction.name == "cz":
+                    instructions.append(
+                        InstructionProto(cz=CZ(qubit_1=instruction.qubits[0], qubit_2=instruction.qubits[1]))
+                    )
+                elif instruction.name == "barrier":
+                    instructions.append(InstructionProto(barrier=Barrier(qubits=instruction.qubits)))
+            return CircuitProto(circuit_id=str(uuid4()), instructions=instructions)
 
-            serialized_qubit_mapping = serialize_qubit_mapping(qubit_mapping)
+        packed_circuits = list(map(pack_circuits, circuits))
 
         # ``bearer_token`` can be ``None`` if cocos we're connecting does not use authentication
         bearer_token = self._get_bearer_token()
 
-        data = RunRequest(
-            qubit_mapping=serialized_qubit_mapping,
-            circuits=circuits,
-            custom_settings=custom_settings,
-            calibration_set_id=calibration_set_id,
+        circuit_request_id = str(uuid4())
+        circuit_request = CircuitRequest(
+            circuit_request_id=circuit_request_id,
+            qubit_mapping=qubit_mapping,
+            circuits=packed_circuits,
+            calibration_set_id=str(calibration_set_id),
             shots=shots,
         )
+        circuit_request_as_any = AnyProto()
+        circuit_request_as_any.Pack(circuit_request)
 
-        headers = {'Expect': '100-Continue', 'User-Agent': self._signature}
+        circuit_task_request = CircuitTaskRequest(
+            queue_name="circuits", circuit_request_id=circuit_request_id, payload=circuit_request_as_any
+        )
+
+        headers = {'Expect': '100-Continue', 'User-Agent': self._signature, "Content-Type": "application/octet-stream"}
         if bearer_token:
             headers['Authorization'] = bearer_token
 
@@ -629,8 +652,8 @@ class IQMClient:
 
         result = self._retry_request_on_error(
             lambda: requests.post(
-                join(self._base_url, 'jobs'),
-                json=json.loads(data.json(exclude_none=True)),
+                join(self._base_url, 'circuits'),
+                data=circuit_task_request.SerializeToString(),
                 headers=headers,
                 timeout=REQUESTS_TIMEOUT,
             )
@@ -642,7 +665,7 @@ class IQMClient:
         result.raise_for_status()
 
         try:
-            job_id = UUID(result.json()['id'])
+            job_id = UUID(result.json()['circuit_request_id'])
             return job_id
         except (json.decoder.JSONDecodeError, KeyError) as e:
             raise CircuitExecutionError(f'Invalid response: {result.text}, {e}') from e
@@ -667,23 +690,36 @@ class IQMClient:
 
         result = self._retry_request_on_error(
             lambda: requests.get(
-                join(self._base_url, 'jobs', str(job_id)),
+                join(self._base_url, 'circuits', str(job_id), 'results'),
                 headers=headers,
                 timeout=REQUESTS_TIMEOUT,
             )
         )
 
-        result.raise_for_status()
-        try:
-            run_result = RunResult.from_dict(result.json())
-        except (json.decoder.JSONDecodeError, KeyError) as e:
-            raise CircuitExecutionError(f'Invalid response: {result.text}, {e}') from e
+        # hack because status is not tracked yet
+        if result.status_code == 404:
+            return RunResult(status=Status.PENDING)
 
-        if run_result.warnings:
-            for warning in run_result.warnings:
-                warnings.warn(warning)
-        if run_result.status == Status.FAILED:
-            raise CircuitExecutionError(run_result.message)
+        print(result)
+
+        if result.status_code != 200:
+            raise CircuitExecutionError("Circuit execution error")
+
+        circuit_result_response = CircuitResultsResponse()
+        circuit_result_response.ParseFromString(result.content)
+
+        measurements: list[dict[str, list[list[int]]]] = []
+        for circuit_measurements in circuit_result_response.circuit_measurement_batch:
+            circuit_measurements_unpacked: dict[str, list[list[int]]] = {}
+            for mk, shots_readout in circuit_measurements.circuit_measurements.items():
+                shots_readout_unpacked = [
+                    list(qubits_readout.qubits_readout) for qubits_readout in shots_readout.shots_readout
+                ]
+                circuit_measurements_unpacked[mk] = shots_readout_unpacked
+            measurements.append(circuit_measurements_unpacked)
+
+        run_result = RunResult(status=Status.READY, measurements=measurements)
+
         return run_result
 
     def get_run_status(self, job_id: UUID) -> RunStatus:
