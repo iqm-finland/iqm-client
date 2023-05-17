@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 12.4
+============
+
+* Add parameter ``circuit_duration_check`` allowing to control server-side maximum circuit duration check. `#85 <https://github.com/iqm-finland/iqm-client/pull/85>`_
+
 Version 12.3
 ============
 

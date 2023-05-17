@@ -56,7 +56,7 @@ e.g. ``numpy.ndarray``, to equivalent JSON serializable types.
 Authentication
 --------------
 
-IQM uses OAuth 2.0 authentication to manage access to quantum computers. 
+IQM uses OAuth 2.0 authentication to manage access to quantum computers.
 For easy token management we have developed `Cortex CLI <https://github.com/iqm-finland/cortex-cli>`_ which is the recommended way to generate and refresh tokens.
 IQM client can use these tokens by reading an environment variable ``IQM_TOKENS_FILE`` pointing to the tokens file managed by Cortex CLI.
 
@@ -75,6 +75,14 @@ In case the quantum computing framework does not allow for this, providing a qub
 Note, that qubit mapping is not supposed to be associated with individual circuits, but rather with the entire job request to IQM server.
 Typically, you would have some local representation of the QPU and transpile the circuits against that representation, then use qubit mapping along with the generated circuits to map from the local representation to the IQM representation of qubit names.
 We discourage exposing this feature to end users of the quantum computing framework.
+
+Note on circuit duration
+------------------------
+
+Before performing circuit execution, IQM server checks how long it would take to run each circuit.
+If any circuit in a job would take too long to execute compared to the coherence time of the QPU, the server will disqualify the job, not execute any circuits, and return a detailed error message.
+In some special cases, it makes sense to disable this check by changing the default value of parameter ``circuit_duration_check`` of :meth:`IQMClient.submit_circuits` to ``False``.
+Disabling the circuit duration check may be limited to certain users or groups, depending on the server settings. In normal use, the circuit duration check should always remain enabled.
 
 Integration testing
 -------------------
