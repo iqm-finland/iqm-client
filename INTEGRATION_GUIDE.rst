@@ -18,7 +18,7 @@ Initialising the IQM client is simple and in case you perform authentication as 
 
     from iqm_client import IQMClient
 
-    server_url = "https://my_iqm.qc.fi"
+    server_url = "https://IQM_SERVER_URL"
 
     iqm_client = IQMClient(server_url)
 
