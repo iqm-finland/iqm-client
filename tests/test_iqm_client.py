@@ -172,7 +172,9 @@ def test_submit_circuits_without_qubit_mapping_returns_id(mock_server, base_url,
     assert job_id == existing_run
 
 
-def test_submit_circuits_with_duration_check_disabled_returns_id(mock_server, base_url, calibration_set_id, sample_circuit):
+def test_submit_circuits_with_duration_check_disabled_returns_id(
+    mock_server, base_url, calibration_set_id, sample_circuit
+):
     """
     Tests sending a circuit without circuit duration_check
     """
