@@ -407,7 +407,7 @@ Note: This field should be always None in normal use."""
     """mapping of logical qubit names to physical qubit names, or None if using physical qubit names"""
     shots: int = Field(...)
     """how many times to execute each circuit in the batch"""
-    circuit_duration_check: Optional[bool] = Field(True)
+    circuit_duration_check: bool = Field(True)
     """If True (default), circuits are disqualified on the server if they are too long compared to the
 T2 decoherence times of the QPU. Setting it to False disables the check, which should not be done in normal use."""
 
@@ -751,7 +751,7 @@ class IQMClient:
         custom_settings: Optional[dict[str, Any]] = None,
         calibration_set_id: Optional[UUID] = None,
         shots: int = 1,
-        circuit_duration_check: Optional[bool] = True,
+        circuit_duration_check: bool = True,
     ) -> UUID:
         """Submits a batch of quantum circuits for execution on a quantum computer.
 
