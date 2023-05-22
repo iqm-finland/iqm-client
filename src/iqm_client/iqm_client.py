@@ -398,7 +398,7 @@ class RunRequest(BaseModel):
 
     circuits: CircuitBatch = Field(...)
     """batch of quantum circuit(s) to execute"""
-    custom_settings: dict[str, Any] = Field(None)
+    custom_settings: Optional[dict[str, Any]] = Field(None)
     """Custom settings to override default IQM hardware settings and calibration data.
 Note: This field should be always None in normal use."""
     calibration_set_id: Optional[UUID] = Field(None)
