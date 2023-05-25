@@ -310,6 +310,9 @@
       <li class="version_item current_version">dev</li>
     
     
+      <li class="version_item"><a href="versions/12.4/integration_guide.html">12.4</a></li>
+    
+    
       <li class="version_item"><a href="versions/12.3/integration_guide.html">12.3</a></li>
     
     
@@ -604,6 +607,11 @@ title="Print to PDF"
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#note-on-circuit-duration">
+   Note on circuit duration
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#integration-testing">
    Integration testing
   </a>
@@ -648,6 +656,11 @@ title="Print to PDF"
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#note-on-circuit-duration">
+   Note on circuit duration
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#integration-testing">
    Integration testing
   </a>
@@ -674,7 +687,7 @@ title="Print to PDF"
   <strong>
     
     You're reading the documentation for a development version.
-    For the latest released version, please have a look at <a href="versions/12.3/integration_guide.html">12.3</a>.
+    For the latest released version, please have a look at <a href="versions/12.4/integration_guide.html">12.4</a>.
     
   </strong>
 </div>
@@ -691,7 +704,7 @@ For example integrations maintained by IQM please refer to the <a class="referen
 <p>Initialising the IQM client is simple and in case you perform authentication as described below requires only the URL to the IQM quantum computer.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">iqm_client</span> <span class="kn">import</span> <span class="n">IQMClient</span>
 
-<span class="n">server_url</span> <span class="o">=</span> <span class="s2">&quot;https://my_iqm.qc.fi&quot;</span>
+<span class="n">server_url</span> <span class="o">=</span> <span class="s2">&quot;https://IQM_SERVER_URL&quot;</span>
 
 <span class="n">iqm_client</span> <span class="o">=</span> <span class="n">IQMClient</span><span class="p">(</span><span class="n">server_url</span><span class="p">)</span>
 </pre></div>
@@ -743,6 +756,13 @@ Note, that qubit mapping is not supposed to be associated with individual circui
 Typically, you would have some local representation of the QPU and transpile the circuits against that representation, then use qubit mapping along with the generated circuits to map from the local representation to the IQM representation of qubit names.
 We discourage exposing this feature to end users of the quantum computing framework.</p>
 </section>
+<section id="note-on-circuit-duration">
+<h2>Note on circuit duration<a class="headerlink" href="#note-on-circuit-duration" title="Permalink to this headline">#</a></h2>
+<p>Before performing circuit execution, IQM server checks how long it would take to run each circuit.
+If any circuit in a job would take too long to execute compared to the coherence time of the QPU, the server will disqualify the job, not execute any circuits, and return a detailed error message.
+In some special cases, it makes sense to disable this check by changing the default value of parameter <code class="docutils literal notranslate"><span class="pre">circuit_duration_check</span></code> of <code class="xref py py-meth docutils literal notranslate"><span class="pre">IQMClient.submit_circuits()</span></code> to <code class="docutils literal notranslate"><span class="pre">False</span></code>.
+Disabling the circuit duration check may be limited to certain users or groups, depending on the server settings. In normal use, the circuit duration check should always remain enabled.</p>
+</section>
 <section id="integration-testing">
 <h2>Integration testing<a class="headerlink" href="#integration-testing" title="Permalink to this headline">#</a></h2>
 <p>IQM provides a demo environment to test the integration against a simulated quantum computer. If you want access to that environment contact <a class="reference external" href="mailto:info&#37;&#52;&#48;meetiqm&#46;com">IQM</a>.</p>
@@ -782,7 +802,7 @@ We discourage exposing this feature to end users of the quantum computing framew
     By IQM client developers<br/>
   
       &copy; Copyright 2021-2022, IQM.<br/>
-    Last updated on 2023-05-03.<br/>
+    Last updated on 2023-05-25.<br/>
 </p>
         </footer>
     </div>

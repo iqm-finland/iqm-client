@@ -310,6 +310,9 @@
       <li class="version_item current_version">dev</li>
     
     
+      <li class="version_item"><a href="../versions/12.4/index.html">12.4</a></li>
+    
+    
       <li class="version_item"><a href="../versions/12.3/index.html">12.3</a></li>
     
     
@@ -597,7 +600,7 @@ title="Print to PDF"
   <strong>
     
     You're reading the documentation for a development version.
-    For the latest released version, please have a look at <a href="../versions/12.3/index.html">12.3</a>.
+    For the latest released version, please have a look at <a href="../versions/12.4/index.html">12.4</a>.
     
   </strong>
 </div>
@@ -682,7 +685,7 @@ Password must be set if <code class="docutils literal notranslate"><span class="
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="iqm_client.iqm_client.IQMClient.submit_circuits">
-<span class="sig-name descname"><span class="pre">submit_circuits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">circuits</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit_mapping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calibration_set_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm_client.iqm_client.IQMClient.submit_circuits" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">submit_circuits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">circuits</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit_mapping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calibration_set_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">circuit_duration_check</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm_client.iqm_client.IQMClient.submit_circuits" title="Permalink to this definition">#</a></dt>
 <dd><p>Submits a batch of quantum circuits for execution on a quantum computer.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -695,6 +698,7 @@ Note that the <code class="docutils literal notranslate"><span class="pre">qubit
 Note: This field should always be <code class="docutils literal notranslate"><span class="pre">None</span></code> in normal use.</p></li>
 <li><p><strong>calibration_set_id</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><em>uuid.UUID</em></a><em>]</em>) – ID of the calibration set to use, or <code class="docutils literal notranslate"><span class="pre">None</span></code> to use the latest one</p></li>
 <li><p><strong>shots</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – number of times <code class="docutils literal notranslate"><span class="pre">circuits</span></code> are executed</p></li>
+<li><p><strong>circuit_duration_check</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – whether to enable max circuit duration criteria for disqualification</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -880,7 +884,7 @@ we will find the job is still pending at least for the first query.</p>
     By IQM client developers<br/>
   
       &copy; Copyright 2021-2022, IQM.<br/>
-    Last updated on 2023-05-03.<br/>
+    Last updated on 2023-05-25.<br/>
 </p>
         </footer>
     </div>

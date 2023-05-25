@@ -310,6 +310,9 @@
       <li class="version_item current_version">dev</li>
     
     
+      <li class="version_item"><a href="../versions/12.4/index.html">12.4</a></li>
+    
+    
       <li class="version_item"><a href="../versions/12.3/index.html">12.3</a></li>
     
     
@@ -597,7 +600,7 @@ title="Print to PDF"
   <strong>
     
     You're reading the documentation for a development version.
-    For the latest released version, please have a look at <a href="../versions/12.3/index.html">12.3</a>.
+    For the latest released version, please have a look at <a href="../versions/12.4/index.html">12.4</a>.
     
   </strong>
 </div>
@@ -607,7 +610,7 @@ title="Print to PDF"
 <h1>iqm_client.iqm_client.RunRequest<a class="headerlink" href="#iqm-client-iqm-client-runrequest" title="Permalink to this headline">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="iqm_client.iqm_client.RunRequest">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">iqm_client.iqm_client.</span></span><span class="sig-name descname"><span class="pre">RunRequest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">circuits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calibration_set_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit_mapping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shots</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm_client.iqm_client.RunRequest" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">iqm_client.iqm_client.</span></span><span class="sig-name descname"><span class="pre">RunRequest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">circuits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calibration_set_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit_mapping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shots</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">circuit_duration_check</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm_client.iqm_client.RunRequest" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pydantic.main.BaseModel</span></code></p>
 <p>Request for an IQM quantum computer to run a job that executes a batch of quantum circuits.</p>
 <p>Note: all circuits in a batch must measure the same qubits otherwise batch execution fails.</p>
@@ -635,6 +638,9 @@ title="Print to PDF"
 <tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.RunRequest.shots" title="iqm_client.iqm_client.RunRequest.shots"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shots</span></code></a></p></td>
 <td><p>how many times to execute each circuit in the batch</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm_client.iqm_client.RunRequest.circuit_duration_check" title="iqm_client.iqm_client.RunRequest.circuit_duration_check"><code class="xref py py-obj docutils literal notranslate"><span class="pre">circuit_duration_check</span></code></a></p></td>
+<td><p>If True (default), circuits are disqualified on the server if they are too long compared to the T2 decoherence times of the QPU.</p></td>
+</tr>
 </tbody>
 </table>
 <p class="rubric">Methods</p>
@@ -653,10 +659,11 @@ title="Print to PDF"
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>circuits</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference internal" href="iqm_client.iqm_client.Circuit.html#iqm_client.iqm_client.Circuit" title="iqm_client.iqm_client.Circuit"><em>iqm_client.iqm_client.Circuit</em></a><em>]</em>) – </p></li>
-<li><p><strong>custom_settings</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><em>Any</em></a><em>]</em>) – </p></li>
+<li><p><strong>custom_settings</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><em>Any</em></a><em>]</em><em>]</em>) – </p></li>
 <li><p><strong>calibration_set_id</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><em>uuid.UUID</em></a><em>]</em>) – </p></li>
 <li><p><strong>qubit_mapping</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference internal" href="iqm_client.iqm_client.SingleQubitMapping.html#iqm_client.iqm_client.SingleQubitMapping" title="iqm_client.iqm_client.SingleQubitMapping"><em>iqm_client.iqm_client.SingleQubitMapping</em></a><em>]</em><em>]</em>) – </p></li>
 <li><p><strong>shots</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – </p></li>
+<li><p><strong>circuit_duration_check</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – </p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -671,7 +678,7 @@ title="Print to PDF"
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="iqm_client.iqm_client.RunRequest.custom_settings">
-<span class="sig-name descname"><span class="pre">custom_settings</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#iqm_client.iqm_client.RunRequest.custom_settings" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">custom_settings</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#iqm_client.iqm_client.RunRequest.custom_settings" title="Permalink to this definition">#</a></dt>
 <dd><p>Custom settings to override default IQM hardware settings and calibration data.
 Note: This field should be always None in normal use.</p>
 </dd></dl>
@@ -692,6 +699,13 @@ Note: This field should be always None in normal use.</p>
 <dt class="sig sig-object py" id="iqm_client.iqm_client.RunRequest.shots">
 <span class="sig-name descname"><span class="pre">shots</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a></em><a class="headerlink" href="#iqm_client.iqm_client.RunRequest.shots" title="Permalink to this definition">#</a></dt>
 <dd><p>how many times to execute each circuit in the batch</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="iqm_client.iqm_client.RunRequest.circuit_duration_check">
+<span class="sig-name descname"><span class="pre">circuit_duration_check</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#bool" title="(in Python v3.9)"><span class="pre">bool</span></a></em><a class="headerlink" href="#iqm_client.iqm_client.RunRequest.circuit_duration_check" title="Permalink to this definition">#</a></dt>
+<dd><p>If True (default), circuits are disqualified on the server if they are too long compared to the
+T2 decoherence times of the QPU. Setting it to False disables the check, which should not be done in normal use.</p>
 </dd></dl>
 
 </dd></dl>
@@ -731,7 +745,7 @@ Note: This field should be always None in normal use.</p>
     By IQM client developers<br/>
   
       &copy; Copyright 2021-2022, IQM.<br/>
-    Last updated on 2023-05-03.<br/>
+    Last updated on 2023-05-25.<br/>
 </p>
         </footer>
     </div>
