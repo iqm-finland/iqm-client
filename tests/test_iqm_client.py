@@ -13,9 +13,10 @@
 # limitations under the License.
 """Tests for the IQM client.
 """
-from mockito import ANY, verify, when
+import json
 
 # pylint: disable=unused-argument
+from mockito import ANY, kwargs, unstub, verify, when
 import pytest
 import requests
 from requests import HTTPError
@@ -28,6 +29,7 @@ from iqm_client import (
     ClientConfigurationError,
     IQMClient,
     QuantumArchitectureSpecification,
+    RunRequest,
     SingleQubitMapping,
     Status,
     __version__,
@@ -187,6 +189,43 @@ def test_submit_circuits_with_duration_check_disabled_returns_id(
         shots=1000,
     )
     assert job_id == existing_run
+
+
+def test_submit_circuits_does_not_activate_heralding_by_default(base_url, sample_circuit):
+    client = IQMClient(base_url)
+    circuits = [Circuit.parse_obj(sample_circuit)]
+    expected_request_json = json.loads(
+        RunRequest(circuits=circuits, shots=10, heralding='none').json(exclude_none=True)
+    )
+    when(requests).post(f'{base_url}/jobs', json=expected_request_json, **kwargs).thenReturn(
+        MockJsonResponse(201, {'id': str(existing_run)})
+    )
+    client.submit_circuits(circuits=circuits, shots=10)
+    unstub()
+
+
+def test_submit_circuits_sets_heralding_mode_in_run_request(base_url, sample_circuit):
+    client = IQMClient(base_url)
+    circuits = [Circuit.parse_obj(sample_circuit)]
+    expected_request_json = json.loads(
+        RunRequest(circuits=circuits, shots=1, heralding='zeros').json(exclude_none=True)
+    )
+    when(requests).post(f'{base_url}/jobs', json=expected_request_json, **kwargs).thenReturn(
+        MockJsonResponse(201, {'id': str(existing_run)})
+    )
+    client.submit_circuits(circuits=circuits, heralding='zeros')
+    unstub()
+
+
+def test_submit_circuits_raises_with_invalid_heralding_mode(base_url, sample_circuit):
+    client = IQMClient(base_url)
+    with pytest.raises(ValueError, match='value is not a valid enumeration member'):
+        client.submit_circuits(
+            qubit_mapping={'Qubit A': 'QB1', 'Qubit B': 'QB2'},
+            circuits=[Circuit.parse_obj(sample_circuit)],
+            heralding='bamboleo',
+            shots=1000,
+        )
 
 
 def test_get_run_adds_user_agent(mock_server, base_url, calibration_set_id, sample_circuit):
