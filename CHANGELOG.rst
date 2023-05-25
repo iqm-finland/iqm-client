@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 12.5
+============
+
+* Add parameter ``heralding`` to ``RunRequest``. `#87 <https://github.com/iqm-finland/iqm-client/pull/87>`_
+
 Version 12.4
 ============
 
