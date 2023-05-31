@@ -195,7 +195,7 @@ def test_submit_circuits_does_not_activate_heralding_by_default(base_url, sample
     client = IQMClient(base_url)
     circuits = [Circuit.parse_obj(sample_circuit)]
     expected_request_json = json.loads(
-        RunRequest(circuits=circuits, shots=10, heralding='none').json(exclude_none=True)
+        RunRequest(circuits=circuits, shots=10, heralding_mode='none').json(exclude_none=True)
     )
     when(requests).post(f'{base_url}/jobs', json=expected_request_json, **kwargs).thenReturn(
         MockJsonResponse(201, {'id': str(existing_run)})
@@ -208,12 +208,12 @@ def test_submit_circuits_sets_heralding_mode_in_run_request(base_url, sample_cir
     client = IQMClient(base_url)
     circuits = [Circuit.parse_obj(sample_circuit)]
     expected_request_json = json.loads(
-        RunRequest(circuits=circuits, shots=1, heralding='zeros').json(exclude_none=True)
+        RunRequest(circuits=circuits, shots=1, heralding_mode='zeros').json(exclude_none=True)
     )
     when(requests).post(f'{base_url}/jobs', json=expected_request_json, **kwargs).thenReturn(
         MockJsonResponse(201, {'id': str(existing_run)})
     )
-    client.submit_circuits(circuits=circuits, heralding='zeros')
+    client.submit_circuits(circuits=circuits, heralding_mode='zeros')
     unstub()
 
 
@@ -223,7 +223,7 @@ def test_submit_circuits_raises_with_invalid_heralding_mode(base_url, sample_cir
         client.submit_circuits(
             qubit_mapping={'Qubit A': 'QB1', 'Qubit B': 'QB2'},
             circuits=[Circuit.parse_obj(sample_circuit)],
-            heralding='bamboleo',
+            heralding_mode='bamboleo',
             shots=1000,
         )
 
