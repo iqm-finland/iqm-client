@@ -399,7 +399,10 @@ class HeraldingMode(str, Enum):
     NONE = 'none'
     """Do not do any heralding."""
     ZEROS = 'zeros'
-    """Perform a heralding measurement, only retain shots with an all-zeros result."""
+    """Perform a heralding measurement, only retain shots with an all-zeros result.
+    
+    Note: in this mode, the number of shots returned after execution will be less or equal to the requested amount 
+    due to the post-selection based on heralding data."""
 
 
 class RunRequest(BaseModel):
@@ -423,9 +426,7 @@ Note: This field should be always None in normal use."""
     """If True (default), circuits are disqualified on the server if they are too long compared to the
 T2 decoherence times of the QPU. Setting it to False disables the check, which should not be done in normal use."""
     heralding_mode: HeraldingMode = Field(HeraldingMode.NONE)
-    """which heralding mode to use during the execution of circuits in this request.
-    Note: if heralding is turned on, the number of shots returned will be less or equal to the specified amount of shots
-    due to the post-selection based on heralding data"""
+    """which heralding mode to use during the execution of circuits in this request."""
 
 
 CircuitMeasurementResults = dict[str, list[list[int]]]
