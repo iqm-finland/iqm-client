@@ -36,7 +36,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="iqm_client.iqm_client.Instruction" href="iqm_client.iqm_client.Instruction.html" />
-    <link rel="prev" title="iqm_client.iqm_client.GrantType" href="iqm_client.iqm_client.GrantType.html" />
+    <link rel="prev" title="iqm_client.iqm_client.HeraldingMode" href="iqm_client.iqm_client.HeraldingMode.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="None">
     
@@ -155,6 +155,11 @@
        <li class="toctree-l4">
         <a class="reference internal" href="iqm_client.iqm_client.GrantType.html">
          iqm_client.iqm_client.GrantType
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.HeraldingMode.html">
+         iqm_client.iqm_client.HeraldingMode
         </a>
        </li>
        <li class="toctree-l4 current active">
@@ -308,6 +313,9 @@
 <ul class="version_list">
     
       <li class="version_item current_version">dev</li>
+    
+    
+      <li class="version_item"><a href="../versions/12.5/index.html">12.5</a></li>
     
     
       <li class="version_item"><a href="../versions/12.4/index.html">12.4</a></li>
@@ -600,7 +608,7 @@ title="Print to PDF"
   <strong>
     
     You're reading the documentation for a development version.
-    For the latest released version, please have a look at <a href="../versions/12.4/index.html">12.4</a>.
+    For the latest released version, please have a look at <a href="../versions/12.5/index.html">12.5</a>.
     
   </strong>
 </div>
@@ -685,7 +693,7 @@ Password must be set if <code class="docutils literal notranslate"><span class="
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="iqm_client.iqm_client.IQMClient.submit_circuits">
-<span class="sig-name descname"><span class="pre">submit_circuits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">circuits</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit_mapping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calibration_set_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">circuit_duration_check</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm_client.iqm_client.IQMClient.submit_circuits" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">submit_circuits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">circuits</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit_mapping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calibration_set_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">circuit_duration_check</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heralding_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">HeraldingMode.NONE</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm_client.iqm_client.IQMClient.submit_circuits" title="Permalink to this definition">#</a></dt>
 <dd><p>Submits a batch of quantum circuits for execution on a quantum computer.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -699,6 +707,7 @@ Note: This field should always be <code class="docutils literal notranslate"><sp
 <li><p><strong>calibration_set_id</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><em>uuid.UUID</em></a><em>]</em>) – ID of the calibration set to use, or <code class="docutils literal notranslate"><span class="pre">None</span></code> to use the latest one</p></li>
 <li><p><strong>shots</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – number of times <code class="docutils literal notranslate"><span class="pre">circuits</span></code> are executed</p></li>
 <li><p><strong>circuit_duration_check</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – whether to enable max circuit duration criteria for disqualification</p></li>
+<li><p><strong>heralding_mode</strong> (<a class="reference internal" href="iqm_client.iqm_client.HeraldingMode.html#iqm_client.iqm_client.HeraldingMode" title="iqm_client.iqm_client.HeraldingMode"><em>iqm_client.iqm_client.HeraldingMode</em></a>) – Heralding mode to use during the execution.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -860,11 +869,11 @@ we will find the job is still pending at least for the first query.</p>
                 
     <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="iqm_client.iqm_client.GrantType.html" title="previous page">
+    <a class='left-prev' id="prev-link" href="iqm_client.iqm_client.HeraldingMode.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">iqm_client.iqm_client.GrantType</p>
+            <p class="prev-next-title">iqm_client.iqm_client.HeraldingMode</p>
         </div>
     </a>
     <a class='right-next' id="next-link" href="iqm_client.iqm_client.Instruction.html" title="next page">
@@ -884,7 +893,7 @@ we will find the job is still pending at least for the first query.</p>
     By IQM client developers<br/>
   
       &copy; Copyright 2021-2022, IQM.<br/>
-    Last updated on 2023-05-25.<br/>
+    Last updated on 2023-06-02.<br/>
 </p>
         </footer>
     </div>
