@@ -521,7 +521,7 @@ class QuantumArchitectureSpecification(BaseModel):
 
 
 class QuantumArchitecture(BaseModel):
-    """Quantum architecture as returned by Cortex."""
+    """Quantum architecture as returned by server."""
 
     quantum_architecture: QuantumArchitectureSpecification = Field(...)
     """details about the quantum architecture"""
@@ -985,7 +985,7 @@ class IQMClient:
         raise APITimeoutError(f"The job didn't finish in {timeout_secs} seconds.")
 
     def get_quantum_architecture(self) -> QuantumArchitectureSpecification:
-        """Retrieve quantum architecture from Cortex.
+        """Retrieve quantum architecture from server.
 
         Returns:
             quantum architecture
