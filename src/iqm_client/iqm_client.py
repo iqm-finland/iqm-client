@@ -882,15 +882,10 @@ class IQMClient:
             HTTPException: http exceptions
             CircuitExecutionError: IQM server specific exceptions
         """
-        headers = {'User-Agent': self._signature}
-        bearer_token = self._get_bearer_token()
-        if bearer_token:
-            headers['Authorization'] = bearer_token
-
         result = self._retry_request_on_error(
             lambda: requests.get(
                 join(self._base_url, 'jobs', str(job_id)),
-                headers=headers,
+                headers=self._default_headers(),
                 timeout=REQUESTS_TIMEOUT,
             )
         )
@@ -921,15 +916,10 @@ class IQMClient:
             HTTPException: http exceptions
             CircuitExecutionError: IQM server specific exceptions
         """
-        headers = {'User-Agent': self._signature}
-        bearer_token = self._get_bearer_token()
-        if bearer_token:
-            headers['Authorization'] = bearer_token
-
         result = self._retry_request_on_error(
             lambda: requests.get(
                 join(self._base_url, 'jobs', str(job_id), 'status'),
-                headers=headers,
+                headers=self._default_headers(),
                 timeout=REQUESTS_TIMEOUT,
             )
         )
@@ -999,13 +989,9 @@ class IQMClient:
         Raises:
             JobAbortionError: if aborting the job failed
         """
-        headers = {'User-Agent': self._signature}
-        bearer_token = self._get_bearer_token()
-        if bearer_token:
-            headers['Authorization'] = bearer_token
         result = requests.post(
             join(self._base_url, 'jobs', str(job_id), 'abort'),
-            headers=headers,
+            headers=self._default_headers(),
             timeout=REQUESTS_TIMEOUT,
         )
         if result.status_code != 200:
@@ -1021,14 +1007,9 @@ class IQMClient:
             APITimeoutError: time exceeded the set timeout
             ClientConfigurationError: if no valid authentication is provided
         """
-        headers = {'User-Agent': self._signature}
-        bearer_token = self._get_bearer_token()
-        if bearer_token:
-            headers['Authorization'] = bearer_token
-
         result = requests.get(
             join(self._base_url, 'quantum-architecture'),
-            headers=headers,
+            headers=self._default_headers(),
             timeout=REQUESTS_TIMEOUT,
         )
 
@@ -1140,3 +1121,10 @@ class IQMClient:
         tokens = result.json()
         self._credentials.access_token = tokens.get('access_token')
         self._credentials.refresh_token = tokens.get('refresh_token')
+
+    def _default_headers(self):
+        headers = {'User-Agent': self._signature}
+        bearer_token = self._get_bearer_token()
+        if bearer_token:
+            headers['Authorization'] = bearer_token
+        return headers
