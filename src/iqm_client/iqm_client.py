@@ -209,6 +209,10 @@ class APITimeoutError(CircuitExecutionError):
     """Exception for when executing a job on the server takes too long."""
 
 
+class JobAbortionError(RuntimeError):
+    """Job abortion failed."""
+
+
 class Status(str, Enum):
     """
     Status of a job.
@@ -218,6 +222,7 @@ class Status(str, Enum):
     PENDING_EXECUTION = 'pending execution'
     READY = 'ready'
     FAILED = 'failed'
+    ABORTED = 'aborted'
 
 
 class Instruction(BaseModel):
@@ -453,11 +458,12 @@ class RunResult(BaseModel):
 
     * ``measurements`` is present iff the status is ``'ready'``.
     * ``message`` carries additional information for the ``'failed'`` status.
-    * If the status is ``'pending'``, ``measurements`` and ``message`` are ``None``.
+    * If the status is ``'pending compilation'`` or ``'pending execution'``, ``measurements`` and ``message`` are
+      ``None``.
     """
 
     status: Status = Field(...)
-    """current status of the job, in ``{'pending', 'ready', 'failed'}``"""
+    """current status of the job, in ``{'pending compilation', 'pending execution', 'ready', 'failed', 'aborted'}``"""
     measurements: Optional[CircuitMeasurementResultsBatch] = Field(None)
     """if the job has finished successfully, the measurement results for the circuit(s)"""
     message: Optional[str] = Field(None)
@@ -486,7 +492,7 @@ class RunStatus(BaseModel):
     """Status of a circuit execution job."""
 
     status: Status = Field(...)
-    """current status of the job, in ``{'pending', 'ready', 'failed'}``"""
+    """current status of the job, in ``{'pending compilation', 'pending execution', 'ready', 'failed', 'aborted'}``"""
     message: Optional[str] = Field(None)
     """if the job failed, an error message"""
     warnings: Optional[list[str]] = Field(None)
@@ -876,15 +882,10 @@ class IQMClient:
             HTTPException: http exceptions
             CircuitExecutionError: IQM server specific exceptions
         """
-        headers = {'User-Agent': self._signature}
-        bearer_token = self._get_bearer_token()
-        if bearer_token:
-            headers['Authorization'] = bearer_token
-
         result = self._retry_request_on_error(
             lambda: requests.get(
                 join(self._base_url, 'jobs', str(job_id)),
-                headers=headers,
+                headers=self._default_headers(),
                 timeout=REQUESTS_TIMEOUT,
             )
         )
@@ -915,15 +916,10 @@ class IQMClient:
             HTTPException: http exceptions
             CircuitExecutionError: IQM server specific exceptions
         """
-        headers = {'User-Agent': self._signature}
-        bearer_token = self._get_bearer_token()
-        if bearer_token:
-            headers['Authorization'] = bearer_token
-
         result = self._retry_request_on_error(
             lambda: requests.get(
                 join(self._base_url, 'jobs', str(job_id), 'status'),
-                headers=headers,
+                headers=self._default_headers(),
                 timeout=REQUESTS_TIMEOUT,
             )
         )
@@ -940,7 +936,7 @@ class IQMClient:
         return run_result
 
     def wait_for_compilation(self, job_id: UUID, timeout_secs: float = DEFAULT_TIMEOUT_SECONDS) -> RunResult:
-        """Poll results until a job is either pending execution, ready, failed, or timed out.
+        """Poll results until a job is either pending execution, ready, failed, aborted, or timed out.
 
         Args:
             job_id: id of the job to wait for
@@ -961,7 +957,7 @@ class IQMClient:
         raise APITimeoutError(f"The job compilation didn't finish in {timeout_secs} seconds.")
 
     def wait_for_results(self, job_id: UUID, timeout_secs: float = DEFAULT_TIMEOUT_SECONDS) -> RunResult:
-        """Poll results until a job is either ready, failed, or timed out.
+        """Poll results until a job is either ready, failed, aborted, or timed out.
            Note, that jobs handling on the server side is async and if we try to request the results
            right after submitting the job (which is usually the case)
            we will find the job is still pending at least for the first query.
@@ -984,6 +980,23 @@ class IQMClient:
             time.sleep(SECONDS_BETWEEN_CALLS)
         raise APITimeoutError(f"The job didn't finish in {timeout_secs} seconds.")
 
+    def abort_job(self, job_id: UUID) -> None:
+        """Abort a job that was submitted for execution.
+
+        Args:
+            job_id: id of the job to be aborted
+
+        Raises:
+            JobAbortionError: if aborting the job failed
+        """
+        result = requests.post(
+            join(self._base_url, 'jobs', str(job_id), 'abort'),
+            headers=self._default_headers(),
+            timeout=REQUESTS_TIMEOUT,
+        )
+        if result.status_code != 200:
+            raise JobAbortionError(result.json()['detail'])
+
     def get_quantum_architecture(self) -> QuantumArchitectureSpecification:
         """Retrieve quantum architecture from server.
 
@@ -994,14 +1007,9 @@ class IQMClient:
             APITimeoutError: time exceeded the set timeout
             ClientConfigurationError: if no valid authentication is provided
         """
-        headers = {'User-Agent': self._signature}
-        bearer_token = self._get_bearer_token()
-        if bearer_token:
-            headers['Authorization'] = bearer_token
-
         result = requests.get(
             join(self._base_url, 'quantum-architecture'),
-            headers=headers,
+            headers=self._default_headers(),
             timeout=REQUESTS_TIMEOUT,
         )
 
@@ -1113,3 +1121,10 @@ class IQMClient:
         tokens = result.json()
         self._credentials.access_token = tokens.get('access_token')
         self._credentials.refresh_token = tokens.get('refresh_token')
+
+    def _default_headers(self):
+        headers = {'User-Agent': self._signature}
+        bearer_token = self._get_bearer_token()
+        if bearer_token:
+            headers['Authorization'] = bearer_token
+        return headers

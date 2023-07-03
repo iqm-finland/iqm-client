@@ -28,6 +28,7 @@ from iqm_client import (
     CircuitValidationError,
     ClientConfigurationError,
     IQMClient,
+    JobAbortionError,
     QuantumArchitectureSpecification,
     RunRequest,
     SingleQubitMapping,
@@ -598,3 +599,39 @@ def test_validate_circuit_checks_instruction_argument_types(sample_circuit):
     circuit.instructions[1].args['phase_t'] = '0.7'
     with pytest.raises(ValueError, match='The argument "phase_t" should be of one of the following supported types'):
         validate_circuit(circuit)
+
+
+def test_abort_job_successful(base_url):
+    """
+    Tests aborting a job
+    """
+    client = IQMClient(base_url)
+    when(requests).post(f'{base_url}/jobs/{existing_run}/abort', headers=ANY, timeout=ANY).thenReturn(
+        MockJsonResponse(200, {})
+    )
+    client.abort_job(existing_run)
+    verify(requests).post(
+        f'{base_url}/jobs/{existing_run}/abort',
+        headers={'User-Agent': f'{DIST_NAME} {__version__}'},
+        timeout=REQUESTS_TIMEOUT,
+    )
+    unstub()
+
+
+@pytest.mark.parametrize('status_code', [404, 409])
+def test_abort_job_failed(base_url, status_code):
+    """
+    Tests aborting a job raises JobAbortionError if server returned error response
+    """
+    client = IQMClient(base_url)
+    when(requests).post(f'{base_url}/jobs/{existing_run}/abort', headers=ANY, timeout=ANY).thenReturn(
+        MockJsonResponse(status_code, {'detail': 'failed to abort job'})
+    )
+    with pytest.raises(JobAbortionError):
+        client.abort_job(existing_run)
+        verify(requests).post(
+            f'{base_url}/jobs/{existing_run}/abort',
+            headers={'User-Agent': f'{DIST_NAME} {__version__}'},
+            timeout=REQUESTS_TIMEOUT,
+        )
+    unstub()

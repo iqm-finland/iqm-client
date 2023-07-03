@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 13.0
+============
+
+* Add ability to abort jobs. `#89 <https://github.com/iqm-finland/iqm-client/pull/89>`_
+
 Version 12.5
 ============
 
