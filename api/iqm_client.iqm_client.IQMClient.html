@@ -237,6 +237,11 @@
          iqm_client.iqm_client.ClientConfigurationError
         </a>
        </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.JobAbortionError.html">
+         iqm_client.iqm_client.JobAbortionError
+        </a>
+       </li>
       </ul>
      </li>
      <li class="toctree-l3 has-children">
@@ -313,6 +318,9 @@
 <ul class="version_list">
     
       <li class="version_item current_version">dev</li>
+    
+    
+      <li class="version_item"><a href="../versions/13.0/index.html">13.0</a></li>
     
     
       <li class="version_item"><a href="../versions/12.5/index.html">12.5</a></li>
@@ -608,7 +616,7 @@ title="Print to PDF"
   <strong>
     
     You're reading the documentation for a development version.
-    For the latest released version, please have a look at <a href="../versions/12.5/index.html">12.5</a>.
+    For the latest released version, please have a look at <a href="../versions/13.0/index.html">13.0</a>.
     
   </strong>
 </div>
@@ -659,20 +667,26 @@ Password must be set if <code class="docutils literal notranslate"><span class="
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__del__</span></code>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_get_bearer_token</span></code>([retries])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_default_headers</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_get_bearer_token</span></code>([retries])</p></td>
 <td><p>Make a bearer token for Authorization header.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_retry_request_on_error</span></code>(request)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_retry_request_on_error</span></code>(request)</p></td>
 <td><p>This is a temporary workaround for 502 errors.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_update_tokens</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_update_tokens</span></code>()</p></td>
 <td><p>Update access token and refresh token.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.abort_job" title="iqm_client.iqm_client.IQMClient.abort_job"><code class="xref py py-obj docutils literal notranslate"><span class="pre">abort_job</span></code></a>(job_id)</p></td>
+<td><p>Abort a job that was submitted for execution.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.close_auth_session" title="iqm_client.iqm_client.IQMClient.close_auth_session"><code class="xref py py-obj docutils literal notranslate"><span class="pre">close_auth_session</span></code></a>()</p></td>
 <td><p>Terminate session with authentication server if there was one created.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.get_quantum_architecture" title="iqm_client.iqm_client.IQMClient.get_quantum_architecture"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_quantum_architecture</span></code></a>()</p></td>
-<td><p>Retrieve quantum architecture from Cortex.</p></td>
+<td><p>Retrieve quantum architecture from server.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.get_run" title="iqm_client.iqm_client.IQMClient.get_run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_run</span></code></a>(job_id)</p></td>
 <td><p>Query the status and results of a submitted job.</p></td>
@@ -684,10 +698,10 @@ Password must be set if <code class="docutils literal notranslate"><span class="
 <td><p>Submits a batch of quantum circuits for execution on a quantum computer.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.wait_for_compilation" title="iqm_client.iqm_client.IQMClient.wait_for_compilation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait_for_compilation</span></code></a>(job_id[, timeout_secs])</p></td>
-<td><p>Poll results until a job is either pending execution, ready, failed, or timed out.</p></td>
+<td><p>Poll results until a job is either pending execution, ready, failed, aborted, or timed out.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.IQMClient.wait_for_results" title="iqm_client.iqm_client.IQMClient.wait_for_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait_for_results</span></code></a>(job_id[, timeout_secs])</p></td>
-<td><p>Poll results until a job is either ready, failed, or timed out.</p></td>
+<td><p>Poll results until a job is either ready, failed, aborted, or timed out.</p></td>
 </tr>
 </tbody>
 </table>
@@ -768,7 +782,7 @@ Note: This field should always be <code class="docutils literal notranslate"><sp
 <dl class="py method">
 <dt class="sig sig-object py" id="iqm_client.iqm_client.IQMClient.wait_for_compilation">
 <span class="sig-name descname"><span class="pre">wait_for_compilation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout_secs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">900</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm_client.iqm_client.IQMClient.wait_for_compilation" title="Permalink to this definition">#</a></dt>
-<dd><p>Poll results until a job is either pending execution, ready, failed, or timed out.</p>
+<dd><p>Poll results until a job is either pending execution, ready, failed, aborted, or timed out.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -792,7 +806,7 @@ Note: This field should always be <code class="docutils literal notranslate"><sp
 <dt class="sig sig-object py" id="iqm_client.iqm_client.IQMClient.wait_for_results">
 <span class="sig-name descname"><span class="pre">wait_for_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout_secs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">900</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm_client.iqm_client.IQMClient.wait_for_results" title="Permalink to this definition">#</a></dt>
 <dd><dl class="simple">
-<dt>Poll results until a job is either ready, failed, or timed out.</dt><dd><p>Note, that jobs handling on the server side is async and if we try to request the results
+<dt>Poll results until a job is either ready, failed, aborted, or timed out.</dt><dd><p>Note, that jobs handling on the server side is async and if we try to request the results
 right after submitting the job (which is usually the case)
 we will find the job is still pending at least for the first query.</p>
 </dd>
@@ -817,9 +831,26 @@ we will find the job is still pending at least for the first query.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="iqm_client.iqm_client.IQMClient.abort_job">
+<span class="sig-name descname"><span class="pre">abort_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm_client.iqm_client.IQMClient.abort_job" title="Permalink to this definition">#</a></dt>
+<dd><p>Abort a job that was submitted for execution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>job_id</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><em>uuid.UUID</em></a>) – id of the job to be aborted</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="iqm_client.iqm_client.JobAbortionError.html#iqm_client.iqm_client.JobAbortionError" title="iqm_client.iqm_client.JobAbortionError"><strong>JobAbortionError</strong></a> – if aborting the job failed</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="iqm_client.iqm_client.IQMClient.get_quantum_architecture">
 <span class="sig-name descname"><span class="pre">get_quantum_architecture</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#iqm_client.iqm_client.IQMClient.get_quantum_architecture" title="Permalink to this definition">#</a></dt>
-<dd><p>Retrieve quantum architecture from Cortex.</p>
+<dd><p>Retrieve quantum architecture from server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>quantum architecture</p>
@@ -893,7 +924,7 @@ we will find the job is still pending at least for the first query.</p>
     By IQM client developers<br/>
   
       &copy; Copyright 2021-2022, IQM.<br/>
-    Last updated on 2023-06-02.<br/>
+    Last updated on 2023-07-03.<br/>
 </p>
         </footer>
     </div>

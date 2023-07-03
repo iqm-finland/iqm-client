@@ -237,6 +237,11 @@
          iqm_client.iqm_client.ClientConfigurationError
         </a>
        </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="iqm_client.iqm_client.JobAbortionError.html">
+         iqm_client.iqm_client.JobAbortionError
+        </a>
+       </li>
       </ul>
      </li>
      <li class="toctree-l3 has-children">
@@ -313,6 +318,9 @@
 <ul class="version_list">
     
       <li class="version_item current_version">dev</li>
+    
+    
+      <li class="version_item"><a href="../versions/13.0/index.html">13.0</a></li>
     
     
       <li class="version_item"><a href="../versions/12.5/index.html">12.5</a></li>
@@ -608,7 +616,7 @@ title="Print to PDF"
   <strong>
     
     You're reading the documentation for a development version.
-    For the latest released version, please have a look at <a href="../versions/12.5/index.html">12.5</a>.
+    For the latest released version, please have a look at <a href="../versions/13.0/index.html">13.0</a>.
     
   </strong>
 </div>
@@ -624,7 +632,8 @@ title="Print to PDF"
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">measurements</span></code> is present iff the status is <code class="docutils literal notranslate"><span class="pre">'ready'</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">message</span></code> carries additional information for the <code class="docutils literal notranslate"><span class="pre">'failed'</span></code> status.</p></li>
-<li><p>If the status is <code class="docutils literal notranslate"><span class="pre">'pending'</span></code>, <code class="docutils literal notranslate"><span class="pre">measurements</span></code> and <code class="docutils literal notranslate"><span class="pre">message</span></code> are <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p>If the status is <code class="docutils literal notranslate"><span class="pre">'pending</span> <span class="pre">compilation'</span></code> or <code class="docutils literal notranslate"><span class="pre">'pending</span> <span class="pre">execution'</span></code>, <code class="docutils literal notranslate"><span class="pre">measurements</span></code> and <code class="docutils literal notranslate"><span class="pre">message</span></code> are
+<code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
 </ul>
 <p>Create a new model by parsing and validating input data from keyword arguments.</p>
 <p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
@@ -636,7 +645,7 @@ title="Print to PDF"
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.RunResult.status" title="iqm_client.iqm_client.RunResult.status"><code class="xref py py-obj docutils literal notranslate"><span class="pre">status</span></code></a></p></td>
-<td><p>current status of the job, in <code class="docutils literal notranslate"><span class="pre">{'pending',</span> <span class="pre">'ready',</span> <span class="pre">'failed'}</span></code></p></td>
+<td><p>current status of the job, in <code class="docutils literal notranslate"><span class="pre">{'pending</span> <span class="pre">compilation',</span> <span class="pre">'pending</span> <span class="pre">execution',</span> <span class="pre">'ready',</span> <span class="pre">'failed',</span> <span class="pre">'aborted'}</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#iqm_client.iqm_client.RunResult.measurements" title="iqm_client.iqm_client.RunResult.measurements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">measurements</span></code></a></p></td>
 <td><p>if the job has finished successfully, the measurement results for the circuit(s)</p></td>
@@ -684,7 +693,7 @@ title="Print to PDF"
 <dl class="py attribute">
 <dt class="sig sig-object py" id="iqm_client.iqm_client.RunResult.status">
 <span class="sig-name descname"><span class="pre">status</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="iqm_client.iqm_client.Status.html#iqm_client.iqm_client.Status" title="iqm_client.iqm_client.Status"><span class="pre">iqm_client.iqm_client.Status</span></a></em><a class="headerlink" href="#iqm_client.iqm_client.RunResult.status" title="Permalink to this definition">#</a></dt>
-<dd><p>current status of the job, in <code class="docutils literal notranslate"><span class="pre">{'pending',</span> <span class="pre">'ready',</span> <span class="pre">'failed'}</span></code></p>
+<dd><p>current status of the job, in <code class="docutils literal notranslate"><span class="pre">{'pending</span> <span class="pre">compilation',</span> <span class="pre">'pending</span> <span class="pre">execution',</span> <span class="pre">'ready',</span> <span class="pre">'failed',</span> <span class="pre">'aborted'}</span></code></p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -765,7 +774,7 @@ title="Print to PDF"
     By IQM client developers<br/>
   
       &copy; Copyright 2021-2022, IQM.<br/>
-    Last updated on 2023-06-02.<br/>
+    Last updated on 2023-07-03.<br/>
 </p>
         </footer>
     </div>
