@@ -147,6 +147,7 @@ import warnings
 
 from pydantic import BaseModel, Field, StrictStr, validate_model, validator
 import requests
+from cryptography.fernet import Fernet
 
 REQUESTS_TIMEOUT = 60
 
@@ -647,6 +648,35 @@ def _get_credentials(credentials: dict[str, str]) -> Optional[Credentials]:
     return Credentials(auth_server_url=auth_server_url, username=username, password=password)
 
 
+def _get_external_credentials(credentials_file: Optional[str] = None, decryption_key: Optional[str] = None) -> Optional[Credentials]:
+    filepath = credentials_file or os.environ.get('IQM_ENCRYPTED_CREDENTIALS_FILE')
+    key = decryption_key or os.environ.get('IQM_DECRYPTION_KEY')
+    if not filepath or not key:
+        return None
+
+    try:
+        with open(filepath, 'r', encoding='utf-8') as file:
+            raw_data = file.read()
+    except FileNotFoundError as error:
+        raise ClientConfigurationError(f'File not found: {filepath}') from error
+
+    decrypted_data = _decrypt_string(key.encode(), raw_data)
+
+    try:
+        json_data = json.loads(decrypted_data)
+    except json.decoder.JSONDecodeError as error:
+        raise ClientConfigurationError(f'Decoding JSON has failed, {error}') from error
+
+    auth_server_url = json_data['auth_server_url']
+    username = json_data['username']
+    password = json_data['password']
+
+    if not auth_server_url or not username or not password:
+        raise ClientConfigurationError('Encrypted credentials files is invalid')
+
+    return Credentials(auth_server_url=auth_server_url, username=username, password=password)
+
+
 def _get_external_token(tokens_file: Optional[str] = None) -> Optional[ExternalToken]:
     """Try to obtain external token from a file, first by path provided, then by path from
     environment variable.
@@ -694,6 +724,19 @@ def _time_left_seconds(token: str) -> int:
     return max(0, exp_time - int(time.time()))
 
 
+def _decrypt_string(key: bytes, ciphertext: str) -> str:
+    # Create a Fernet symmetric encryption object with the key
+    fernet = Fernet(key)
+
+    # Decrypt the ciphertext
+    plaintext_bytes = fernet.decrypt(ciphertext)
+
+    # Convert the decrypted bytes back to a string
+    plaintext = plaintext_bytes.decode()
+
+    # Return the decrypted plaintext
+    return plaintext
+
 class IQMClient:
     """Provides access to IQM quantum computers.
 
@@ -726,6 +769,8 @@ class IQMClient:
         *,
         client_signature: Optional[str] = None,
         tokens_file: Optional[str] = None,
+        external_credentials_file: Optional[str] = None,
+        decryption_key: Optional[str] = None,
         **credentials,  # contains auth_server_url, username, password
     ):
         if not url.startswith(('http:', 'https:')):
@@ -739,7 +784,11 @@ class IQMClient:
         self._tokens_file = tokens_file
         self._external_token = _get_external_token(tokens_file)
         if not self._external_token:
-            self._credentials = _get_credentials(credentials)
+            external_credentials = _get_external_credentials(external_credentials_file, decryption_key)
+            if external_credentials:
+                self._credentials = external_credentials
+            else:
+                self._credentials = _get_credentials(credentials)
             self._update_tokens()
 
     def __del__(self):
