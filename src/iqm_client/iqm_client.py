@@ -1128,3 +1128,23 @@ class IQMClient:
         if bearer_token:
             headers['Authorization'] = bearer_token
         return headers
+
+    def get_calibration_data(self, calibration_set_id: UUID = None):
+        """
+        Return json response from calibration endpoint.
+        Optionally you can input a calibration set id (UUID) to query historical results
+
+        Args:
+            calibration_set_id: calibration set id to query. Defaults to None, returning the latest data.
+
+        Returns:
+            Calibration data in json format
+        """
+        headers = self._default_headers()
+        url = os.path.join(self._base_url, 'calibration')
+        if calibration_set_id:
+            url = os.path.join(url, str(calibration_set_id))
+        response = requests.get(url, headers=headers, timeout=REQUESTS_TIMEOUT)
+        response.raise_for_status()
+
+        return response.json()
