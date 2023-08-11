@@ -320,6 +320,9 @@
       <li class="version_item current_version">dev</li>
     
     
+      <li class="version_item"><a href="../versions/13.1/index.html">13.1</a></li>
+    
+    
       <li class="version_item"><a href="../versions/13.0/index.html">13.0</a></li>
     
     
@@ -616,7 +619,7 @@ title="Print to PDF"
   <strong>
     
     You're reading the documentation for a development version.
-    For the latest released version, please have a look at <a href="../versions/13.0/index.html">13.0</a>.
+    For the latest released version, please have a look at <a href="../versions/13.1/index.html">13.1</a>.
     
   </strong>
 </div>
@@ -626,7 +629,7 @@ title="Print to PDF"
 <h1>iqm_client.iqm_client.Metadata<a class="headerlink" href="#iqm-client-iqm-client-metadata" title="Permalink to this headline">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="iqm_client.iqm_client.Metadata">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">iqm_client.iqm_client.</span></span><span class="sig-name descname"><span class="pre">Metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calibration_set_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm_client.iqm_client.Metadata" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">iqm_client.iqm_client.</span></span><span class="sig-name descname"><span class="pre">Metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calibration_set_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timestamps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm_client.iqm_client.Metadata" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pydantic.main.BaseModel</span></code></p>
 <p>Metadata describing a circuit execution job.</p>
 <p>Create a new model by parsing and validating input data from keyword arguments.</p>
@@ -643,6 +646,9 @@ title="Print to PDF"
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#iqm_client.iqm_client.Metadata.request" title="iqm_client.iqm_client.Metadata.request"><code class="xref py py-obj docutils literal notranslate"><span class="pre">request</span></code></a></p></td>
 <td><p>copy of the original RunRequest sent to the server</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm_client.iqm_client.Metadata.timestamps" title="iqm_client.iqm_client.Metadata.timestamps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">timestamps</span></code></a></p></td>
+<td><p>Timestamps of execution progress</p></td>
 </tr>
 </tbody>
 </table>
@@ -663,6 +669,7 @@ title="Print to PDF"
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>calibration_set_id</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><em>uuid.UUID</em></a><em>]</em>) – </p></li>
 <li><p><strong>request</strong> (<a class="reference internal" href="iqm_client.iqm_client.RunRequest.html#iqm_client.iqm_client.RunRequest" title="iqm_client.iqm_client.RunRequest"><em>iqm_client.iqm_client.RunRequest</em></a>) – </p></li>
+<li><p><strong>timestamps</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>]</em><em>]</em>) – </p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -679,6 +686,12 @@ title="Print to PDF"
 <dt class="sig sig-object py" id="iqm_client.iqm_client.Metadata.request">
 <span class="sig-name descname"><span class="pre">request</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="iqm_client.iqm_client.RunRequest.html#iqm_client.iqm_client.RunRequest" title="iqm_client.iqm_client.RunRequest"><span class="pre">iqm_client.iqm_client.RunRequest</span></a></em><a class="headerlink" href="#iqm_client.iqm_client.Metadata.request" title="Permalink to this definition">#</a></dt>
 <dd><p>copy of the original RunRequest sent to the server</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="iqm_client.iqm_client.Metadata.timestamps">
+<span class="sig-name descname"><span class="pre">timestamps</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#float" title="(in Python v3.9)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#iqm_client.iqm_client.Metadata.timestamps" title="Permalink to this definition">#</a></dt>
+<dd><p>Timestamps of execution progress</p>
 </dd></dl>
 
 </dd></dl>
@@ -718,7 +731,7 @@ title="Print to PDF"
     By IQM client developers<br/>
   
       &copy; Copyright 2021-2022, IQM.<br/>
-    Last updated on 2023-07-03.<br/>
+    Last updated on 2023-08-11.<br/>
 </p>
         </footer>
     </div>
