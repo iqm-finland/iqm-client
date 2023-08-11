@@ -178,6 +178,10 @@ def generate_server_stubs(base_url, sample_circuit):
                         'circuits': [sample_circuit],
                         'calibration_set_id': calibration_set_id_value,
                     },
+                    'timestamps': {
+                        'job_start': 0.0,
+                        'job_end': 1.1,
+                    },
                 },
             },
         )
