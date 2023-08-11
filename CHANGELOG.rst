@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 13.1
+============
+
+* Add execution timestamps in RunResult metadata. `#92 <https://github.com/iqm-finland/iqm-client/pull/92>`_
+
 Version 13.0
 ============
 
