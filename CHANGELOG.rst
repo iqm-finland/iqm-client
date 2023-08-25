@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 13.2
+============
+
+* Use ISO 8601 format timestamps in RunResult metadata. `#93 <https://github.com/iqm-finland/iqm-client/pull/93>`_
+
 Version 13.1
 ============
 
