@@ -451,7 +451,7 @@ class Metadata(BaseModel):
     """ID of the calibration set used"""
     request: RunRequest = Field(...)
     """copy of the original RunRequest sent to the server"""
-    timestamps: Optional[dict[str, float]] = Field(None)
+    timestamps: Optional[dict[str, str]] = Field(None)
     """Timestamps of execution progress"""
 
 
