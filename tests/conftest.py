@@ -20,45 +20,107 @@ from base64 import b64encode
 import json
 import os
 import time
-from typing import Optional
-from uuid import UUID, uuid4
+from typing import Any, Optional
+from uuid import UUID
 
-from mockito import ANY, expect, mock, unstub, when
+from mockito import expect, mock, when
+from mockito.matchers import ANY
 import pytest
 import requests
 from requests import HTTPError, Response
 
-from iqm_client import AUTH_CLIENT_ID, AUTH_REALM, AuthRequest, GrantType
-
-REQUESTS_TIMEOUT = 60
-
-calibration_set_id_value = UUID('9ddb9586-8f27-49a9-90ed-41086b47f6bd')
-existing_run = UUID('3c3fcda3-e860-46bf-92a4-bcc59fa76ce9')
-missing_run = UUID('059e4186-50a3-4e6c-ba1f-37fe6afbdfc2')
+from iqm_client import (
+    AUTH_CLIENT_ID,
+    AUTH_REALM,
+    DIST_NAME,
+    REQUESTS_TIMEOUT,
+    AuthRequest,
+    Circuit,
+    GrantType,
+    HeraldingMode,
+    Instruction,
+    IQMClient,
+    RunRequest,
+    SingleQubitMapping,
+    __version__,
+)
 
 
 @pytest.fixture()
-def base_url():
+def base_url() -> str:
     return 'https://example.com'
 
 
 @pytest.fixture()
-def credentials():
+def client_signature() -> str:
+    return 'some-signature'
+
+
+@pytest.fixture()
+def sample_calibration_set_id() -> UUID:
+    return UUID('9ddb9586-8f27-49a9-90ed-41086b47f6bd')
+
+
+@pytest.fixture()
+def existing_run_id() -> UUID:
+    return UUID('3c3fcda3-e860-46bf-92a4-bcc59fa76ce9')
+
+
+@pytest.fixture()
+def missing_run_id() -> UUID:
+    return UUID('059e4186-50a3-4e6c-ba1f-37fe6afbdfc2')
+
+
+@pytest.fixture()
+def sample_client(base_url) -> IQMClient:
+    return IQMClient(url=base_url)
+
+
+@pytest.fixture()
+def client_with_signature(base_url) -> IQMClient:
+    return IQMClient(url=base_url, client_signature='some-signature')
+
+
+@pytest.fixture()
+def credentials(base_url):
     return {
-        'auth_server_url': 'some_auth_server',
+        'auth_server_url': f'{base_url}/auth',
         'username': 'some_username',
         'password': 'some_password',
     }
 
 
-@pytest.fixture(scope='function')
-def mock_server(base_url, sample_circuit):
-    """
-    Runs mocking separately for each test
-    """
-    generate_server_stubs(base_url, sample_circuit)
-    yield  # running test function
-    unstub()
+@pytest.fixture()
+def client_with_credentials(base_url, credentials):
+    prepare_tokens(300, 300, **credentials)
+    return IQMClient(url=base_url, **credentials)
+
+
+@pytest.fixture()
+def client_with_external_token(tokens_dict, credentials):
+    prepare_tokens(300, 300, **credentials)
+    tokens_path = os.path.dirname(os.path.realpath(__file__)) + '/resources/tokens.json'
+    return IQMClient(tokens_dict['auth_server_url'], tokens_file=tokens_path)
+
+
+@pytest.fixture()
+def jobs_url(base_url) -> str:
+    return f'{base_url}/jobs'
+
+
+@pytest.fixture()
+def existing_job_url(jobs_url, existing_run_id) -> str:
+    return f'{jobs_url}/{existing_run_id}'
+
+
+@pytest.fixture()
+def existing_job_status_url(existing_job_url) -> str:
+    return f'{existing_job_url}/status'
+
+
+@pytest.fixture()
+def quantum_architecture_url(base_url) -> str:
+    return f'{base_url}/quantum-architecture'
 
 
 @pytest.fixture
@@ -71,11 +133,6 @@ def settings_dict():
         return json.loads(f.read())
 
 
-@pytest.fixture()
-def calibration_set_id():
-    return calibration_set_id_value
-
-
 @pytest.fixture
 def tokens_dict():
     """
@@ -86,25 +143,205 @@ def tokens_dict():
         return json.loads(f.read())
 
 
+@pytest.fixture()
+def sample_circuit_metadata():
+    return {'experiment_type': 'test', 'qubits': (0, 1), 'values': [0.01686514, 0.05760602]}
+
+
 @pytest.fixture
-def sample_circuit():
+def sample_circuit(sample_circuit_metadata):
     """
     A sample circuit for testing submit_circuit
     """
-    return {
-        'name': 'The circuit',
-        'instructions': [
-            {'name': 'cz', 'qubits': ['Qubit A', 'Qubit B'], 'args': {}},
-            {
-                'name': 'phased_rx',
-                'implementation': 'drag_gaussian',
-                'qubits': ['Qubit A'],
-                'args': {'phase_t': 0.7, 'angle_t': 0.25},
-            },
-            {'name': 'measurement', 'qubits': ['Qubit A'], 'args': {'key': 'A'}},
+    return Circuit(
+        name='The circuit',
+        instructions=[
+            Instruction(
+                name='cz',
+                qubits=(
+                    'Qubit A',
+                    'Qubit B',
+                ),
+                args={},
+            ),
+            Instruction(
+                name='phased_rx',
+                implementation='drag_gaussian',
+                qubits=('Qubit A',),
+                args={'phase_t': 0.7, 'angle_t': 0.25},
+            ),
+            Instruction(name='measurement', qubits=('Qubit A',), args={'key': 'A'}),
         ],
-        'metadata': {'experiment_type': 'test', 'qubits': (0, 1), 'values': [0.01686514, 0.05760602]},
-    }
+        metadata=sample_circuit_metadata,
+    )
+
+
+@pytest.fixture()
+def minimal_run_request(sample_circuit) -> RunRequest:
+    return RunRequest(
+        circuits=[sample_circuit],
+        shots=10,
+    )
+
+
+@pytest.fixture()
+def run_request_with_heralding(sample_circuit) -> RunRequest:
+    return RunRequest(
+        circuits=[sample_circuit],
+        shots=10,
+        heralding_mode=HeraldingMode.ZEROS,
+    )
+
+
+@pytest.fixture()
+def run_request_with_custom_settings(sample_circuit, settings_dict) -> RunRequest:
+    return RunRequest(
+        circuits=[sample_circuit],
+        shots=10,
+        qubit_mapping=[
+            SingleQubitMapping(logical_name='Qubit A', physical_name='QB1'),
+            SingleQubitMapping(logical_name='Qubit B', physical_name='QB2'),
+        ],
+        custom_settings=settings_dict,
+        heralding_mode=HeraldingMode.NONE,
+    )
+
+
+@pytest.fixture()
+def run_request_without_qubit_mapping(sample_circuit) -> RunRequest:
+    return RunRequest(
+        circuits=[sample_circuit],
+        shots=10,
+        heralding_mode=HeraldingMode.NONE,
+    )
+
+
+@pytest.fixture()
+def run_request_with_invalid_qubit_mapping(sample_circuit) -> RunRequest:
+    return RunRequest(
+        circuits=[sample_circuit],
+        shots=10,
+        qubit_mapping=[
+            SingleQubitMapping(logical_name='Qubit A', physical_name='QB1'),
+            SingleQubitMapping(logical_name='Qubit B', physical_name='QB1'),
+        ],
+        heralding_mode=HeraldingMode.NONE,
+    )
+
+
+@pytest.fixture()
+def run_request_with_incomplete_qubit_mapping(sample_circuit) -> RunRequest:
+    return RunRequest(
+        circuits=[sample_circuit],
+        shots=10,
+        qubit_mapping=[
+            SingleQubitMapping(logical_name='Qubit A', physical_name='QB1'),
+        ],
+        heralding_mode=HeraldingMode.NONE,
+    )
+
+
+@pytest.fixture()
+def run_request_with_calibration_set_id(sample_circuit, sample_calibration_set_id) -> RunRequest:
+    return RunRequest(
+        circuits=[sample_circuit],
+        shots=10,
+        qubit_mapping=[
+            SingleQubitMapping(logical_name='Qubit A', physical_name='QB1'),
+            SingleQubitMapping(logical_name='Qubit B', physical_name='QB2'),
+        ],
+        calibration_set_id=sample_calibration_set_id,
+        heralding_mode=HeraldingMode.NONE,
+    )
+
+
+@pytest.fixture()
+def run_request_with_duration_check_disabled(sample_circuit) -> RunRequest:
+    return RunRequest(
+        circuits=[sample_circuit],
+        shots=10,
+        qubit_mapping=[
+            SingleQubitMapping(logical_name='Qubit A', physical_name='QB1'),
+            SingleQubitMapping(logical_name='Qubit B', physical_name='QB2'),
+        ],
+        circuit_duration_check=False,
+        heralding_mode=HeraldingMode.NONE,
+    )
+
+
+@pytest.fixture()
+def pending_compilation_job_result(sample_circuit):
+    return MockJsonResponse(
+        200, {'status': 'pending compilation', 'metadata': {'request': {'shots': 10, 'circuits': [sample_circuit]}}}
+    )
+
+
+@pytest.fixture()
+def pending_execution_job_result(sample_circuit):
+    return MockJsonResponse(
+        200, {'status': 'pending execution', 'metadata': {'request': {'shots': 10, 'circuits': [sample_circuit]}}}
+    )
+
+
+@pytest.fixture()
+def ready_job_result(sample_circuit, sample_calibration_set_id):
+    return MockJsonResponse(
+        200,
+        {
+            'status': 'ready',
+            'measurements': [{'result': [[1, 0, 1, 1], [1, 0, 0, 1], [1, 0, 1, 1], [1, 0, 1, 1]]}],
+            'metadata': {
+                'calibration_set_id': str(sample_calibration_set_id),
+                'request': {
+                    'shots': 42,
+                    'circuits': [sample_circuit],
+                    'calibration_set_id': str(sample_calibration_set_id),
+                },
+                'timestamps': {
+                    'job_start': 0.0,
+                    'job_end': 1.1,
+                },
+            },
+        },
+    )
+
+
+@pytest.fixture()
+def job_result_with_warnings(sample_circuit, sample_calibration_set_id):
+    return MockJsonResponse(
+        200,
+        {
+            'status': 'ready',
+            'metadata': {
+                'calibration_set_id': str(sample_calibration_set_id),
+                'request': {
+                    'shots': 42,
+                    'circuits': [sample_circuit],
+                    'calibration_set_id': str(sample_calibration_set_id),
+                },
+                'timestamps': {
+                    'job_start': 0.0,
+                    'job_end': 1.1,
+                },
+            },
+            'warnings': ['This is a warning message'],
+        },
+    )
+
+
+@pytest.fixture()
+def pending_compilation_status():
+    return MockJsonResponse(200, {'status': 'pending compilation'})
+
+
+@pytest.fixture()
+def pending_execution_status():
+    return MockJsonResponse(200, {'status': 'pending execution'})
+
+
+@pytest.fixture()
+def ready_status():
+    return MockJsonResponse(200, {'status': 'ready'})
 
 
 @pytest.fixture
@@ -133,6 +370,11 @@ class MockTextResponse:
             raise HTTPError('')
 
 
+@pytest.fixture()
+def not_valid_json_response() -> MockTextResponse:
+    return MockTextResponse(200, 'not a valid json')
+
+
 class MockJsonResponse:
     def __init__(self, status_code: int, json_data: dict, history: Optional[list[Response]] = None):
         self.status_code = status_code
@@ -151,54 +393,29 @@ class MockJsonResponse:
             raise HTTPError('')
 
 
-def generate_server_stubs(base_url, sample_circuit):
-    """
-    Mocking some calls to the server by mocking 'requests'
-    """
-    when(requests).post(f'{base_url}/jobs', ...).thenReturn(MockJsonResponse(201, {'id': str(existing_run)}))
+@pytest.fixture()
+def submit_success(existing_run_id) -> MockJsonResponse:
+    return MockJsonResponse(201, {'id': str(existing_run_id)})
 
-    when(requests).get(f'{base_url}/jobs/{existing_run}', ...).thenReturn(
-        MockJsonResponse(
-            200, {'status': 'pending compilation', 'metadata': {'request': {'shots': 42, 'circuits': [sample_circuit]}}}
-        )
-    ).thenReturn(
-        MockJsonResponse(
-            200, {'status': 'pending execution', 'metadata': {'request': {'shots': 42, 'circuits': [sample_circuit]}}}
-        )
-    ).thenReturn(
-        MockJsonResponse(
-            200,
-            {
-                'status': 'ready',
-                'measurements': [{'result': [[1, 0, 1, 1], [1, 0, 0, 1], [1, 0, 1, 1], [1, 0, 1, 1]]}],
-                'metadata': {
-                    'calibration_set_id': calibration_set_id_value,
-                    'request': {
-                        'shots': 42,
-                        'circuits': [sample_circuit],
-                        'calibration_set_id': calibration_set_id_value,
-                    },
-                    'timestamps': {
-                        'job_start': 0.0,
-                        'job_end': 1.1,
-                    },
-                },
-            },
-        )
-    )
 
-    when(requests).get(f'{base_url}/jobs/{existing_run}/status', ...).thenReturn(
-        MockJsonResponse(200, {'status': 'pending compilation'})
-    ).thenReturn(MockJsonResponse(200, {'status': 'pending execution'})).thenReturn(
-        MockJsonResponse(200, {'status': 'ready'})
-    )
+@pytest.fixture()
+def submit_failed_auth() -> MockJsonResponse:
+    return MockJsonResponse(401, {'detail': 'unauthorized'})
 
-    # 'run was not created' response
-    no_run_response = Response()
-    no_run_response.status_code = 404
-    no_run_response.reason = 'Run not found'
-    when(requests).get(f'{base_url}/jobs/{missing_run}', ...).thenReturn(no_run_response)
-    when(requests).get(f'{base_url}/jobs/{missing_run}/status', ...).thenReturn(no_run_response)
+
+@pytest.fixture()
+def quantum_architecture_success(sample_quantum_architecture) -> MockJsonResponse:
+    return MockJsonResponse(200, sample_quantum_architecture)
+
+
+@pytest.fixture()
+def abort_job_success() -> MockJsonResponse:
+    return MockJsonResponse(200, {})
+
+
+@pytest.fixture()
+def abort_job_failed() -> MockJsonResponse:
+    return MockJsonResponse(400, {'detail': 'failed to abort job'})
 
 
 def prepare_tokens(
@@ -261,84 +478,6 @@ def make_token(token_type: str, lifetime: int) -> str:
     return f'{empty}.{body}.{empty}'
 
 
-def expected_headers(user_agent: Optional[str] = None, access_token: Optional[str] = None, **others) -> Optional[dict]:
-    """Prepare expected headers
-
-    Args:
-        user_agent: expected user agent header, if any
-        access_token: expected access token in Authorization header, if any
-        others: any other headers
-
-    Returns:
-        Headers dict or None if no headers are expected
-    """
-    headers = others
-    if user_agent:
-        headers['User-Agent'] = user_agent
-    if access_token:
-        headers['Authorization'] = f'Bearer {access_token}'
-    return headers or None
-
-
-def expect_status_request(
-    url: str,
-    user_agent: Optional[str] = None,
-    access_token: Optional[str] = None,
-    timeout: int = ANY(int),
-    times: int = 1,
-) -> UUID:
-    """Prepare for status request.
-
-    Args:
-        url: server URL for the status request
-        user_agent: expected user agent header, if any
-        access_token: expected access token in Authorization header, if any
-        timeout: expected timeout value, if any
-        times: number of times the status request is expected to be made
-
-    Returns:
-        Expected job ID to be used in the request
-    """
-    job_id = uuid4()
-    expect(requests, times=times).get(
-        f'{url}/jobs/{job_id}',
-        headers=expected_headers(user_agent, access_token),
-        timeout=timeout,
-    ).thenReturn(
-        MockJsonResponse(200, {'status': 'pending compilation', 'metadata': {'request': {'shots': 42, 'circuits': []}}})
-    )
-    return job_id
-
-
-# pylint: disable=too-many-arguments
-def expect_submit_circuits_request(
-    url: str,
-    user_agent: Optional[str] = None,
-    access_token: Optional[str] = None,
-    timeout: int = ANY(int),
-    times: int = 1,
-    response_status: int = 200,
-) -> UUID:
-    """Prepare for submit_circuits request.
-
-    Args:
-        url: server URL for the status request
-        user_agent: expected user agent header, if any
-        access_token: expected access token in Authorization header, if any
-        timeout: expected timeout value, if any
-        times: number of times the status request is expected to be made
-        response_status: status code to return in the response
-    """
-    job_id = uuid4()
-    expect(requests, times=times).post(
-        f'{url}/jobs',
-        json=ANY(dict),
-        headers=expected_headers(user_agent, access_token, **{'Expect': '100-Continue'}),
-        timeout=timeout,
-    ).thenReturn(MockJsonResponse(response_status, {'id': str(job_id)}))
-    return job_id
-
-
 def expect_logout(auth_server_url: str, refresh_token: str, timeout: int = ANY(int)):
     """Prepare for logout request.
 
@@ -353,3 +492,54 @@ def expect_logout(auth_server_url: str, refresh_token: str, timeout: int = ANY(i
         data=request_data.dict(exclude_none=True),
         timeout=timeout,
     ).thenReturn(mock({'status_code': 204, 'text': '{}'}))
+
+
+def post_jobs_args(
+    run_request: Optional[RunRequest] = None,
+    user_agent: Optional[str] = f'{DIST_NAME} {__version__}',
+    access_token: Optional[str] = None,
+) -> dict[str, Any]:
+    """Returns expected kwargs of POST /jobs request"""
+    headers = {'Expect': '100-Continue'} if run_request is not None else {}
+    if user_agent is not None:
+        headers['User-Agent'] = user_agent
+    if access_token is not None:
+        headers['Authorization'] = f'Bearer {access_token}'
+    if run_request is None:
+        return {'headers': headers, 'timeout': REQUESTS_TIMEOUT}
+    return {
+        'json': json.loads(run_request.json(exclude_none=True)),
+        'headers': headers,
+        'timeout': REQUESTS_TIMEOUT,
+    }
+
+
+def get_jobs_args(
+    user_agent: Optional[str] = f'{DIST_NAME} {__version__}', access_token: Optional[str] = None
+) -> dict[str, Any]:
+    """Returns expected kwargs of POST /jpbs request"""
+    headers = {}
+    if user_agent is not None:
+        headers['User-Agent'] = user_agent
+    if access_token is not None:
+        headers['Authorization'] = f'Bearer {access_token}'
+    return {
+        'headers': headers if headers else None,
+        'timeout': REQUESTS_TIMEOUT,
+    }
+
+
+def submit_circuits_args(run_request: RunRequest) -> dict[str, Any]:
+    """Return args to be used with submit_circuits to generate the expected RunRequest"""
+    qm_dict = None
+    if run_request.qubit_mapping is not None:
+        qm_dict = {qm.logical_name: qm.physical_name for qm in run_request.qubit_mapping}
+    return {
+        'circuits': run_request.circuits,
+        'qubit_mapping': qm_dict,
+        'custom_settings': run_request.custom_settings,
+        'calibration_set_id': run_request.calibration_set_id,
+        'shots': run_request.shots,
+        'circuit_duration_check': run_request.circuit_duration_check,
+        'heralding_mode': run_request.heralding_mode,
+    }
