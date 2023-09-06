@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 13.3
+============
+
+* Improve tests. `#94 <https://github.com/iqm-finland/iqm-client/pull/94>`_
+
 Version 13.2
 ============
 

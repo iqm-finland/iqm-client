@@ -13,404 +13,392 @@
 # limitations under the License.
 """Tests for the IQM client.
 """
-import json
-
-# pylint: disable=unused-argument
-from mockito import ANY, kwargs, unstub, verify, when
+# pylint: disable=too-many-arguments
+from mockito import expect, unstub, verifyNoUnwantedInteractions
 import pytest
 import requests
 from requests import HTTPError
 
 from iqm_client import (
-    DIST_NAME,
-    Circuit,
     CircuitExecutionError,
     CircuitValidationError,
     ClientConfigurationError,
+    HeraldingMode,
     IQMClient,
     JobAbortionError,
     QuantumArchitectureSpecification,
-    RunRequest,
     SingleQubitMapping,
     Status,
-    __version__,
     serialize_qubit_mapping,
     validate_circuit,
 )
-from tests.conftest import MockJsonResponse, MockTextResponse, existing_run, missing_run
-
-REQUESTS_TIMEOUT = 60
+from tests.conftest import MockJsonResponse, get_jobs_args, post_jobs_args, submit_circuits_args
 
 
 def test_serialize_qubit_mapping():
     """
     Tests that serialize_qubit_mapping returns a list of SingleQubitMapping objects
     """
-    qubit_mapping = {'Alice': 'QB1', 'Bob': 'qubit_3', 'Charlie': 'physical 0'}
-    assert serialize_qubit_mapping(qubit_mapping) == [
+    qm_dict = {'Alice': 'QB1', 'Bob': 'qubit_3', 'Charlie': 'physical 0'}
+    assert serialize_qubit_mapping(qm_dict) == [
         SingleQubitMapping(logical_name='Alice', physical_name='QB1'),
         SingleQubitMapping(logical_name='Bob', physical_name='qubit_3'),
         SingleQubitMapping(logical_name='Charlie', physical_name='physical 0'),
     ]
 
 
-def test_submit_circuits_adds_user_agent(mock_server, base_url, sample_circuit):
+def test_submit_circuits_adds_user_agent(sample_client, jobs_url, minimal_run_request, submit_success):
     """
     Tests that submit_circuit without client signature adds correct User-Agent header
     """
-    client = IQMClient(base_url)
-    client.submit_circuits(
-        circuits=[Circuit.parse_obj(sample_circuit)],
-        qubit_mapping={'Qubit A': 'QB1', 'Qubit B': 'QB2'},
-        shots=1000,
-    )
-    verify(requests).post(
-        f'{base_url}/jobs',
-        json=ANY,
-        headers={'Expect': '100-Continue', 'User-Agent': f'{DIST_NAME} {__version__}'},
-        timeout=ANY,
-    )
+    expect(requests, times=1).post(jobs_url, **post_jobs_args(minimal_run_request)).thenReturn(submit_success)
+
+    sample_client.submit_circuits(**submit_circuits_args(minimal_run_request))
+
+    verifyNoUnwantedInteractions()
+    unstub()
 
 
-def test_submit_circuits_adds_user_agent_with_client_signature(mock_server, base_url, sample_circuit):
+def test_submit_circuits_adds_user_agent_with_client_signature(
+    client_with_signature, jobs_url, minimal_run_request, submit_success
+):
     """
     Tests that submit_circuit with client signature adds correct User-Agent header
     """
-    client = IQMClient(base_url, client_signature='some-client-signature')
-    assert 'some-client-signature' in client._signature
-    client.submit_circuits(
-        circuits=[Circuit.parse_obj(sample_circuit)],
-        qubit_mapping={'Qubit A': 'QB1', 'Qubit B': 'QB2'},
-        shots=1000,
-    )
-    verify(requests).post(
-        f'{base_url}/jobs',
-        json=ANY,
-        headers={'Expect': '100-Continue', 'User-Agent': f'{DIST_NAME} {__version__}, some-client-signature'},
-        timeout=REQUESTS_TIMEOUT,
-    )
+    expect(requests, times=1).post(
+        jobs_url, **post_jobs_args(minimal_run_request, user_agent=client_with_signature._signature)
+    ).thenReturn(submit_success)
+
+    client_with_signature.submit_circuits(**submit_circuits_args(minimal_run_request))
+
+    verifyNoUnwantedInteractions()
+    unstub()
 
 
-def test_submit_circuits_returns_id(mock_server, base_url, sample_circuit):
-    """
-    Tests sending a circuit
-    """
-    client = IQMClient(base_url)
-    job_id = client.submit_circuits(
-        circuits=[Circuit.parse_obj(sample_circuit)], qubit_mapping={'Qubit A': 'QB1', 'Qubit B': 'QB2'}, shots=1000
-    )
-    assert job_id == existing_run
-
-
-def test_submit_circuits_with_custom_settings_returns_id(mock_server, settings_dict, base_url, sample_circuit):
-    """
-    Tests sending a circuit
-    """
-    client = IQMClient(base_url)
-    job_id = client.submit_circuits(
-        circuits=[Circuit.parse_obj(sample_circuit)],
-        custom_settings=settings_dict,
-        qubit_mapping={'Qubit A': 'QB1', 'Qubit B': 'QB2'},
-        shots=1000,
-    )
-    assert job_id == existing_run
-
-
-def test_submit_circuit_with_non_injective_qubit_mapping(mock_server, base_url, sample_circuit):
-    """
-    Test non-injective qubit mapping.
-    """
-    client = IQMClient(base_url)
-    with pytest.raises(ValueError, match='Multiple logical qubits map to the same physical qubit'):
-        client.submit_circuits(
-            circuits=[Circuit.parse_obj(sample_circuit)],
-            qubit_mapping={'Qubit A': 'QB1', 'Qubit B': 'QB1'},
-        )
-
-
-def test_submit_circuit_with_incomplete_qubit_mapping(mock_server, base_url, sample_circuit):
-    """
-    Test the scenario when circuits contain qubit names that are not present in the provided qubit mapping.
-    """
-    client = IQMClient(base_url)
-
-    circuit_1 = Circuit.parse_obj(sample_circuit)
-
-    sample_circuit['name'] = 'The other circuit'
-    sample_circuit['instructions'].insert(
-        0, {'name': 'phased_rx', 'qubits': ['Qubit C'], 'args': {'phase_t': 0.0, 'angle_t': 0.25}}
-    )
-    circuit_2 = Circuit.parse_obj(sample_circuit)
-    with pytest.raises(
-        ValueError,
-        match="The qubits {'Qubit C'} in circuit 'The other circuit' at index 1 "
-        'are not found in the provided qubit mapping.',
-    ):
-        client.submit_circuits(
-            circuits=[circuit_1, circuit_2],
-            qubit_mapping={'Qubit A': 'QB1', 'Qubit B': 'QB2'},
-        )
-
-
-def test_submit_circuits_with_calibration_set_id_returns_id(mock_server, base_url, calibration_set_id, sample_circuit):
-    """
-    Tests sending a circuit with calibration set id
-    """
-    client = IQMClient(base_url)
-    job_id = client.submit_circuits(
-        qubit_mapping={'Qubit A': 'QB1', 'Qubit B': 'QB2'},
-        circuits=[Circuit.parse_obj(sample_circuit)],
-        calibration_set_id=calibration_set_id,
-        shots=1000,
-    )
-    assert job_id == existing_run
-
-
-def test_submit_circuits_without_qubit_mapping_returns_id(mock_server, base_url, sample_circuit):
-    """
-    Tests sending a circuit without qubit mapping
-    """
-    client = IQMClient(base_url)
-    job_id = client.submit_circuits(circuits=[Circuit.parse_obj(sample_circuit)], shots=1000)
-    assert job_id == existing_run
-
-
-def test_submit_circuits_with_duration_check_disabled_returns_id(
-    mock_server, base_url, calibration_set_id, sample_circuit
+@pytest.mark.parametrize(
+    'run_request_name, valid_request, error_message',
+    [
+        ('minimal_run_request', True, None),
+        ('run_request_with_heralding', True, None),
+        ('run_request_with_custom_settings', True, None),
+        ('run_request_with_invalid_qubit_mapping', False, 'Multiple logical qubits map to the same physical qubit.'),
+        (
+            'run_request_with_incomplete_qubit_mapping',
+            False,
+            "The qubits {'Qubit B'} in circuit 'The circuit' "
+            + 'at index 0 are not found in the provided qubit mapping.',
+        ),
+        ('run_request_without_qubit_mapping', True, None),
+        ('run_request_with_calibration_set_id', True, None),
+        ('run_request_with_duration_check_disabled', True, None),
+    ],
+)
+def test_submit_circuits_returns_id(
+    sample_client, jobs_url, run_request_name, valid_request, error_message, request, submit_success, existing_run_id
 ):
     """
-    Tests sending a circuit without circuit duration_check
+    Tests submitting circuits for execution
     """
-    client = IQMClient(base_url)
-    job_id = client.submit_circuits(
-        qubit_mapping={'Qubit A': 'QB1', 'Qubit B': 'QB2'},
-        circuits=[Circuit.parse_obj(sample_circuit)],
-        calibration_set_id=calibration_set_id,
-        circuit_duration_check=False,
-        shots=1000,
-    )
-    assert job_id == existing_run
+    run_request = request.getfixturevalue(run_request_name)
 
+    if valid_request:
+        expect(requests, times=1).post(jobs_url, **post_jobs_args(run_request)).thenReturn(submit_success)
 
-def test_submit_circuits_does_not_activate_heralding_by_default(base_url, sample_circuit):
-    client = IQMClient(base_url)
-    circuits = [Circuit.parse_obj(sample_circuit)]
-    expected_request_json = json.loads(
-        RunRequest(circuits=circuits, shots=10, heralding_mode='none').json(exclude_none=True)
-    )
-    when(requests).post(f'{base_url}/jobs', json=expected_request_json, **kwargs).thenReturn(
-        MockJsonResponse(201, {'id': str(existing_run)})
-    )
-    client.submit_circuits(circuits=circuits, shots=10)
+    if error_message is None:
+        assert sample_client.submit_circuits(**submit_circuits_args(run_request)) == existing_run_id
+    else:
+        with pytest.raises(ValueError, match=error_message):
+            sample_client.submit_circuits(**submit_circuits_args(run_request))
+
+    verifyNoUnwantedInteractions()
     unstub()
 
 
-def test_submit_circuits_sets_heralding_mode_in_run_request(base_url, sample_circuit):
-    client = IQMClient(base_url)
-    circuits = [Circuit.parse_obj(sample_circuit)]
-    expected_request_json = json.loads(
-        RunRequest(circuits=circuits, shots=1, heralding_mode='zeros').json(exclude_none=True)
-    )
-    when(requests).post(f'{base_url}/jobs', json=expected_request_json, **kwargs).thenReturn(
-        MockJsonResponse(201, {'id': str(existing_run)})
-    )
-    client.submit_circuits(circuits=circuits, heralding_mode='zeros')
+def test_submit_circuits_does_not_activate_heralding_by_default(
+    sample_client, jobs_url, minimal_run_request, submit_success
+):
+    """
+    Test submitting run request without heralding
+    """
+    # Expect request to have heralding mode NONE by default
+    assert post_jobs_args(minimal_run_request)['json']['heralding_mode'] == HeraldingMode.NONE.value
+    expect(requests, times=1).post(jobs_url, **post_jobs_args(minimal_run_request)).thenReturn(submit_success)
+
+    # Specify no heralding mode in submit_circuits
+    sample_client.submit_circuits(circuits=minimal_run_request.circuits, shots=minimal_run_request.shots)
+
+    verifyNoUnwantedInteractions()
     unstub()
 
 
-def test_submit_circuits_raises_with_invalid_heralding_mode(base_url, sample_circuit):
-    client = IQMClient(base_url)
+def test_submit_circuits_sets_heralding_mode_in_run_request(
+    sample_client, jobs_url, run_request_with_heralding, submit_success
+):
+    """
+    Test submitting run request with heralding
+    """
+    # Expect heralding mode to be the same as in run request
+    expected_heralding_mode = run_request_with_heralding.heralding_mode.value
+    assert post_jobs_args(run_request_with_heralding)['json']['heralding_mode'] == expected_heralding_mode
+    expect(requests, times=1).post(jobs_url, **post_jobs_args(run_request_with_heralding)).thenReturn(submit_success)
+
+    assert submit_circuits_args(run_request_with_heralding)['heralding_mode'] == expected_heralding_mode
+    sample_client.submit_circuits(**submit_circuits_args(run_request_with_heralding))
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_submit_circuits_raises_with_invalid_heralding_mode(sample_client):
+    """
+    Test that submitting run request with invalid heralding mode raises an error
+    """
     with pytest.raises(ValueError, match='value is not a valid enumeration member'):
-        client.submit_circuits(
-            qubit_mapping={'Qubit A': 'QB1', 'Qubit B': 'QB2'},
-            circuits=[Circuit.parse_obj(sample_circuit)],
-            heralding_mode='bamboleo',
-            shots=1000,
-        )
+        sample_client.submit_circuits(circuits=[], shots=10, heralding_mode='invalid')
 
 
-def test_get_run_adds_user_agent(mock_server, base_url, calibration_set_id, sample_circuit):
+def test_get_run_adds_user_agent(sample_client, existing_job_url, existing_run_id, pending_compilation_job_result):
     """
     Tests that get_run without client signature adds the correct User-Agent header
     """
-    client = IQMClient(base_url)
-    client.get_run(existing_run)
-    verify(requests).get(
-        f'{base_url}/jobs/{existing_run}',
-        headers={'User-Agent': f'{DIST_NAME} {__version__}'},
-        timeout=REQUESTS_TIMEOUT,
-    )
+    expect(requests, times=1).get(existing_job_url, **get_jobs_args()).thenReturn(pending_compilation_job_result)
+
+    sample_client.get_run(existing_run_id)
+
+    verifyNoUnwantedInteractions()
+    unstub()
 
 
-def test_get_run_adds_user_agent_with_client_signature(mock_server, base_url, calibration_set_id, sample_circuit):
+def test_get_run_adds_user_agent_with_client_signature(
+    client_with_signature, client_signature, existing_job_url, existing_run_id, pending_compilation_job_result
+):
     """
     Tests that get_run with client signature adds the correct User-Agent header
     """
-    client = IQMClient(base_url, client_signature='some-client-signature')
-    assert 'some-client-signature' in client._signature
-    client.get_run(existing_run)
-    verify(requests).get(
-        f'{base_url}/jobs/{existing_run}',
-        headers={'User-Agent': f'{DIST_NAME} {__version__}, some-client-signature'},
-        timeout=REQUESTS_TIMEOUT,
+    assert client_signature in client_with_signature._signature
+    expect(requests, times=1).get(
+        existing_job_url,
+        **get_jobs_args(user_agent=client_with_signature._signature),
+    ).thenReturn(pending_compilation_job_result)
+
+    client_with_signature.get_run(existing_run_id)
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_get_run_status_and_results_for_existing_run(
+    sample_client,
+    existing_job_url,
+    sample_circuit_metadata,
+    sample_calibration_set_id,
+    pending_compilation_job_result,
+    pending_execution_job_result,
+    ready_job_result,
+    existing_run_id,
+):
+    """
+    Tests getting the run status
+    """
+    expect(requests, times=3).get(existing_job_url, **get_jobs_args()).thenReturn(
+        pending_compilation_job_result
+    ).thenReturn(pending_execution_job_result).thenReturn(ready_job_result)
+
+    # First request gets status 'pending compilation'
+    assert sample_client.get_run(existing_run_id).status == Status.PENDING_COMPILATION
+    # Second requests gets status 'pending execution'
+    assert sample_client.get_run(existing_run_id).status == Status.PENDING_EXECUTION
+    # Third request gets status 'ready'
+    job_result = sample_client.get_run(existing_run_id)
+    assert job_result.status == Status.READY
+    assert job_result.measurements is not None
+    assert job_result.metadata.request.calibration_set_id == sample_calibration_set_id
+    assert job_result.metadata.request.circuits[0].metadata == sample_circuit_metadata
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_get_run_status_for_existing_run(
+    sample_client,
+    existing_job_status_url,
+    pending_compilation_status,
+    pending_execution_status,
+    ready_status,
+    existing_run_id,
+):
+    """
+    Tests getting the run status
+    """
+    expect(requests, times=3).get(existing_job_status_url, **get_jobs_args()).thenReturn(
+        pending_compilation_status
+    ).thenReturn(pending_execution_status).thenReturn(ready_status)
+
+    # First request gets status 'pending compilation'
+    assert sample_client.get_run_status(existing_run_id).status == Status.PENDING_COMPILATION
+    # Second request gets status 'pending execution'
+    assert sample_client.get_run_status(existing_run_id).status == Status.PENDING_EXECUTION
+    # Second request gets status 'ready'
+    assert sample_client.get_run_status(existing_run_id).status == Status.READY
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_get_run_status_and_results_for_missing_run(sample_client, jobs_url, missing_run_id):
+    """
+    Tests getting a task that was not created
+    """
+    expect(requests, times=1).get(f'{jobs_url}/{missing_run_id}', **get_jobs_args()).thenReturn(
+        MockJsonResponse(404, {'detail': 'not found'})
     )
 
+    with pytest.raises(HTTPError) as e:
+        sample_client.get_run(missing_run_id)
+    assert e.value.response.status_code == 404
 
-def test_get_run_status_and_results_for_existing_run(mock_server, base_url, calibration_set_id, sample_circuit):
-    """
-    Tests getting the run status
-    """
-    client = IQMClient(base_url)
-    assert client.get_run(existing_run).status == Status.PENDING_COMPILATION
-    compiled_run = client.get_run(existing_run)
-    assert compiled_run.status == Status.PENDING_EXECUTION
-    ready_run = client.get_run(existing_run)
-    assert ready_run.status == Status.READY
-    assert ready_run.measurements is not None
-    assert ready_run.metadata.request.calibration_set_id == calibration_set_id
-    assert ready_run.metadata.request.circuits[0].metadata == sample_circuit['metadata']
+    verifyNoUnwantedInteractions()
+    unstub()
 
 
-def test_get_run_status_for_existing_run(mock_server, base_url):
-    """
-    Tests getting the run status
-    """
-    client = IQMClient(base_url)
-    assert client.get_run_status(existing_run).status == Status.PENDING_COMPILATION
-    compiled_run = client.get_run_status(existing_run)
-    assert compiled_run.status == Status.PENDING_EXECUTION
-    ready_run = client.get_run_status(existing_run)
-    assert ready_run.status == Status.READY
-
-
-def test_get_run_status_and_results_for_missing_run(mock_server, base_url):
+def test_get_run_status_for_missing_run(sample_client, jobs_url, missing_run_id):
     """
     Tests getting a task that was not created
     """
-    client = IQMClient(base_url)
-    with pytest.raises(HTTPError):
-        assert client.get_run(missing_run)
+    expect(requests, times=1).get(f'{jobs_url}/{missing_run_id}/status', **get_jobs_args()).thenReturn(
+        MockJsonResponse(404, {'detail': 'not found'})
+    )
+
+    with pytest.raises(HTTPError) as e:
+        sample_client.get_run_status(missing_run_id)
+    assert e.value.response.status_code == 404
+
+    verifyNoUnwantedInteractions()
+    unstub()
 
 
-def test_get_run_status_for_missing_run(mock_server, base_url):
-    """
-    Tests getting a task that was not created
-    """
-    client = IQMClient(base_url)
-    with pytest.raises(HTTPError):
-        assert client.get_run_status(missing_run)
-
-
-def test_waiting_for_compilation(mock_server, base_url):
+def test_waiting_for_compilation(
+    sample_client, existing_job_url, pending_compilation_job_result, pending_execution_job_result, existing_run_id
+):
     """
     Tests waiting for compilation for an existing task
     """
-    client = IQMClient(base_url)
-    assert client.wait_for_compilation(existing_run).status == Status.PENDING_EXECUTION
+    expect(requests, times=3).get(existing_job_url, **get_jobs_args()).thenReturn(
+        pending_compilation_job_result
+    ).thenReturn(pending_compilation_job_result).thenReturn(pending_execution_job_result)
+
+    assert sample_client.wait_for_compilation(existing_run_id).status == Status.PENDING_EXECUTION
+
+    verifyNoUnwantedInteractions()
+    unstub()
 
 
-def test_wait_for_compilation_adds_user_agent(mock_server, base_url):
-    """
-    Tests that wait_for_compilation without client signature adds the correct User-Agent header
-    """
-    client = IQMClient(base_url)
-    client.wait_for_compilation(existing_run)
-    verify(requests, times=2).get(
-        f'{base_url}/jobs/{existing_run}',
-        headers={'User-Agent': f'{DIST_NAME} {__version__}'},
-        timeout=REQUESTS_TIMEOUT,
-    )
-
-
-def test_wait_for_compilation_adds_user_agent_with_client_signature(mock_server, base_url):
+def test_wait_for_compilation_adds_user_agent_with_signature(
+    client_with_signature,
+    client_signature,
+    existing_job_url,
+    pending_compilation_job_result,
+    pending_execution_job_result,
+    existing_run_id,
+):
     """
     Tests that wait_for_compilation with client signature adds the correct User-Agent header
     """
-    client = IQMClient(base_url, client_signature='some-client-signature')
-    client.wait_for_compilation(existing_run)
-    assert 'some-client-signature' in client._signature
-    verify(requests, times=2).get(
-        f'{base_url}/jobs/{existing_run}',
-        headers={'User-Agent': f'{DIST_NAME} {__version__}, some-client-signature'},
-        timeout=REQUESTS_TIMEOUT,
+    assert client_signature in client_with_signature._signature
+    expect(requests, times=3).get(
+        existing_job_url, **get_jobs_args(user_agent=client_with_signature._signature)
+    ).thenReturn(pending_compilation_job_result).thenReturn(pending_compilation_job_result).thenReturn(
+        pending_execution_job_result
     )
 
+    assert client_with_signature.wait_for_compilation(existing_run_id).status == Status.PENDING_EXECUTION
 
-def test_waiting_for_results(mock_server, base_url):
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_waiting_for_results(
+    sample_client,
+    existing_job_url,
+    pending_compilation_job_result,
+    pending_execution_job_result,
+    ready_job_result,
+    existing_run_id,
+):
     """
     Tests waiting for results for an existing task
     """
-    client = IQMClient(base_url)
-    assert client.wait_for_results(existing_run).status == Status.READY
+    expect(requests, times=3).get(existing_job_url, **get_jobs_args()).thenReturn(
+        pending_compilation_job_result
+    ).thenReturn(pending_execution_job_result).thenReturn(ready_job_result)
+
+    assert sample_client.wait_for_results(existing_run_id).status == Status.READY
+
+    verifyNoUnwantedInteractions()
+    unstub()
 
 
-def test_wait_for_results_adds_user_agent(mock_server, base_url):
+def test_wait_for_results_adds_user_agent_with_signature(
+    client_with_signature,
+    client_signature,
+    existing_job_url,
+    pending_compilation_job_result,
+    pending_execution_job_result,
+    ready_job_result,
+    existing_run_id,
+):
     """
     Tests that wait_for_results without client signature adds the correct User-Agent header
     """
-    client = IQMClient(base_url)
-    client.wait_for_results(existing_run)
-    verify(requests, times=3).get(
-        f'{base_url}/jobs/{existing_run}',
-        headers={'User-Agent': f'{DIST_NAME} {__version__}'},
-        timeout=REQUESTS_TIMEOUT,
-    )
+    assert client_signature in client_with_signature._signature
+    expect(requests, times=3).get(
+        existing_job_url, **get_jobs_args(user_agent=client_with_signature._signature)
+    ).thenReturn(pending_compilation_job_result).thenReturn(pending_execution_job_result).thenReturn(ready_job_result)
+
+    assert client_with_signature.wait_for_results(existing_run_id).status == Status.READY
+
+    verifyNoUnwantedInteractions()
+    unstub()
 
 
-def test_wait_for_results_adds_user_agent_with_client_signature(mock_server, base_url):
-    """
-    Tests that wait_for_results with client signature adds the correct User-Agent header
-    """
-    client = IQMClient(base_url, client_signature='some-client-signature')
-    client.wait_for_results(existing_run)
-    assert 'some-client-signature' in client._signature
-    verify(requests, times=3).get(
-        f'{base_url}/jobs/{existing_run}',
-        headers={'User-Agent': f'{DIST_NAME} {__version__}, some-client-signature'},
-        timeout=REQUESTS_TIMEOUT,
-    )
-
-
-def test_get_quantum_architecture(sample_quantum_architecture, base_url):
+def test_get_quantum_architecture(
+    sample_client, quantum_architecture_url, sample_quantum_architecture, quantum_architecture_success
+):
     """Test retrieving the quantum architecture"""
-    client = IQMClient(base_url)
-    when(requests).get(f'{base_url}/quantum-architecture', ...).thenReturn(
-        MockJsonResponse(200, sample_quantum_architecture)
-    )
-    assert client.get_quantum_architecture() == QuantumArchitectureSpecification(
+    expect(requests, times=1).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
+
+    assert sample_client.get_quantum_architecture() == QuantumArchitectureSpecification(
         **sample_quantum_architecture['quantum_architecture']
     )
 
+    verifyNoUnwantedInteractions()
+    unstub()
 
-def test_user_warning_is_emitted_when_warnings_in_response(base_url, calibration_set_id):
+
+def test_user_warning_is_emitted_when_warnings_in_response(
+    sample_client, existing_job_url, job_result_with_warnings, existing_run_id
+):
     """Test that a warning is emitted when warnings are present in the response"""
-    client = IQMClient(base_url)
-    msg = 'This is a warning msg'
-    with when(requests).get(f'{base_url}/jobs/{existing_run}', headers=ANY, timeout=ANY).thenReturn(
-        MockJsonResponse(
-            200,
-            {
-                'status': 'ready',
-                'warnings': [msg],
-                'metadata': {'calibration_set_id': calibration_set_id, 'request': {'shots': 42, 'circuits': []}},
-            },
-        )
-    ):
-        with pytest.warns(UserWarning, match=msg):
-            client.get_run(existing_run)
+    expect(requests, times=1).get(existing_job_url, ...).thenReturn(job_result_with_warnings)
+
+    expected_message = job_result_with_warnings.json()['warnings'][0]
+    with pytest.warns(UserWarning, match=expected_message):
+        sample_client.get_run(existing_run_id)
+
+    verifyNoUnwantedInteractions()
+    unstub()
 
 
 def test_base_url_is_invalid():
     """Test that an exception is raised when the base URL is invalid"""
-    invalid_base_url = 'https//example.com'
+    invalid_base_url = 'xyz://example.com'
     with pytest.raises(ClientConfigurationError) as exc:
         IQMClient(invalid_base_url)
     assert f'The URL schema has to be http or https. Incorrect schema in URL: {invalid_base_url}' == str(exc.value)
 
 
-def test_tokens_file_not_found():
+def test_tokens_file_not_found(base_url):
     """Test that an exception is raised when the tokens file is not found"""
-    base_url = 'https://example.com'
     tokens_file = '/home/iqm/tokens.json'
     with pytest.raises(ClientConfigurationError) as exc:
         IQMClient(base_url, tokens_file=tokens_file)
@@ -426,57 +414,67 @@ def test_tokens_and_credentials_combo_invalid(credentials):
     assert 'Either external token or credentials must be provided. Both were provided.' == str(exc.value)
 
 
-def test_run_result_throws_json_decode_error_if_received_not_json(base_url):
+def test_run_result_throws_json_decode_error_if_received_not_json(
+    sample_client, existing_job_url, existing_run_id, not_valid_json_response
+):
     """Test that an exception is raised when the response is not a valid JSON"""
-    client = IQMClient(base_url)
-    with when(requests).get(f'{base_url}/jobs/{existing_run}', headers=ANY, timeout=ANY).thenReturn(
-        MockTextResponse(200, 'not a valid json')
-    ):
-        with pytest.raises(CircuitExecutionError):
-            client.get_run(existing_run)
+    expect(requests, times=1).get(existing_job_url, ...).thenReturn(not_valid_json_response)
+
+    with pytest.raises(CircuitExecutionError):
+        sample_client.get_run(existing_run_id)
+
+    verifyNoUnwantedInteractions()
+    unstub()
 
 
-def test_run_result_status_throws_json_decode_error_if_received_not_json(base_url):
+def test_run_result_status_throws_json_decode_error_if_received_not_json(
+    sample_client, existing_job_status_url, existing_run_id, not_valid_json_response
+):
     """Test that an exception is raised when the response is not a valid JSON"""
-    client = IQMClient(base_url)
-    with when(requests).get(f'{base_url}/jobs/{existing_run}/status', headers=ANY, timeout=ANY).thenReturn(
-        MockTextResponse(200, 'not a valid json')
-    ):
-        with pytest.raises(CircuitExecutionError):
-            client.get_run_status(existing_run)
+    expect(requests, times=1).get(existing_job_status_url, ...).thenReturn(not_valid_json_response)
+
+    with pytest.raises(CircuitExecutionError):
+        sample_client.get_run_status(existing_run_id)
+
+    verifyNoUnwantedInteractions()
+    unstub()
 
 
-def test_quantum_architecture_throws_json_decode_error_if_received_not_json(base_url):
+def test_quantum_architecture_throws_json_decode_error_if_received_not_json(
+    sample_client, quantum_architecture_url, not_valid_json_response
+):
     """Test that an exception is raised when the response is not a valid JSON"""
-    client = IQMClient(base_url)
-    with when(requests).get(f'{base_url}/quantum-architecture', headers=ANY, timeout=ANY).thenReturn(
-        MockTextResponse(200, 'not a valid json')
-    ):
-        with pytest.raises(CircuitExecutionError):
-            client.get_quantum_architecture()
+    expect(requests, times=1).get(quantum_architecture_url, ...).thenReturn(not_valid_json_response)
+
+    with pytest.raises(CircuitExecutionError):
+        sample_client.get_quantum_architecture()
+
+    verifyNoUnwantedInteractions()
+    unstub()
 
 
-def test_submit_circuits_throws_json_decode_error_if_received_not_json(base_url):
+def test_submit_circuits_throws_json_decode_error_if_received_not_json(
+    sample_client, jobs_url, not_valid_json_response
+):
     """Test that an exception is raised when the response is not a valid JSON"""
-    client = IQMClient(base_url)
-    with when(requests).post(f'{base_url}/jobs', json=ANY, headers=ANY, timeout=ANY).thenReturn(
-        MockTextResponse(200, 'not a valid json')
-    ):
-        with pytest.raises(CircuitExecutionError):
-            client.submit_circuits([])
+    expect(requests, times=1).post(jobs_url, ...).thenReturn(not_valid_json_response)
+
+    with pytest.raises(CircuitExecutionError):
+        sample_client.submit_circuits([])
+
+    verifyNoUnwantedInteractions()
+    unstub()
 
 
-def test_submit_circuits_validates_circuits(base_url, sample_circuit):
+def test_submit_circuits_validates_circuits(sample_client, sample_circuit):
     """
     Tests that <submit_circuits> validates the batch of provided circuits
     before submitting them for execution
     """
-    client = IQMClient(base_url)
-    valid_circuit = Circuit.parse_obj(sample_circuit)
-    invalid_circuit = Circuit.parse_obj(sample_circuit)
+    invalid_circuit = sample_circuit.copy()
     invalid_circuit.name = ''  # Invalidate the circuit on purpose
     with pytest.raises(CircuitValidationError, match='The circuit at index 1 failed the validation'):
-        client.submit_circuits(circuits=[valid_circuit, invalid_circuit])
+        sample_client.submit_circuits(circuits=[sample_circuit, invalid_circuit], shots=10)
 
 
 def test_validate_circuit_detects_circuit_name_is_empty_string(sample_circuit):
@@ -484,7 +482,7 @@ def test_validate_circuit_detects_circuit_name_is_empty_string(sample_circuit):
     Tests that custom Pydantic validator (triggered via <validate_circuit>)
     catches empty name of a circuit
     """
-    circuit = Circuit.parse_obj(sample_circuit)
+    circuit = sample_circuit.copy()
     circuit.name = ''
     with pytest.raises(ValueError, match='A circuit should have a non-empty string for a name'):
         validate_circuit(circuit)
@@ -495,7 +493,7 @@ def test_validate_circuit_detects_circuit_metadata_is_wrong_type(sample_circuit)
     Tests that custom Pydantic validator (triggered via <validate_circuit>)
     catches invalid type of circuit metadata
     """
-    circuit = Circuit.parse_obj(sample_circuit)
+    circuit = sample_circuit.copy()
     circuit.metadata = []
     with pytest.raises(ValueError, match='Circuit metadata should be a dictionary'):
         validate_circuit(circuit)
@@ -506,7 +504,7 @@ def test_validate_circuit_detects_circuit_metadata_keys_are_wrong_type(sample_ci
     Tests that custom Pydantic validator (triggered via <validate_circuit>)
     catches invalid type of circuit metadata
     """
-    circuit = Circuit.parse_obj(sample_circuit)
+    circuit = sample_circuit.copy()
     circuit.metadata = {'1': 'string key is ok', 2: 'int key is not ok'}
     with pytest.raises(ValueError, match='Metadata dictionary should use strings for all root-level keys'):
         validate_circuit(circuit)
@@ -517,7 +515,7 @@ def test_validate_circuit_checks_circuit_instructions_container_type(sample_circ
     Tests that custom Pydantic validator (triggered via <validate_circuit>)
     catches invalid type of instruction container of a circuit
     """
-    circuit = Circuit.parse_obj(sample_circuit)
+    circuit = sample_circuit.copy()
     circuit.instructions = {}
     with pytest.raises(ValueError, match='Instructions of a circuit should be packed in a tuple'):
         validate_circuit(circuit)
@@ -528,7 +526,7 @@ def test_validate_circuit_checks_circuit_has_at_least_one_instruction(sample_cir
     Tests that custom Pydantic validator (triggered via <validate_circuit>)
     catches when circuit instructions container has 0 instructions
     """
-    circuit = Circuit.parse_obj(sample_circuit)
+    circuit = sample_circuit.copy()
     circuit.instructions = tuple()
     with pytest.raises(ValueError, match='Each circuit should have at least one instruction'):
         validate_circuit(circuit)
@@ -539,7 +537,7 @@ def test_validate_circuit_checks_circuit_instructions_container_content(sample_c
     Tests that custom Pydantic validator (triggered via <validate_circuit>)
     catches when circuit instructions container has items of incorrect type
     """
-    circuit = Circuit.parse_obj(sample_circuit)
+    circuit = sample_circuit.copy()
     circuit.instructions += ('I am not an instruction!',)
     with pytest.raises(ValueError, match='Every instruction in a circuit should be of type <Instruction>'):
         validate_circuit(circuit)
@@ -550,7 +548,7 @@ def test_validate_circuit_checks_instruction_name_is_supported(sample_circuit):
     Tests that custom Pydantic validator (triggered via <validate_circuit>)
     catches when instruction name is set to an unknown instruction type
     """
-    circuit = Circuit.parse_obj(sample_circuit)
+    circuit = sample_circuit.copy()
     circuit.instructions[0].name = 'kaboom'
     with pytest.raises(ValueError, match='Unknown instruction "kaboom"'):
         validate_circuit(circuit)
@@ -561,7 +559,7 @@ def test_validate_circuit_checks_instruction_implementation_is_string(sample_cir
     Tests that custom Pydantic validator (triggered via <validate_circuit>)
     catches when instruction implementation is set to an empty string
     """
-    circuit = Circuit.parse_obj(sample_circuit)
+    circuit = sample_circuit.copy()
     circuit.instructions[0].implementation = ''
     with pytest.raises(ValueError, match='Implementation of the instruction should be set to a non-empty string'):
         validate_circuit(circuit)
@@ -573,7 +571,7 @@ def test_validate_circuit_checks_instruction_qubit_count(sample_circuit):
     catches when qubit count of the instruction does not match the arity of
     that instruction
     """
-    circuit = Circuit.parse_obj(sample_circuit)
+    circuit = sample_circuit.copy()
     circuit.instructions[0].qubits += ('Qubit C',)
     with pytest.raises(ValueError, match=r'The "cz" instruction acts on 2 qubit\(s\), but 3 were given'):
         validate_circuit(circuit)
@@ -584,7 +582,7 @@ def test_validate_circuit_checks_instruction_argument_names(sample_circuit):
     Tests that custom Pydantic validator (triggered via <validate_circuit>)
     catches when submitted argument names of the instruction are not supported
     """
-    circuit = Circuit.parse_obj(sample_circuit)
+    circuit = sample_circuit.copy()
     circuit.instructions[1].args['arg_x'] = 'This argument name is not supported by the instruction'
     with pytest.raises(ValueError, match='The instruction "phased_rx" requires'):
         validate_circuit(circuit)
@@ -595,43 +593,35 @@ def test_validate_circuit_checks_instruction_argument_types(sample_circuit):
     Tests that custom Pydantic validator (triggered via <validate_circuit>)
     catches when submitted argument types of the instruction are not supported
     """
-    circuit = Circuit.parse_obj(sample_circuit)
+    circuit = sample_circuit.copy()
     circuit.instructions[1].args['phase_t'] = '0.7'
     with pytest.raises(ValueError, match='The argument "phase_t" should be of one of the following supported types'):
         validate_circuit(circuit)
 
 
-def test_abort_job_successful(base_url):
+def test_abort_job_successful(sample_client, existing_job_url, existing_run_id, abort_job_success):
     """
     Tests aborting a job
     """
-    client = IQMClient(base_url)
-    when(requests).post(f'{base_url}/jobs/{existing_run}/abort', headers=ANY, timeout=ANY).thenReturn(
-        MockJsonResponse(200, {})
-    )
-    client.abort_job(existing_run)
-    verify(requests).post(
-        f'{base_url}/jobs/{existing_run}/abort',
-        headers={'User-Agent': f'{DIST_NAME} {__version__}'},
-        timeout=REQUESTS_TIMEOUT,
-    )
+    expect(requests, times=1).post(f'{existing_job_url}/abort', **post_jobs_args()).thenReturn(abort_job_success)
+
+    sample_client.abort_job(existing_run_id)
+
+    verifyNoUnwantedInteractions()
     unstub()
 
 
 @pytest.mark.parametrize('status_code', [404, 409])
-def test_abort_job_failed(base_url, status_code):
+def test_abort_job_failed(status_code, sample_client, existing_job_url, existing_run_id, abort_job_failed):
     """
     Tests aborting a job raises JobAbortionError if server returned error response
     """
-    client = IQMClient(base_url)
-    when(requests).post(f'{base_url}/jobs/{existing_run}/abort', headers=ANY, timeout=ANY).thenReturn(
-        MockJsonResponse(status_code, {'detail': 'failed to abort job'})
-    )
+    response = abort_job_failed
+    response.status_code = status_code
+    expect(requests, times=1).post(f'{existing_job_url}/abort', **post_jobs_args()).thenReturn(response)
+
     with pytest.raises(JobAbortionError):
-        client.abort_job(existing_run)
-        verify(requests).post(
-            f'{base_url}/jobs/{existing_run}/abort',
-            headers={'User-Agent': f'{DIST_NAME} {__version__}'},
-            timeout=REQUESTS_TIMEOUT,
-        )
+        sample_client.abort_job(existing_run_id)
+
+    verifyNoUnwantedInteractions()
     unstub()
