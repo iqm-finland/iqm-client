@@ -390,7 +390,7 @@ class MockJsonResponse:
 
     def raise_for_status(self):
         if 400 <= self.status_code < 600:
-            raise HTTPError('')
+            raise HTTPError(f'{self.status_code}', response=self)
 
 
 @pytest.fixture()

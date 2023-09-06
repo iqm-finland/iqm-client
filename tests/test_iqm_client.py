@@ -32,7 +32,7 @@ from iqm_client import (
     serialize_qubit_mapping,
     validate_circuit,
 )
-from tests.conftest import get_jobs_args, post_jobs_args, submit_circuits_args
+from tests.conftest import MockJsonResponse, get_jobs_args, post_jobs_args, submit_circuits_args
 
 
 def test_serialize_qubit_mapping():
@@ -245,20 +245,36 @@ def test_get_run_status_for_existing_run(
     unstub()
 
 
-def test_get_run_status_and_results_for_missing_run(sample_client, missing_run_id):
+def test_get_run_status_and_results_for_missing_run(sample_client, jobs_url, missing_run_id):
     """
     Tests getting a task that was not created
     """
-    with pytest.raises(HTTPError):
-        assert sample_client.get_run(missing_run_id)
+    expect(requests, times=1).get(f'{jobs_url}/{missing_run_id}', **get_jobs_args()).thenReturn(
+        MockJsonResponse(404, {'detail': 'not found'})
+    )
+
+    with pytest.raises(HTTPError) as e:
+        sample_client.get_run(missing_run_id)
+    assert e.value.response.status_code == 404
+
+    verifyNoUnwantedInteractions()
+    unstub()
 
 
-def test_get_run_status_for_missing_run(sample_client, missing_run_id):
+def test_get_run_status_for_missing_run(sample_client, jobs_url, missing_run_id):
     """
     Tests getting a task that was not created
     """
-    with pytest.raises(HTTPError):
-        assert sample_client.get_run_status(missing_run_id)
+    expect(requests, times=1).get(f'{jobs_url}/{missing_run_id}/status', **get_jobs_args()).thenReturn(
+        MockJsonResponse(404, {'detail': 'not found'})
+    )
+
+    with pytest.raises(HTTPError) as e:
+        sample_client.get_run_status(missing_run_id)
+    assert e.value.response.status_code == 404
+
+    verifyNoUnwantedInteractions()
+    unstub()
 
 
 def test_waiting_for_compilation(
