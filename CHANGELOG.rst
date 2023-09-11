@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 14.0
+============
+
+* Move ``iqm_client`` package to ``iqm`` namespace. `#96 <https://github.com/iqm-finland/iqm-client/pull/96>`_
+
 Version 13.4
 ============
 

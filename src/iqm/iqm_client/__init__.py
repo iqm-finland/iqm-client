@@ -15,7 +15,7 @@
 """
 from importlib.metadata import PackageNotFoundError, version
 
-from iqm_client.iqm_client import *
+from iqm.iqm_client.iqm_client import *
 
 try:
     DIST_NAME = "iqm-client"
