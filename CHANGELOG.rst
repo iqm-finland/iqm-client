@@ -2,6 +2,12 @@
 Changelog
 =========
 
+Version 13.4
+============
+
+* Update integration guide. `#95 <https://github.com/iqm-finland/iqm-client/pull/95>`_
+
+
 Version 13.3
 ============
 
