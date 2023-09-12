@@ -46,12 +46,31 @@ Then the circuit can be submitted and its status and result can be queried with 
 
     job_status = iqm_client.get_run_status(job_id)
 
-    job = iqm_client.wait_for_results(job_id)
+    job_result = iqm_client.wait_for_results(job_id)
 
-A dict containing arbitrary metadata an be attached to the circuit before submitting it for
+A dict containing arbitrary metadata can be attached to the circuit before submitting it for
 execution. The attached metadata should consist only of values of JSON serializable datatypes.
 An utility function ``util.to_json_dict`` can be used to convert supported datatypes,
 e.g. ``numpy.ndarray``, to equivalent JSON serializable types.
+
+Progress of the job can be followed with ``iqm_client.get_run_status``. Once the job is ready
+the results can be read with ``iqm_client.get_run``. Both of these actions are combined in
+``iqm_client.wait_for_results`` which waits until the job is ready and then returns the result.
+
+In addition to the actual results, job result contains also metadata of the job execution.
+The metadata includes the original request, ID of the calibration set used in the execution and
+a collection of timestamps that can be used to check the time it took to execute the job.
+
+Job phases and related timestamps
+---------------------------------
+
+Job starts when circuits are submitted for execution. Job start is captured as timestamp ``job_start``.
+
+First the submitted circuits are compiled to an instruction schedule. The duration of this phase can be determined from timestamps ``compile_start`` and ``compile_end``.
+
+After compilation the instruction schedule is sent for execution. This phase produces timestamps ``execution_start`` and ``execution_end``.
+
+Once execution is complete and the results are available the job is complete and the timestamp ``job_end`` is added into the job metadata.
 
 Authentication
 --------------
