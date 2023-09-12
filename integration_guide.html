@@ -320,6 +320,9 @@
       <li class="version_item current_version">dev</li>
     
     
+      <li class="version_item"><a href="versions/13.4/integration_guide.html">13.4</a></li>
+    
+    
       <li class="version_item"><a href="versions/13.3/integration_guide.html">13.3</a></li>
     
     
@@ -617,6 +620,11 @@ title="Print to PDF"
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#job-phases-and-related-timestamps">
+   Job phases and related timestamps
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#authentication">
    Authentication
   </a>
@@ -666,6 +674,11 @@ title="Print to PDF"
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#job-phases-and-related-timestamps">
+   Job phases and related timestamps
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#authentication">
    Authentication
   </a>
@@ -712,7 +725,7 @@ title="Print to PDF"
   <strong>
     
     You're reading the documentation for a development version.
-    For the latest released version, please have a look at <a href="versions/13.3/integration_guide.html">13.3</a>.
+    For the latest released version, please have a look at <a href="versions/13.4/integration_guide.html">13.4</a>.
     
   </strong>
 </div>
@@ -753,13 +766,26 @@ For example integrations maintained by IQM please refer to the <a class="referen
 
 <span class="n">job_status</span> <span class="o">=</span> <span class="n">iqm_client</span><span class="o">.</span><span class="n">get_run_status</span><span class="p">(</span><span class="n">job_id</span><span class="p">)</span>
 
-<span class="n">job</span> <span class="o">=</span> <span class="n">iqm_client</span><span class="o">.</span><span class="n">wait_for_results</span><span class="p">(</span><span class="n">job_id</span><span class="p">)</span>
+<span class="n">job_result</span> <span class="o">=</span> <span class="n">iqm_client</span><span class="o">.</span><span class="n">wait_for_results</span><span class="p">(</span><span class="n">job_id</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>A dict containing arbitrary metadata an be attached to the circuit before submitting it for
+<p>A dict containing arbitrary metadata can be attached to the circuit before submitting it for
 execution. The attached metadata should consist only of values of JSON serializable datatypes.
 An utility function <code class="docutils literal notranslate"><span class="pre">util.to_json_dict</span></code> can be used to convert supported datatypes,
 e.g. <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, to equivalent JSON serializable types.</p>
+<p>Progress of the job can be followed with <code class="docutils literal notranslate"><span class="pre">iqm_client.get_run_status</span></code>. Once the job is ready
+the results can be read with <code class="docutils literal notranslate"><span class="pre">iqm_client.get_run</span></code>. Both of these actions are combined in
+<code class="docutils literal notranslate"><span class="pre">iqm_client.wait_for_results</span></code> which waits until the job is ready and then returns the result.</p>
+<p>In addition to the actual results, job result contains also metadata of the job execution.
+The metadata includes the original request, ID of the calibration set used in the execution and
+a collection of timestamps that can be used to check the time it took to execute the job.</p>
+</section>
+<section id="job-phases-and-related-timestamps">
+<h2>Job phases and related timestamps<a class="headerlink" href="#job-phases-and-related-timestamps" title="Permalink to this headline">#</a></h2>
+<p>Job starts when circuits are submitted for execution. Job start is captured as timestamp <code class="docutils literal notranslate"><span class="pre">job_start</span></code>.</p>
+<p>First the submitted circuits are compiled to an instruction schedule. The duration of this phase can be determined from timestamps <code class="docutils literal notranslate"><span class="pre">compile_start</span></code> and <code class="docutils literal notranslate"><span class="pre">compile_end</span></code>.</p>
+<p>After compilation the instruction schedule is sent for execution. This phase produces timestamps <code class="docutils literal notranslate"><span class="pre">execution_start</span></code> and <code class="docutils literal notranslate"><span class="pre">execution_end</span></code>.</p>
+<p>Once execution is complete and the results are available the job is complete and the timestamp <code class="docutils literal notranslate"><span class="pre">job_end</span></code> is added into the job metadata.</p>
 </section>
 <section id="authentication">
 <h2>Authentication<a class="headerlink" href="#authentication" title="Permalink to this headline">#</a></h2>
@@ -827,7 +853,7 @@ Disabling the circuit duration check may be limited to certain users or groups, 
     By IQM client developers<br/>
   
       &copy; Copyright 2021-2022, IQM.<br/>
-    Last updated on 2023-09-06.<br/>
+    Last updated on 2023-09-12.<br/>
 </p>
         </footer>
     </div>
