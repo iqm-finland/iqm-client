@@ -16,7 +16,7 @@
 import numpy as np
 import pytest
 
-from iqm_client.util import to_json_dict
+from iqm.iqm_client.util import to_json_dict
 
 
 def test_serialize_dict():

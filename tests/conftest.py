@@ -29,7 +29,7 @@ import pytest
 import requests
 from requests import HTTPError, Response
 
-from iqm_client import (
+from iqm.iqm_client import (
     AUTH_CLIENT_ID,
     AUTH_REALM,
     DIST_NAME,

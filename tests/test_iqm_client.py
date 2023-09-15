@@ -19,7 +19,7 @@ import pytest
 import requests
 from requests import HTTPError
 
-from iqm_client import (
+from iqm.iqm_client import (
     CircuitExecutionError,
     CircuitValidationError,
     ClientConfigurationError,

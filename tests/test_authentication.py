@@ -23,8 +23,8 @@ from mockito import expect, unstub, verifyNoUnwantedInteractions, when
 import pytest
 import requests
 
-from iqm_client import ClientAuthenticationError, ClientConfigurationError, Credentials, IQMClient
-from iqm_client.iqm_client import _time_left_seconds
+from iqm.iqm_client import ClientAuthenticationError, ClientConfigurationError, Credentials, IQMClient
+from iqm.iqm_client.iqm_client import _time_left_seconds
 from tests.conftest import (
     MockJsonResponse,
     expect_logout,

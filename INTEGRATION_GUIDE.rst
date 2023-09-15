@@ -16,7 +16,7 @@ Initialising the IQM client is simple and in case you perform authentication as 
 
 .. code-block:: python
 
-    from iqm_client import IQMClient
+    from iqm.iqm_client import IQMClient
 
     server_url = "https://IQM_SERVER_URL"
 
@@ -26,7 +26,7 @@ To submit a circuit the circuit has to be specified in the IQM transfer format.
 
 .. code-block:: python
 
-    from iqm_client import Circuit, Instruction
+    from iqm.iqm_client import Circuit, Instruction
 
     instructions = (
         Instruction(
