@@ -148,7 +148,7 @@ import warnings
 from pydantic import BaseModel, Field, StrictStr, validate_model, validator
 import requests
 
-REQUESTS_TIMEOUT = 60
+REQUESTS_TIMEOUT = int(os.environ.get('IQM_CLIENT_REQUESTS_TIMEOUT', 60))
 
 DEFAULT_TIMEOUT_SECONDS = 900
 SECONDS_BETWEEN_CALLS = float(os.environ.get('IQM_CLIENT_SECONDS_BETWEEN_CALLS', 1.0))
