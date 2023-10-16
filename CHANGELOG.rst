@@ -5,7 +5,7 @@ Changelog
 Version 14.1
 ============
 
-* Use latest version of ``sphinx-multiversion-contrib`` to fix documentation version sorting `#98 <https://github.com/iqm-finland/iqm-client/pull/98>`_
+* Use latest version of ``sphinx-multiversion-contrib`` to fix documentation version sorting. `#98 <https://github.com/iqm-finland/iqm-client/pull/98>`_
 
 Version 14.0
 ============
