@@ -64,13 +64,28 @@ a collection of timestamps that can be used to check the time it took to execute
 Job phases and related timestamps
 ---------------------------------
 
-Job starts when circuits are submitted for execution. Job start is captured as timestamp ``job_start``.
+The timestamps returned with job results are stored as an optional dict called ``timestamps`` in the metadata of
+RunResult of the job. Each timestamp is stored in the dict with a key describing the point in job processing where
+the timestamp was stored. For example, the timestamp stored at the start of circuit compilation step is stored with
+key ``compilation_start``. Other timestamps are stored in the same way, with keys containing the step name,
+``compilation``, ``submit`` or ``execution``, and either a ``_start`` or ``_end`` suffix. In addition, there are
+also timestamps for starting and ending the job itself, ``job_start`` and ``job_end``. If the job processing is
+terminated before it is complete the timestamps of steps not processed will not be present in the dict.
 
-First the submitted circuits are compiled to an instruction schedule. The duration of this phase can be determined from timestamps ``compile_start`` and ``compile_end``.
+The first timestamp stored is the ``job_start`` timestamp. It is stored when the server receives the job request.
 
-After compilation the instruction schedule is sent for execution. This phase produces timestamps ``execution_start`` and ``execution_end``.
+The job processing starts with compilation step where the circuits are converted to pulse schedules that can be
+sent for execution. Compilation step produces timestamps ``compilation_start`` and ``compilation_end``.
 
-Once execution is complete and the results are available the job is complete and the timestamp ``job_end`` is added into the job metadata.
+The pulse schedules are then submitted to station control for execution. This step produces timestamps
+``submit_start`` and ``submit_end``.
+
+After submitting the pulse schedules the server waits for station control to provide the execution results.
+This step produces timestamps ``execution_start`` and ``execution_end``.
+
+Finally, when job processing is complete, regardless whether the job was successful or not, the timestamp
+``job_end`` is stored.
+
 
 Authentication
 --------------
