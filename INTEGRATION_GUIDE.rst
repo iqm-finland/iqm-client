@@ -67,15 +67,15 @@ Job phases and related timestamps
 The timestamps returned with job results are stored as an optional dict called ``timestamps`` in the metadata of
 RunResult of the job. Each timestamp is stored in the dict with a key describing the point in job processing where
 the timestamp was stored. For example, the timestamp stored at the start of circuit compilation step is stored with
-key ``compilation_start``. Other timestamps are stored in the same way, with keys containing the step name,
-``compilation``, ``submit`` or ``execution``, and either a ``_start`` or ``_end`` suffix. In addition, there are
+key ``compile_start``. Other timestamps are stored in the same way, with keys containing the step name,
+``compile``, ``submit`` or ``execution``, and either a ``_start`` or ``_end`` suffix. In addition, there are
 also timestamps for starting and ending the job itself, ``job_start`` and ``job_end``. If the job processing is
 terminated before it is complete the timestamps of steps not processed will not be present in the dict.
 
 The first timestamp stored is the ``job_start`` timestamp. It is stored when the server receives the job request.
 
 The job processing starts with compilation step where the circuits are converted to pulse schedules that can be
-sent for execution. Compilation step produces timestamps ``compilation_start`` and ``compilation_end``.
+sent for execution. Compilation step produces timestamps ``compile_start`` and ``compile_end``.
 
 The pulse schedules are then submitted to station control for execution. This step produces timestamps
 ``submit_start`` and ``submit_end``.
