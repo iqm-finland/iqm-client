@@ -77,10 +77,10 @@ The first timestamp stored is the ``job_start`` timestamp. It is stored when the
 The job processing starts with compilation step where the circuits are converted to pulse schedules that can be
 sent for execution. Compilation step produces timestamps ``compile_start`` and ``compile_end``.
 
-The pulse schedules are then submitted to station control for execution. This step produces timestamps
+The pulse schedules are then submitted for execution. This step produces timestamps
 ``submit_start`` and ``submit_end``.
 
-After submitting the pulse schedules the server waits for station control to provide the execution results.
+After submitting the pulse schedules the server waits for the execution results.
 This step produces timestamps ``execution_start`` and ``execution_end``.
 
 Finally, when job processing is complete, regardless whether the job was successful or not, the timestamp
