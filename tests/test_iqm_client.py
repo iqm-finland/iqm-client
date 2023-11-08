@@ -278,14 +278,21 @@ def test_get_run_status_for_missing_run(sample_client, jobs_url, missing_run_id)
 
 
 def test_waiting_for_compilation(
-    sample_client, existing_job_url, pending_compilation_job_result, pending_execution_job_result, existing_run_id
+    sample_client,
+    existing_job_status_url,
+    pending_compilation_status,
+    pending_execution_status,
+    existing_job_url,
+    pending_execution_job_result,
+    existing_run_id,
 ):
     """
     Tests waiting for compilation for an existing task
     """
-    expect(requests, times=3).get(existing_job_url, **get_jobs_args()).thenReturn(
-        pending_compilation_job_result
-    ).thenReturn(pending_compilation_job_result).thenReturn(pending_execution_job_result)
+    expect(requests, times=3).get(existing_job_status_url, **get_jobs_args()).thenReturn(
+        pending_compilation_status
+    ).thenReturn(pending_compilation_status).thenReturn(pending_execution_status)
+    expect(requests, times=1).get(existing_job_url, **get_jobs_args()).thenReturn(pending_execution_job_result)
 
     assert sample_client.wait_for_compilation(existing_run_id).status == Status.PENDING_EXECUTION
 
@@ -296,8 +303,10 @@ def test_waiting_for_compilation(
 def test_wait_for_compilation_adds_user_agent_with_signature(
     client_with_signature,
     client_signature,
+    existing_job_status_url,
+    pending_compilation_status,
+    pending_execution_status,
     existing_job_url,
-    pending_compilation_job_result,
     pending_execution_job_result,
     existing_run_id,
 ):
@@ -306,10 +315,11 @@ def test_wait_for_compilation_adds_user_agent_with_signature(
     """
     assert client_signature in client_with_signature._signature
     expect(requests, times=3).get(
+        existing_job_status_url, **get_jobs_args(user_agent=client_with_signature._signature)
+    ).thenReturn(pending_compilation_status).thenReturn(pending_compilation_status).thenReturn(pending_execution_status)
+    expect(requests, times=1).get(
         existing_job_url, **get_jobs_args(user_agent=client_with_signature._signature)
-    ).thenReturn(pending_compilation_job_result).thenReturn(pending_compilation_job_result).thenReturn(
-        pending_execution_job_result
-    )
+    ).thenReturn(pending_execution_job_result)
 
     assert client_with_signature.wait_for_compilation(existing_run_id).status == Status.PENDING_EXECUTION
 
@@ -319,18 +329,21 @@ def test_wait_for_compilation_adds_user_agent_with_signature(
 
 def test_waiting_for_results(
     sample_client,
+    existing_job_status_url,
+    pending_compilation_status,
+    pending_execution_status,
+    ready_status,
     existing_job_url,
-    pending_compilation_job_result,
-    pending_execution_job_result,
     ready_job_result,
     existing_run_id,
 ):
     """
     Tests waiting for results for an existing task
     """
-    expect(requests, times=3).get(existing_job_url, **get_jobs_args()).thenReturn(
-        pending_compilation_job_result
-    ).thenReturn(pending_execution_job_result).thenReturn(ready_job_result)
+    expect(requests, times=3).get(existing_job_status_url, **get_jobs_args()).thenReturn(
+        pending_compilation_status
+    ).thenReturn(pending_execution_status).thenReturn(ready_status)
+    expect(requests, times=1).get(existing_job_url, **get_jobs_args()).thenReturn(ready_job_result)
 
     assert sample_client.wait_for_results(existing_run_id).status == Status.READY
 
@@ -341,9 +354,11 @@ def test_waiting_for_results(
 def test_wait_for_results_adds_user_agent_with_signature(
     client_with_signature,
     client_signature,
+    existing_job_status_url,
+    pending_compilation_status,
+    pending_execution_status,
+    ready_status,
     existing_job_url,
-    pending_compilation_job_result,
-    pending_execution_job_result,
     ready_job_result,
     existing_run_id,
 ):
@@ -352,8 +367,11 @@ def test_wait_for_results_adds_user_agent_with_signature(
     """
     assert client_signature in client_with_signature._signature
     expect(requests, times=3).get(
+        existing_job_status_url, **get_jobs_args(user_agent=client_with_signature._signature)
+    ).thenReturn(pending_compilation_status).thenReturn(pending_execution_status).thenReturn(ready_status)
+    expect(requests, times=1).get(
         existing_job_url, **get_jobs_args(user_agent=client_with_signature._signature)
-    ).thenReturn(pending_compilation_job_result).thenReturn(pending_execution_job_result).thenReturn(ready_job_result)
+    ).thenReturn(ready_job_result)
 
     assert client_with_signature.wait_for_results(existing_run_id).status == Status.READY
 

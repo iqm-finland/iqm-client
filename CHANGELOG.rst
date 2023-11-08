@@ -2,10 +2,15 @@
 Changelog
 =========
 
-Version 14.2
+Version 14.3
 ============
 
 * Update integration guide. `#99 <https://github.com/iqm-finland/iqm-client/pull/99>`_
+
+Version 14.2
+============
+
+* Use ``get_run_status`` instead of ``get_run`` to check job status in ``wait_for_compilation`` and ``wait_for_results``. `#100 <https://github.com/iqm-finland/iqm-client/pull/100>`_
 
 Version 14.1
 ============

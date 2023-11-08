@@ -952,9 +952,9 @@ class IQMClient:
         """
         start_time = datetime.now()
         while (datetime.now() - start_time).total_seconds() < timeout_secs:
-            results = self.get_run(job_id)
-            if results.status != Status.PENDING_COMPILATION:
-                return results
+            status = self.get_run_status(job_id).status
+            if status != Status.PENDING_COMPILATION:
+                return self.get_run(job_id)
             time.sleep(SECONDS_BETWEEN_CALLS)
         raise APITimeoutError(f"The job compilation didn't finish in {timeout_secs} seconds.")
 
@@ -976,9 +976,9 @@ class IQMClient:
         """
         start_time = datetime.now()
         while (datetime.now() - start_time).total_seconds() < timeout_secs:
-            results = self.get_run(job_id)
-            if results.status not in (Status.PENDING_COMPILATION, Status.PENDING_EXECUTION):
-                return results
+            status = self.get_run_status(job_id).status
+            if status not in (Status.PENDING_COMPILATION, Status.PENDING_EXECUTION):
+                return self.get_run(job_id)
             time.sleep(SECONDS_BETWEEN_CALLS)
         raise APITimeoutError(f"The job didn't finish in {timeout_secs} seconds.")
 
