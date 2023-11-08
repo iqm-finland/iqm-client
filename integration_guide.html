@@ -320,6 +320,9 @@
       <li class="version_item current_version">dev</li>
     
     
+      <li class="version_item"><a href="versions/14.3/integration_guide.html">14.3</a></li>
+    
+    
       <li class="version_item"><a href="versions/14.2/integration_guide.html">14.2</a></li>
     
     
@@ -734,7 +737,7 @@ title="Print to PDF"
   <strong>
     
     You're reading the documentation for a development version.
-    For the latest released version, please have a look at <a href="versions/14.2/integration_guide.html">14.2</a>.
+    For the latest released version, please have a look at <a href="versions/14.3/integration_guide.html">14.3</a>.
     
   </strong>
 </div>
@@ -791,10 +794,22 @@ a collection of timestamps that can be used to check the time it took to execute
 </section>
 <section id="job-phases-and-related-timestamps">
 <h2>Job phases and related timestamps<a class="headerlink" href="#job-phases-and-related-timestamps" title="Permalink to this headline">#</a></h2>
-<p>Job starts when circuits are submitted for execution. Job start is captured as timestamp <code class="docutils literal notranslate"><span class="pre">job_start</span></code>.</p>
-<p>First the submitted circuits are compiled to an instruction schedule. The duration of this phase can be determined from timestamps <code class="docutils literal notranslate"><span class="pre">compile_start</span></code> and <code class="docutils literal notranslate"><span class="pre">compile_end</span></code>.</p>
-<p>After compilation the instruction schedule is sent for execution. This phase produces timestamps <code class="docutils literal notranslate"><span class="pre">execution_start</span></code> and <code class="docutils literal notranslate"><span class="pre">execution_end</span></code>.</p>
-<p>Once execution is complete and the results are available the job is complete and the timestamp <code class="docutils literal notranslate"><span class="pre">job_end</span></code> is added into the job metadata.</p>
+<p>The timestamps returned with job results are stored as an optional dict called <code class="docutils literal notranslate"><span class="pre">timestamps</span></code> in the metadata of
+RunResult of the job. Each timestamp is stored in the dict with a key describing the point in job processing where
+the timestamp was stored. For example, the timestamp stored at the start of circuit compilation step is stored with
+key <code class="docutils literal notranslate"><span class="pre">compile_start</span></code>. Other timestamps are stored in the same way, with keys containing the step name,
+<code class="docutils literal notranslate"><span class="pre">compile</span></code>, <code class="docutils literal notranslate"><span class="pre">submit</span></code> or <code class="docutils literal notranslate"><span class="pre">execution</span></code>, and either a <code class="docutils literal notranslate"><span class="pre">_start</span></code> or <code class="docutils literal notranslate"><span class="pre">_end</span></code> suffix. In addition, there are
+also timestamps for starting and ending the job itself, <code class="docutils literal notranslate"><span class="pre">job_start</span></code> and <code class="docutils literal notranslate"><span class="pre">job_end</span></code>. If the job processing is
+terminated before it is complete the timestamps of steps not processed will not be present in the dict.</p>
+<p>The first timestamp stored is the <code class="docutils literal notranslate"><span class="pre">job_start</span></code> timestamp. It is stored when the server receives the job request.</p>
+<p>The job processing starts with compilation step where the circuits are converted to pulse schedules that can be
+sent for execution. Compilation step produces timestamps <code class="docutils literal notranslate"><span class="pre">compile_start</span></code> and <code class="docutils literal notranslate"><span class="pre">compile_end</span></code>.</p>
+<p>The pulse schedules are then submitted for execution. This step produces timestamps
+<code class="docutils literal notranslate"><span class="pre">submit_start</span></code> and <code class="docutils literal notranslate"><span class="pre">submit_end</span></code>.</p>
+<p>After submitting the pulse schedules the server waits for the execution results.
+This step produces timestamps <code class="docutils literal notranslate"><span class="pre">execution_start</span></code> and <code class="docutils literal notranslate"><span class="pre">execution_end</span></code>.</p>
+<p>Finally, when job processing is complete, regardless whether the job was successful or not, the timestamp
+<code class="docutils literal notranslate"><span class="pre">job_end</span></code> is stored.</p>
 </section>
 <section id="authentication">
 <h2>Authentication<a class="headerlink" href="#authentication" title="Permalink to this headline">#</a></h2>
