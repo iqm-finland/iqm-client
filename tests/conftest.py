@@ -517,7 +517,7 @@ def post_jobs_args(
 def get_jobs_args(
     user_agent: Optional[str] = f'{DIST_NAME} {__version__}', access_token: Optional[str] = None
 ) -> dict[str, Any]:
-    """Returns expected kwargs of POST /jpbs request"""
+    """Returns expected kwargs of POST /jobs request"""
     headers = {}
     if user_agent is not None:
         headers['User-Agent'] = user_agent
