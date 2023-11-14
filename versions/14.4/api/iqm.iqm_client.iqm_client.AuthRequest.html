@@ -1,0 +1,558 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.17.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>iqm.iqm_client.iqm_client.AuthRequest — IQM client 14.4 documentation</title>
+<!-- Loaded before other Sphinx assets -->
+<link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet"/>
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet"/>
+<link href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css" rel="stylesheet"/>
+<link as="font" crossorigin="" href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="" href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2" rel="preload" type="font/woff2"/>
+<link href="../../../_static/pygments.css" rel="stylesheet" type="text/css">
+<link href="../../../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" rel="stylesheet" type="text/css">
+<link href="../../../_static/graphviz.css" rel="stylesheet" type="text/css">
+<!-- Pre-loaded scripts that we'll load fully later -->
+<link as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf" rel="preload"/>
+<script data-url_root="../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+<script src="../../../_static/jquery.js"></script>
+<script src="../../../_static/underscore.js"></script>
+<script src="../../../_static/doctools.js"></script>
+<script src="../../../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
+<link href="../../../_static/favicon.ico" rel="shortcut icon">
+<link href="../genindex.html" rel="index" title="Index">
+<link href="../search.html" rel="search" title="Search">
+<link href="iqm.iqm_client.iqm_client.Circuit.html" rel="next" title="iqm.iqm_client.iqm_client.Circuit"/>
+<link href="iqm.iqm_client.iqm_client.validate_circuit.html" rel="prev" title="iqm.iqm_client.iqm_client.validate_circuit"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="None" name="docsearch:language"/>
+<!-- Google Analytics -->
+</link></link></link></link></link></link></head>
+<body data-offset="60" data-spy="scroll" data-target="#bd-toc-nav">
+<!-- Checkboxes to toggle the left sidebar -->
+<input aria-label="Toggle navigation sidebar" class="sidebar-toggle" id="__navigation" name="__navigation" type="checkbox"/>
+<label class="overlay overlay-navbar" for="__navigation">
+<div class="visually-hidden">Toggle navigation sidebar</div>
+</label>
+<!-- Checkboxes to toggle the in-page toc -->
+<input aria-label="Toggle in-page Table of Contents" class="sidebar-toggle" id="__page-toc" name="__page-toc" type="checkbox"/>
+<label class="overlay overlay-pagetoc" for="__page-toc">
+<div class="visually-hidden">Toggle in-page Table of Contents</div>
+</label>
+<!-- Headers at the top -->
+<div class="announcement header-item noprint"></div>
+<div class="header header-item noprint"></div>
+<div class="container-fluid" id="banner"></div>
+<div class="container-xl">
+<div class="row">
+<!-- Sidebar -->
+<div class="bd-sidebar noprint" id="site-navigation">
+<div class="bd-sidebar__content">
+<div class="bd-sidebar__top"><div class="navbar-brand-box">
+<a class="navbar-brand text-wrap" href="../index.html">
+<!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+<img alt="logo" class="logo" src="../../../_static/logo.png"/>
+</a>
+</div><form action="../search.html" class="bd-search d-flex align-items-center" method="get">
+<i class="icon fas fa-search"></i>
+<input aria-label="Search the docs ..." autocomplete="off" class="form-control" id="search-input" name="q" placeholder="Search the docs ..." type="search"/>
+</form><nav aria-label="Main" class="bd-links" id="bd-docs-nav">
+<div class="bd-toc-item active">
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1">
+<a class="reference internal" href="../readme.html">
+   IQM Client
+  </a>
+</li>
+<li class="toctree-l1 current active has-children">
+<a class="reference internal" href="../API.html">
+   API Reference
+  </a>
+<input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox">
+<label for="toctree-checkbox-1">
+<i class="fas fa-chevron-down">
+</i>
+</label>
+<ul class="current">
+<li class="toctree-l2 current active has-children">
+<a class="reference internal" href="iqm.iqm_client.html">
+     iqm.iqm_client
+    </a>
+<input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox">
+<label for="toctree-checkbox-2">
+<i class="fas fa-chevron-down">
+</i>
+</label>
+<ul class="current">
+<li class="toctree-l3 current active has-children">
+<a class="reference internal" href="iqm.iqm_client.iqm_client.html">
+       iqm.iqm_client.iqm_client
+      </a>
+<input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox">
+<label for="toctree-checkbox-3">
+<i class="fas fa-chevron-down">
+</i>
+</label>
+<ul class="current">
+<li class="toctree-l4">
+<a class="reference internal" href="iqm.iqm_client.iqm_client.serialize_qubit_mapping.html">
+         iqm.iqm_client.iqm_client.serialize_qubit_mapping
+        </a>
+</li>
+<li class="toctree-l4">
+<a class="reference internal" href="iqm.iqm_client.iqm_client.validate_circuit.html">
+         iqm.iqm_client.iqm_client.validate_circuit
+        </a>
+</li>
+<li class="toctree-l4 current active">
+<a class="current reference internal" href="#">
+         iqm.iqm_client.iqm_client.AuthRequest
+        </a>
+</li>
+<li class="toctree-l4">
+<a class="reference internal" href="iqm.iqm_client.iqm_client.Circuit.html">
+         iqm.iqm_client.iqm_client.Circuit
+        </a>
+</li>
+<li class="toctree-l4">
+<a class="reference internal" href="iqm.iqm_client.iqm_client.Credentials.html">
+         iqm.iqm_client.iqm_client.Credentials
+        </a>
+</li>
+<li class="toctree-l4">
+<a class="reference internal" href="iqm.iqm_client.iqm_client.ExternalToken.html">
+         iqm.iqm_client.iqm_client.ExternalToken
+        </a>
+</li>
+<li class="toctree-l4">
+<a class="reference internal" href="iqm.iqm_client.iqm_client.GrantType.html">
+         iqm.iqm_client.iqm_client.GrantType
+        </a>
+</li>
+<li class="toctree-l4">
+<a class="reference internal" href="iqm.iqm_client.iqm_client.HeraldingMode.html">
+         iqm.iqm_client.iqm_client.HeraldingMode
+        </a>
+</li>
+<li class="toctree-l4">
+<a class="reference internal" href="iqm.iqm_client.iqm_client.IQMClient.html">
+         iqm.iqm_client.iqm_client.IQMClient
+        </a>
+</li>
+<li class="toctree-l4">
+<a class="reference internal" href="iqm.iqm_client.iqm_client.Instruction.html">
+         iqm.iqm_client.iqm_client.Instruction
+        </a>
+</li>
+<li class="toctree-l4">
+<a class="reference internal" href="iqm.iqm_client.iqm_client.Metadata.html">
+         iqm.iqm_client.iqm_client.Metadata
+        </a>
+</li>
+<li class="toctree-l4">
+<a class="reference internal" href="iqm.iqm_client.iqm_client.QuantumArchitecture.html">
+         iqm.iqm_client.iqm_client.QuantumArchitecture
+        </a>
+</li>
+<li class="toctree-l4">
+<a class="reference internal" href="iqm.iqm_client.iqm_client.QuantumArchitectureSpecification.html">
+         iqm.iqm_client.iqm_client.QuantumArchitectureSpecification
+        </a>
+</li>
+<li class="toctree-l4">
+<a class="reference internal" href="iqm.iqm_client.iqm_client.RunRequest.html">
+         iqm.iqm_client.iqm_client.RunRequest
+        </a>
+</li>
+<li class="toctree-l4">
+<a class="reference internal" href="iqm.iqm_client.iqm_client.RunResult.html">
+         iqm.iqm_client.iqm_client.RunResult
+        </a>
+</li>
+<li class="toctree-l4">
+<a class="reference internal" href="iqm.iqm_client.iqm_client.RunStatus.html">
+         iqm.iqm_client.iqm_client.RunStatus
+        </a>
+</li>
+<li class="toctree-l4">
+<a class="reference internal" href="iqm.iqm_client.iqm_client.SingleQubitMapping.html">
+         iqm.iqm_client.iqm_client.SingleQubitMapping
+        </a>
+</li>
+<li class="toctree-l4">
+<a class="reference internal" href="iqm.iqm_client.iqm_client.Status.html">
+         iqm.iqm_client.iqm_client.Status
+        </a>
+</li>
+<li class="toctree-l4">
+<a class="reference internal" href="iqm.iqm_client.iqm_client.APITimeoutError.html">
+         iqm.iqm_client.iqm_client.APITimeoutError
+        </a>
+</li>
+<li class="toctree-l4">
+<a class="reference internal" href="iqm.iqm_client.iqm_client.CircuitExecutionError.html">
+         iqm.iqm_client.iqm_client.CircuitExecutionError
+        </a>
+</li>
+<li class="toctree-l4">
+<a class="reference internal" href="iqm.iqm_client.iqm_client.CircuitValidationError.html">
+         iqm.iqm_client.iqm_client.CircuitValidationError
+        </a>
+</li>
+<li class="toctree-l4">
+<a class="reference internal" href="iqm.iqm_client.iqm_client.ClientAuthenticationError.html">
+         iqm.iqm_client.iqm_client.ClientAuthenticationError
+        </a>
+</li>
+<li class="toctree-l4">
+<a class="reference internal" href="iqm.iqm_client.iqm_client.ClientConfigurationError.html">
+         iqm.iqm_client.iqm_client.ClientConfigurationError
+        </a>
+</li>
+<li class="toctree-l4">
+<a class="reference internal" href="iqm.iqm_client.iqm_client.JobAbortionError.html">
+         iqm.iqm_client.iqm_client.JobAbortionError
+        </a>
+</li>
+</ul>
+</input></li>
+<li class="toctree-l3 has-children">
+<a class="reference internal" href="iqm.iqm_client.util.html">
+       iqm.iqm_client.util
+      </a>
+<input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+<label for="toctree-checkbox-4">
+<i class="fas fa-chevron-down">
+</i>
+</label>
+<ul>
+<li class="toctree-l4">
+<a class="reference internal" href="iqm.iqm_client.util.to_json_dict.html">
+         iqm.iqm_client.util.to_json_dict
+        </a>
+</li>
+<li class="toctree-l4">
+<a class="reference internal" href="iqm.iqm_client.util.IQMJSONEncoder.html">
+         iqm.iqm_client.util.IQMJSONEncoder
+        </a>
+</li>
+</ul>
+</li>
+</ul>
+</input></li>
+</ul>
+</input></li>
+<li class="toctree-l1">
+<a class="reference internal" href="../integration_guide.html">
+   Integration Guide
+  </a>
+</li>
+<li class="toctree-l1">
+<a class="reference internal" href="../license.html">
+   License
+  </a>
+</li>
+<li class="toctree-l1">
+<a class="reference internal" href="../authors.html">
+   Contributors
+  </a>
+</li>
+<li class="toctree-l1">
+<a class="reference internal" href="../changelog.html">
+   Changelog
+  </a>
+</li>
+</ul>
+</div>
+</nav>
+<style type="text/css">
+  ul.version_list { padding-left: 0; }
+  ul.version_list li.version_item { display: inline; }
+  li.version_item a {
+    color: white;
+    background-color: #097aba;
+    padding: 0.12rem 0.45rem;
+    border-radius: 0.35rem;
+  }
+  li.version_item a:hover {
+    background-color: #064061;
+    text-decoration: none;
+  }
+  li.version_item.current_version {
+    color: white;
+    background-color: #064061;
+    padding: 0.12rem 0.45rem;
+    border-radius: 0.35rem;
+  }
+</style>
+<h3>Versions</h3>
+<ul class="version_list"><li class="version_item"><a href="../../../index.html">dev</a></li>
+<li class="version_item current_version">14.4</li>
+<li class="version_item"><a href="../../14.3/index.html">14.3</a></li>
+<li class="version_item"><a href="../../14.2/index.html">14.2</a></li>
+<li class="version_item"><a href="../../14.1/index.html">14.1</a></li>
+<li class="version_item"><a href="../../14.0/index.html">14.0</a></li>
+<li class="version_item"><a href="../../13.4/index.html">13.4</a></li>
+<li class="version_item"><a href="../../13.3/index.html">13.3</a></li>
+<li class="version_item"><a href="../../13.2/index.html">13.2</a></li>
+<li class="version_item"><a href="../../13.1/index.html">13.1</a></li>
+<li class="version_item"><a href="../../13.0/index.html">13.0</a></li>
+<li class="version_item"><a href="../../12.5/index.html">12.5</a></li>
+<li class="version_item"><a href="../../12.4/index.html">12.4</a></li>
+<li class="version_item"><a href="../../12.3/index.html">12.3</a></li>
+<li class="version_item"><a href="../../12.2/index.html">12.2</a></li>
+<li class="version_item"><a href="../../12.1/index.html">12.1</a></li>
+<li class="version_item"><a href="../../12.0/index.html">12.0</a></li>
+<li class="version_item"><a href="../../11.8/index.html">11.8</a></li>
+<li class="version_item"><a href="../../11.7/index.html">11.7</a></li>
+<li class="version_item"><a href="../../11.6/index.html">11.6</a></li>
+<li class="version_item"><a href="../../11.5/index.html">11.5</a></li>
+<li class="version_item"><a href="../../11.4/index.html">11.4</a></li>
+<li class="version_item"><a href="../../11.3/index.html">11.3</a></li>
+<li class="version_item"><a href="../../11.2/index.html">11.2</a></li>
+<li class="version_item"><a href="../../11.1/index.html">11.1</a></li>
+<li class="version_item"><a href="../../11.0/index.html">11.0</a></li>
+<li class="version_item"><a href="../../10.3/index.html">10.3</a></li>
+<li class="version_item"><a href="../../10.2/index.html">10.2</a></li>
+<li class="version_item"><a href="../../10.1/index.html">10.1</a></li>
+<li class="version_item"><a href="../../10.0/index.html">10.0</a></li>
+<li class="version_item"><a href="../../9.8/index.html">9.8</a></li>
+<li class="version_item"><a href="../../9.7/index.html">9.7</a></li>
+<li class="version_item"><a href="../../9.6/index.html">9.6</a></li>
+<li class="version_item"><a href="../../9.5/index.html">9.5</a></li>
+<li class="version_item"><a href="../../9.4/index.html">9.4</a></li>
+<li class="version_item"><a href="../../9.3/index.html">9.3</a></li>
+<li class="version_item"><a href="../../9.2/index.html">9.2</a></li>
+<li class="version_item"><a href="../../9.1/index.html">9.1</a></li>
+<li class="version_item"><a href="../../9.0/index.html">9.0</a></li>
+<li class="version_item"><a href="../../8.4/index.html">8.4</a></li>
+<li class="version_item"><a href="../../8.3/index.html">8.3</a></li>
+<li class="version_item"><a href="../../8.2/index.html">8.2</a></li>
+<li class="version_item"><a href="../../8.1/index.html">8.1</a></li>
+<li class="version_item"><a href="../../8.0/index.html">8.0</a></li>
+<li class="version_item"><a href="../../7.3/index.html">7.3</a></li>
+<li class="version_item"><a href="../../7.2/index.html">7.2</a></li>
+<li class="version_item"><a href="../../7.1/index.html">7.1</a></li>
+<li class="version_item"><a href="../../7.0/index.html">7.0</a></li>
+<li class="version_item"><a href="../../6.2/index.html">6.2</a></li>
+<li class="version_item"><a href="../../6.1/index.html">6.1</a></li>
+<li class="version_item"><a href="../../6.0/index.html">6.0</a></li>
+<li class="version_item"><a href="../../5.0/index.html">5.0</a></li>
+<li class="version_item"><a href="../../4.3/index.html">4.3</a></li>
+<li class="version_item"><a href="../../4.2/index.html">4.2</a></li>
+<li class="version_item"><a href="../../4.0/index.html">4.0</a></li>
+<li class="version_item"><a href="../../3.3/index.html">3.3</a></li>
+<li class="version_item"><a href="../../3.2/index.html">3.2</a></li>
+<li class="version_item"><a href="../../3.1/index.html">3.1</a></li>
+<li class="version_item"><a href="../../3.0/index.html">3.0</a></li>
+<li class="version_item"><a href="../../2.2/index.html">2.2</a></li>
+<li class="version_item"><a href="../../1.10/index.html">1.10</a></li></ul>
+</div>
+<div class="bd-sidebar__bottom">
+<!-- To handle the deprecated key -->
+<div class="navbar_extra_footer">
+            Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
+</div>
+</div>
+</div>
+<div id="rtd-footer-container"></div>
+</div>
+<!-- A tiny helper pixel to detect if we've scrolled -->
+<div class="sbt-scroll-pixel-helper"></div>
+<!-- Main content -->
+<div class="col py-0 content-container">
+<div class="header-article row sticky-top noprint">
+<div class="col py-1 d-flex header-article-main">
+<div class="header-article__left">
+<label class="headerbtn" data-placement="right" data-toggle="tooltip" for="__navigation" title="Toggle navigation">
+<span class="headerbtn__icon-container">
+<i class="fas fa-bars"></i>
+</span>
+</label>
+</div>
+<div class="header-article__right">
+<button class="headerbtn" data-placement="bottom" data-toggle="tooltip" onclick="toggleFullScreen()" title="Fullscreen mode">
+<span class="headerbtn__icon-container">
+<i class="fas fa-expand"></i>
+</span>
+</button>
+<div class="menu-dropdown menu-dropdown-download-buttons">
+<button aria-label="Download this page" class="headerbtn menu-dropdown__trigger">
+<i class="fas fa-download"></i>
+</button>
+<div class="menu-dropdown__content">
+<ul>
+<li>
+<a class="headerbtn" data-placement="left" data-toggle="tooltip" href="../_sources/api/iqm.iqm_client.iqm_client.AuthRequest.rst.txt" title="Download source file">
+<span class="headerbtn__icon-container">
+<i class="fas fa-file"></i>
+</span>
+<span class="headerbtn__text-container">.rst</span>
+</a>
+</li>
+<li>
+<button class="headerbtn" data-placement="left" data-toggle="tooltip" onclick="printPdf(this)" title="Print to PDF">
+<span class="headerbtn__icon-container">
+<i class="fas fa-file-pdf"></i>
+</span>
+<span class="headerbtn__text-container">.pdf</span>
+</button>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<!-- Table of contents -->
+<div class="col-md-3 bd-toc show noprint">
+</div>
+</div>
+<div class="article row">
+<div class="col pl-md-3 pl-lg-5 content-container">
+<!-- Table of contents that is only displayed when printing the page -->
+<div class="onlyprint" id="jb-print-docs-body">
+<h1>iqm.iqm_client.iqm_client.AuthRequest</h1>
+<!-- Table of contents -->
+<div id="print-main-content">
+<div id="jb-print-toc">
+</div>
+</div>
+</div>
+<main id="main-content" role="main">
+<div>
+<section id="iqm-iqm-client-iqm-client-authrequest">
+<h1>iqm.iqm_client.iqm_client.AuthRequest<a class="headerlink" href="#iqm-iqm-client-iqm-client-authrequest" title="Permalink to this headline">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.AuthRequest">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">iqm.iqm_client.iqm_client.</span></span><span class="sig-name descname"><span class="pre">AuthRequest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grant_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refresh_token</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm.iqm_client.iqm_client.AuthRequest" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pydantic.main.BaseModel</span></code></p>
+<p>Request sent to authentication server for access token and refresh token, or for terminating the session.</p>
+<ul class="simple">
+<li><p>Token request with grant type <code class="docutils literal notranslate"><span class="pre">'password'</span></code> starts a new session in the authentication server.
+It uses fields <code class="docutils literal notranslate"><span class="pre">client_id</span></code>, <code class="docutils literal notranslate"><span class="pre">grant_type</span></code>, <code class="docutils literal notranslate"><span class="pre">username</span></code> and <code class="docutils literal notranslate"><span class="pre">password</span></code>.</p></li>
+<li><p>Token request with grant type <code class="docutils literal notranslate"><span class="pre">'refresh_token'</span></code> is used for maintaining an existing session.
+It uses field <code class="docutils literal notranslate"><span class="pre">client_id</span></code>, <code class="docutils literal notranslate"><span class="pre">grant_type</span></code>, <code class="docutils literal notranslate"><span class="pre">refresh_token</span></code>.</p></li>
+<li><p>Logout request uses only fields <code class="docutils literal notranslate"><span class="pre">client_id</span></code> and <code class="docutils literal notranslate"><span class="pre">refresh_token</span></code>.</p></li>
+</ul>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
+<p class="rubric">Attributes</p>
+<table class="autosummary longtable table autosummary">
+<colgroup>
+<col style="width: 10%"/>
+<col style="width: 90%"/>
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.AuthRequest.client_id" title="iqm.iqm_client.iqm_client.AuthRequest.client_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">client_id</span></code></a></p></td>
+<td><p>name of the client for all request types</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.AuthRequest.grant_type" title="iqm.iqm_client.iqm_client.AuthRequest.grant_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">grant_type</span></code></a></p></td>
+<td><p>type of token request, in <code class="docutils literal notranslate"><span class="pre">{'password',</span> <span class="pre">'refresh_token'}</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.AuthRequest.username" title="iqm.iqm_client.iqm_client.AuthRequest.username"><code class="xref py py-obj docutils literal notranslate"><span class="pre">username</span></code></a></p></td>
+<td><p>username for grant type <code class="docutils literal notranslate"><span class="pre">'password'</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.AuthRequest.password" title="iqm.iqm_client.iqm_client.AuthRequest.password"><code class="xref py py-obj docutils literal notranslate"><span class="pre">password</span></code></a></p></td>
+<td><p>password for grant type <code class="docutils literal notranslate"><span class="pre">'password'</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.AuthRequest.refresh_token" title="iqm.iqm_client.iqm_client.AuthRequest.refresh_token"><code class="xref py py-obj docutils literal notranslate"><span class="pre">refresh_token</span></code></a></p></td>
+<td><p>refresh token for grant type <code class="docutils literal notranslate"><span class="pre">'refresh_token'</span></code> and logout request</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable table autosummary">
+<colgroup>
+<col style="width: 10%"/>
+<col style="width: 90%"/>
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__json_encoder__</span></code>(obj)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>client_id</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – </p></li>
+<li><p><strong>grant_type</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><em>Optional</em></a><em>[</em><a class="reference internal" href="iqm.iqm_client.iqm_client.GrantType.html#iqm.iqm_client.iqm_client.GrantType" title="iqm.iqm_client.iqm_client.GrantType"><em>iqm.iqm_client.iqm_client.GrantType</em></a><em>]</em>) – </p></li>
+<li><p><strong>username</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – </p></li>
+<li><p><strong>password</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – </p></li>
+<li><p><strong>refresh_token</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.AuthRequest.client_id">
+<span class="sig-name descname"><span class="pre">client_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></em><a class="headerlink" href="#iqm.iqm_client.iqm_client.AuthRequest.client_id" title="Permalink to this definition">#</a></dt>
+<dd><p>name of the client for all request types</p>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.AuthRequest.grant_type">
+<span class="sig-name descname"><span class="pre">grant_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="iqm.iqm_client.iqm_client.GrantType.html#iqm.iqm_client.iqm_client.GrantType" title="iqm.iqm_client.iqm_client.GrantType"><span class="pre">iqm.iqm_client.iqm_client.GrantType</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#iqm.iqm_client.iqm_client.AuthRequest.grant_type" title="Permalink to this definition">#</a></dt>
+<dd><p>type of token request, in <code class="docutils literal notranslate"><span class="pre">{'password',</span> <span class="pre">'refresh_token'}</span></code></p>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.AuthRequest.username">
+<span class="sig-name descname"><span class="pre">username</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#iqm.iqm_client.iqm_client.AuthRequest.username" title="Permalink to this definition">#</a></dt>
+<dd><p>username for grant type <code class="docutils literal notranslate"><span class="pre">'password'</span></code></p>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.AuthRequest.password">
+<span class="sig-name descname"><span class="pre">password</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#iqm.iqm_client.iqm_client.AuthRequest.password" title="Permalink to this definition">#</a></dt>
+<dd><p>password for grant type <code class="docutils literal notranslate"><span class="pre">'password'</span></code></p>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.AuthRequest.refresh_token">
+<span class="sig-name descname"><span class="pre">refresh_token</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#iqm.iqm_client.iqm_client.AuthRequest.refresh_token" title="Permalink to this definition">#</a></dt>
+<dd><p>refresh token for grant type <code class="docutils literal notranslate"><span class="pre">'refresh_token'</span></code> and logout request</p>
+</dd></dl>
+</dd></dl>
+</section>
+</div>
+</main>
+<footer class="footer-article noprint">
+<!-- Previous / next buttons -->
+<div class="prev-next-area">
+<a class="left-prev" href="iqm.iqm_client.iqm_client.validate_circuit.html" id="prev-link" title="previous page">
+<i class="fas fa-angle-left"></i>
+<div class="prev-next-info">
+<p class="prev-next-subtitle">previous</p>
+<p class="prev-next-title">iqm.iqm_client.iqm_client.validate_circuit</p>
+</div>
+</a>
+<a class="right-next" href="iqm.iqm_client.iqm_client.Circuit.html" id="next-link" title="next page">
+<div class="prev-next-info">
+<p class="prev-next-subtitle">next</p>
+<p class="prev-next-title">iqm.iqm_client.iqm_client.Circuit</p>
+</div>
+<i class="fas fa-angle-right"></i>
+</a>
+</div>
+</footer>
+</div>
+</div>
+<div class="footer-content row">
+<footer class="col footer"><p>
+  
+    By IQM client developers<br/>
+  
+      © Copyright 2021-2022, IQM.<br/>
+    Last updated on 2023-11-14.<br/>
+</p>
+</footer>
+</div>
+</div>
+</div>
+</div>
+<!-- Scripts loaded after <body> so the DOM is not blocked -->
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+</body>
+</html>

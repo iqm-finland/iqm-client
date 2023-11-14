@@ -320,6 +320,9 @@
       <li class="version_item current_version">dev</li>
     
     
+      <li class="version_item"><a href="../versions/14.4/index.html">14.4</a></li>
+    
+    
       <li class="version_item"><a href="../versions/14.3/index.html">14.3</a></li>
     
     
@@ -640,7 +643,7 @@ title="Print to PDF"
   <strong>
     
     You're reading the documentation for a development version.
-    For the latest released version, please have a look at <a href="../versions/14.3/index.html">14.3</a>.
+    For the latest released version, please have a look at <a href="../versions/14.4/index.html">14.4</a>.
     
   </strong>
 </div>
@@ -743,7 +746,7 @@ Note that the <code class="docutils literal notranslate"><span class="pre">qubit
 <li><p><strong>custom_settings</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><em>Any</em></a><em>]</em><em>]</em>) – Custom settings to override default settings and calibration data.
 Note: This field should always be <code class="docutils literal notranslate"><span class="pre">None</span></code> in normal use.</p></li>
 <li><p><strong>calibration_set_id</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Optional" title="(in Python v3.9)"><em>Optional</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><em>uuid.UUID</em></a><em>]</em>) – ID of the calibration set to use, or <code class="docutils literal notranslate"><span class="pre">None</span></code> to use the latest one</p></li>
-<li><p><strong>shots</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – number of times <code class="docutils literal notranslate"><span class="pre">circuits</span></code> are executed</p></li>
+<li><p><strong>shots</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – number of times <code class="docutils literal notranslate"><span class="pre">circuits</span></code> are executed, value must be greater than zero</p></li>
 <li><p><strong>circuit_duration_check</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – whether to enable max circuit duration criteria for disqualification</p></li>
 <li><p><strong>heralding_mode</strong> (<a class="reference internal" href="iqm.iqm_client.iqm_client.HeraldingMode.html#iqm.iqm_client.iqm_client.HeraldingMode" title="iqm.iqm_client.iqm_client.HeraldingMode"><em>iqm.iqm_client.iqm_client.HeraldingMode</em></a>) – Heralding mode to use during the execution.</p></li>
 </ul>
@@ -948,7 +951,7 @@ we will find the job is still pending at least for the first query.</p>
     By IQM client developers<br/>
   
       &copy; Copyright 2021-2022, IQM.<br/>
-    Last updated on 2023-11-08.<br/>
+    Last updated on 2023-11-14.<br/>
 </p>
         </footer>
     </div>
