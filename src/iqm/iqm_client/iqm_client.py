@@ -712,6 +712,10 @@ class IQMClient:
             This can also be set in the IQM_TOKENS_FILE environment variable.
             If tokens_file is set, auth_server_url, username and password
             must not be set.
+        token: If an IQM token is long-lived and the server provides it in plain text format,
+            it can be passed in this argument. It can also be provided in the IQM_TOKEN
+            environment variable. If ``tokens_file`` (or IQM_TOKENS_FILE) is set, it will
+            override the value of this token.
 
     Keyword Args:
         auth_server_url (str): Optional base URL of the authentication server.
@@ -731,6 +735,7 @@ class IQMClient:
         *,
         client_signature: Optional[str] = None,
         tokens_file: Optional[str] = None,
+        token: Optional[str] = None,
         **credentials,  # contains auth_server_url, username, password
     ):
         if not url.startswith(('http:', 'https:')):
@@ -745,6 +750,7 @@ class IQMClient:
             self._signature += f', {client_signature}'
         self._tokens_file = tokens_file
         self._external_token = _get_external_token(tokens_file)
+        self._token = token or os.environ.get('IQM_TOKEN')
         if not self._external_token:
             self._credentials = _get_credentials(credentials)
             self._update_tokens()
@@ -1070,8 +1076,8 @@ class IQMClient:
         self._credentials.refresh_token = None
         return True
 
-    def _get_bearer_token(self, retries: int = 1) -> Optional[str]:
-        """Make a bearer token for Authorization header. If access token is about to expire refresh it first.
+    def _get_bearer_token(self, retries: int = 1) -> Optional[str]:  # pylint: disable=too-many-return-statements
+        """Make a bearer token for Authorization header. If token is about to expire, refresh it first.
 
         Args:
             retries: number of times to try updating the tokens
@@ -1087,6 +1093,8 @@ class IQMClient:
                 if not self._external_token:
                     return None
             return f'Bearer {self._external_token.access_token}'
+        if self._token:
+            return f'Bearer {self._token}'
         if self._credentials is None or not self._credentials.access_token:
             return None
         if _time_left_seconds(self._credentials.access_token) > REFRESH_MARGIN_SECONDS:
