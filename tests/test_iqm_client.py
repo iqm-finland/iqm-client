@@ -131,6 +131,16 @@ def test_submit_circuits_does_not_activate_heralding_by_default(
     unstub()
 
 
+def test_submit_circuits_raises_with_invalid_shots(sample_client, minimal_run_request):
+    """
+    Test that submitting run request with invalid number of shots raises ValueError
+    """
+    args = submit_circuits_args(minimal_run_request)
+    args['shots'] = 0
+    with pytest.raises(ValueError, match='Number of shots must be greater than zero.'):
+        sample_client.submit_circuits(**args)
+
+
 def test_submit_circuits_sets_heralding_mode_in_run_request(
     sample_client, jobs_url, run_request_with_heralding, submit_success
 ):

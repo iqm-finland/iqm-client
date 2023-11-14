@@ -425,8 +425,8 @@ Note: This field should be always None in normal use."""
     """ID of the calibration set to use, or None to use the latest calibration set"""
     qubit_mapping: Optional[list[SingleQubitMapping]] = Field(None)
     """mapping of logical qubit names to physical qubit names, or None if using physical qubit names"""
-    shots: int = Field(...)
-    """how many times to execute each circuit in the batch"""
+    shots: int = Field(..., gt=0)
+    """how many times to execute each circuit in the batch, must be greater than zero"""
     circuit_duration_check: bool = Field(True)
     """If True (default), circuits are disqualified on the server if they are too long compared to the
 T2 decoherence times of the QPU. Setting it to False disables the check, which should not be done in normal use."""
@@ -789,13 +789,16 @@ class IQMClient:
             custom_settings: Custom settings to override default settings and calibration data.
                 Note: This field should always be ``None`` in normal use.
             calibration_set_id: ID of the calibration set to use, or ``None`` to use the latest one
-            shots: number of times ``circuits`` are executed
+            shots: number of times ``circuits`` are executed, value must be greater than zero
             circuit_duration_check: whether to enable max circuit duration criteria for disqualification
             heralding_mode: Heralding mode to use during the execution.
 
         Returns:
             ID for the created job. This ID is needed to query the job status and the execution results.
         """
+
+        if shots < 1:
+            raise ValueError('Number of shots must be greater than zero.')
 
         for i, circuit in enumerate(circuits):
             try:

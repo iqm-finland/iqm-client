@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 14.4
+============
+
+* Require number of shots to be greater than zero. `#101 <https://github.com/iqm-finland/iqm-client/pull/101>`_
+
 Version 14.3
 ============
 
