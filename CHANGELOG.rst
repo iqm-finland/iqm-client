@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 14.5
+============
+
+* Add platform version and python version to user agent. `#103 <https://github.com/iqm-finland/iqm-client/pull/103>`_
+
 Version 14.4
 ============
 
