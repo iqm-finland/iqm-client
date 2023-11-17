@@ -139,6 +139,7 @@ from enum import Enum
 from importlib.metadata import version
 import json
 import os
+import platform
 from posixpath import join
 import time
 from typing import Any, Callable, Optional, Union
@@ -735,7 +736,9 @@ class IQMClient:
         if tokens_file and credentials:
             raise ClientConfigurationError('Either external token or credentials must be provided. Both were provided.')
         self._base_url = url
-        self._signature = f'iqm-client {version("iqm-client")}'
+        self._signature = f'{platform.platform(terse=True)}'
+        self._signature += f', python {platform.python_version()}'
+        self._signature += f', iqm-client {version("iqm-client")}'
         if client_signature:
             self._signature += f', {client_signature}'
         self._tokens_file = tokens_file

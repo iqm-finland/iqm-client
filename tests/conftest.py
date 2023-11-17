@@ -19,6 +19,7 @@ Mocks server calls for testing
 from base64 import b64encode
 import json
 import os
+import platform
 import time
 from typing import Any, Optional
 from uuid import UUID
@@ -496,13 +497,13 @@ def expect_logout(auth_server_url: str, refresh_token: str, timeout: int = ANY(i
 
 def post_jobs_args(
     run_request: Optional[RunRequest] = None,
-    user_agent: Optional[str] = f'{DIST_NAME} {__version__}',
+    user_agent: Optional[str] = None,
     access_token: Optional[str] = None,
 ) -> dict[str, Any]:
     """Returns expected kwargs of POST /jobs request"""
     headers = {'Expect': '100-Continue'} if run_request is not None else {}
-    if user_agent is not None:
-        headers['User-Agent'] = user_agent
+    signature = f'{platform.platform(terse=True)}, python {platform.python_version()}, {DIST_NAME} {__version__}'
+    headers['User-Agent'] = signature if user_agent is None else user_agent
     if access_token is not None:
         headers['Authorization'] = f'Bearer {access_token}'
     if run_request is None:
@@ -515,12 +516,13 @@ def post_jobs_args(
 
 
 def get_jobs_args(
-    user_agent: Optional[str] = f'{DIST_NAME} {__version__}', access_token: Optional[str] = None
+    user_agent: Optional[str] = None,
+    access_token: Optional[str] = None,
 ) -> dict[str, Any]:
     """Returns expected kwargs of POST /jobs request"""
     headers = {}
-    if user_agent is not None:
-        headers['User-Agent'] = user_agent
+    signature = f'{platform.platform(terse=True)}, python {platform.python_version()}, {DIST_NAME} {__version__}'
+    headers['User-Agent'] = signature if user_agent is None else user_agent
     if access_token is not None:
         headers['Authorization'] = f'Bearer {access_token}'
     return {
