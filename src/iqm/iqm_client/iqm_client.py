@@ -452,6 +452,8 @@ class Metadata(BaseModel):
     """ID of the calibration set used"""
     request: RunRequest = Field(...)
     """copy of the original RunRequest sent to the server"""
+    cocos_version: Optional[str] = Field(None)
+    """CoCoS version used to execute the job"""
     timestamps: Optional[dict[str, str]] = Field(None)
     """Timestamps of execution progress"""
 

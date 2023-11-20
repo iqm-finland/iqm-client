@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 14.6
+============
+
+* Add CoCoS version to job metadata. `#104 <https://github.com/iqm-finland/iqm-client/pull/104>`_
+
 Version 14.5
 ============
 
