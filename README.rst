@@ -14,7 +14,7 @@ Installation
 ============
 
 IQM client is not intended to be used directly by human users. For executing code on an IQM quantum computer,
-you can use for example the `Cirq on IQM <https://iqm-finland.github.io/cirq-on-iqm/index.html>`_ library.
+you can use for example the `Qiskit on IQM <https://iqm-finland.github.io/qiskit-on-iqm/>`_ library.
 
 If you want just this library, though, you can install it from the Python Package Index (PyPI):
 
