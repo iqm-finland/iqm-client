@@ -2,17 +2,17 @@
 Integration Guide
 =================
 
-IQM client is designed to be the python adapter to IQMs quantum computers for application level quantum computing frameworks.
-For example integrations maintained by IQM please refer to the `Qiskit <https://github.com/iqm-finland/qiskit-on-iqm>`_ and `Cirq <https://github.com/iqm-finland/cirq-on-iqm>`_ integrations.
+IQM client is designed to be the Python adapter to IQM's quantum computers for application-level quantum computing frameworks.
+For example integrations maintained by IQM, please refer to the `Qiskit <https://github.com/iqm-finland/qiskit-on-iqm>`_ and `Cirq <https://github.com/iqm-finland/cirq-on-iqm>`_ packages.
 
-IQM client offers the functionality to submit circuits to an IQM quantum computer, query a job or a job status and retrieve the quantum architecture of the quantum computer being used.
+IQM client offers the functionality to submit circuits to an IQM quantum computer, query a job or a job status, and retrieve the quantum architecture of the quantum computer.
 
-The following sections give some information on how to integrate IQM quantum computers into your quantum computing framework.
+The following sections illustrate how to integrate IQM quantum computers into your quantum computing framework.
 
 Code example
 ------------
 
-Initialising the IQM client is simple and in case you perform authentication as described below requires only the URL to the IQM quantum computer.
+Initialising the IQM client is simple, and in case you perform authentication as described below, requires only the URL of the IQM quantum computer.
 
 .. code-block:: python
 
@@ -22,7 +22,7 @@ Initialising the IQM client is simple and in case you perform authentication as 
 
     iqm_client = IQMClient(server_url)
 
-To submit a circuit the circuit has to be specified in the IQM transfer format.
+To submit a circuit, the circuit has to be specified in the IQM transfer format.
 
 .. code-block:: python
 
@@ -38,7 +38,7 @@ To submit a circuit the circuit has to be specified in the IQM transfer format.
 
     circuit = Circuit(name="quantum_circuit", instructions=instructions)
 
-Then the circuit can be submitted and its status and result can be queried with the job id.
+Then the circuit can be submitted, and its status and result can be queried with the job id.
 
 .. code-block:: python
 
@@ -50,16 +50,16 @@ Then the circuit can be submitted and its status and result can be queried with 
 
 A dict containing arbitrary metadata can be attached to the circuit before submitting it for
 execution. The attached metadata should consist only of values of JSON serializable datatypes.
-An utility function ``util.to_json_dict`` can be used to convert supported datatypes,
+A utility function ``util.to_json_dict`` can be used to convert supported datatypes,
 e.g. ``numpy.ndarray``, to equivalent JSON serializable types.
 
-Progress of the job can be followed with ``iqm_client.get_run_status``. Once the job is ready
+The progress of the job can be followed with ``iqm_client.get_run_status``. Once the job is ready,
 the results can be read with ``iqm_client.get_run``. Both of these actions are combined in
 ``iqm_client.wait_for_results`` which waits until the job is ready and then returns the result.
 
 In addition to the actual results, job result contains also metadata of the job execution.
-The metadata includes the original request, ID of the calibration set used in the execution and
-a collection of timestamps that can be used to check the time it took to execute the job.
+The metadata includes the original request, ID of the calibration set used in the execution, and
+a collection of timestamps describing the duration of the execution.
 
 Job phases and related timestamps
 ---------------------------------
@@ -94,12 +94,12 @@ IQM uses OAuth 2.0 authentication to manage access to quantum computers.
 For easy token management we have developed `Cortex CLI <https://github.com/iqm-finland/cortex-cli>`_ which is the recommended way to generate and refresh tokens.
 IQM client can use these tokens by reading an environment variable ``IQM_TOKENS_FILE`` pointing to the tokens file managed by Cortex CLI.
 
-Circuit compilation
--------------------
+Circuit transpilation
+---------------------
 
-IQM does not provide an open source circuit transpilation library so this will have to be supplied by the quantum computing framework or a third party library.
-To provide the necessary information to do circuit transpilation :meth:`IQMClient.get_quantum_architecture` returns the qubits, qubit connectivity and native operations.
-This information should enable circuit transpilation for IQM quantum architectures.
+IQM does not provide an open source circuit transpilation library, so this will have to be supplied by the quantum computing framework or a third party library.
+To obtain the necessary information for circuit transpilation, :meth:`IQMClient.get_quantum_architecture` returns the names of the qubits, qubit connectivity,
+and native operations. This information should enable circuit transpilation for IQM quantum architectures.
 
 Note on qubit mapping
 ---------------------
@@ -121,4 +121,4 @@ Disabling the circuit duration check may be limited to certain users or groups, 
 Integration testing
 -------------------
 
-IQM provides a demo environment to test the integration against a simulated quantum computer. If you want access to that environment contact `IQM <info@meetiqm.com>`_.
+IQM provides a demo environment to test the integration against a mock quantum computer. If you'd like to request access to that environment, please contact `IQM <info@meetiqm.com>`_.
