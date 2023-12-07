@@ -51,6 +51,15 @@ def test_get_initial_tokens_with_credentials_from_arguments(credentials):
     unstub()
 
 
+def test_get_token_from_arguments(monkeypatch):
+    """
+    Tests that plaintext token is read from the arguments
+    """
+    monkeypatch.setenv('IQM_TOKEN', '2345')
+    client = IQMClient(url='https://example.com', token='1234')
+    assert client._token == '1234'
+
+
 def test_get_initial_tokens_with_credentials_from_env_variables(credentials, monkeypatch):
     """
     Tests that credentials are read from environment variables if they are not given as arguments
@@ -66,6 +75,15 @@ def test_get_initial_tokens_with_credentials_from_env_variables(credentials, mon
     client = IQMClient(url='https://example.com')
     assert client._credentials == expected_credentials
     unstub()
+
+
+def test_get_token_from_env_variable(monkeypatch):
+    """
+    Tests that plaintext token is read from the environment variable if they are not given as arguments
+    """
+    monkeypatch.setenv('IQM_TOKEN', '1234')
+    client = IQMClient(url='https://example.com')
+    assert client._token == '1234'
 
 
 def test_get_initial_tokens_with_incomplete_credentials_from_env_variables(credentials, monkeypatch):
@@ -344,3 +362,29 @@ def test_external_token_updated_if_expired(base_url):
     assert bearer_token is not None
     assert _time_left_seconds(bearer_token.removeprefix('Bearer ')) > 0
     unstub()
+
+
+def test_tokens_file_overrides_plaintext_token(base_url):
+    """
+    Tests tokens_file is preferred over plaintext token
+    """
+    tokens_path = 'dummy_path'
+    access_token = make_token('Bearer', lifetime=300)
+    tokens_file_contents = json.dumps({'auth_server_url': base_url + '/auth', 'access_token': access_token})
+    when(builtins).open(tokens_path, 'r', encoding='utf-8').thenReturn(io.StringIO(tokens_file_contents))
+    try:
+        client = IQMClient(base_url, tokens_file=tokens_path, token='12345')
+        bearer_token = client._get_bearer_token()
+        assert bearer_token is not None
+        assert bearer_token == f'Bearer {access_token}'
+    finally:
+        unstub()
+
+
+def test_plaintext_token_is_used_as_bearer_token_if_tokens_file_is_not_set(base_url):
+    """
+    Tests that plaintext token is used as a bearer token correctly
+    """
+    client = IQMClient(base_url, token='1234')
+    bearer_token = client._get_bearer_token()
+    assert bearer_token == 'Bearer 1234'
