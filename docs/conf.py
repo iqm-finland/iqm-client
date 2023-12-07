@@ -115,6 +115,12 @@ html_theme_path = [sphinx_book_theme.get_html_theme_path()]
 # documentation.
 html_theme_options = {}
 
+html_sidebars = {
+    '**': [
+        'sidebar-logo.html', 'search-field.html', 'sbt-sidebar-nav.html', 'versioning.html'
+    ]
+}
+
 # A shorter title for the navigation bar.  Default is the same as html_title.
 # html_short_title = None
 
