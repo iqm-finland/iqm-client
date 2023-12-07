@@ -617,7 +617,7 @@ class ExternalToken(BaseModel):
 
     auth_server_url: str = Field(...)
     """Base URL of the authentication server"""
-    access_token: Optional[str] = Field(None)
+    access_token: str = Field(...)
     """current access token of the session"""
 
 
