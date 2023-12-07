@@ -73,7 +73,7 @@ and :math:`X` and :math:`Y` are Pauli matrices.
 .. code-block:: python
    :caption: Example
 
-   Instruction(name='phased_rx', qubits=('bob',), args={'angle_t': 0.7, 'phase_t': 0.25})
+   Instruction(name='prx', qubits=('bob',), args={'angle_t': 0.7, 'phase_t': 0.25})
 
 
 CZ
@@ -173,7 +173,7 @@ SUPPORTED_INSTRUCTIONS = {
             'key': (str,),
         },
     },
-    'measurement': {
+    'measurement': {  # deprecated
         'arity': -1,
         'args': {
             'key': (str,),
@@ -192,7 +192,7 @@ SUPPORTED_INSTRUCTIONS = {
             ),
         },
     },
-    'phased_rx': {
+    'phased_rx': {  # deprecated
         'arity': 1,
         'args': {
             'angle_t': (
