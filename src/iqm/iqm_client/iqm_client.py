@@ -29,17 +29,16 @@ We currently support the following native instruction types:
 ================ =========== ====================================== ===========
 name             # of qubits args                                   description
 ================ =========== ====================================== ===========
-measurement      >= 1        ``key: str``                           Measurement in the Z basis.
-phased_rx        1           ``angle_t: float``, ``phase_t: float`` Phased x-rotation gate.
+measure          >= 1        ``key: str``                           Measurement in the Z basis.
+prx              1           ``angle_t: float``, ``phase_t: float`` Phased x-rotation gate.
 cz               2                                                  Controlled-Z gate.
 barrier          >= 1                                               Execution barrier.
 ================ =========== ====================================== ===========
 
-Instructions can be further specified by adding an ``implementation`` field with
-a name for the implementation of the instruction. The default value for this field is
-an empty string which selects the default implementation.
+For each Instruction you may also optionally specify :attr:`~Instruction.implementation`,
+which contains the name of an implementation of the instruction to use.
 Support for multiple implementations is currently experimental and in normal use the
-field should be omitted. This selects the default implementation for the instruction.
+field should be omitted, this selects the default implementation for the instruction.
 
 Measurement
 -----------
@@ -168,10 +167,29 @@ SUPPORTED_INSTRUCTIONS = {
         'arity': 2,
         'args': {},
     },
+    'measure': {
+        'arity': -1,
+        'args': {
+            'key': (str,),
+        },
+    },
     'measurement': {
         'arity': -1,
         'args': {
             'key': (str,),
+        },
+    },
+    'prx': {
+        'arity': 1,
+        'args': {
+            'angle_t': (
+                float,
+                int,
+            ),
+            'phase_t': (
+                float,
+                int,
+            ),
         },
     },
     'phased_rx': {
@@ -599,7 +617,7 @@ class ExternalToken(BaseModel):
 
     auth_server_url: str = Field(...)
     """Base URL of the authentication server"""
-    access_token: str = Field(None)
+    access_token: Optional[str] = Field(None)
     """current access token of the session"""
 
 
