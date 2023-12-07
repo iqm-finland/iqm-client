@@ -320,6 +320,9 @@
       <li class="version_item current_version">dev</li>
     
     
+      <li class="version_item"><a href="versions/14.7/integration_guide.html">14.7</a></li>
+    
+    
       <li class="version_item"><a href="versions/14.6/integration_guide.html">14.6</a></li>
     
     
@@ -651,8 +654,8 @@ title="Print to PDF"
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#circuit-compilation">
-   Circuit compilation
+  <a class="reference internal nav-link" href="#circuit-transpilation">
+   Circuit transpilation
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -705,8 +708,8 @@ title="Print to PDF"
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#circuit-compilation">
-   Circuit compilation
+  <a class="reference internal nav-link" href="#circuit-transpilation">
+   Circuit transpilation
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -746,7 +749,7 @@ title="Print to PDF"
   <strong>
     
     You're reading the documentation for a development version.
-    For the latest released version, please have a look at <a href="versions/14.6/integration_guide.html">14.6</a>.
+    For the latest released version, please have a look at <a href="versions/14.7/integration_guide.html">14.7</a>.
     
   </strong>
 </div>
@@ -754,13 +757,13 @@ title="Print to PDF"
 
   <section id="integration-guide">
 <span id="id1"></span><h1>Integration Guide<a class="headerlink" href="#integration-guide" title="Permalink to this headline">#</a></h1>
-<p>IQM client is designed to be the python adapter to IQMs quantum computers for application level quantum computing frameworks.
-For example integrations maintained by IQM please refer to the <a class="reference external" href="https://github.com/iqm-finland/qiskit-on-iqm">Qiskit</a> and <a class="reference external" href="https://github.com/iqm-finland/cirq-on-iqm">Cirq</a> integrations.</p>
-<p>IQM client offers the functionality to submit circuits to an IQM quantum computer, query a job or a job status and retrieve the quantum architecture of the quantum computer being used.</p>
-<p>The following sections give some information on how to integrate IQM quantum computers into your quantum computing framework.</p>
+<p>IQM client is designed to be the Python adapter to IQM’s quantum computers for application-level quantum computing frameworks.
+For example integrations maintained by IQM, please refer to the <a class="reference external" href="https://github.com/iqm-finland/qiskit-on-iqm">Qiskit</a> and <a class="reference external" href="https://github.com/iqm-finland/cirq-on-iqm">Cirq</a> packages.</p>
+<p>IQM client offers the functionality to submit circuits to an IQM quantum computer, query a job or a job status, and retrieve the quantum architecture of the quantum computer.</p>
+<p>The following sections illustrate how to integrate IQM quantum computers into your quantum computing framework.</p>
 <section id="code-example">
 <h2>Code example<a class="headerlink" href="#code-example" title="Permalink to this headline">#</a></h2>
-<p>Initialising the IQM client is simple and in case you perform authentication as described below requires only the URL to the IQM quantum computer.</p>
+<p>Initialising the IQM client is simple, and in case you perform authentication as described below, requires only the URL of the IQM quantum computer.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">iqm.iqm_client</span> <span class="kn">import</span> <span class="n">IQMClient</span>
 
 <span class="n">server_url</span> <span class="o">=</span> <span class="s2">&quot;https://IQM_SERVER_URL&quot;</span>
@@ -768,7 +771,7 @@ For example integrations maintained by IQM please refer to the <a class="referen
 <span class="n">iqm_client</span> <span class="o">=</span> <span class="n">IQMClient</span><span class="p">(</span><span class="n">server_url</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>To submit a circuit the circuit has to be specified in the IQM transfer format.</p>
+<p>To submit a circuit, the circuit has to be specified in the IQM transfer format.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">iqm.iqm_client</span> <span class="kn">import</span> <span class="n">Circuit</span><span class="p">,</span> <span class="n">Instruction</span>
 
 <span class="n">instructions</span> <span class="o">=</span> <span class="p">(</span>
@@ -782,7 +785,7 @@ For example integrations maintained by IQM please refer to the <a class="referen
 <span class="n">circuit</span> <span class="o">=</span> <span class="n">Circuit</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;quantum_circuit&quot;</span><span class="p">,</span> <span class="n">instructions</span><span class="o">=</span><span class="n">instructions</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Then the circuit can be submitted and its status and result can be queried with the job id.</p>
+<p>Then the circuit can be submitted, and its status and result can be queried with the job id.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">job_id</span> <span class="o">=</span> <span class="n">iqm_client</span><span class="o">.</span><span class="n">submit_circuits</span><span class="p">([</span><span class="n">circuit</span><span class="p">])</span>
 
 <span class="n">job_status</span> <span class="o">=</span> <span class="n">iqm_client</span><span class="o">.</span><span class="n">get_run_status</span><span class="p">(</span><span class="n">job_id</span><span class="p">)</span>
@@ -792,14 +795,14 @@ For example integrations maintained by IQM please refer to the <a class="referen
 </div>
 <p>A dict containing arbitrary metadata can be attached to the circuit before submitting it for
 execution. The attached metadata should consist only of values of JSON serializable datatypes.
-An utility function <code class="docutils literal notranslate"><span class="pre">util.to_json_dict</span></code> can be used to convert supported datatypes,
+A utility function <code class="docutils literal notranslate"><span class="pre">util.to_json_dict</span></code> can be used to convert supported datatypes,
 e.g. <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, to equivalent JSON serializable types.</p>
-<p>Progress of the job can be followed with <code class="docutils literal notranslate"><span class="pre">iqm_client.get_run_status</span></code>. Once the job is ready
+<p>The progress of the job can be followed with <code class="docutils literal notranslate"><span class="pre">iqm_client.get_run_status</span></code>. Once the job is ready,
 the results can be read with <code class="docutils literal notranslate"><span class="pre">iqm_client.get_run</span></code>. Both of these actions are combined in
 <code class="docutils literal notranslate"><span class="pre">iqm_client.wait_for_results</span></code> which waits until the job is ready and then returns the result.</p>
 <p>In addition to the actual results, job result contains also metadata of the job execution.
-The metadata includes the original request, ID of the calibration set used in the execution and
-a collection of timestamps that can be used to check the time it took to execute the job.</p>
+The metadata includes the original request, ID of the calibration set used in the execution, and
+a collection of timestamps describing the duration of the execution.</p>
 </section>
 <section id="job-phases-and-related-timestamps">
 <h2>Job phases and related timestamps<a class="headerlink" href="#job-phases-and-related-timestamps" title="Permalink to this headline">#</a></h2>
@@ -822,15 +825,26 @@ This step produces timestamps <code class="docutils literal notranslate"><span c
 </section>
 <section id="authentication">
 <h2>Authentication<a class="headerlink" href="#authentication" title="Permalink to this headline">#</a></h2>
-<p>IQM uses OAuth 2.0 authentication to manage access to quantum computers.
-For easy token management we have developed <a class="reference external" href="https://github.com/iqm-finland/cortex-cli">Cortex CLI</a> which is the recommended way to generate and refresh tokens.
-IQM client can use these tokens by reading an environment variable <code class="docutils literal notranslate"><span class="pre">IQM_TOKENS_FILE</span></code> pointing to the tokens file managed by Cortex CLI.</p>
+<p>IQM uses bearer token authentication to manage access to quantum computers.
+Currently, there are two alternative ways of providing an authentication token
+to IQM client:</p>
+<p>1. OAuth 2.0 tokens using <a class="reference external" href="https://github.com/iqm-finland/cortex-cli">Cortex CLI</a> which
+is the recommended way to generate and refresh tokens. IQM client can use these tokens by
+reading an environment variable <code class="docutils literal notranslate"><span class="pre">IQM_TOKENS_FILE</span></code> pointing to the tokens file managed by
+Cortex CLI.</p>
+<p>2. Plaintext token obtained from a server dashboard. These tokens may have longer lifespan
+than access tokens generated by Cortex CLI, and thus IQM client won’t attempt to refresh
+them. The generated token is set as the <cite>IQM_TOKEN</cite> environment variable, and IQM client
+reads it from there. The recommended usage is to set the environment variable in
+<cite>.bashrc</cite>/<cite>.zshrc</cite> so that it’s set up automatically for each terminal session.</p>
+<p>Note that a server may not support both authentication methods. The supported
+authentication methods and their instructions are provided on the server’s front page.</p>
 </section>
-<section id="circuit-compilation">
-<h2>Circuit compilation<a class="headerlink" href="#circuit-compilation" title="Permalink to this headline">#</a></h2>
-<p>IQM does not provide an open source circuit transpilation library so this will have to be supplied by the quantum computing framework or a third party library.
-To provide the necessary information to do circuit transpilation <code class="xref py py-meth docutils literal notranslate"><span class="pre">IQMClient.get_quantum_architecture()</span></code> returns the qubits, qubit connectivity and native operations.
-This information should enable circuit transpilation for IQM quantum architectures.</p>
+<section id="circuit-transpilation">
+<h2>Circuit transpilation<a class="headerlink" href="#circuit-transpilation" title="Permalink to this headline">#</a></h2>
+<p>IQM does not provide an open source circuit transpilation library, so this will have to be supplied by the quantum computing framework or a third party library.
+To obtain the necessary information for circuit transpilation, <code class="xref py py-meth docutils literal notranslate"><span class="pre">IQMClient.get_quantum_architecture()</span></code> returns the names of the qubits, qubit connectivity,
+and native operations. This information should enable circuit transpilation for IQM quantum architectures.</p>
 </section>
 <section id="note-on-qubit-mapping">
 <h2>Note on qubit mapping<a class="headerlink" href="#note-on-qubit-mapping" title="Permalink to this headline">#</a></h2>
@@ -849,7 +863,7 @@ Disabling the circuit duration check may be limited to certain users or groups, 
 </section>
 <section id="integration-testing">
 <h2>Integration testing<a class="headerlink" href="#integration-testing" title="Permalink to this headline">#</a></h2>
-<p>IQM provides a demo environment to test the integration against a simulated quantum computer. If you want access to that environment contact <a class="reference external" href="mailto:info&#37;&#52;&#48;meetiqm&#46;com">IQM</a>.</p>
+<p>IQM provides a demo environment to test the integration against a mock quantum computer. If you’d like to request access to that environment, please contact <a class="reference external" href="mailto:info&#37;&#52;&#48;meetiqm&#46;com">IQM</a>.</p>
 </section>
 </section>
 
@@ -886,7 +900,7 @@ Disabling the circuit duration check may be limited to certain users or groups, 
     By IQM client developers<br/>
   
       &copy; Copyright 2021-2022, IQM.<br/>
-    Last updated on 2023-11-20.<br/>
+    Last updated on 2023-12-07.<br/>
 </p>
         </footer>
     </div>
