@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 14.7
+============
+
+* Add API token support. `#102 <https://github.com/iqm-finland/iqm-client/pull/102>`_
+
 Version 14.6
 ============
 
