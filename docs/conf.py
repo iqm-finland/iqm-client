@@ -117,7 +117,7 @@ html_theme_options = {}
 
 html_sidebars = {
     '**': [
-        'sidebar-logo.html', 'search-field.html', 'sbt-sidebar-nav.html', 'versioning.html'
+        'navbar-logo.html', 'search-field.html', 'sbt-sidebar-nav.html', 'versioning.html'
     ]
 }
 
