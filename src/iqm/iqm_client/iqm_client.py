@@ -55,7 +55,7 @@ The measurement must be the last operation on each qubit, i.e. it cannot be foll
    Instruction(name='measurement', qubits=('alice', 'bob', 'charlie'), args={'key': 'm1'})
 
 
-Phased Rx
+Phased RX
 ---------
 
 Phased x-rotation gate, i.e. an x-rotation conjugated by a z-rotation.
@@ -64,8 +64,8 @@ both measured in units of full turns (:math:`2\pi` radians).
 The gate is represented in the standard computational basis by the matrix
 
 .. math::
-    R(\theta, \phi) = \exp(-i (X \cos (2 \pi \; \phi) + Y \sin (2 \pi \; \phi)) \: \pi \; \theta)
-    = R_z(\phi) R_x(\theta) R_z^\dagger(\phi),
+    \text{PRX}(\theta, \phi) = \exp(-i (X \cos (2 \pi \; \phi) + Y \sin (2 \pi \; \phi)) \: \pi \; \theta)
+    = \text{RZ}(\phi) \: \text{RX}(\theta) \: \text{RZ}^\dagger(\phi),
 
 where :math:`\theta` = ``angle_t``, :math:`\phi` = ``phase_t``,
 and :math:`X` and :math:`Y` are Pauli matrices.
