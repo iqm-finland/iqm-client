@@ -505,6 +505,15 @@ def test_submit_circuits_validates_circuits(sample_client, sample_circuit):
         sample_client.submit_circuits(circuits=[sample_circuit, invalid_circuit], shots=10)
 
 
+def test_validate_circuit_accepts_valid_circuit(sample_circuit):
+    """
+    Tests that custom Pydantic validator (triggered via <validate_circuit>)
+    accepts a valid circuit.
+    """
+    circuit = sample_circuit.copy()
+    validate_circuit(circuit)
+
+
 def test_validate_circuit_detects_circuit_name_is_empty_string(sample_circuit):
     """
     Tests that custom Pydantic validator (triggered via <validate_circuit>)
@@ -589,7 +598,7 @@ def test_validate_circuit_checks_instruction_implementation_is_string(sample_cir
     """
     circuit = sample_circuit.copy()
     circuit.instructions[0].implementation = ''
-    with pytest.raises(ValueError, match='Implementation of the instruction should be set to a non-empty string'):
+    with pytest.raises(ValueError, match='Implementation of the instruction should be None, or a non-empty string'):
         validate_circuit(circuit)
 
 

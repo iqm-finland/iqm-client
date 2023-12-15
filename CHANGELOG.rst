@@ -2,6 +2,13 @@
 Changelog
 =========
 
+Version 15.0
+============
+
+* Update project setup to use ``pyproject.toml``. `#107 <https://github.com/iqm-finland/iqm-client/pull/107>`_
+* New instruction names: ``phased_rx`` -> ``prx``, ``measurement`` -> ``measure`` (the old names are deprecated
+  but still supported). `#107 <https://github.com/iqm-finland/iqm-client/pull/107>`_
+
 Version 14.7
 ============
 

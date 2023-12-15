@@ -22,7 +22,7 @@ sys.path.insert(0, os.path.abspath(py_path))
 # -- Project information -----------------------------------------------------
 
 project = 'IQM client'
-copyright = '2021-2022, IQM'
+copyright = '2021-2023, IQM'
 author = 'IQM client developers'
 
 # The short X.Y version.
@@ -39,7 +39,7 @@ else:
 # -- General configuration ---------------------------------------------------
 
 # require a recent version of Sphinx
-needs_sphinx = '4.5'
+needs_sphinx = '6.2'
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -113,13 +113,11 @@ html_theme_path = [sphinx_book_theme.get_html_theme_path()]
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-html_theme_options = {
-    'logo_only': True,
-}
+html_theme_options = {}
 
 html_sidebars = {
     '**': [
-        'sidebar-logo.html', 'search-field.html', 'sbt-sidebar-nav.html', 'versioning.html'
+        'navbar-logo.html', 'search-field.html', 'sbt-sidebar-nav.html', 'versioning.html'
     ]
 }
 
@@ -139,9 +137,6 @@ html_favicon = '_static/images/favicon.ico'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
-#html_css_files = [
-#    'css/custom.css'
-#]
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.

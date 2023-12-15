@@ -29,20 +29,26 @@ We currently support the following native instruction types:
 ================ =========== ====================================== ===========
 name             # of qubits args                                   description
 ================ =========== ====================================== ===========
-measurement      >= 1        ``key: str``                           Measurement in the Z basis.
-phased_rx        1           ``angle_t: float``, ``phase_t: float`` Phased x-rotation gate.
+measure          >= 1        ``key: str``                           Measurement in the Z basis.
+prx              1           ``angle_t: float``, ``phase_t: float`` Phased x-rotation gate.
 cz               2                                                  Controlled-Z gate.
 barrier          >= 1                                               Execution barrier.
 ================ =========== ====================================== ===========
 
-Instructions can be further specified by adding an ``implementation`` field with
-a name for the implementation of the instruction. The default value for this field is
-an empty string which selects the default implementation.
+For each Instruction you may also optionally specify :attr:`~Instruction.implementation`,
+which contains the name of an implementation of the instruction to use.
 Support for multiple implementations is currently experimental and in normal use the
-field should be omitted. This selects the default implementation for the instruction.
+field should be omitted, this selects the default implementation for the instruction.
 
-Measurement
------------
+.. note::
+
+   The following instruction names are deprecated, but supported for backwards compatibility for now:
+
+   * ``phased_rx`` ↦ ``prx``
+   * ``measurement`` ↦ ``measure``
+
+Measure
+-------
 
 Measurement in the computational (Z) basis. The measurement results are the output of the circuit.
 Takes one string argument, ``key``, denoting the measurement key the results are labeled with.
@@ -53,11 +59,11 @@ The measurement must be the last operation on each qubit, i.e. it cannot be foll
 .. code-block:: python
    :caption: Example
 
-   Instruction(name='measurement', qubits=('alice', 'bob', 'charlie'), args={'key': 'm1'})
+   Instruction(name='measure', qubits=('alice', 'bob', 'charlie'), args={'key': 'm1'})
 
 
-Phased Rx
----------
+PRX
+---
 
 Phased x-rotation gate, i.e. an x-rotation conjugated by a z-rotation.
 Takes two arguments, the rotation angle ``angle_t`` and the phase angle ``phase_t``,
@@ -65,8 +71,8 @@ both measured in units of full turns (:math:`2\pi` radians).
 The gate is represented in the standard computational basis by the matrix
 
 .. math::
-    R(\theta, \phi) = \exp(-i (X \cos (2 \pi \; \phi) + Y \sin (2 \pi \; \phi)) \: \pi \; \theta)
-    = R_z(\phi) R_x(\theta) R_z^\dagger(\phi),
+    \text{PRX}(\theta, \phi) = \exp(-i (X \cos (2 \pi \; \phi) + Y \sin (2 \pi \; \phi)) \: \pi \; \theta)
+    = \text{RZ}(\phi) \: \text{RX}(\theta) \: \text{RZ}^\dagger(\phi),
 
 where :math:`\theta` = ``angle_t``, :math:`\phi` = ``phase_t``,
 and :math:`X` and :math:`Y` are Pauli matrices.
@@ -74,7 +80,7 @@ and :math:`X` and :math:`Y` are Pauli matrices.
 .. code-block:: python
    :caption: Example
 
-   Instruction(name='phased_rx', qubits=('bob',), args={'angle_t': 0.7, 'phase_t': 0.25})
+   Instruction(name='prx', qubits=('bob',), args={'angle_t': 0.7, 'phase_t': 0.25})
 
 
 CZ
@@ -168,13 +174,32 @@ SUPPORTED_INSTRUCTIONS = {
         'arity': 2,
         'args': {},
     },
-    'measurement': {
+    'measure': {
         'arity': -1,
         'args': {
             'key': (str,),
         },
     },
-    'phased_rx': {
+    'measurement': {  # deprecated
+        'arity': -1,
+        'args': {
+            'key': (str,),
+        },
+    },
+    'prx': {
+        'arity': 1,
+        'args': {
+            'angle_t': (
+                float,
+                int,
+            ),
+            'phase_t': (
+                float,
+                int,
+            ),
+        },
+    },
+    'phased_rx': {  # deprecated
         'arity': 1,
         'args': {
             'angle_t': (
@@ -229,7 +254,7 @@ class Status(str, Enum):
 class Instruction(BaseModel):
     """An instruction in a quantum circuit."""
 
-    name: str = Field(..., example='measurement')
+    name: str = Field(..., example='measure')
     """name of the quantum operation"""
     implementation: Optional[StrictStr] = Field(None)
     """name of the implementation, for experimental use only"""
@@ -255,7 +280,7 @@ class Instruction(BaseModel):
         implementation = value
         if isinstance(implementation, str):
             if not implementation:
-                raise ValueError('Implementation of the instruction should be set to a non-empty string')
+                raise ValueError('Implementation of the instruction should be None, or a non-empty string')
         return implementation
 
     @validator('qubits')
@@ -599,7 +624,7 @@ class ExternalToken(BaseModel):
 
     auth_server_url: str = Field(...)
     """Base URL of the authentication server"""
-    access_token: str = Field(None)
+    access_token: str = Field(...)
     """current access token of the session"""
 
 
