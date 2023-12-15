@@ -1,223 +1,125 @@
 
 <!DOCTYPE html>
 
-<html>
+<html data-content_root="" lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.17.1: http://docutils.sourceforge.net/" name="generator"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.19: https://docutils.sourceforge.io/" name="generator"/>
 <title>iqm_client.iqm_client — IQM client 7.1 documentation</title>
+<script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
 <!-- Loaded before other Sphinx assets -->
-<link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet"/>
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet"/>
-<link href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css" rel="stylesheet"/>
-<link as="font" crossorigin="" href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2" rel="preload" type="font/woff2"/>
-<link as="font" crossorigin="" href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2" rel="preload" type="font/woff2"/>
+<link href="../../../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet"/>
+<link href="../../../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet"/>
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet"/>
+<link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet"/>
+<link as="font" crossorigin="" href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="" href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="" href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" rel="preload" type="font/woff2"/>
 <link href="../../../_static/pygments.css" rel="stylesheet" type="text/css"/>
-<link href="../../../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" rel="stylesheet" type="text/css"/>
+<link href="../../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" rel="stylesheet" type="text/css"/>
 <link href="../../../_static/graphviz.css" rel="stylesheet" type="text/css"/>
 <!-- Pre-loaded scripts that we'll load fully later -->
-<link as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf" rel="preload"/>
+<link as="script" href="../../../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" rel="preload"/>
+<link as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" rel="preload"/>
+<script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
 <script data-url_root="../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-<script src="../../../_static/jquery.js"></script>
-<script src="../../../_static/underscore.js"></script>
 <script src="../../../_static/doctools.js"></script>
-<script src="../../../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
+<script src="../../../_static/sphinx_highlight.js"></script>
+<script src="../../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
 <script>window.MathJax = {"tex": {"macros": {"vr": "\\vec{r}", "ket": ["\\left| #1 \\right\\rangle", 1], "iprod": ["\\left\\langle #1 | #2 \\right\\rangle", 2]}}}</script>
 <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-<link href="../../../_static/favicon.ico" rel="shortcut icon"/>
+<script>DOCUMENTATION_OPTIONS.pagename = 'api/iqm_client.iqm_client';</script>
+<link href="../../../_static/favicon.ico" rel="icon"/>
 <link href="../genindex.html" rel="index" title="Index"/>
 <link href="../search.html" rel="search" title="Search"/>
-<link href="iqm_client.iqm_client.serialize_qubit_mapping.html" rel="next" title="iqm_client.iqm_client.serialize_qubit_mapping"/>
+<link href="iqm_client.iqm_client.CircuitMeasurementResults.html" rel="next" title="iqm_client.iqm_client.CircuitMeasurementResults"/>
 <link href="iqm_client.html" rel="prev" title="iqm_client"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<meta content="None" name="docsearch:language"/>
-<!-- Google Analytics -->
+<meta content="en" name="docsearch:language"/>
+<meta content="2023-12-15" name="docbuild:last-update"/>
 </head>
-<body data-offset="60" data-spy="scroll" data-target="#bd-toc-nav">
-<!-- Checkboxes to toggle the left sidebar -->
-<input aria-label="Toggle navigation sidebar" class="sidebar-toggle" id="__navigation" name="__navigation" type="checkbox"/>
-<label class="overlay overlay-navbar" for="__navigation">
-<div class="visually-hidden">Toggle navigation sidebar</div>
-</label>
-<!-- Checkboxes to toggle the in-page toc -->
-<input aria-label="Toggle in-page Table of Contents" class="sidebar-toggle" id="__page-toc" name="__page-toc" type="checkbox"/>
-<label class="overlay overlay-pagetoc" for="__page-toc">
-<div class="visually-hidden">Toggle in-page Table of Contents</div>
-</label>
-<!-- Headers at the top -->
-<div class="announcement header-item noprint"></div>
-<div class="header header-item noprint"></div>
-<div class="container-fluid" id="banner"></div>
-<div class="container-xl">
-<div class="row">
-<!-- Sidebar -->
-<div class="bd-sidebar noprint" id="site-navigation">
-<div class="bd-sidebar__content">
-<div class="bd-sidebar__top"><div class="navbar-brand-box">
-<a class="navbar-brand text-wrap" href="../index.html">
-<!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
-<img alt="logo" class="logo" src="../../../_static/logo.png"/>
-</a>
-</div><form action="../search.html" class="bd-search d-flex align-items-center" method="get">
-<i class="icon fas fa-search"></i>
-<input aria-label="Search the docs ..." autocomplete="off" class="form-control" id="search-input" name="q" placeholder="Search the docs ..." type="search"/>
-</form><nav aria-label="Main" class="bd-links" id="bd-docs-nav">
-<div class="bd-toc-item active">
+<body data-bs-root-margin="0px 0px -60%" data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-default-mode="" data-offset="180">
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<div id="pst-scroll-pixel-helper"></div>
+<button class="btn rounded-pill" id="pst-back-to-top" type="button">
+<i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+<input class="sidebar-toggle" id="__primary" name="__primary" type="checkbox"/>
+<label class="overlay overlay-primary" for="__primary"></label>
+<input class="sidebar-toggle" id="__secondary" name="__secondary" type="checkbox"/>
+<label class="overlay overlay-secondary" for="__secondary"></label>
+<div class="search-button__wrapper">
+<div class="search-button__overlay"></div>
+<div class="search-button__search-container">
+<form action="../search.html" class="bd-search d-flex align-items-center" method="get">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input aria-label="Search..." autocapitalize="off" autocomplete="off" autocorrect="off" class="form-control" id="search-input" name="q" placeholder="Search..." spellcheck="false" type="search"/>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+</div>
+<nav class="bd-header navbar navbar-expand-lg bd-navbar">
+</nav>
+<div class="bd-container">
+<div class="bd-container__inner bd-page-width">
+<div class="bd-sidebar-primary bd-sidebar">
+<div class="sidebar-header-items sidebar-primary__section">
+</div>
+<div class="sidebar-primary-items__start sidebar-primary__section">
+<div class="sidebar-primary-item">
+<a class="navbar-brand logo" href="../index.html">
+<img alt="IQM client 7.1 documentation - Home" class="logo__image only-light" src="../../../_static/logo.png"/>
+<script>document.write(`<img src="../../../_static/logo.png" class="logo__image only-dark" alt="IQM client 7.1 documentation - Home"/>`);</script>
+</a></div>
+<div class="sidebar-primary-item">
+<form action="../search.html" class="bd-search d-flex align-items-center" method="get">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input aria-label="Search..." autocapitalize="off" autocomplete="off" autocorrect="off" class="form-control" id="search-input" name="q" placeholder="Search..." spellcheck="false" type="search"/>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+<div class="sidebar-primary-item"><nav aria-label="Main" class="bd-links" id="bd-docs-nav">
+<div class="bd-toc-item navbar-nav active">
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1">
-<a class="reference internal" href="../readme.html">
-   IQM Client
-  </a>
-</li>
-<li class="toctree-l1 current active has-children">
-<a class="reference internal" href="../API.html">
-   API Reference
-  </a>
-<input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
-<label for="toctree-checkbox-1">
-<i class="fas fa-chevron-down">
-</i>
-</label>
-<ul class="current">
-<li class="toctree-l2 current active has-children">
-<a class="reference internal" href="iqm_client.html">
-     iqm_client
-    </a>
-<input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
-<label for="toctree-checkbox-2">
-<i class="fas fa-chevron-down">
-</i>
-</label>
-<ul class="current">
-<li class="toctree-l3 current active has-children">
-<a class="current reference internal" href="#">
-       iqm_client.iqm_client
-      </a>
-<input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
-<label for="toctree-checkbox-3">
-<i class="fas fa-chevron-down">
-</i>
-</label>
-<ul>
-<li class="toctree-l4">
-<a class="reference internal" href="iqm_client.iqm_client.serialize_qubit_mapping.html">
-         iqm_client.iqm_client.serialize_qubit_mapping
-        </a>
-</li>
-<li class="toctree-l4">
-<a class="reference internal" href="iqm_client.iqm_client.AuthRequest.html">
-         iqm_client.iqm_client.AuthRequest
-        </a>
-</li>
-<li class="toctree-l4">
-<a class="reference internal" href="iqm_client.iqm_client.Circuit.html">
-         iqm_client.iqm_client.Circuit
-        </a>
-</li>
-<li class="toctree-l4">
-<a class="reference internal" href="iqm_client.iqm_client.Credentials.html">
-         iqm_client.iqm_client.Credentials
-        </a>
-</li>
-<li class="toctree-l4">
-<a class="reference internal" href="iqm_client.iqm_client.ExternalToken.html">
-         iqm_client.iqm_client.ExternalToken
-        </a>
-</li>
-<li class="toctree-l4">
-<a class="reference internal" href="iqm_client.iqm_client.GrantType.html">
-         iqm_client.iqm_client.GrantType
-        </a>
-</li>
-<li class="toctree-l4">
-<a class="reference internal" href="iqm_client.iqm_client.IQMClient.html">
-         iqm_client.iqm_client.IQMClient
-        </a>
-</li>
-<li class="toctree-l4">
-<a class="reference internal" href="iqm_client.iqm_client.Instruction.html">
-         iqm_client.iqm_client.Instruction
-        </a>
-</li>
-<li class="toctree-l4">
-<a class="reference internal" href="iqm_client.iqm_client.Metadata.html">
-         iqm_client.iqm_client.Metadata
-        </a>
-</li>
-<li class="toctree-l4">
-<a class="reference internal" href="iqm_client.iqm_client.RunRequest.html">
-         iqm_client.iqm_client.RunRequest
-        </a>
-</li>
-<li class="toctree-l4">
-<a class="reference internal" href="iqm_client.iqm_client.RunResult.html">
-         iqm_client.iqm_client.RunResult
-        </a>
-</li>
-<li class="toctree-l4">
-<a class="reference internal" href="iqm_client.iqm_client.RunStatus.html">
-         iqm_client.iqm_client.RunStatus
-        </a>
-</li>
-<li class="toctree-l4">
-<a class="reference internal" href="iqm_client.iqm_client.SingleQubitMapping.html">
-         iqm_client.iqm_client.SingleQubitMapping
-        </a>
-</li>
-<li class="toctree-l4">
-<a class="reference internal" href="iqm_client.iqm_client.Status.html">
-         iqm_client.iqm_client.Status
-        </a>
-</li>
-<li class="toctree-l4">
-<a class="reference internal" href="iqm_client.iqm_client.APITimeoutError.html">
-         iqm_client.iqm_client.APITimeoutError
-        </a>
-</li>
-<li class="toctree-l4">
-<a class="reference internal" href="iqm_client.iqm_client.CircuitExecutionError.html">
-         iqm_client.iqm_client.CircuitExecutionError
-        </a>
-</li>
-<li class="toctree-l4">
-<a class="reference internal" href="iqm_client.iqm_client.ClientAuthenticationError.html">
-         iqm_client.iqm_client.ClientAuthenticationError
-        </a>
-</li>
-<li class="toctree-l4">
-<a class="reference internal" href="iqm_client.iqm_client.ClientConfigurationError.html">
-         iqm_client.iqm_client.ClientConfigurationError
-        </a>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../readme.html">IQM Client</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../API.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="iqm_client.html">iqm_client</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l3 current active has-children"><a class="current reference internal" href="#">iqm_client.iqm_client</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="iqm_client.iqm_client.CircuitMeasurementResults.html">iqm_client.iqm_client.CircuitMeasurementResults</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm_client.iqm_client.serialize_qubit_mapping.html">iqm_client.iqm_client.serialize_qubit_mapping</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm_client.iqm_client.AuthRequest.html">iqm_client.iqm_client.AuthRequest</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm_client.iqm_client.Circuit.html">iqm_client.iqm_client.Circuit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm_client.iqm_client.Credentials.html">iqm_client.iqm_client.Credentials</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm_client.iqm_client.ExternalToken.html">iqm_client.iqm_client.ExternalToken</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm_client.iqm_client.GrantType.html">iqm_client.iqm_client.GrantType</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm_client.iqm_client.IQMClient.html">iqm_client.iqm_client.IQMClient</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm_client.iqm_client.Instruction.html">iqm_client.iqm_client.Instruction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm_client.iqm_client.Metadata.html">iqm_client.iqm_client.Metadata</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm_client.iqm_client.RunRequest.html">iqm_client.iqm_client.RunRequest</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm_client.iqm_client.RunResult.html">iqm_client.iqm_client.RunResult</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm_client.iqm_client.RunStatus.html">iqm_client.iqm_client.RunStatus</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm_client.iqm_client.SingleQubitMapping.html">iqm_client.iqm_client.SingleQubitMapping</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm_client.iqm_client.Status.html">iqm_client.iqm_client.Status</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm_client.iqm_client.APITimeoutError.html">iqm_client.iqm_client.APITimeoutError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm_client.iqm_client.CircuitExecutionError.html">iqm_client.iqm_client.CircuitExecutionError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm_client.iqm_client.ClientAuthenticationError.html">iqm_client.iqm_client.ClientAuthenticationError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm_client.iqm_client.ClientConfigurationError.html">iqm_client.iqm_client.ClientConfigurationError</a></li>
 </ul>
 </li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1">
-<a class="reference internal" href="../license.html">
-   License
-  </a>
-</li>
-<li class="toctree-l1">
-<a class="reference internal" href="../authors.html">
-   Contributors
-  </a>
-</li>
-<li class="toctree-l1">
-<a class="reference internal" href="../changelog.html">
-   Changelog
-  </a>
-</li>
-<li class="toctree-l1">
-<a class="reference internal" href="../json_schemas.html">
-   JSON schemas
-  </a>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../authors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../json_schemas.html">JSON schemas</a></li>
 </ul>
 </div>
-</nav>
+</nav></div>
+<div class="sidebar-primary-item">
 <style type="text/css">
   ul.version_list { padding-left: 0; }
   ul.version_list li.version_item { display: inline; }
@@ -240,6 +142,7 @@
 </style>
 <h3>Versions</h3>
 <ul class="version_list"><li class="version_item"><a href="../../../index.html">dev</a></li>
+<li class="version_item"><a href="../../15.0/index.html">15.0</a></li>
 <li class="version_item"><a href="../../14.7/index.html">14.7</a></li>
 <li class="version_item"><a href="../../14.6/index.html">14.6</a></li>
 <li class="version_item"><a href="../../14.5/index.html">14.5</a></li>
@@ -304,114 +207,75 @@
 <li class="version_item"><a href="../../2.2/index.html">2.2</a></li>
 <li class="version_item"><a href="../../1.10/index.html">1.10</a></li></ul>
 </div>
-<div class="bd-sidebar__bottom">
-<!-- To handle the deprecated key -->
-<div class="navbar_extra_footer">
-            Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
 </div>
-</div>
+<div class="sidebar-primary-items__end sidebar-primary__section">
 </div>
 <div id="rtd-footer-container"></div>
 </div>
-<!-- A tiny helper pixel to detect if we've scrolled -->
+<main class="bd-main" id="main-content">
 <div class="sbt-scroll-pixel-helper"></div>
-<!-- Main content -->
-<div class="col py-0 content-container">
-<div class="header-article row sticky-top noprint">
-<div class="col py-1 d-flex header-article-main">
-<div class="header-article__left">
-<label class="headerbtn" data-placement="right" data-toggle="tooltip" for="__navigation" title="Toggle navigation">
-<span class="headerbtn__icon-container">
-<i class="fas fa-bars"></i>
-</span>
-</label>
+<div class="bd-content">
+<div class="bd-article-container">
+<div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+<div class="header-article-items__start">
+<div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" data-bs-placement="bottom" data-bs-toggle="tooltip" for="__primary" title="Toggle primary sidebar">
+<span class="fa-solid fa-bars"></span>
+</label></div>
 </div>
-<div class="header-article__right">
-<button class="headerbtn" data-placement="bottom" data-toggle="tooltip" onclick="toggleFullScreen()" title="Fullscreen mode">
-<span class="headerbtn__icon-container">
-<i class="fas fa-expand"></i>
-</span>
-</button>
-<div class="menu-dropdown menu-dropdown-download-buttons">
-<button aria-label="Download this page" class="headerbtn menu-dropdown__trigger">
+<div class="header-article-items__end">
+<div class="header-article-item">
+<div class="article-header-buttons">
+<div class="dropdown dropdown-download-buttons">
+<button aria-expanded="false" aria-label="Download this page" class="btn dropdown-toggle" data-bs-toggle="dropdown" type="button">
 <i class="fas fa-download"></i>
 </button>
-<div class="menu-dropdown__content">
-<ul>
-<li>
-<a class="headerbtn" data-placement="left" data-toggle="tooltip" href="../_sources/api/iqm_client.iqm_client.rst.txt" title="Download source file">
-<span class="headerbtn__icon-container">
+<ul class="dropdown-menu">
+<li><a class="btn btn-sm btn-download-source-button dropdown-item" data-bs-placement="left" data-bs-toggle="tooltip" href="../_sources/api/iqm_client.iqm_client.rst" target="_blank" title="Download source file">
+<span class="btn__icon-container">
 <i class="fas fa-file"></i>
 </span>
-<span class="headerbtn__text-container">.rst</span>
+<span class="btn__text-container">.rst</span>
 </a>
 </li>
 <li>
-<button class="headerbtn" data-placement="left" data-toggle="tooltip" onclick="printPdf(this)" title="Print to PDF">
-<span class="headerbtn__icon-container">
+<button class="btn btn-sm btn-download-pdf-button dropdown-item" data-bs-placement="left" data-bs-toggle="tooltip" onclick="window.print()" title="Print to PDF">
+<span class="btn__icon-container">
 <i class="fas fa-file-pdf"></i>
 </span>
-<span class="headerbtn__text-container">.pdf</span>
+<span class="btn__text-container">.pdf</span>
 </button>
 </li>
 </ul>
 </div>
-</div>
-<label class="headerbtn headerbtn-page-toc" for="__page-toc">
-<span class="headerbtn__icon-container">
-<i class="fas fa-list"></i>
+<button class="btn btn-sm btn-fullscreen-button" data-bs-placement="bottom" data-bs-toggle="tooltip" onclick="toggleFullScreen()" title="Fullscreen mode">
+<span class="btn__icon-container">
+<i class="fas fa-expand"></i>
 </span>
+</button>
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" data-bs-placement="bottom" data-bs-toggle="tooltip" for="__secondary" title="Toggle secondary sidebar">
+<span class="fa-solid fa-list"></span>
 </label>
+</div></div>
 </div>
 </div>
-<!-- Table of contents -->
-<div class="col-md-3 bd-toc show noprint">
-<div class="tocsection onthispage pt-5 pb-3">
-<i class="fas fa-list"></i> Contents
-    </div>
-<nav aria-label="Page" id="bd-toc-nav">
-<ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry">
-<a class="reference internal nav-link" href="#instructions">
-   Instructions
-  </a>
-<ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry">
-<a class="reference internal nav-link" href="#measurement">
-     Measurement
-    </a>
-</li>
-<li class="toc-h3 nav-item toc-entry">
-<a class="reference internal nav-link" href="#phased-rx">
-     Phased Rx
-    </a>
-</li>
-<li class="toc-h3 nav-item toc-entry">
-<a class="reference internal nav-link" href="#cz">
-     CZ
-    </a>
-</li>
-<li class="toc-h3 nav-item toc-entry">
-<a class="reference internal nav-link" href="#barrier">
-     Barrier
-    </a>
-</li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry">
-<a class="reference internal nav-link" href="#circuit-output">
-   Circuit output
-  </a>
-<ul class="nav section-nav flex-column">
-</ul>
-</li>
-</ul>
-</nav>
 </div>
-</div>
-<div class="article row">
-<div class="col pl-md-3 pl-lg-5 content-container">
-<!-- Table of contents that is only displayed when printing the page -->
 <div class="onlyprint" id="jb-print-docs-body">
 <h1>iqm_client.iqm_client</h1>
 <!-- Table of contents -->
@@ -422,47 +286,21 @@
 </div>
 <nav aria-label="Page">
 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry">
-<a class="reference internal nav-link" href="#instructions">
-   Instructions
-  </a>
-<ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry">
-<a class="reference internal nav-link" href="#measurement">
-     Measurement
-    </a>
-</li>
-<li class="toc-h3 nav-item toc-entry">
-<a class="reference internal nav-link" href="#phased-rx">
-     Phased Rx
-    </a>
-</li>
-<li class="toc-h3 nav-item toc-entry">
-<a class="reference internal nav-link" href="#cz">
-     CZ
-    </a>
-</li>
-<li class="toc-h3 nav-item toc-entry">
-<a class="reference internal nav-link" href="#barrier">
-     Barrier
-    </a>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#instructions">Instructions</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#measurement">Measurement</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#phased-rx">Phased Rx</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cz">CZ</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#barrier">Barrier</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry">
-<a class="reference internal nav-link" href="#circuit-output">
-   Circuit output
-  </a>
-<ul class="nav section-nav flex-column">
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#circuit-output">Circuit output</a></li>
 </ul>
 </nav>
 </div>
 </div>
 </div>
-<main id="main-content" role="main">
-<div>
+<div id="searchbox"></div>
+<article class="bd-article" role="main">
 <style type="text/css">
   .version_notice {
     background-color: #ffc107;
@@ -474,12 +312,12 @@
 <strong>
     
             You're reading an old version of this documentation.
-            If you want up-to-date information, please have a look at <a href="../../14.7/index.html">14.7</a>.
+            If you want up-to-date information, please have a look at <a href="../../15.0/index.html">15.0</a>.
     
         </strong>
 </div>
 <section id="module-iqm_client.iqm_client">
-<span id="iqm-client-iqm-client"></span><h1>iqm_client.iqm_client<a class="headerlink" href="#module-iqm_client.iqm_client" title="Permalink to this headline">#</a></h1>
+<span id="iqm-client-iqm-client"></span><h1>iqm_client.iqm_client<a class="headerlink" href="#module-iqm_client.iqm_client" title="Permalink to this heading">#</a></h1>
 <p>Client for connecting to the IQM quantum computer server interface.</p>
 <p>The <a class="reference internal" href="iqm_client.iqm_client.Circuit.html#iqm_client.iqm_client.Circuit" title="iqm_client.iqm_client.Circuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Circuit</span></code></a> class represents quantum circuits to be executed, consisting of a list of
 native quantum operations, each represented by an instance of the <a class="reference internal" href="iqm_client.iqm_client.Instruction.html#iqm_client.iqm_client.Instruction" title="iqm_client.iqm_client.Instruction"><code class="xref py py-class docutils literal notranslate"><span class="pre">Instruction</span></code></a> class.
@@ -487,15 +325,9 @@ Different Instruction types are distinguished by their <a class="reference inter
 Each Instruction type acts on a number of <a class="reference internal" href="iqm_client.iqm_client.Instruction.html#iqm_client.iqm_client.Instruction.qubits" title="iqm_client.iqm_client.Instruction.qubits"><code class="xref py py-attr docutils literal notranslate"><span class="pre">qubits</span></code></a>, and expects certain
 <a class="reference internal" href="iqm_client.iqm_client.Instruction.html#iqm_client.iqm_client.Instruction.args" title="iqm_client.iqm_client.Instruction.args"><code class="xref py py-attr docutils literal notranslate"><span class="pre">args</span></code></a>.</p>
 <section id="instructions">
-<h2>Instructions<a class="headerlink" href="#instructions" title="Permalink to this headline">#</a></h2>
+<h2>Instructions<a class="headerlink" href="#instructions" title="Permalink to this heading">#</a></h2>
 <p>We currently support three native instruction types:</p>
 <table class="table">
-<colgroup>
-<col style="width: 17%"/>
-<col style="width: 12%"/>
-<col style="width: 41%"/>
-<col style="width: 29%"/>
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>name</p></th>
 <th class="head"><p># of qubits</p></th>
@@ -527,7 +359,7 @@ Each Instruction type acts on a number of <a class="reference internal" href="iq
 </tbody>
 </table>
 <section id="measurement">
-<h3>Measurement<a class="headerlink" href="#measurement" title="Permalink to this headline">#</a></h3>
+<h3>Measurement<a class="headerlink" href="#measurement" title="Permalink to this heading">#</a></h3>
 <p>Measurement in the computational (Z) basis. The measurement results are the output of the circuit.
 Takes one string argument, <code class="docutils literal notranslate"><span class="pre">key</span></code>, denoting the measurement key the results are labeled with.
 All the measurement keys in a circuit must be unique.
@@ -536,7 +368,7 @@ The measurement must be the last operation on each qubit, i.e. it cannot be foll
 <p>Example: <code class="docutils literal notranslate"><span class="pre">Instruction(name='measurement',</span> <span class="pre">qubits=['alice',</span> <span class="pre">'bob',</span> <span class="pre">'charlie'],</span> <span class="pre">args={'key':</span> <span class="pre">'m1'})</span></code></p>
 </section>
 <section id="phased-rx">
-<h3>Phased Rx<a class="headerlink" href="#phased-rx" title="Permalink to this headline">#</a></h3>
+<h3>Phased Rx<a class="headerlink" href="#phased-rx" title="Permalink to this heading">#</a></h3>
 <p>Phased x-rotation gate, i.e. an x-rotation conjugated by a z-rotation.
 Takes two arguments, the rotation angle <code class="docutils literal notranslate"><span class="pre">angle_t</span></code> and the phase angle <code class="docutils literal notranslate"><span class="pre">phase_t</span></code>,
 both measured in units of full turns (<span class="math notranslate nohighlight">\(2\pi\)</span> radians).
@@ -549,7 +381,7 @@ and <span class="math notranslate nohighlight">\(X\)</span> and <span class="mat
 <p>Example: <code class="docutils literal notranslate"><span class="pre">Instruction(name='phased_rx',</span> <span class="pre">qubits=['bob'],</span> <span class="pre">args={'angle_t':</span> <span class="pre">0.7,</span> <span class="pre">'phase_t':</span> <span class="pre">0.25})</span></code></p>
 </section>
 <section id="cz">
-<h3>CZ<a class="headerlink" href="#cz" title="Permalink to this headline">#</a></h3>
+<h3>CZ<a class="headerlink" href="#cz" title="Permalink to this heading">#</a></h3>
 <p>Controlled-Z gate. Represented in the standard computational basis by the matrix</p>
 <div class="math notranslate nohighlight">
 \[\text{CZ} = \text{diag}(1, 1, 1, -1).\]</div>
@@ -557,14 +389,14 @@ and <span class="math notranslate nohighlight">\(X\)</span> and <span class="mat
 <p>Example: <code class="docutils literal notranslate"><span class="pre">Instruction(name='cz',</span> <span class="pre">qubits=['alice',</span> <span class="pre">'bob'],</span> <span class="pre">args={})</span></code></p>
 </section>
 <section id="barrier">
-<h3>Barrier<a class="headerlink" href="#barrier" title="Permalink to this headline">#</a></h3>
+<h3>Barrier<a class="headerlink" href="#barrier" title="Permalink to this heading">#</a></h3>
 <p>Barriers ensure that all operations after the barrier on the qubit subsystems spanned by
 the barrier are only executed when all the operations before the barrier have been completed.</p>
 <p>Example: <code class="docutils literal notranslate"><span class="pre">Instruction(name='barrier',</span> <span class="pre">qubits=['alice',</span> <span class="pre">'bob'],</span> <span class="pre">args={})</span></code></p>
 </section>
 </section>
 <section id="circuit-output">
-<h2>Circuit output<a class="headerlink" href="#circuit-output" title="Permalink to this headline">#</a></h2>
+<h2>Circuit output<a class="headerlink" href="#circuit-output" title="Permalink to this heading">#</a></h2>
 <p>The <a class="reference internal" href="iqm_client.iqm_client.RunResult.html#iqm_client.iqm_client.RunResult" title="iqm_client.iqm_client.RunResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunResult</span></code></a> class represents the results of the quantum circuit execution.
 If the run succeeded, <a class="reference internal" href="iqm_client.iqm_client.RunResult.html#iqm_client.iqm_client.RunResult.measurements" title="iqm_client.iqm_client.RunResult.measurements"><code class="xref py py-attr docutils literal notranslate"><span class="pre">RunResult.measurements</span></code></a> contains the output of the batch of circuits,
 consisting of the results of the measurement operations in each circuit.
@@ -575,13 +407,18 @@ results, represented as a nested list.
 <code class="docutils literal notranslate"><span class="pre">circuit_index</span></code>’th circuit of the batch.</p>
 <p>The results are nonnegative integers representing the computational basis state (for qubits, 0 or 1)
 that was the measurement outcome.</p>
+</section>
 <hr class="docutils"/>
+<p class="rubric">Module Attributes</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="iqm_client.iqm_client.CircuitMeasurementResults.html#iqm_client.iqm_client.CircuitMeasurementResults" title="iqm_client.iqm_client.CircuitMeasurementResults"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CircuitMeasurementResults</span></code></a></p></td>
+<td><p>Measurement results from a single circuit.</p></td>
+</tr>
+</tbody>
+</table>
 <p class="rubric">Functions</p>
 <table class="autosummary longtable table autosummary">
-<colgroup>
-<col style="width: 10%"/>
-<col style="width: 90%"/>
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="iqm_client.iqm_client.serialize_qubit_mapping.html#iqm_client.iqm_client.serialize_qubit_mapping" title="iqm_client.iqm_client.serialize_qubit_mapping"><code class="xref py py-obj docutils literal notranslate"><span class="pre">serialize_qubit_mapping</span></code></a>(qubit_mapping)</p></td>
 <td><p>Serializes a qubit mapping dict into the corresponding IQM data transfer format.</p></td>
@@ -590,10 +427,6 @@ that was the measurement outcome.</p>
 </table>
 <p class="rubric">Classes</p>
 <table class="autosummary longtable table autosummary">
-<colgroup>
-<col style="width: 10%"/>
-<col style="width: 90%"/>
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="iqm_client.iqm_client.AuthRequest.html#iqm_client.iqm_client.AuthRequest" title="iqm_client.iqm_client.AuthRequest"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AuthRequest</span></code></a>(*, client_id[, grant_type, ...])</p></td>
 <td><p>Request sent to authentication server for access token and refresh token, or for terminating the session.</p></td>
@@ -638,10 +471,6 @@ that was the measurement outcome.</p>
 </table>
 <p class="rubric">Exceptions</p>
 <table class="autosummary longtable table autosummary">
-<colgroup>
-<col style="width: 10%"/>
-<col style="width: 90%"/>
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="iqm_client.iqm_client.APITimeoutError.html#iqm_client.iqm_client.APITimeoutError" title="iqm_client.iqm_client.APITimeoutError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">APITimeoutError</span></code></a></p></td>
 <td><p>Exception for when executing a task on the server takes too long.</p></td>
@@ -657,7 +486,6 @@ that was the measurement outcome.</p>
 </tr>
 </tbody>
 </table>
-</section>
 <p class="rubric">Inheritance</p>
 <div class="graphviz"><img alt="Inheritance diagram of iqm_client.iqm_client" class="inheritance graphviz" src="../_images/inheritance-5a3be3fc4f8ce552f4c181ecbd1c1d8347833b32.png" usemap="#inheritanceccd5403770"/></div>
 <map id="inheritanceccd5403770" name="inheritanceccd5403770">
@@ -679,43 +507,76 @@ that was the measurement outcome.</p>
 <area alt="" coords="268,105,340,131" href="iqm_client.iqm_client.Status.html#iqm_client.iqm_client.Status" id="node20" shape="rect" target="_top" title="Status of a task."/>
 <area alt="" coords="55,31,142,56" href="iqm_client.iqm_client.IQMClient.html#iqm_client.iqm_client.IQMClient" id="node13" shape="rect" target="_top" title="Provides access to IQM quantum computers."/>
 </map></section>
-</div>
-</main>
-<footer class="footer-article noprint">
-<!-- Previous / next buttons -->
+</article>
+<footer class="prev-next-footer">
 <div class="prev-next-area">
-<a class="left-prev" href="iqm_client.html" id="prev-link" title="previous page">
-<i class="fas fa-angle-left"></i>
+<a class="left-prev" href="iqm_client.html" title="previous page">
+<i class="fa-solid fa-angle-left"></i>
 <div class="prev-next-info">
 <p class="prev-next-subtitle">previous</p>
 <p class="prev-next-title">iqm_client</p>
 </div>
 </a>
-<a class="right-next" href="iqm_client.iqm_client.serialize_qubit_mapping.html" id="next-link" title="next page">
+<a class="right-next" href="iqm_client.iqm_client.CircuitMeasurementResults.html" title="next page">
 <div class="prev-next-info">
 <p class="prev-next-subtitle">next</p>
-<p class="prev-next-title">iqm_client.iqm_client.serialize_qubit_mapping</p>
+<p class="prev-next-title">iqm_client.iqm_client.CircuitMeasurementResults</p>
 </div>
-<i class="fas fa-angle-right"></i>
+<i class="fa-solid fa-angle-right"></i>
 </a>
 </div>
 </footer>
 </div>
+<div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+<div class="sidebar-secondary-item">
+<div class="page-toc tocsection onthispage">
+<i class="fa-solid fa-list"></i> Contents
+  </div>
+<nav class="bd-toc-nav page-toc">
+<ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#instructions">Instructions</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#measurement">Measurement</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#phased-rx">Phased Rx</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cz">CZ</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#barrier">Barrier</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#circuit-output">Circuit output</a></li>
+</ul>
+</nav></div>
+</div></div>
 </div>
-<div class="footer-content row">
-<footer class="col footer"><p>
-  
-    By IQM client developers<br/>
-  
-      © Copyright 2021-2022, IQM.<br/>
-    Last updated on 2023-02-10.<br/>
+<footer class="bd-footer-content">
+<div class="bd-footer-content__inner container">
+<div class="footer-item">
+<p class="component-author">
+By IQM client developers
 </p>
+</div>
+<div class="footer-item">
+<p class="copyright">
+    
+      © Copyright 2021-2023, IQM.
+      <br/>
+</p>
+</div>
+<div class="footer-item">
+<p class="last-updated">
+  Last updated on 2023-12-15.
+  <br/>
+</p>
+</div>
+<div class="footer-item">
+</div>
+</div>
 </footer>
-</div>
-</div>
+</main>
 </div>
 </div>
 <!-- Scripts loaded after <body> so the DOM is not blocked -->
-<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<script src="../../../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+<footer class="bd-footer">
+</footer>
 </body>
 </html>
