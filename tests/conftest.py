@@ -171,7 +171,13 @@ def sample_circuit(sample_circuit_metadata):
                 qubits=('Qubit A',),
                 args={'phase_t': 0.7, 'angle_t': 0.25},
             ),
+            Instruction(
+                name='prx',
+                qubits=('Qubit A',),
+                args={'phase_t': 0.3, 'angle_t': -0.2},
+            ),
             Instruction(name='measurement', qubits=('Qubit A',), args={'key': 'A'}),
+            Instruction(name='measure', qubits=('Qubit B',), args={'key': 'B'}),
         ],
         metadata=sample_circuit_metadata,
     )

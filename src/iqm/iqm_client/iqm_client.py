@@ -280,7 +280,7 @@ class Instruction(BaseModel):
         implementation = value
         if isinstance(implementation, str):
             if not implementation:
-                raise ValueError('Implementation of the instruction should be set to a non-empty string')
+                raise ValueError('Implementation of the instruction should be None, or a non-empty string')
         return implementation
 
     @validator('qubits')
