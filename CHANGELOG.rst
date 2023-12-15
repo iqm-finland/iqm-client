@@ -2,7 +2,7 @@
 Changelog
 =========
 
-Version 14.8
+Version 15.0
 ============
 
 * Update project setup to use ``pyproject.toml``. `#107 <https://github.com/iqm-finland/iqm-client/pull/107>`_
