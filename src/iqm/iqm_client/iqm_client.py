@@ -40,8 +40,15 @@ which contains the name of an implementation of the instruction to use.
 Support for multiple implementations is currently experimental and in normal use the
 field should be omitted, this selects the default implementation for the instruction.
 
-Measurement
------------
+.. note::
+
+   The following instruction names are deprecated, but supported for backwards compatibility for now:
+
+   * ``phased_rx`` ↦ ``prx``
+   * ``measurement`` ↦ ``measure``
+
+Measure
+-------
 
 Measurement in the computational (Z) basis. The measurement results are the output of the circuit.
 Takes one string argument, ``key``, denoting the measurement key the results are labeled with.
@@ -52,11 +59,11 @@ The measurement must be the last operation on each qubit, i.e. it cannot be foll
 .. code-block:: python
    :caption: Example
 
-   Instruction(name='measurement', qubits=('alice', 'bob', 'charlie'), args={'key': 'm1'})
+   Instruction(name='measure', qubits=('alice', 'bob', 'charlie'), args={'key': 'm1'})
 
 
-Phased RX
----------
+PRX
+---
 
 Phased x-rotation gate, i.e. an x-rotation conjugated by a z-rotation.
 Takes two arguments, the rotation angle ``angle_t`` and the phase angle ``phase_t``,
@@ -247,7 +254,7 @@ class Status(str, Enum):
 class Instruction(BaseModel):
     """An instruction in a quantum circuit."""
 
-    name: str = Field(..., example='measurement')
+    name: str = Field(..., example='measure')
     """name of the quantum operation"""
     implementation: Optional[StrictStr] = Field(None)
     """name of the implementation, for experimental use only"""

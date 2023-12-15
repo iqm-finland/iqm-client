@@ -63,8 +63,8 @@ version_scheme = "no-guess-dev"
 [tool.black]
 line-length = 120
 skip-string-normalization = true
-target-version = ['py311']
-extend-exclude = '_pb2.py$'
+target-version = ["py311"]
+extend-exclude = "_pb2.py$"
 
 
 [tool.coverage.run]
@@ -116,7 +116,7 @@ mypy_path = "src"
 plugins = ["pydantic.mypy"]
 
 [[tool.mypy.overrides]]
-module = ['requests']
+module = ["requests"]
 ignore_missing_imports = true
 
 
