@@ -163,7 +163,7 @@ def test_submit_circuits_raises_with_invalid_heralding_mode(sample_client):
     """
     Test that submitting run request with invalid heralding mode raises an error
     """
-    with pytest.raises(ValueError, match='value is not a valid enumeration member'):
+    with pytest.raises(ValueError, match="Input should be 'none' or 'zeros'"):
         sample_client.submit_circuits(circuits=[], shots=10, heralding_mode='invalid')
 
 
@@ -499,7 +499,7 @@ def test_submit_circuits_validates_circuits(sample_client, sample_circuit):
     Tests that <submit_circuits> validates the batch of provided circuits
     before submitting them for execution
     """
-    invalid_circuit = sample_circuit.copy()
+    invalid_circuit = sample_circuit.model_copy()
     invalid_circuit.name = ''  # Invalidate the circuit on purpose
     with pytest.raises(CircuitValidationError, match='The circuit at index 1 failed the validation'):
         sample_client.submit_circuits(circuits=[sample_circuit, invalid_circuit], shots=10)
@@ -510,7 +510,7 @@ def test_validate_circuit_accepts_valid_circuit(sample_circuit):
     Tests that custom Pydantic validator (triggered via <validate_circuit>)
     accepts a valid circuit.
     """
-    circuit = sample_circuit.copy()
+    circuit = sample_circuit.model_copy()
     validate_circuit(circuit)
 
 
@@ -519,7 +519,7 @@ def test_validate_circuit_detects_circuit_name_is_empty_string(sample_circuit):
     Tests that custom Pydantic validator (triggered via <validate_circuit>)
     catches empty name of a circuit
     """
-    circuit = sample_circuit.copy()
+    circuit = sample_circuit.model_copy()
     circuit.name = ''
     with pytest.raises(ValueError, match='A circuit should have a non-empty string for a name'):
         validate_circuit(circuit)
@@ -530,7 +530,7 @@ def test_validate_circuit_detects_circuit_metadata_is_wrong_type(sample_circuit)
     Tests that custom Pydantic validator (triggered via <validate_circuit>)
     catches invalid type of circuit metadata
     """
-    circuit = sample_circuit.copy()
+    circuit = sample_circuit.model_copy()
     circuit.metadata = []
     with pytest.raises(ValueError, match='Circuit metadata should be a dictionary'):
         validate_circuit(circuit)
@@ -541,7 +541,7 @@ def test_validate_circuit_detects_circuit_metadata_keys_are_wrong_type(sample_ci
     Tests that custom Pydantic validator (triggered via <validate_circuit>)
     catches invalid type of circuit metadata
     """
-    circuit = sample_circuit.copy()
+    circuit = sample_circuit.model_copy()
     circuit.metadata = {'1': 'string key is ok', 2: 'int key is not ok'}
     with pytest.raises(ValueError, match='Metadata dictionary should use strings for all root-level keys'):
         validate_circuit(circuit)
@@ -552,7 +552,7 @@ def test_validate_circuit_checks_circuit_instructions_container_type(sample_circ
     Tests that custom Pydantic validator (triggered via <validate_circuit>)
     catches invalid type of instruction container of a circuit
     """
-    circuit = sample_circuit.copy()
+    circuit = sample_circuit.model_copy()
     circuit.instructions = {}
     with pytest.raises(ValueError, match='Instructions of a circuit should be packed in a tuple'):
         validate_circuit(circuit)
@@ -563,7 +563,7 @@ def test_validate_circuit_checks_circuit_has_at_least_one_instruction(sample_cir
     Tests that custom Pydantic validator (triggered via <validate_circuit>)
     catches when circuit instructions container has 0 instructions
     """
-    circuit = sample_circuit.copy()
+    circuit = sample_circuit.model_copy()
     circuit.instructions = tuple()
     with pytest.raises(ValueError, match='Each circuit should have at least one instruction'):
         validate_circuit(circuit)
@@ -574,7 +574,7 @@ def test_validate_circuit_checks_circuit_instructions_container_content(sample_c
     Tests that custom Pydantic validator (triggered via <validate_circuit>)
     catches when circuit instructions container has items of incorrect type
     """
-    circuit = sample_circuit.copy()
+    circuit = sample_circuit.model_copy()
     circuit.instructions += ('I am not an instruction!',)
     with pytest.raises(ValueError, match='Every instruction in a circuit should be of type <Instruction>'):
         validate_circuit(circuit)
@@ -585,7 +585,7 @@ def test_validate_circuit_checks_instruction_name_is_supported(sample_circuit):
     Tests that custom Pydantic validator (triggered via <validate_circuit>)
     catches when instruction name is set to an unknown instruction type
     """
-    circuit = sample_circuit.copy()
+    circuit = sample_circuit.model_copy()
     circuit.instructions[0].name = 'kaboom'
     with pytest.raises(ValueError, match='Unknown instruction "kaboom"'):
         validate_circuit(circuit)
@@ -596,7 +596,7 @@ def test_validate_circuit_checks_instruction_implementation_is_string(sample_cir
     Tests that custom Pydantic validator (triggered via <validate_circuit>)
     catches when instruction implementation is set to an empty string
     """
-    circuit = sample_circuit.copy()
+    circuit = sample_circuit.model_copy()
     circuit.instructions[0].implementation = ''
     with pytest.raises(ValueError, match='Implementation of the instruction should be None, or a non-empty string'):
         validate_circuit(circuit)
@@ -608,7 +608,7 @@ def test_validate_circuit_checks_instruction_qubit_count(sample_circuit):
     catches when qubit count of the instruction does not match the arity of
     that instruction
     """
-    circuit = sample_circuit.copy()
+    circuit = sample_circuit.model_copy()
     circuit.instructions[0].qubits += ('Qubit C',)
     with pytest.raises(ValueError, match=r'The "cz" instruction acts on 2 qubit\(s\), but 3 were given'):
         validate_circuit(circuit)
@@ -619,7 +619,7 @@ def test_validate_circuit_checks_instruction_argument_names(sample_circuit):
     Tests that custom Pydantic validator (triggered via <validate_circuit>)
     catches when submitted argument names of the instruction are not supported
     """
-    circuit = sample_circuit.copy()
+    circuit = sample_circuit.model_copy()
     circuit.instructions[1].args['arg_x'] = 'This argument name is not supported by the instruction'
     with pytest.raises(ValueError, match='The instruction "phased_rx" requires'):
         validate_circuit(circuit)
@@ -630,9 +630,9 @@ def test_validate_circuit_checks_instruction_argument_types(sample_circuit):
     Tests that custom Pydantic validator (triggered via <validate_circuit>)
     catches when submitted argument types of the instruction are not supported
     """
-    circuit = sample_circuit.copy()
+    circuit = sample_circuit.model_copy()
     circuit.instructions[1].args['phase_t'] = '0.7'
-    with pytest.raises(ValueError, match='The argument "phase_t" should be of one of the following supported types'):
+    with pytest.raises(TypeError, match='The argument "phase_t" should be of one of the following supported types'):
         validate_circuit(circuit)
 
 
