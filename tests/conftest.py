@@ -183,6 +183,41 @@ def sample_circuit(sample_circuit_metadata):
     )
 
 
+@pytest.fixture
+def sample_circuit_with_raw_instructions(sample_circuit_metadata):
+    """
+    A sample circuit with instructions defined by dicts for testing if
+    we do not break pydantic parsing logic with custom validators
+    """
+    return Circuit(
+        name='The circuit',
+        instructions=[
+            {
+                'name': 'cz',
+                'qubits': (
+                    'Qubit A',
+                    'Qubit B',
+                ),
+                'args': {},
+            },
+            {
+                'name': 'phased_rx',
+                'implementation': 'drag_gaussian',
+                'qubits': ('Qubit A',),
+                'args': {'phase_t': 0.7, 'angle_t': 0.25},
+            },
+            {
+                'name': 'prx',
+                'qubits': ('Qubit A',),
+                'args': {'phase_t': 0.3, 'angle_t': -0.2},
+            },
+            {'name': 'measurement', 'qubits': ('Qubit A',), 'args': {'key': 'A'}},
+            {'name': 'measure', 'qubits': ('Qubit B',), 'args': {'key': 'B'}},
+        ],
+        metadata=sample_circuit_metadata,
+    )
+
+
 @pytest.fixture()
 def minimal_run_request(sample_circuit) -> RunRequest:
     return RunRequest(

@@ -592,6 +592,15 @@ def test_validate_circuit_checks_instruction_argument_types(sample_circuit):
         validate_circuit(circuit)
 
 
+def test_validate_circuit_can_handle_raw_instructions(sample_circuit_with_raw_instructions):
+    """
+    Tests that custom Pydantic validator (triggered via <validate_circuit>)
+    accepts a circuit with raw instructions
+    """
+    circuit = sample_circuit_with_raw_instructions.model_copy()
+    validate_circuit(circuit)
+
+
 def test_abort_job_successful(sample_client, existing_job_url, existing_run_id, abort_job_success):
     """
     Tests aborting a job
