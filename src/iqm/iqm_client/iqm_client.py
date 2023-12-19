@@ -152,7 +152,7 @@ from typing import Any, Callable, Optional, Union
 from uuid import UUID
 import warnings
 
-from pydantic import BaseModel, Field, StrictStr, validate_model, validator
+from pydantic import BaseModel, Field, StrictStr, ValidationInfo, field_validator
 import requests
 
 REQUESTS_TIMEOUT = 60
@@ -165,7 +165,7 @@ AUTH_CLIENT_ID = 'iqm_client'
 AUTH_REALM = 'cortex'
 
 
-SUPPORTED_INSTRUCTIONS = {
+SUPPORTED_INSTRUCTIONS: dict[str, dict[str, Any]] = {
     'barrier': {
         'arity': -1,
         'args': {},
@@ -254,16 +254,17 @@ class Status(str, Enum):
 class Instruction(BaseModel):
     """An instruction in a quantum circuit."""
 
-    name: str = Field(..., example='measure')
+    name: str = Field(..., examples=['measure'])
     """name of the quantum operation"""
     implementation: Optional[StrictStr] = Field(None)
     """name of the implementation, for experimental use only"""
-    qubits: tuple[StrictStr, ...] = Field(..., example=('alice',))
+    qubits: tuple[StrictStr, ...] = Field(..., examples=[('alice',)])
     """names of the logical qubits the operation acts on"""
-    args: dict[str, Any] = Field(..., example={'key': 'm'})
+    args: dict[str, Any] = Field(..., examples=[{'key': 'm'}])
     """arguments for the operation"""
 
-    @validator('name')
+    @field_validator('name')
+    @classmethod
     def name_validator(cls, value):
         """Check if the name of instruction is set to one of the supported quantum operations"""
         name = value
@@ -274,7 +275,8 @@ class Instruction(BaseModel):
             )
         return name
 
-    @validator('implementation')
+    @field_validator('implementation')
+    @classmethod
     def implementation_validator(cls, value):
         """Check if the implementation of the instruction is set to a non-empty string"""
         implementation = value
@@ -283,11 +285,12 @@ class Instruction(BaseModel):
                 raise ValueError('Implementation of the instruction should be None, or a non-empty string')
         return implementation
 
-    @validator('qubits')
-    def qubits_validator(cls, value, values):
+    @field_validator('qubits')
+    @classmethod
+    def qubits_validator(cls, value, info: ValidationInfo):
         """Check if the instruction has the correct number of qubits according to the instruction's type"""
         qubits = value
-        name = values.get('name')
+        name = info.data.get('name')
         if not name:
             raise ValueError('Could not validate qubits because the name of the instruction did not pass validation')
         arity = SUPPORTED_INSTRUCTIONS[name]['arity']
@@ -297,12 +300,12 @@ class Instruction(BaseModel):
             )
         return qubits
 
-    @validator('args')
-    def args_validator(cls, value, values):
+    @field_validator('args')
+    @classmethod
+    def args_validator(cls, value, info: ValidationInfo):
         """Check argument names and types for a given instruction"""
         args = value
-        name = values.get('name')
-
+        name = info.data.get('name')
         if not name:
             raise ValueError('Could not validate args because the name of the instruction did not pass validation')
 
@@ -331,7 +334,7 @@ class Instruction(BaseModel):
 class Circuit(BaseModel):
     """Quantum circuit to be executed."""
 
-    name: str = Field(..., example='test circuit')
+    name: str = Field(..., examples=['test circuit'])
     """name of the circuit"""
     instructions: tuple[Instruction, ...] = Field(...)
     """instructions comprising the circuit"""
@@ -345,7 +348,8 @@ class Circuit(BaseModel):
             qubits.update(instruction.qubits)
         return qubits
 
-    @validator('name')
+    @field_validator('name')
+    @classmethod
     def name_validator(cls, value):
         """Check if the circuit name is a non-empty string"""
         name = value
@@ -353,7 +357,8 @@ class Circuit(BaseModel):
             raise ValueError('A circuit should have a non-empty string for a name.')
         return name
 
-    @validator('instructions', pre=True)
+    @field_validator('instructions', mode='before')
+    @classmethod
     def instructions_validator(cls, value):
         """Check the container of instructions and each instruction within"""
         instructions = value
@@ -366,28 +371,17 @@ class Circuit(BaseModel):
         if len(value) == 0:
             raise ValueError('Each circuit should have at least one instruction.')
 
-        # TODO: The following check is needed because Pydantic coerces data,
-        #  e.g. it would try to convert <list> into <Instruction> instead of
-        #  trowing a validation error. This check will become obsolete with
-        #  Pydantic v2, when strict mode for type checking is implemented and
-        #  can be enabled (throwing an error instead of coercing data)
-
         # Check each instruction
         for instruction in instructions:
             if isinstance(instruction, Instruction):
-                *_, validation_error = validate_model(Instruction, instruction.__dict__)
-                if validation_error:
-                    raise validation_error
-            elif isinstance(instruction, dict):
-                *_, validation_error = validate_model(Instruction, instruction)
-                if validation_error:
-                    raise validation_error
+                Instruction.model_validate(instruction.__dict__)
             else:
                 raise ValueError('Every instruction in a circuit should be of type <Instruction>')
 
         return instructions
 
-    @validator('metadata', pre=True)
+    @field_validator('metadata', mode='before')
+    @classmethod
     def metadata_validator(cls, value):
         """Check metadata dictionary and its keys"""
         metadata = value
@@ -410,9 +404,9 @@ CircuitBatch = list[Circuit]
 class SingleQubitMapping(BaseModel):
     """Mapping of a logical qubit name to a physical qubit name."""
 
-    logical_name: str = Field(..., example='alice')
+    logical_name: str = Field(..., examples=['alice'])
     """logical qubit name"""
-    physical_name: str = Field(..., example='QB1')
+    physical_name: str = Field(..., examples=['QB1'])
     """physical qubit name"""
 
 
@@ -653,9 +647,7 @@ def validate_circuit(circuit: Circuit) -> None:
     Raises:
             pydantic.error_wrappers.ValidationError
     """
-    *_, validation_error = validate_model(Circuit, circuit.__dict__)
-    if validation_error:
-        raise validation_error
+    Circuit.model_validate(circuit.__dict__)
 
 
 def _get_credentials(credentials: dict[str, str]) -> Optional[Credentials]:
@@ -893,7 +885,7 @@ class IQMClient:
         result = self._retry_request_on_error(
             lambda: requests.post(
                 join(self._base_url, 'jobs'),
-                json=json.loads(data.json(exclude_none=True)),
+                json=json.loads(data.model_dump_json(exclude_none=True)),
                 headers=headers,
                 timeout=REQUESTS_TIMEOUT,
             )
@@ -1094,7 +1086,7 @@ class IQMClient:
 
         url = f'{self._credentials.auth_server_url}/realms/{AUTH_REALM}/protocol/openid-connect/logout'
         data = AuthRequest(client_id=AUTH_CLIENT_ID, refresh_token=self._credentials.refresh_token)
-        result = requests.post(url, data=data.dict(exclude_none=True), timeout=REQUESTS_TIMEOUT)
+        result = requests.post(url, data=data.model_dump(exclude_none=True), timeout=REQUESTS_TIMEOUT)
         if result.status_code not in [200, 204]:
             raise ClientAuthenticationError(f'Logout failed, {result.text}')
         self._credentials.access_token = None
@@ -1158,7 +1150,7 @@ class IQMClient:
             )
 
         url = f'{self._credentials.auth_server_url}/realms/{AUTH_REALM}/protocol/openid-connect/token'
-        result = requests.post(url, data=data.dict(exclude_none=True), timeout=REQUESTS_TIMEOUT)
+        result = requests.post(url, data=data.model_dump(exclude_none=True), timeout=REQUESTS_TIMEOUT)
         if result.status_code != 200:
             raise ClientAuthenticationError(f'Failed to update tokens, {result.text}')
         tokens = result.json()

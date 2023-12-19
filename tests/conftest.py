@@ -305,8 +305,8 @@ def ready_job_result(sample_circuit, sample_calibration_set_id):
                     'calibration_set_id': str(sample_calibration_set_id),
                 },
                 'timestamps': {
-                    'job_start': 0.0,
-                    'job_end': 1.1,
+                    'job_start': '0.0',
+                    'job_end': '1.1',
                 },
             },
         },
@@ -327,8 +327,8 @@ def job_result_with_warnings(sample_circuit, sample_calibration_set_id):
                     'calibration_set_id': str(sample_calibration_set_id),
                 },
                 'timestamps': {
-                    'job_start': 0.0,
-                    'job_end': 1.1,
+                    'job_start': '0.0',
+                    'job_end': '1.1',
                 },
             },
             'warnings': ['This is a warning message'],
@@ -462,7 +462,7 @@ def prepare_tokens(
     }
     when(requests).post(
         f'{credentials["auth_server_url"]}/realms/{AUTH_REALM}/protocol/openid-connect/token',
-        data=request_data.dict(exclude_none=True),
+        data=request_data.model_dump(exclude_none=True),
         timeout=REQUESTS_TIMEOUT,
     ).thenReturn(MockJsonResponse(status_code, tokens))
 
@@ -496,7 +496,7 @@ def expect_logout(auth_server_url: str, refresh_token: str, timeout: int = ANY(i
     request_data = AuthRequest(client_id=AUTH_CLIENT_ID, refresh_token=refresh_token)
     expect(requests, times=1).post(
         f'{auth_server_url}/realms/{AUTH_REALM}/protocol/openid-connect/logout',
-        data=request_data.dict(exclude_none=True),
+        data=request_data.model_dump(exclude_none=True),
         timeout=timeout,
     ).thenReturn(mock({'status_code': 204, 'text': '{}'}))
 
@@ -515,7 +515,7 @@ def post_jobs_args(
     if run_request is None:
         return {'headers': headers, 'timeout': REQUESTS_TIMEOUT}
     return {
-        'json': json.loads(run_request.json(exclude_none=True)),
+        'json': json.loads(run_request.model_dump_json(exclude_none=True)),
         'headers': headers,
         'timeout': REQUESTS_TIMEOUT,
     }
