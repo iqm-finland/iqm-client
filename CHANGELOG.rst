@@ -5,7 +5,7 @@ Changelog
 Version 15.1
 ============
 
-* Bump ``pydantic`` version to ``2.5.2``. `#108 <https://github.com/iqm-finland/iqm-client/pull/108>`_
+* Bump ``pydantic`` version to ``2.4.2``. `#108 <https://github.com/iqm-finland/iqm-client/pull/108>`_
 
 Version 15.0
 ============
