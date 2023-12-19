@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 15.2
+============
+
+* Allow construction of ``Circuit.instructions``  from a ``tuple`` of ``dict``. `#109 <https://github.com/iqm-finland/iqm-client/pull/109>`_
+
 Version 15.1
 ============
 
