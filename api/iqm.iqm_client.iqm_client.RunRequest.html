@@ -50,7 +50,7 @@
     <link rel="prev" title="iqm.iqm_client.iqm_client.QuantumArchitectureSpecification" href="iqm.iqm_client.iqm_client.QuantumArchitectureSpecification.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="2023-12-15"/>
+    <meta name="docbuild:last-update" content="2023-12-19"/>
   </head>
   
   
@@ -236,6 +236,9 @@
 <ul class="version_list">
     
       <li class="version_item current_version">dev</li>
+    
+    
+      <li class="version_item"><a href="../versions/15.1/index.html">15.1</a></li>
     
     
       <li class="version_item"><a href="../versions/15.0/index.html">15.0</a></li>
@@ -583,6 +586,8 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.RunRequest.shots"><code class="docutils literal notranslate"><span class="pre">RunRequest.shots</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.RunRequest.circuit_duration_check"><code class="docutils literal notranslate"><span class="pre">RunRequest.circuit_duration_check</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.RunRequest.heralding_mode"><code class="docutils literal notranslate"><span class="pre">RunRequest.heralding_mode</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.RunRequest.model_config"><code class="docutils literal notranslate"><span class="pre">RunRequest.model_config</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.RunRequest.model_fields"><code class="docutils literal notranslate"><span class="pre">RunRequest.model_fields</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -608,7 +613,7 @@ document.write(`
   <strong>
     
     You're reading the documentation for a development version.
-    For the latest released version, please have a look at <a href="../versions/15.0/index.html">15.0</a>.
+    For the latest released version, please have a look at <a href="../versions/15.1/index.html">15.1</a>.
     
   </strong>
 </div>
@@ -622,11 +627,15 @@ document.write(`
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
 <p>Request for an IQM quantum computer to run a job that executes a batch of quantum circuits.</p>
 <p>Note: all circuits in a batch must measure the same qubits otherwise batch execution fails.</p>
-<p>Create a new model by parsing and validating input data from keyword arguments.</p>
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
 <p class="rubric">Attributes</p>
 <table class="autosummary longtable table autosummary">
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.RunRequest.model_config" title="iqm.iqm_client.iqm_client.RunRequest.model_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_config</span></code></a></p></td>
+<td><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.RunRequest.model_fields" title="iqm.iqm_client.iqm_client.RunRequest.model_fields"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_fields</span></code></a></p></td>
+<td><p>Metadata about the fields defined on the model, mapping of field names to [<cite>FieldInfo</cite>][pydantic.fields.FieldInfo].</p></td>
+</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.RunRequest.circuits" title="iqm.iqm_client.iqm_client.RunRequest.circuits"><code class="xref py py-obj docutils literal notranslate"><span class="pre">circuits</span></code></a></p></td>
 <td><p>batch of quantum circuit(s) to execute</p></td>
 </tr>
@@ -653,9 +662,6 @@ document.write(`
 <p class="rubric">Methods</p>
 <table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__json_encoder__</span></code>(obj)</p></td>
-<td><p></p></td>
-</tr>
 </tbody>
 </table>
 <dl class="field-list simple">
@@ -673,26 +679,26 @@ document.write(`
 </dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.RunRequest.circuits">
-<span class="sig-name descname"><span class="pre">circuits</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="iqm.iqm_client.iqm_client.Circuit.html#iqm.iqm_client.iqm_client.Circuit" title="iqm.iqm_client.iqm_client.Circuit"><span class="pre">iqm.iqm_client.iqm_client.Circuit</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#iqm.iqm_client.iqm_client.RunRequest.circuits" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">circuits</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">CircuitBatch</span></em><a class="headerlink" href="#iqm.iqm_client.iqm_client.RunRequest.circuits" title="Permalink to this definition">#</a></dt>
 <dd><p>batch of quantum circuit(s) to execute</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.RunRequest.custom_settings">
-<span class="sig-name descname"><span class="pre">custom_settings</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><span class="pre">None</span></a></em><a class="headerlink" href="#iqm.iqm_client.iqm_client.RunRequest.custom_settings" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">custom_settings</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><span class="pre">None</span></a></em><a class="headerlink" href="#iqm.iqm_client.iqm_client.RunRequest.custom_settings" title="Permalink to this definition">#</a></dt>
 <dd><p>Custom settings to override default IQM hardware settings and calibration data.
 Note: This field should be always None in normal use.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.RunRequest.calibration_set_id">
-<span class="sig-name descname"><span class="pre">calibration_set_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><span class="pre">UUID</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><span class="pre">None</span></a></em><a class="headerlink" href="#iqm.iqm_client.iqm_client.RunRequest.calibration_set_id" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">calibration_set_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">UUID</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><span class="pre">None</span></a></em><a class="headerlink" href="#iqm.iqm_client.iqm_client.RunRequest.calibration_set_id" title="Permalink to this definition">#</a></dt>
 <dd><p>ID of the calibration set to use, or None to use the latest calibration set</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.RunRequest.qubit_mapping">
-<span class="sig-name descname"><span class="pre">qubit_mapping</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="iqm.iqm_client.iqm_client.SingleQubitMapping.html#iqm.iqm_client.iqm_client.SingleQubitMapping" title="iqm.iqm_client.iqm_client.SingleQubitMapping"><span class="pre">iqm.iqm_client.iqm_client.SingleQubitMapping</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><span class="pre">None</span></a></em><a class="headerlink" href="#iqm.iqm_client.iqm_client.RunRequest.qubit_mapping" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">qubit_mapping</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="iqm.iqm_client.iqm_client.SingleQubitMapping.html#iqm.iqm_client.iqm_client.SingleQubitMapping" title="iqm.iqm_client.iqm_client.SingleQubitMapping"><span class="pre">SingleQubitMapping</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><span class="pre">None</span></a></em><a class="headerlink" href="#iqm.iqm_client.iqm_client.RunRequest.qubit_mapping" title="Permalink to this definition">#</a></dt>
 <dd><p>mapping of logical qubit names to physical qubit names, or None if using physical qubit names</p>
 </dd></dl>
 
@@ -713,6 +719,20 @@ T2 decoherence times of the QPU. Setting it to False disables the check, which s
 <dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.RunRequest.heralding_mode">
 <span class="sig-name descname"><span class="pre">heralding_mode</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="iqm.iqm_client.iqm_client.HeraldingMode.html#iqm.iqm_client.iqm_client.HeraldingMode" title="iqm.iqm_client.iqm_client.HeraldingMode"><span class="pre">HeraldingMode</span></a></em><a class="headerlink" href="#iqm.iqm_client.iqm_client.RunRequest.heralding_mode" title="Permalink to this definition">#</a></dt>
 <dd><p>which heralding mode to use during the execution of circuits in this request.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.RunRequest.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#iqm.iqm_client.iqm_client.RunRequest.model_config" title="Permalink to this definition">#</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.RunRequest.model_fields">
+<span class="sig-name descname"><span class="pre">model_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">FieldInfo</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'calibration_set_id':</span> <span class="pre">FieldInfo(annotation=Union[UUID,</span> <span class="pre">NoneType],</span> <span class="pre">required=False),</span> <span class="pre">'circuit_duration_check':</span> <span class="pre">FieldInfo(annotation=bool,</span> <span class="pre">required=False,</span> <span class="pre">default=True),</span> <span class="pre">'circuits':</span> <span class="pre">FieldInfo(annotation=list[Circuit],</span> <span class="pre">required=True),</span> <span class="pre">'custom_settings':</span> <span class="pre">FieldInfo(annotation=Union[dict[str,</span> <span class="pre">Any],</span> <span class="pre">NoneType],</span> <span class="pre">required=False),</span> <span class="pre">'heralding_mode':</span> <span class="pre">FieldInfo(annotation=HeraldingMode,</span> <span class="pre">required=False,</span> <span class="pre">default=&lt;HeraldingMode.NONE:</span> <span class="pre">'none'&gt;),</span> <span class="pre">'qubit_mapping':</span> <span class="pre">FieldInfo(annotation=Union[list[SingleQubitMapping],</span> <span class="pre">NoneType],</span> <span class="pre">required=False),</span> <span class="pre">'shots':</span> <span class="pre">FieldInfo(annotation=int,</span> <span class="pre">required=True,</span> <span class="pre">metadata=[Gt(gt=0)])}</span></em><a class="headerlink" href="#iqm.iqm_client.iqm_client.RunRequest.model_fields" title="Permalink to this definition">#</a></dt>
+<dd><p>Metadata about the fields defined on the model,
+mapping of field names to [<cite>FieldInfo</cite>][pydantic.fields.FieldInfo].</p>
+<p>This replaces <cite>Model.__fields__</cite> from Pydantic V1.</p>
 </dd></dl>
 
 </dd></dl>
@@ -772,6 +792,8 @@ T2 decoherence times of the QPU. Setting it to False disables the check, which s
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.RunRequest.shots"><code class="docutils literal notranslate"><span class="pre">RunRequest.shots</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.RunRequest.circuit_duration_check"><code class="docutils literal notranslate"><span class="pre">RunRequest.circuit_duration_check</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.RunRequest.heralding_mode"><code class="docutils literal notranslate"><span class="pre">RunRequest.heralding_mode</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.RunRequest.model_config"><code class="docutils literal notranslate"><span class="pre">RunRequest.model_config</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.RunRequest.model_fields"><code class="docutils literal notranslate"><span class="pre">RunRequest.model_fields</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -807,7 +829,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2023-12-15.
+  Last updated on 2023-12-19.
   <br/>
 </p>
   </div>

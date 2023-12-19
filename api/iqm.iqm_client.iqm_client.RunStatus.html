@@ -50,7 +50,7 @@
     <link rel="prev" title="iqm.iqm_client.iqm_client.RunResult" href="iqm.iqm_client.iqm_client.RunResult.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="2023-12-15"/>
+    <meta name="docbuild:last-update" content="2023-12-19"/>
   </head>
   
   
@@ -236,6 +236,9 @@
 <ul class="version_list">
     
       <li class="version_item current_version">dev</li>
+    
+    
+      <li class="version_item"><a href="../versions/15.1/index.html">15.1</a></li>
     
     
       <li class="version_item"><a href="../versions/15.0/index.html">15.0</a></li>
@@ -580,6 +583,8 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.RunStatus.message"><code class="docutils literal notranslate"><span class="pre">RunStatus.message</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.RunStatus.warnings"><code class="docutils literal notranslate"><span class="pre">RunStatus.warnings</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.RunStatus.from_dict"><code class="docutils literal notranslate"><span class="pre">RunStatus.from_dict()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.RunStatus.model_config"><code class="docutils literal notranslate"><span class="pre">RunStatus.model_config</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.RunStatus.model_fields"><code class="docutils literal notranslate"><span class="pre">RunStatus.model_fields</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -605,7 +610,7 @@ document.write(`
   <strong>
     
     You're reading the documentation for a development version.
-    For the latest released version, please have a look at <a href="../versions/15.0/index.html">15.0</a>.
+    For the latest released version, please have a look at <a href="../versions/15.1/index.html">15.1</a>.
     
   </strong>
 </div>
@@ -618,11 +623,15 @@ document.write(`
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">iqm.iqm_client.iqm_client.</span></span><span class="sig-name descname"><span class="pre">RunStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warnings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm.iqm_client.iqm_client.RunStatus" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
 <p>Status of a circuit execution job.</p>
-<p>Create a new model by parsing and validating input data from keyword arguments.</p>
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
 <p class="rubric">Attributes</p>
 <table class="autosummary longtable table autosummary">
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.RunStatus.model_config" title="iqm.iqm_client.iqm_client.RunStatus.model_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_config</span></code></a></p></td>
+<td><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.RunStatus.model_fields" title="iqm.iqm_client.iqm_client.RunStatus.model_fields"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_fields</span></code></a></p></td>
+<td><p>Metadata about the fields defined on the model, mapping of field names to [<cite>FieldInfo</cite>][pydantic.fields.FieldInfo].</p></td>
+</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.RunStatus.status" title="iqm.iqm_client.iqm_client.RunStatus.status"><code class="xref py py-obj docutils literal notranslate"><span class="pre">status</span></code></a></p></td>
 <td><p>current status of the job, in <code class="docutils literal notranslate"><span class="pre">{'pending</span> <span class="pre">compilation',</span> <span class="pre">'pending</span> <span class="pre">execution',</span> <span class="pre">'ready',</span> <span class="pre">'failed',</span> <span class="pre">'aborted'}</span></code></p></td>
 </tr>
@@ -637,10 +646,7 @@ document.write(`
 <p class="rubric">Methods</p>
 <table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__json_encoder__</span></code>(obj)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.RunStatus.from_dict" title="iqm.iqm_client.iqm_client.RunStatus.from_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_dict</span></code></a>(inp)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.RunStatus.from_dict" title="iqm.iqm_client.iqm_client.RunStatus.from_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_dict</span></code></a>(inp)</p></td>
 <td><p>Parses the result from a dict.</p></td>
 </tr>
 </tbody>
@@ -687,6 +693,20 @@ document.write(`
 <dd class="field-odd"><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.RunStatus" title="iqm.iqm_client.iqm_client.RunStatus"><em>RunStatus</em></a></p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.RunStatus.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#iqm.iqm_client.iqm_client.RunStatus.model_config" title="Permalink to this definition">#</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.RunStatus.model_fields">
+<span class="sig-name descname"><span class="pre">model_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">FieldInfo</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'message':</span> <span class="pre">FieldInfo(annotation=Union[str,</span> <span class="pre">NoneType],</span> <span class="pre">required=False),</span> <span class="pre">'status':</span> <span class="pre">FieldInfo(annotation=Status,</span> <span class="pre">required=True),</span> <span class="pre">'warnings':</span> <span class="pre">FieldInfo(annotation=Union[list[str],</span> <span class="pre">NoneType],</span> <span class="pre">required=False)}</span></em><a class="headerlink" href="#iqm.iqm_client.iqm_client.RunStatus.model_fields" title="Permalink to this definition">#</a></dt>
+<dd><p>Metadata about the fields defined on the model,
+mapping of field names to [<cite>FieldInfo</cite>][pydantic.fields.FieldInfo].</p>
+<p>This replaces <cite>Model.__fields__</cite> from Pydantic V1.</p>
 </dd></dl>
 
 </dd></dl>
@@ -743,6 +763,8 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.RunStatus.message"><code class="docutils literal notranslate"><span class="pre">RunStatus.message</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.RunStatus.warnings"><code class="docutils literal notranslate"><span class="pre">RunStatus.warnings</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.RunStatus.from_dict"><code class="docutils literal notranslate"><span class="pre">RunStatus.from_dict()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.RunStatus.model_config"><code class="docutils literal notranslate"><span class="pre">RunStatus.model_config</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.RunStatus.model_fields"><code class="docutils literal notranslate"><span class="pre">RunStatus.model_fields</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -778,7 +800,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2023-12-15.
+  Last updated on 2023-12-19.
   <br/>
 </p>
   </div>
