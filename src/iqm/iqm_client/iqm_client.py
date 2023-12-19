@@ -254,7 +254,7 @@ class Status(str, Enum):
 class Instruction(BaseModel):
     """An instruction in a quantum circuit."""
 
-    name: str = Field(..., examples=['measurement'])
+    name: str = Field(..., examples=['measure'])
     """name of the quantum operation"""
     implementation: Optional[StrictStr] = Field(None)
     """name of the implementation, for experimental use only"""
