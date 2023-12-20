@@ -50,7 +50,7 @@
     <link rel="prev" title="iqm.iqm_client.iqm_client.AuthRequest" href="iqm.iqm_client.iqm_client.AuthRequest.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="2023-12-19"/>
+    <meta name="docbuild:last-update" content="2023-12-20"/>
   </head>
   
   
@@ -236,6 +236,9 @@
 <ul class="version_list">
     
       <li class="version_item current_version">dev</li>
+    
+    
+      <li class="version_item"><a href="../versions/15.2/index.html">15.2</a></li>
     
     
       <li class="version_item"><a href="../versions/15.1/index.html">15.1</a></li>
@@ -585,7 +588,6 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.Circuit.all_qubits"><code class="docutils literal notranslate"><span class="pre">Circuit.all_qubits()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.Circuit.name_validator"><code class="docutils literal notranslate"><span class="pre">Circuit.name_validator()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.Circuit.instructions_validator"><code class="docutils literal notranslate"><span class="pre">Circuit.instructions_validator()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.Circuit.metadata_validator"><code class="docutils literal notranslate"><span class="pre">Circuit.metadata_validator()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.Circuit.model_config"><code class="docutils literal notranslate"><span class="pre">Circuit.model_config</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.Circuit.model_fields"><code class="docutils literal notranslate"><span class="pre">Circuit.model_fields</span></code></a></li>
 </ul>
@@ -613,7 +615,7 @@ document.write(`
   <strong>
     
     You're reading the documentation for a development version.
-    For the latest released version, please have a look at <a href="../versions/15.1/index.html">15.1</a>.
+    For the latest released version, please have a look at <a href="../versions/15.2/index.html">15.2</a>.
     
   </strong>
 </div>
@@ -655,10 +657,7 @@ document.write(`
 <tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.Circuit.instructions_validator" title="iqm.iqm_client.iqm_client.Circuit.instructions_validator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">instructions_validator</span></code></a>(value)</p></td>
 <td><p>Check the container of instructions and each instruction within</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.Circuit.metadata_validator" title="iqm.iqm_client.iqm_client.Circuit.metadata_validator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metadata_validator</span></code></a>(value)</p></td>
-<td><p>Check metadata dictionary and its keys</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.Circuit.name_validator" title="iqm.iqm_client.iqm_client.Circuit.name_validator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">name_validator</span></code></a>(value)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.Circuit.name_validator" title="iqm.iqm_client.iqm_client.Circuit.name_validator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">name_validator</span></code></a>(value)</p></td>
 <td><p>Check if the circuit name is a non-empty string</p></td>
 </tr>
 </tbody>
@@ -711,12 +710,6 @@ document.write(`
 <dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.Circuit.instructions_validator">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">instructions_validator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm.iqm_client.iqm_client.Circuit.instructions_validator" title="Permalink to this definition">#</a></dt>
 <dd><p>Check the container of instructions and each instruction within</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.Circuit.metadata_validator">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">metadata_validator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm.iqm_client.iqm_client.Circuit.metadata_validator" title="Permalink to this definition">#</a></dt>
-<dd><p>Check metadata dictionary and its keys</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -789,7 +782,6 @@ mapping of field names to [<cite>FieldInfo</cite>][pydantic.fields.FieldInfo].</
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.Circuit.all_qubits"><code class="docutils literal notranslate"><span class="pre">Circuit.all_qubits()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.Circuit.name_validator"><code class="docutils literal notranslate"><span class="pre">Circuit.name_validator()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.Circuit.instructions_validator"><code class="docutils literal notranslate"><span class="pre">Circuit.instructions_validator()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.Circuit.metadata_validator"><code class="docutils literal notranslate"><span class="pre">Circuit.metadata_validator()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.Circuit.model_config"><code class="docutils literal notranslate"><span class="pre">Circuit.model_config</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.Circuit.model_fields"><code class="docutils literal notranslate"><span class="pre">Circuit.model_fields</span></code></a></li>
 </ul>
@@ -827,7 +819,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2023-12-19.
+  Last updated on 2023-12-20.
   <br/>
 </p>
   </div>
