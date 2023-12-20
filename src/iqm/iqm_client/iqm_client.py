@@ -357,7 +357,7 @@ class Circuit(BaseModel):
             raise ValueError('A circuit should have a non-empty string for a name.')
         return name
 
-    @field_validator('instructions', mode='before')
+    @field_validator('instructions')
     @classmethod
     def instructions_validator(cls, value):
         """Check the container of instructions and each instruction within"""
@@ -371,7 +371,9 @@ class Circuit(BaseModel):
         if len(value) == 0:
             raise ValueError('Each circuit should have at least one instruction.')
 
-        # Check each instruction
+        # Check each instruction explicitly, because automatic validation for Instruction
+        # is only called when we create a new instance of Instruction, but not if we modify
+        # an existing instance.
         for instruction in instructions:
             if isinstance(instruction, Instruction):
                 Instruction.model_validate(instruction.__dict__)
@@ -379,22 +381,6 @@ class Circuit(BaseModel):
                 raise ValueError('Every instruction in a circuit should be of type <Instruction>')
 
         return instructions
-
-    @field_validator('metadata', mode='before')
-    @classmethod
-    def metadata_validator(cls, value):
-        """Check metadata dictionary and its keys"""
-        metadata = value
-
-        if not (isinstance(metadata, dict) or metadata is None):
-            raise ValueError('Circuit metadata should be a dictionary')
-
-        # All keys should be strings
-        if metadata:
-            if not all((isinstance(key, str) for key in metadata.keys())):
-                raise ValueError('Metadata dictionary should use strings for all root-level keys')
-
-        return metadata
 
 
 CircuitBatch = list[Circuit]
@@ -425,8 +411,8 @@ class HeraldingMode(str, Enum):
     """Do not do any heralding."""
     ZEROS = 'zeros'
     """Perform a heralding measurement, only retain shots with an all-zeros result.
-    
-    Note: in this mode, the number of shots returned after execution will be less or equal to the requested amount 
+
+    Note: in this mode, the number of shots returned after execution will be less or equal to the requested amount
     due to the post-selection based on heralding data."""
 
 

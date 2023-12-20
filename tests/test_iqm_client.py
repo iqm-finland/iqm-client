@@ -525,39 +525,6 @@ def test_validate_circuit_detects_circuit_name_is_empty_string(sample_circuit):
         validate_circuit(circuit)
 
 
-def test_validate_circuit_detects_circuit_metadata_is_wrong_type(sample_circuit):
-    """
-    Tests that custom Pydantic validator (triggered via <validate_circuit>)
-    catches invalid type of circuit metadata
-    """
-    circuit = sample_circuit.model_copy()
-    circuit.metadata = []
-    with pytest.raises(ValueError, match='Circuit metadata should be a dictionary'):
-        validate_circuit(circuit)
-
-
-def test_validate_circuit_detects_circuit_metadata_keys_are_wrong_type(sample_circuit):
-    """
-    Tests that custom Pydantic validator (triggered via <validate_circuit>)
-    catches invalid type of circuit metadata
-    """
-    circuit = sample_circuit.model_copy()
-    circuit.metadata = {'1': 'string key is ok', 2: 'int key is not ok'}
-    with pytest.raises(ValueError, match='Metadata dictionary should use strings for all root-level keys'):
-        validate_circuit(circuit)
-
-
-def test_validate_circuit_checks_circuit_instructions_container_type(sample_circuit):
-    """
-    Tests that custom Pydantic validator (triggered via <validate_circuit>)
-    catches invalid type of instruction container of a circuit
-    """
-    circuit = sample_circuit.model_copy()
-    circuit.instructions = {}
-    with pytest.raises(ValueError, match='Instructions of a circuit should be packed in a tuple'):
-        validate_circuit(circuit)
-
-
 def test_validate_circuit_checks_circuit_has_at_least_one_instruction(sample_circuit):
     """
     Tests that custom Pydantic validator (triggered via <validate_circuit>)
@@ -566,17 +533,6 @@ def test_validate_circuit_checks_circuit_has_at_least_one_instruction(sample_cir
     circuit = sample_circuit.model_copy()
     circuit.instructions = tuple()
     with pytest.raises(ValueError, match='Each circuit should have at least one instruction'):
-        validate_circuit(circuit)
-
-
-def test_validate_circuit_checks_circuit_instructions_container_content(sample_circuit):
-    """
-    Tests that custom Pydantic validator (triggered via <validate_circuit>)
-    catches when circuit instructions container has items of incorrect type
-    """
-    circuit = sample_circuit.model_copy()
-    circuit.instructions += ('I am not an instruction!',)
-    with pytest.raises(ValueError, match='Every instruction in a circuit should be of type <Instruction>'):
         validate_circuit(circuit)
 
 
@@ -634,6 +590,15 @@ def test_validate_circuit_checks_instruction_argument_types(sample_circuit):
     circuit.instructions[1].args['phase_t'] = '0.7'
     with pytest.raises(TypeError, match='The argument "phase_t" should be of one of the following supported types'):
         validate_circuit(circuit)
+
+
+def test_validate_circuit_can_handle_raw_instructions(sample_circuit_with_raw_instructions):
+    """
+    Tests that custom Pydantic validator (triggered via <validate_circuit>)
+    accepts a circuit with raw instructions
+    """
+    circuit = sample_circuit_with_raw_instructions.model_copy()
+    validate_circuit(circuit)
 
 
 def test_abort_job_successful(sample_client, existing_job_url, existing_run_id, abort_job_success):
