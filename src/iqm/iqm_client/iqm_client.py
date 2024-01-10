@@ -1037,7 +1037,7 @@ class IQMClient:
         result = requests.get(
             join(self._base_url, 'quantum-architecture'),
             headers=self._default_headers(),
-            timeout=REQUESTS_TIMEOUT,
+            timeout=timeout_secs,
         )
 
         # /quantum_architecture is not a strictly authenticated endpoint,
