@@ -520,7 +520,7 @@ def make_token(token_type: str, lifetime: int) -> str:
     return f'{empty}.{body}.{empty}'
 
 
-def expect_logout(auth_server_url: str, refresh_token: str, timeout: int = ANY(int)):
+def expect_logout(auth_server_url: str, refresh_token: str, timeout: float = ANY(float)):
     """Prepare for logout request.
 
     Args:
