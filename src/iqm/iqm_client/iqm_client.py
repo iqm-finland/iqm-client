@@ -899,8 +899,8 @@ class IQMClient:
             result of the job (can be pending)
 
         Raises:
-            HTTPException: http exceptions
             CircuitExecutionError: IQM server specific exceptions
+            HTTPException: HTTP exceptions
         """
         result = self._retry_request_on_error(
             lambda: requests.get(
@@ -934,8 +934,8 @@ class IQMClient:
             status of the job
 
         Raises:
-            HTTPException: http exceptions
             CircuitExecutionError: IQM server specific exceptions
+            HTTPException: HTTP exceptions
         """
         result = self._retry_request_on_error(
             lambda: requests.get(
@@ -1009,8 +1009,8 @@ class IQMClient:
             timeout_secs: network request timeout
 
         Raises:
+            HTTPException: HTTP exceptions
             JobAbortionError: if aborting the job failed
-            HTTPException: http exceptions
         """
         result = requests.post(
             join(self._base_url, 'jobs', str(job_id), 'abort'),
@@ -1032,7 +1032,7 @@ class IQMClient:
         Raises:
             APITimeoutError: time exceeded the set timeout
             ClientConfigurationError: if no valid authentication is provided
-            HTTPException: http exceptions
+            HTTPException: HTTP exceptions
         """
         result = requests.get(
             join(self._base_url, 'quantum-architecture'),
