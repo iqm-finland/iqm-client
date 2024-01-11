@@ -135,7 +135,7 @@ Disabling the circuit duration check may be limited to certain users or groups, 
 Note on environment variables
 -----------------------------
 
-Set ``IQM_CLIENT_REQUESTS_TIMEOUT`` environment variable to override the network requests default timeout value. Currently it is set to 60 seconds. This might be needed when fetching run results of larger circuits via slow network connections.
+Set ``IQM_CLIENT_REQUESTS_TIMEOUT`` environment variable to override the network requests default timeout value. The default value is 60 seconds and might not be sufficient when fetching run results of larger circuits via slow network connections.
 
 On Linux:
 
