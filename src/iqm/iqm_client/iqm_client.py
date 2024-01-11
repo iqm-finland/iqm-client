@@ -888,7 +888,7 @@ class IQMClient:
         except (json.decoder.JSONDecodeError, KeyError) as e:
             raise CircuitExecutionError(f'Invalid response: {result.text}, {e}') from e
 
-    def get_run(self, job_id: UUID, timeout_secs: float = REQUESTS_TIMEOUT) -> RunResult:
+    def get_run(self, job_id: UUID, *, timeout_secs: float = REQUESTS_TIMEOUT) -> RunResult:
         """Query the status and results of a submitted job.
 
         Args:
@@ -923,7 +923,7 @@ class IQMClient:
             raise CircuitExecutionError(run_result.message)
         return run_result
 
-    def get_run_status(self, job_id: UUID, timeout_secs: float = REQUESTS_TIMEOUT) -> RunStatus:
+    def get_run_status(self, job_id: UUID, *, timeout_secs: float = REQUESTS_TIMEOUT) -> RunStatus:
         """Query the status of a submitted job.
 
         Args:
@@ -1001,7 +1001,7 @@ class IQMClient:
             time.sleep(SECONDS_BETWEEN_CALLS)
         raise APITimeoutError(f"The job didn't finish in {timeout_secs} seconds.")
 
-    def abort_job(self, job_id: UUID, timeout_secs: float = REQUESTS_TIMEOUT) -> None:
+    def abort_job(self, job_id: UUID, *, timeout_secs: float = REQUESTS_TIMEOUT) -> None:
         """Abort a job that was submitted for execution.
 
         Args:
@@ -1020,7 +1020,7 @@ class IQMClient:
         if result.status_code != 200:
             raise JobAbortionError(result.json()['detail'])
 
-    def get_quantum_architecture(self, timeout_secs: float = REQUESTS_TIMEOUT) -> QuantumArchitectureSpecification:
+    def get_quantum_architecture(self, *, timeout_secs: float = REQUESTS_TIMEOUT) -> QuantumArchitectureSpecification:
         """Retrieve quantum architecture from server.
 
         Args:
