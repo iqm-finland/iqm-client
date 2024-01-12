@@ -2,6 +2,12 @@
 Changelog
 =========
 
+Version 15.3
+============
+
+* Make network request timeouts reconfigurable for ``abort_job``, ``get_quantum_architecture``, ``get_run``, and ``get_run_status`` via keyword argument ``timeout_secs``. `#110 <https://github.com/iqm-finland/iqm-client/pull/110>`_
+* Make network request timeouts reconfigurable globally via environment variable ``IQM_CLIENT_REQUESTS_TIMEOUT``. `#110 <https://github.com/iqm-finland/iqm-client/pull/110>`_
+
 Version 15.2
 ============
 

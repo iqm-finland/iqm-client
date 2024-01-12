@@ -132,6 +132,28 @@ If any circuit in a job would take too long to execute compared to the coherence
 In some special cases, it makes sense to disable this check by changing the default value of parameter ``circuit_duration_check`` of :meth:`IQMClient.submit_circuits` to ``False``.
 Disabling the circuit duration check may be limited to certain users or groups, depending on the server settings. In normal use, the circuit duration check should always remain enabled.
 
+Note on environment variables
+-----------------------------
+
+Set ``IQM_CLIENT_REQUESTS_TIMEOUT`` environment variable to override the network requests default timeout value. The default value is 60 seconds and might not be sufficient when fetching run results of larger circuits via slow network connections.
+
+On Linux:
+
+.. code-block:: bash
+
+  $ export IQM_CLIENT_REQUESTS_TIMEOUT=120
+
+On Windows:
+
+.. code-block:: batch
+
+  set IQM_CLIENT_REQUESTS_TIMEOUT=120
+
+Once set, this environment variable will control network request timeouts for IQM Client methods ``abort_job``, ``get_quantum_architecture``, ``get_run``, and ``get_run_status``.
+
+Set ``IQM_CLIENT_SECONDS_BETWEEN_CALLS`` to control the polling frequency when waiting for compilation and run results with IQM Client methods ``wait_for_compilation`` and ``wait_for_results``. The default value is set to 1 second.
+
+
 Integration testing
 -------------------
 

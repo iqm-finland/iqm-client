@@ -155,11 +155,11 @@ import warnings
 from pydantic import BaseModel, Field, StrictStr, ValidationInfo, field_validator
 import requests
 
-REQUESTS_TIMEOUT = 60
+REQUESTS_TIMEOUT = float(os.environ.get('IQM_CLIENT_REQUESTS_TIMEOUT', 60.0))
 
 DEFAULT_TIMEOUT_SECONDS = 900
 SECONDS_BETWEEN_CALLS = float(os.environ.get('IQM_CLIENT_SECONDS_BETWEEN_CALLS', 1.0))
-REFRESH_MARGIN_SECONDS = REQUESTS_TIMEOUT
+REFRESH_MARGIN_SECONDS = 60
 
 AUTH_CLIENT_ID = 'iqm_client'
 AUTH_REALM = 'cortex'
@@ -888,24 +888,25 @@ class IQMClient:
         except (json.decoder.JSONDecodeError, KeyError) as e:
             raise CircuitExecutionError(f'Invalid response: {result.text}, {e}') from e
 
-    def get_run(self, job_id: UUID) -> RunResult:
+    def get_run(self, job_id: UUID, *, timeout_secs: float = REQUESTS_TIMEOUT) -> RunResult:
         """Query the status and results of a submitted job.
 
         Args:
             job_id: id of the job to query
+            timeout_secs: network request timeout
 
         Returns:
             result of the job (can be pending)
 
         Raises:
-            HTTPException: http exceptions
             CircuitExecutionError: IQM server specific exceptions
+            HTTPException: HTTP exceptions
         """
         result = self._retry_request_on_error(
             lambda: requests.get(
                 join(self._base_url, 'jobs', str(job_id)),
                 headers=self._default_headers(),
-                timeout=REQUESTS_TIMEOUT,
+                timeout=timeout_secs,
             )
         )
 
@@ -922,24 +923,25 @@ class IQMClient:
             raise CircuitExecutionError(run_result.message)
         return run_result
 
-    def get_run_status(self, job_id: UUID) -> RunStatus:
+    def get_run_status(self, job_id: UUID, *, timeout_secs: float = REQUESTS_TIMEOUT) -> RunStatus:
         """Query the status of a submitted job.
 
         Args:
             job_id: id of the job to query
+            timeout_secs: network request timeout
 
         Returns:
             status of the job
 
         Raises:
-            HTTPException: http exceptions
             CircuitExecutionError: IQM server specific exceptions
+            HTTPException: HTTP exceptions
         """
         result = self._retry_request_on_error(
             lambda: requests.get(
                 join(self._base_url, 'jobs', str(job_id), 'status'),
                 headers=self._default_headers(),
-                timeout=REQUESTS_TIMEOUT,
+                timeout=timeout_secs,
             )
         )
 
@@ -999,25 +1001,30 @@ class IQMClient:
             time.sleep(SECONDS_BETWEEN_CALLS)
         raise APITimeoutError(f"The job didn't finish in {timeout_secs} seconds.")
 
-    def abort_job(self, job_id: UUID) -> None:
+    def abort_job(self, job_id: UUID, *, timeout_secs: float = REQUESTS_TIMEOUT) -> None:
         """Abort a job that was submitted for execution.
 
         Args:
             job_id: id of the job to be aborted
+            timeout_secs: network request timeout
 
         Raises:
+            HTTPException: HTTP exceptions
             JobAbortionError: if aborting the job failed
         """
         result = requests.post(
             join(self._base_url, 'jobs', str(job_id), 'abort'),
             headers=self._default_headers(),
-            timeout=REQUESTS_TIMEOUT,
+            timeout=timeout_secs,
         )
         if result.status_code != 200:
             raise JobAbortionError(result.json()['detail'])
 
-    def get_quantum_architecture(self) -> QuantumArchitectureSpecification:
+    def get_quantum_architecture(self, *, timeout_secs: float = REQUESTS_TIMEOUT) -> QuantumArchitectureSpecification:
         """Retrieve quantum architecture from server.
+
+        Args:
+            timeout_secs: network request timeout
 
         Returns:
             quantum architecture
@@ -1025,11 +1032,12 @@ class IQMClient:
         Raises:
             APITimeoutError: time exceeded the set timeout
             ClientConfigurationError: if no valid authentication is provided
+            HTTPException: HTTP exceptions
         """
         result = requests.get(
             join(self._base_url, 'quantum-architecture'),
             headers=self._default_headers(),
-            timeout=REQUESTS_TIMEOUT,
+            timeout=timeout_secs,
         )
 
         # /quantum_architecture is not a strictly authenticated endpoint,
