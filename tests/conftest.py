@@ -393,7 +393,7 @@ def sample_quantum_architecture():
             'name': 'hercules',
             'qubits': ['QB1', 'QB2'],
             'qubit_connectivity': [['QB1', 'QB2']],
-            'operations': ['phased_rx', 'CZ'],
+            'operations': {'phased_rx': [['QB1'], ['QB2']], 'CZ': [['QB1', 'QB2']]},
         }
     }
 
