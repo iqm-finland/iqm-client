@@ -18,7 +18,7 @@ from importlib.metadata import PackageNotFoundError, version
 from iqm.iqm_client.iqm_client import *
 
 try:
-    DIST_NAME = "iqm-client"
+    DIST_NAME = "iqm-client-ndonis"
     __version__ = version(DIST_NAME)
 except PackageNotFoundError:
     __version__ = "unknown"

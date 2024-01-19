@@ -752,7 +752,7 @@ class IQMClient:
         self._base_url = url
         self._signature = f'{platform.platform(terse=True)}'
         self._signature += f', python {platform.python_version()}'
-        self._signature += f', iqm-client {version("iqm-client")}'
+        self._signature += f', iqm-client {version("iqm-client-ndonis")}'
         if client_signature:
             self._signature += f', {client_signature}'
         self._tokens_file = tokens_file

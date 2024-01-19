@@ -3,7 +3,7 @@ requires = ["setuptools>=65.4.1", "setuptools_scm[toml]>=7"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "iqm-client"
+name = "iqm-client-ndonis"
 dynamic = ["version"]
 description = "Client library for accessing an IQM quantum computer"
 authors = [{name="IQM Finland Oy", email="developers@meetiqm.com"}]
