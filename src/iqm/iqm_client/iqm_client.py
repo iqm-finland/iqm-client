@@ -174,6 +174,10 @@ SUPPORTED_INSTRUCTIONS: dict[str, dict[str, Any]] = {
         'arity': 2,
         'args': {},
     },
+    'move': {
+        'arity': 2,
+        'args': {},
+    },
     'measure': {
         'arity': -1,
         'args': {
@@ -528,8 +532,8 @@ class QuantumArchitectureSpecification(BaseModel):
 
     name: str = Field(...)
     """name of the quantum architecture"""
-    operations: list[str] = Field(...)
-    """list of operations supported by this quantum architecture"""
+    operations: dict[str, list[list[str]]] = Field(...)
+    """the operations supported by this quantum architecture, mapped to the allowed connections"""
     qubits: list[str] = Field(...)
     """list of qubits of this quantum architecture"""
     qubit_connectivity: list[list[str]] = Field(...)
