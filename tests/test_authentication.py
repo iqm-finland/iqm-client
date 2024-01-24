@@ -13,7 +13,7 @@
 # limitations under the License.
 """Tests for user authentication and token management in IQM client.
 """
-
+# pylint: disable=too-many-arguments
 import builtins
 import io
 import json
@@ -115,11 +115,18 @@ def test_add_authorization_header_when_credentials_are_provided(
 
 
 def test_add_authorization_header_on_submit_circuits_when_credentials_are_provided(
-    client_with_credentials, jobs_url, minimal_run_request, existing_run_id, submit_success
+    client_with_credentials,
+    jobs_url,
+    minimal_run_request,
+    existing_run_id,
+    submit_success,
+    quantum_architecture_url,
+    quantum_architecture_success,
 ):
     """
     Tests that ``submit_circuits`` requests are sent with Authorization header when credentials are provided
     """
+    expect(requests, times=1).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
     expect(requests, times=1).post(
         jobs_url, **post_jobs_args(minimal_run_request, access_token=client_with_credentials._credentials.access_token)
     ).thenReturn(submit_success)
@@ -131,11 +138,17 @@ def test_add_authorization_header_on_submit_circuits_when_credentials_are_provid
 
 
 def test_submit_circuits_raises_when_auth_failed(
-    client_with_credentials, jobs_url, minimal_run_request, submit_failed_auth
+    client_with_credentials,
+    jobs_url,
+    minimal_run_request,
+    submit_failed_auth,
+    quantum_architecture_url,
+    quantum_architecture_success,
 ):
     """
     Tests that ``submit_circuits`` raises ClientAuthenticationError when authentication fails
     """
+    expect(requests, times=1).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
     expect(requests, times=1).post(
         jobs_url, **post_jobs_args(minimal_run_request, access_token=client_with_credentials._credentials.access_token)
     ).thenReturn(submit_failed_auth)

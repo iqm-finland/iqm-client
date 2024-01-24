@@ -203,10 +203,12 @@ SUPPORTED_INSTRUCTIONS: dict[str, dict[str, Any]] = {
     'cz': {
         'arity': 2,
         'args': {},
+        'directed': False,
     },
     'move': {
         'arity': 2,
         'args': {},
+        'directed': True,
     },
     'measure': {
         'arity': -1,
@@ -788,6 +790,7 @@ class IQMClient:
         self._tokens_file = tokens_file
         self._external_token = _get_external_token(tokens_file)
         self._token = token or os.environ.get('IQM_TOKEN')
+        self._architecture: QuantumArchitectureSpecification | None = None
         if not self._external_token:
             self._credentials = _get_credentials(credentials)
             self._update_tokens()
@@ -856,23 +859,12 @@ class IQMClient:
                     e.__traceback__
                 )
 
-        serialized_qubit_mapping: Optional[list[SingleQubitMapping]] = None
-        if qubit_mapping is not None:
-            # check if qubit mapping is injective
-            target_qubits = set(qubit_mapping.values())
-            if not len(target_qubits) == len(qubit_mapping):
-                raise ValueError('Multiple logical qubits map to the same physical qubit.')
+        architecture = self.get_quantum_architecture()
 
-            # check if qubit mapping covers all qubits in the circuits
-            for i, circuit in enumerate(circuits):
-                diff = circuit.all_qubits() - set(qubit_mapping)
-                if diff:
-                    raise ValueError(
-                        f"The qubits {diff} in circuit '{circuit.name}' at index {i} "
-                        f'are not found in the provided qubit mapping.'
-                    )
+        self._validate_qubit_mapping(architecture, circuits, qubit_mapping)
+        serialized_qubit_mapping = serialize_qubit_mapping(qubit_mapping) if qubit_mapping else None
 
-            serialized_qubit_mapping = serialize_qubit_mapping(qubit_mapping)
+        self._validate_circuit_instructions(architecture, circuits, qubit_mapping)
 
         # ``bearer_token`` can be ``None`` if cocos we're connecting does not use authentication
         bearer_token = self._get_bearer_token()
@@ -921,6 +913,100 @@ class IQMClient:
             return job_id
         except (json.decoder.JSONDecodeError, KeyError) as e:
             raise CircuitExecutionError(f'Invalid response: {result.text}, {e}') from e
+
+    @staticmethod
+    def _validate_qubit_mapping(
+        architecture: QuantumArchitectureSpecification,
+        circuits: CircuitBatch,
+        qubit_mapping: Optional[dict[str, str]] = None,
+    ):
+        """Validates the given qubit mapping, if defined.
+
+        Args:
+          architecture: the quantum architecture to check against
+          circuits: list of circuits to be checked
+          qubit_mapping: Mapping of logical qubit names to physical qubit names.
+              Can be set to ``None`` if all ``circuits`` already use physical qubit names.
+              Note that the ``qubit_mapping`` is used for all ``circuits``.
+
+        Raises:
+            CircuitExecutionError: IQM server specific exceptions
+        """
+        if qubit_mapping is None:
+            return
+
+        # check if qubit mapping is injective
+        target_qubits = set(qubit_mapping.values())
+        if not len(target_qubits) == len(qubit_mapping):
+            raise ValueError('Multiple logical qubits map to the same physical qubit.')
+
+        # check if qubit mapping covers all qubits in the circuits
+        for i, circuit in enumerate(circuits):
+            diff = circuit.all_qubits() - set(qubit_mapping)
+            if diff:
+                raise ValueError(
+                    f"The qubits {diff} in circuit '{circuit.name}' at index {i} "
+                    f'are not found in the provided qubit mapping.'
+                )
+
+        # check that each mapped qubit is defined in the quantum architecture
+        for _logical, physical in qubit_mapping.items():
+            if physical not in architecture.qubits:
+                raise CircuitExecutionError(f'Qubit {physical} not present in quantum architecture')
+
+    @staticmethod
+    def _validate_circuit_instructions(
+        architecture: QuantumArchitectureSpecification,
+        circuits: CircuitBatch,
+        qubit_mapping: Optional[dict[str, str]] = None,
+    ):
+        """Validates that the instructions target correct qubits in the given circuits.
+
+        Args:
+          architecture: the quantum architecture to check against
+          circuits: list of circuits to be checked
+          qubit_mapping: Mapping of logical qubit names to physical qubit names.
+              Can be set to ``None`` if all ``circuits`` already use physical qubit names.
+              Note that the ``qubit_mapping`` is used for all ``circuits``.
+
+        Raises:
+            CircuitExecutionError: IQM server specific exceptions
+        """
+        for circuit in circuits:
+            for instr in circuit.instructions:
+                IQMClient._validate_instruction(architecture, instr, qubit_mapping)
+
+    @staticmethod
+    def _validate_instruction(
+        architecture: QuantumArchitectureSpecification,
+        instruction: Instruction,
+        qubit_mapping: Optional[dict[str, str]] = None,
+    ):
+        """Validates that the instruction targets correct qubits in the given architecture.
+
+        Args:
+          architecture: the quantum architecture to check against
+          instruction: the instruction to check
+          qubit_mapping: Mapping of logical qubit names to physical qubit names.
+              Can be set to ``None`` if all ``circuits`` already use physical qubit names.
+              Note that the ``qubit_mapping`` is used for all ``circuits``.
+
+        Raises:
+            CircuitExecutionError: IQM server specific exceptions
+        """
+        if instruction.name not in architecture.operations:
+            raise ValueError(f"Instruction '{instruction.name}' is not supported by the quantum architecture.")
+        allowed_loci = architecture.operations[instruction.name]
+        qubits = [qubit_mapping[q] for q in instruction.qubits] if qubit_mapping else list(instruction.qubits)
+        info = SUPPORTED_INSTRUCTIONS[instruction.name]
+        is_directed = 'directed' in info and info['directed'] is True
+        all_loci = allowed_loci if is_directed else [qs for pair in allowed_loci for qs in [pair, pair[::-1]]]
+        if qubits not in all_loci:
+            raise CircuitExecutionError(
+                f'{instruction.qubits} = {tuple(qubits)} not allowed as locus for {instruction.name}'
+                if qubit_mapping
+                else f'{instruction.qubits} not allowed as locus for {instruction.name}'
+            )
 
     def get_run(self, job_id: UUID, *, timeout_secs: float = REQUESTS_TIMEOUT) -> RunResult:
         """Query the status and results of a submitted job.
@@ -1056,6 +1142,7 @@ class IQMClient:
 
     def get_quantum_architecture(self, *, timeout_secs: float = REQUESTS_TIMEOUT) -> QuantumArchitectureSpecification:
         """Retrieve quantum architecture from server.
+        Caches the result and returns the same result on later invocations.
 
         Args:
             timeout_secs: network request timeout
@@ -1068,6 +1155,9 @@ class IQMClient:
             ClientConfigurationError: if no valid authentication is provided
             HTTPException: HTTP exceptions
         """
+        if self._architecture:
+            return self._architecture
+
         result = requests.get(
             join(self._base_url, 'quantum-architecture'),
             headers=self._default_headers(),
@@ -1088,6 +1178,8 @@ class IQMClient:
             qa = QuantumArchitecture(**result.json()).quantum_architecture
         except (json.decoder.JSONDecodeError, KeyError) as e:
             raise CircuitExecutionError(f'Invalid response: {result.text}, {e}') from e
+        # Cache architecture so that later invocations do not need to query it again
+        self._architecture = qa
         return qa
 
     def close_auth_session(self) -> bool:
