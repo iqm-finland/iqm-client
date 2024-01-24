@@ -2,6 +2,12 @@
 Changelog
 =========
 
+Version 16.0
+============
+
+* Extend quantum architecture specification to allow different loci for each operation.
+* Allow the ``move`` instruction natively.
+
 Version 15.4
 ============
 

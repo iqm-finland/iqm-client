@@ -33,6 +33,7 @@ measure          >= 1        ``key: str``                           Measurement 
 prx              1           ``angle_t: float``, ``phase_t: float`` Phased x-rotation gate.
 cz               2                                                  Controlled-Z gate.
 barrier          >= 1                                               Execution barrier.
+move             2                                                  Moves 1 state between resonator and qubit.
 ================ =========== ====================================== ===========
 
 For each Instruction you may also optionally specify :attr:`~Instruction.implementation`,
@@ -96,6 +97,35 @@ It is symmetric wrt. the qubits it's acting on, and takes no arguments.
    :caption: Example
 
    Instruction(name='cz', qubits=('alice', 'bob'), args={})
+
+
+MOVE
+----
+
+The MOVE operation is an operation between a qubit and resonator than moves the
+1 state between the qubit and resonator. Specifically, it transforms 01 to 10
+and 10 to 01, where indexes are ordered qubit then resonator. However, the MOVE
+operation is not defined when both the resonator and qubit are in the 1 state;
+it is not defined on the 11 state. If the MOVE operation is applied to the
+11 state there will be substantial (roughly 63%) leakage into the 02 state.
+
+With 11 input undefined, the matrix form of the MOVE operation is:
+
+.. math:: \text{MOVE} = \begin{bmatrix}
+    1 & 0 & 0 & n/a \\
+    0 & 0 & 1 & n/a \\
+    0 & 1 & 0 & n/a \\
+    0 & 0 & 0 & n/a
+    \end{bmatrix}
+
+To ensure that both the qubit and resonator are not both in the 1 state, it is
+recommended that no single qubit gates are applied to the qubit in between a
+pair of MOVE operations.
+
+.. code-block:: python
+   :caption: Example
+
+   Instruction(name='move', qubits=('alice', 'bob'), args={})
 
 
 Barrier
@@ -533,7 +563,7 @@ class QuantumArchitectureSpecification(BaseModel):
     name: str = Field(...)
     """name of the quantum architecture"""
     operations: dict[str, list[list[str]]] = Field(...)
-    """the operations supported by this quantum architecture, mapped to the allowed connections"""
+    """operations supported by this quantum architecture, mapped to the allowed loci"""
     qubits: list[str] = Field(...)
     """list of qubits of this quantum architecture"""
     qubit_connectivity: list[list[str]] = Field(...)
