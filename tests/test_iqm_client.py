@@ -14,7 +14,7 @@
 """Tests for the IQM client.
 """
 # pylint: disable=too-many-arguments
-from mockito import expect, unstub, verifyNoUnwantedInteractions
+from mockito import expect, unstub, verifyNoUnwantedInteractions, when
 import pytest
 import requests
 from requests import HTTPError
@@ -47,11 +47,14 @@ def test_serialize_qubit_mapping():
     ]
 
 
-def test_submit_circuits_adds_user_agent(sample_client, jobs_url, minimal_run_request, submit_success):
+def test_submit_circuits_adds_user_agent(
+    sample_client, jobs_url, minimal_run_request, submit_success, quantum_architecture_url, quantum_architecture_success
+):
     """
     Tests that submit_circuit without client signature adds correct User-Agent header
     """
     expect(requests, times=1).post(jobs_url, **post_jobs_args(minimal_run_request)).thenReturn(submit_success)
+    expect(requests, times=1).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
 
     sample_client.submit_circuits(**submit_circuits_args(minimal_run_request))
 
@@ -60,7 +63,12 @@ def test_submit_circuits_adds_user_agent(sample_client, jobs_url, minimal_run_re
 
 
 def test_submit_circuits_adds_user_agent_with_client_signature(
-    client_with_signature, jobs_url, minimal_run_request, submit_success
+    client_with_signature,
+    jobs_url,
+    minimal_run_request,
+    submit_success,
+    quantum_architecture_url,
+    quantum_architecture_success,
 ):
     """
     Tests that submit_circuit with client signature adds correct User-Agent header
@@ -68,6 +76,7 @@ def test_submit_circuits_adds_user_agent_with_client_signature(
     expect(requests, times=1).post(
         jobs_url, **post_jobs_args(minimal_run_request, user_agent=client_with_signature._signature)
     ).thenReturn(submit_success)
+    expect(requests, times=1).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
 
     client_with_signature.submit_circuits(**submit_circuits_args(minimal_run_request))
 
@@ -94,12 +103,22 @@ def test_submit_circuits_adds_user_agent_with_client_signature(
     ],
 )
 def test_submit_circuits_returns_id(
-    sample_client, jobs_url, run_request_name, valid_request, error_message, request, submit_success, existing_run_id
+    sample_client,
+    jobs_url,
+    run_request_name,
+    valid_request,
+    error_message,
+    request,
+    submit_success,
+    existing_run_id,
+    quantum_architecture_url,
+    quantum_architecture_success,
 ):
     """
     Tests submitting circuits for execution
     """
     run_request = request.getfixturevalue(run_request_name)
+    when(requests).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
 
     if valid_request:
         expect(requests, times=1).post(jobs_url, **post_jobs_args(run_request)).thenReturn(submit_success)
@@ -115,7 +134,7 @@ def test_submit_circuits_returns_id(
 
 
 def test_submit_circuits_does_not_activate_heralding_by_default(
-    sample_client, jobs_url, minimal_run_request, submit_success
+    sample_client, jobs_url, minimal_run_request, submit_success, quantum_architecture_url, quantum_architecture_success
 ):
     """
     Test submitting run request without heralding
@@ -123,6 +142,7 @@ def test_submit_circuits_does_not_activate_heralding_by_default(
     # Expect request to have heralding mode NONE by default
     assert post_jobs_args(minimal_run_request)['json']['heralding_mode'] == HeraldingMode.NONE.value
     expect(requests, times=1).post(jobs_url, **post_jobs_args(minimal_run_request)).thenReturn(submit_success)
+    when(requests).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
 
     # Specify no heralding mode in submit_circuits
     sample_client.submit_circuits(circuits=minimal_run_request.circuits, shots=minimal_run_request.shots)
@@ -142,7 +162,12 @@ def test_submit_circuits_raises_with_invalid_shots(sample_client, minimal_run_re
 
 
 def test_submit_circuits_sets_heralding_mode_in_run_request(
-    sample_client, jobs_url, run_request_with_heralding, submit_success
+    sample_client,
+    jobs_url,
+    run_request_with_heralding,
+    submit_success,
+    quantum_architecture_url,
+    quantum_architecture_success,
 ):
     """
     Test submitting run request with heralding
@@ -151,6 +176,7 @@ def test_submit_circuits_sets_heralding_mode_in_run_request(
     expected_heralding_mode = run_request_with_heralding.heralding_mode.value
     assert post_jobs_args(run_request_with_heralding)['json']['heralding_mode'] == expected_heralding_mode
     expect(requests, times=1).post(jobs_url, **post_jobs_args(run_request_with_heralding)).thenReturn(submit_success)
+    expect(requests, times=1).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
 
     assert submit_circuits_args(run_request_with_heralding)['heralding_mode'] == expected_heralding_mode
     sample_client.submit_circuits(**submit_circuits_args(run_request_with_heralding))
@@ -159,19 +185,52 @@ def test_submit_circuits_sets_heralding_mode_in_run_request(
     unstub()
 
 
-def test_submit_circuits_raises_with_invalid_heralding_mode(sample_client):
+def test_submit_circuits_gets_architecture_once(
+    sample_client,
+    jobs_url,
+    minimal_run_request,
+    submit_success,
+    quantum_architecture_url,
+    quantum_architecture_success,
+):
+    """
+    Test that quantum architecture specification is only requested once from the QC
+    """
+    expect(requests, times=1).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
+    expect(requests, times=1).post(jobs_url, **post_jobs_args(minimal_run_request)).thenReturn(submit_success)
+    # Get architecture explicitly and then submit job
+    sample_client.get_quantum_architecture()
+    sample_client.submit_circuits(**submit_circuits_args(minimal_run_request))
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_submit_circuits_raises_with_invalid_heralding_mode(
+    sample_client,
+    quantum_architecture_url,
+    quantum_architecture_success,
+):
     """
     Test that submitting run request with invalid heralding mode raises an error
     """
+    when(requests).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
     with pytest.raises(ValueError, match="Input should be 'none' or 'zeros'"):
         sample_client.submit_circuits(circuits=[], shots=10, heralding_mode='invalid')
 
 
-def test_get_run_adds_user_agent(sample_client, existing_job_url, existing_run_id, pending_compilation_job_result):
+def test_get_run_adds_user_agent(
+    sample_client,
+    existing_job_url,
+    existing_run_id,
+    pending_compilation_job_result,
+    quantum_architecture_url,
+    quantum_architecture_success,
+):
     """
     Tests that get_run without client signature adds the correct User-Agent header
     """
     expect(requests, times=1).get(existing_job_url, **get_jobs_args()).thenReturn(pending_compilation_job_result)
+    when(requests).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
 
     sample_client.get_run(existing_run_id)
 
@@ -482,10 +541,11 @@ def test_quantum_architecture_throws_json_decode_error_if_received_not_json(
 
 
 def test_submit_circuits_throws_json_decode_error_if_received_not_json(
-    sample_client, jobs_url, not_valid_json_response
+    sample_client, jobs_url, not_valid_json_response, quantum_architecture_url, quantum_architecture_success
 ):
     """Test that an exception is raised when the response is not a valid JSON"""
     expect(requests, times=1).post(jobs_url, ...).thenReturn(not_valid_json_response)
+    expect(requests, times=1).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
 
     with pytest.raises(CircuitExecutionError):
         sample_client.submit_circuits([])
