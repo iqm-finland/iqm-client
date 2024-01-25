@@ -182,8 +182,11 @@ from typing import Any, Callable, Optional, Union
 from uuid import UUID
 import warnings
 
-from pydantic import BaseModel, Field, StrictStr, ValidationInfo, field_validator
+from pydantic import BaseModel, Field, field_validator
 import requests
+
+from iqm.iqm_client.instruction import SUPPORTED_INSTRUCTIONS, Instruction
+from iqm.iqm_client.quantum_architecture import QuantumArchitecture, QuantumArchitectureSpecification
 
 REQUESTS_TIMEOUT = float(os.environ.get('IQM_CLIENT_REQUESTS_TIMEOUT', 60.0))
 
@@ -193,62 +196,6 @@ REFRESH_MARGIN_SECONDS = 60
 
 AUTH_CLIENT_ID = 'iqm_client'
 AUTH_REALM = 'cortex'
-
-
-SUPPORTED_INSTRUCTIONS: dict[str, dict[str, Any]] = {
-    'barrier': {
-        'arity': -1,
-        'args': {},
-    },
-    'cz': {
-        'arity': 2,
-        'args': {},
-        'directed': False,
-    },
-    'move': {
-        'arity': 2,
-        'args': {},
-        'directed': True,
-    },
-    'measure': {
-        'arity': -1,
-        'args': {
-            'key': (str,),
-        },
-    },
-    'measurement': {  # deprecated
-        'arity': -1,
-        'args': {
-            'key': (str,),
-        },
-    },
-    'prx': {
-        'arity': 1,
-        'args': {
-            'angle_t': (
-                float,
-                int,
-            ),
-            'phase_t': (
-                float,
-                int,
-            ),
-        },
-    },
-    'phased_rx': {  # deprecated
-        'arity': 1,
-        'args': {
-            'angle_t': (
-                float,
-                int,
-            ),
-            'phase_t': (
-                float,
-                int,
-            ),
-        },
-    },
-}
 
 
 class ClientConfigurationError(RuntimeError):
@@ -285,86 +232,6 @@ class Status(str, Enum):
     READY = 'ready'
     FAILED = 'failed'
     ABORTED = 'aborted'
-
-
-class Instruction(BaseModel):
-    """An instruction in a quantum circuit."""
-
-    name: str = Field(..., examples=['measure'])
-    """name of the quantum operation"""
-    implementation: Optional[StrictStr] = Field(None)
-    """name of the implementation, for experimental use only"""
-    qubits: tuple[StrictStr, ...] = Field(..., examples=[('alice',)])
-    """names of the logical qubits the operation acts on"""
-    args: dict[str, Any] = Field(..., examples=[{'key': 'm'}])
-    """arguments for the operation"""
-
-    @field_validator('name')
-    @classmethod
-    def name_validator(cls, value):
-        """Check if the name of instruction is set to one of the supported quantum operations"""
-        name = value
-        if name not in SUPPORTED_INSTRUCTIONS:
-            raise ValueError(
-                f'Unknown instruction "{name}". '
-                f'Supported instructions are \"{", ".join(SUPPORTED_INSTRUCTIONS.keys())}\"'
-            )
-        return name
-
-    @field_validator('implementation')
-    @classmethod
-    def implementation_validator(cls, value):
-        """Check if the implementation of the instruction is set to a non-empty string"""
-        implementation = value
-        if isinstance(implementation, str):
-            if not implementation:
-                raise ValueError('Implementation of the instruction should be None, or a non-empty string')
-        return implementation
-
-    @field_validator('qubits')
-    @classmethod
-    def qubits_validator(cls, value, info: ValidationInfo):
-        """Check if the instruction has the correct number of qubits according to the instruction's type"""
-        qubits = value
-        name = info.data.get('name')
-        if not name:
-            raise ValueError('Could not validate qubits because the name of the instruction did not pass validation')
-        arity = SUPPORTED_INSTRUCTIONS[name]['arity']
-        if (0 <= arity) and (arity != len(qubits)):
-            raise ValueError(
-                f'The "{name}" instruction acts on {arity} qubit(s), but {len(qubits)} were given: {qubits}'
-            )
-        return qubits
-
-    @field_validator('args')
-    @classmethod
-    def args_validator(cls, value, info: ValidationInfo):
-        """Check argument names and types for a given instruction"""
-        args = value
-        name = info.data.get('name')
-        if not name:
-            raise ValueError('Could not validate args because the name of the instruction did not pass validation')
-
-        # Check argument names
-        submitted_arg_names = set(args.keys())
-        supported_arg_names = set(SUPPORTED_INSTRUCTIONS[name]['args'].keys())
-        if submitted_arg_names != supported_arg_names:
-            raise ValueError(
-                f'The instruction "{name}" requires '
-                f'{tuple(supported_arg_names) if supported_arg_names else "no"} argument(s), '
-                f'but {tuple(submitted_arg_names)} were given'
-            )
-
-        # Check argument types
-        for arg_name, arg_value in args.items():
-            supported_arg_types = SUPPORTED_INSTRUCTIONS[name]['args'][arg_name]
-            if not isinstance(arg_value, supported_arg_types):
-                raise TypeError(
-                    f'The argument "{arg_name}" should be of one of the following supported types'
-                    f' {supported_arg_types}, but ({type(arg_value)}) was given'
-                )
-
-        return value
 
 
 class Circuit(BaseModel):
@@ -557,26 +424,6 @@ class RunStatus(BaseModel):
         """
         input_copy = inp.copy()
         return RunStatus(status=Status(input_copy.pop('status')), **input_copy)
-
-
-class QuantumArchitectureSpecification(BaseModel):
-    """Quantum architecture specification."""
-
-    name: str = Field(...)
-    """name of the quantum architecture"""
-    operations: dict[str, list[list[str]]] = Field(...)
-    """operations supported by this quantum architecture, mapped to the allowed loci"""
-    qubits: list[str] = Field(...)
-    """list of qubits of this quantum architecture"""
-    qubit_connectivity: list[list[str]] = Field(...)
-    """qubit connectivity of this quantum architecture"""
-
-
-class QuantumArchitecture(BaseModel):
-    """Quantum architecture as returned by server."""
-
-    quantum_architecture: QuantumArchitectureSpecification = Field(...)
-    """details about the quantum architecture"""
 
 
 class GrantType(str, Enum):
