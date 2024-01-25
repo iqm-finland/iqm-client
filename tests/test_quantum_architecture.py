@@ -1,6 +1,6 @@
 import pytest
 
-from iqm.iqm_client import QuantumArchitectureSpecification
+from iqm.iqm_client import QuantumArchitecture, QuantumArchitectureSpecification
 
 
 @pytest.mark.parametrize(
@@ -63,6 +63,17 @@ def test_different_prx_move_ops(operations):
 )
 def test_equivalent_prx_cz_ops(operations):
     verify_ops_match({'prx': [['QB1'], ['QB2'], ['QB3']], 'cz': [['QB1', 'QB2']]}, operations, True)
+
+
+def test_instruction_loci(sample_quantum_architecture):
+    arch = QuantumArchitecture.model_validate(sample_quantum_architecture).quantum_architecture
+    assert arch.get_instruction_loci('foo') is None
+    assert arch.get_instruction_loci('measure') == [['QB1'], ['QB2']]
+    assert arch.get_instruction_loci('measurement') == [['QB1'], ['QB2']]
+    assert arch.get_instruction_loci('phased_rx') == [['QB1'], ['QB2']]
+    assert arch.get_instruction_loci('prx') == [['QB1'], ['QB2']]
+    assert arch.get_instruction_loci('cz') == [['QB1', 'QB2']]
+    assert arch.get_instruction_loci('move') is None
 
 
 def verify_ops_match(ops1, ops2, should_match: bool):

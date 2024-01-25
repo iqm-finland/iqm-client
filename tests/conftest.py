@@ -404,9 +404,7 @@ def sample_quantum_architecture():
             'qubit_connectivity': [['QB1', 'QB2']],
             'operations': {
                 'phased_rx': [['QB1'], ['QB2']],
-                'prx': [['QB1'], ['QB2']],
                 'cz': [['QB1', 'QB2']],
-                'measure': [['QB1'], ['QB2']],
                 'measurement': [['QB1'], ['QB2']],
             },
         }
