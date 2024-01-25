@@ -841,9 +841,9 @@ class IQMClient:
         Raises:
             CircuitExecutionError: IQM server specific exceptions
         """
-        if instruction.name not in architecture.operations:
+        allowed_loci = architecture.get_instruction_loci(instruction.name)
+        if not allowed_loci:
             raise ValueError(f"Instruction '{instruction.name}' is not supported by the quantum architecture.")
-        allowed_loci = architecture.operations[instruction.name]
         qubits = [qubit_mapping[q] for q in instruction.qubits] if qubit_mapping else list(instruction.qubits)
         info = SUPPORTED_INSTRUCTIONS[instruction.name]
         is_directed = 'directed' in info and info['directed'] is True

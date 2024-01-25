@@ -17,9 +17,11 @@ classes.
 
 For more information on the topic, refer to the more comprehensive documentation in iqm_client.py.
 """
+from typing import Optional
+
 from pydantic import BaseModel, Field
 
-from iqm.iqm_client.instruction import is_directed_instruction, is_multi_qubit_instruction
+from iqm.iqm_client.instruction import SUPPORTED_INSTRUCTIONS, is_directed_instruction, is_multi_qubit_instruction
 from iqm.iqm_client.util import sort_list
 
 
@@ -67,6 +69,31 @@ class QuantumArchitectureSpecification(BaseModel):
                 if qs1 != qs2:
                     return False
         return True
+
+    def get_instruction_loci(self, name: str) -> Optional[list[list[str]]]:
+        """Return the loci for the given instruction. This is backwards-compatible
+        with deprecated names, so that requesting instruction loci for an operation
+        that is not explicitly supported by this architecture specification, any
+        known aliased instruction name is checked and if a match is found, the loci
+        for that instruction is returned.
+
+        Args:
+            name: the instruction name
+
+        Returns:
+            the loci for the instruction supported by this quantum architecture.
+        """
+        if name in self.operations:
+            return self.operations[name]
+        if name not in SUPPORTED_INSTRUCTIONS:
+            return None
+        support = SUPPORTED_INSTRUCTIONS[name]
+        if 'aliases' in support:
+            aliases = support['aliases']
+            for alias in aliases:
+                if alias in self.operations:
+                    return self.operations[alias]
+        return None
 
 
 class QuantumArchitecture(BaseModel):

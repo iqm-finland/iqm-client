@@ -43,12 +43,14 @@ SUPPORTED_INSTRUCTIONS: dict[str, dict[str, Any]] = {
         'args': {
             'key': (str,),
         },
+        'aliases': ['measurement'],
     },
     'measurement': {  # deprecated
         'arity': -1,
         'args': {
             'key': (str,),
         },
+        'aliases': ['measure'],
     },
     'prx': {
         'arity': 1,
@@ -62,6 +64,7 @@ SUPPORTED_INSTRUCTIONS: dict[str, dict[str, Any]] = {
                 int,
             ),
         },
+        'aliases': ['phased_rx'],
     },
     'phased_rx': {  # deprecated
         'arity': 1,
@@ -75,6 +78,7 @@ SUPPORTED_INSTRUCTIONS: dict[str, dict[str, Any]] = {
                 int,
             ),
         },
+        'aliases': ['prx'],
     },
 }
 
