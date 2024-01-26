@@ -17,12 +17,11 @@ classes.
 
 For more information on the topic, refer to the more comprehensive documentation in iqm_client.py.
 """
-from typing import Optional
+from __future__ import annotations
 
 from pydantic import BaseModel, Field
 
-from iqm.iqm_client.instruction import SUPPORTED_INSTRUCTIONS, is_directed_instruction, is_multi_qubit_instruction
-from iqm.iqm_client.util import sort_list
+from iqm.iqm_client.instruction import get_current_instruction_name, is_directed_instruction, is_multi_qubit_instruction
 
 
 class QuantumArchitectureSpecification(BaseModel):
@@ -37,7 +36,12 @@ class QuantumArchitectureSpecification(BaseModel):
     qubit_connectivity: list[list[str]] = Field(...)
     """Qubit connectivity of this quantum architecture."""
 
-    def has_equivalent_operations(self, other: 'QuantumArchitectureSpecification'):
+    def __init__(self, **data):
+        super().__init__(**data)
+        self.operations = {get_current_instruction_name(k): v for k, v in self.operations.items()}
+        print("OPS", self.operations)
+
+    def has_equivalent_operations(self, other: QuantumArchitectureSpecification):
         """Compares the given operation sets defined by the quantum architecture against
         another architecture specification.
 
@@ -59,9 +63,9 @@ class QuantumArchitectureSpecification(BaseModel):
             c2 = ops2[op]
             if is_multi_qubit_instruction(op):
                 if not is_directed_instruction(op):
-                    c1 = [sort_list(qbs) for qbs in c1]
-                    c2 = [sort_list(qbs) for qbs in c2]
-                if sort_list(c1) != sort_list(c2):
+                    c1 = [sorted(qbs) for qbs in c1]
+                    c2 = [sorted(qbs) for qbs in c2]
+                if sorted(c1) != sorted(c2):
                     return False
             else:
                 qs1 = {q for [q] in c1}
@@ -69,31 +73,6 @@ class QuantumArchitectureSpecification(BaseModel):
                 if qs1 != qs2:
                     return False
         return True
-
-    def get_instruction_loci(self, name: str) -> Optional[list[list[str]]]:
-        """Return the loci for the given instruction. This is backwards-compatible
-        with deprecated names, so that requesting instruction loci for an operation
-        that is not explicitly supported by this architecture specification, any
-        known aliased instruction name is checked and if a match is found, the loci
-        for that instruction is returned.
-
-        Args:
-            name: the instruction name
-
-        Returns:
-            the loci for the instruction supported by this quantum architecture.
-        """
-        if name in self.operations:
-            return self.operations[name]
-        if name not in SUPPORTED_INSTRUCTIONS:
-            return None
-        support = SUPPORTED_INSTRUCTIONS[name]
-        if 'aliases' in support:
-            aliases = support['aliases']
-            for alias in aliases:
-                if alias in self.operations:
-                    return self.operations[alias]
-        return None
 
 
 class QuantumArchitecture(BaseModel):
