@@ -637,7 +637,7 @@ def test_validate_circuit_checks_instruction_argument_names(sample_circuit):
     """
     circuit = sample_circuit.model_copy()
     circuit.instructions[1].args['arg_x'] = 'This argument name is not supported by the instruction'
-    with pytest.raises(ValueError, match='The instruction "phased_rx" requires'):
+    with pytest.raises(ValueError, match='The instruction "prx" requires'):
         validate_circuit(circuit)
 
 

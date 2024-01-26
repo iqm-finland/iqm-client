@@ -43,14 +43,13 @@ SUPPORTED_INSTRUCTIONS: dict[str, dict[str, Any]] = {
         'args': {
             'key': (str,),
         },
-        'aliases': ['measurement'],
     },
     'measurement': {  # deprecated
         'arity': -1,
         'args': {
             'key': (str,),
         },
-        'aliases': ['measure'],
+        'renamed_to': 'measure',
     },
     'prx': {
         'arity': 1,
@@ -64,7 +63,6 @@ SUPPORTED_INSTRUCTIONS: dict[str, dict[str, Any]] = {
                 int,
             ),
         },
-        'aliases': ['phased_rx'],
     },
     'phased_rx': {  # deprecated
         'arity': 1,
@@ -78,7 +76,7 @@ SUPPORTED_INSTRUCTIONS: dict[str, dict[str, Any]] = {
                 int,
             ),
         },
-        'aliases': ['prx'],
+        'renamed_to': 'prx',
     },
 }
 
@@ -94,6 +92,11 @@ class Instruction(BaseModel):
     """names of the logical qubits the operation acts on"""
     args: dict[str, Any] = Field(..., examples=[{'key': 'm'}])
     """arguments for the operation"""
+
+    def __init__(self, **data):
+        super().__init__(**data)
+        # Auto-convert name if a deprecated name is used
+        self.name = get_current_instruction_name(self.name)
 
     @field_validator('name')
     @classmethod
@@ -190,4 +193,21 @@ def is_directed_instruction(name: str) -> bool:
         name in SUPPORTED_INSTRUCTIONS
         and 'directed' in SUPPORTED_INSTRUCTIONS[name]
         and SUPPORTED_INSTRUCTIONS[name]['directed']
+    )
+
+
+def get_current_instruction_name(name: str):
+    """Checks if the instruction name has been deprecated and returns the new name if it is;
+    otherwise, just returns the name as-is.
+
+    Args:
+        name: the name of the instruction
+
+    Returns:
+        the current name of the instruction.
+    """
+    return (
+        SUPPORTED_INSTRUCTIONS[name]['renamed_to']
+        if name in SUPPORTED_INSTRUCTIONS and 'renamed_to' in SUPPORTED_INSTRUCTIONS[name]
+        else name
     )

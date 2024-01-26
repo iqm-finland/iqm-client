@@ -125,7 +125,7 @@ pair of MOVE operations.
 .. code-block:: python
    :caption: Example
 
-   Instruction(name='move', qubits=('alice', 'bob'), args={})
+   Instruction(name='move', qubits=('alice', 'resonator'), args={})
 
 
 Barrier
@@ -841,9 +841,9 @@ class IQMClient:
         Raises:
             CircuitExecutionError: IQM server specific exceptions
         """
-        allowed_loci = architecture.get_instruction_loci(instruction.name)
-        if not allowed_loci:
+        if instruction.name not in architecture.operations:
             raise ValueError(f"Instruction '{instruction.name}' is not supported by the quantum architecture.")
+        allowed_loci = architecture.operations[instruction.name]
         qubits = [qubit_mapping[q] for q in instruction.qubits] if qubit_mapping else list(instruction.qubits)
         info = SUPPORTED_INSTRUCTIONS[instruction.name]
         is_directed = 'directed' in info and info['directed'] is True
