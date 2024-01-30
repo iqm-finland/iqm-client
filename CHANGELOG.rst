@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 15.4
+============
+
+* Add testing with python 3.11. `#113 <https://github.com/iqm-finland/iqm-client/pull/113>`_
+
 Version 15.3
 ============
 
