@@ -27,6 +27,7 @@ SUPPORTED_INSTRUCTIONS: dict[str, dict[str, Any]] = {
     'barrier': {
         'arity': -1,
         'args': {},
+        'check_locus': False,
     },
     'cz': {
         'arity': 2,

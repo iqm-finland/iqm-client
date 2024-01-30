@@ -64,3 +64,16 @@ def test_disallowed_move_qubits(sample_move_architecture, qubits):
     with pytest.raises(CircuitExecutionError) as err:
         IQMClient._validate_instruction(arch, Instruction(name='move', qubits=qubits, args={}), None)
     assert str(err.value) == f"('{qubits[0]}', '{qubits[1]}') not allowed as locus for move"
+
+
+def test_barrier(sample_move_architecture):
+    """
+    Tests that instruction validation passes for the barrier operation
+    """
+    arch = QuantumArchitecture(**sample_move_architecture).quantum_architecture
+    IQMClient._validate_instruction(
+        arch, Instruction(name='barrier', qubits=['COMP_R', 'QB1', 'QB2', 'QB3'], args={}), None
+    )
+    IQMClient._validate_instruction(
+        arch, Instruction(name='barrier', qubits=['QB1', 'COMP_R', 'QB2', 'QB3'], args={}), None
+    )

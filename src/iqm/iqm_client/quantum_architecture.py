@@ -39,7 +39,6 @@ class QuantumArchitectureSpecification(BaseModel):
     def __init__(self, **data):
         super().__init__(**data)
         self.operations = {get_current_instruction_name(k): v for k, v in self.operations.items()}
-        print("OPS", self.operations)
 
     def has_equivalent_operations(self, other: QuantumArchitectureSpecification):
         """Compares the given operation sets defined by the quantum architecture against
