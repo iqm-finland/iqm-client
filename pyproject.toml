@@ -16,7 +16,7 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: Apache Software License",
 ]
-requires-python = "~=3.9"
+requires-python = ">=3.9, <3.12"
 dependencies = [
     "numpy",
     "requests >= 2.28.2, < 3.0",
