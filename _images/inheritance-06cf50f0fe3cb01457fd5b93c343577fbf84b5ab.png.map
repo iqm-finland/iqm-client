@@ -2,7 +2,7 @@
 <area shape="rect" id="node1" href="iqm.iqm_client.iqm_client.APITimeoutError.html#iqm.iqm_client.iqm_client.APITimeoutError" target="_top" title="Exception for when executing a job on the server takes too long." alt="" coords="298,795,426,820"/>
 <area shape="rect" id="node2" href="iqm.iqm_client.iqm_client.CircuitExecutionError.html#iqm.iqm_client.iqm_client.CircuitExecutionError" target="_top" title="Something went wrong on the server." alt="" coords="19,795,178,820"/>
 <area shape="rect" id="node3" href="iqm.iqm_client.iqm_client.AuthRequest.html#iqm.iqm_client.iqm_client.AuthRequest" target="_top" title="Request sent to authentication server for access token and refresh token, or for terminating the session." alt="" coords="309,203,415,228"/>
-<area shape="rect" id="node4" title="Usage docs: https://docs.pydantic.dev/2.5/concepts/models/" alt="" coords="51,487,146,512"/>
+<area shape="rect" id="node4" title="Usage docs: https://docs.pydantic.dev/2.6/concepts/models/" alt="" coords="51,487,146,512"/>
 <area shape="rect" id="node5" href="iqm.iqm_client.iqm_client.Circuit.html#iqm.iqm_client.iqm_client.Circuit" target="_top" title="Quantum circuit to be executed." alt="" coords="326,252,398,277"/>
 <area shape="rect" id="node9" href="iqm.iqm_client.iqm_client.Credentials.html#iqm.iqm_client.iqm_client.Credentials" target="_top" title="Credentials and tokens for maintaining a session with the authentication server." alt="" coords="314,301,410,327"/>
 <area shape="rect" id="node11" href="iqm.iqm_client.iqm_client.ExternalToken.html#iqm.iqm_client.iqm_client.ExternalToken" target="_top" title="Externally managed token for maintaining a session with the authentication server." alt="" coords="305,351,419,376"/>
