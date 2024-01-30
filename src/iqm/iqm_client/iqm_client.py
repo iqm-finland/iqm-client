@@ -846,6 +846,9 @@ class IQMClient:
         allowed_loci = architecture.operations[instruction.name]
         qubits = [qubit_mapping[q] for q in instruction.qubits] if qubit_mapping else list(instruction.qubits)
         info = SUPPORTED_INSTRUCTIONS[instruction.name]
+        if 'check_locus' in info and not info['check_locus']:
+            # Should skip locus check (e.g. for barrier)
+            return
         is_directed = 'directed' in info and info['directed'] is True
         all_loci = allowed_loci if is_directed else [qs for pair in allowed_loci for qs in [pair, pair[::-1]]]
         if qubits not in all_loci:
