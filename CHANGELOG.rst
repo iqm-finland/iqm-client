@@ -7,6 +7,8 @@ Version 16.0
 
 * Extend quantum architecture specification to allow different loci for each operation.
 * Allow the ``move`` instruction natively.
+* Validate instructions loci based on quantum architecture.
+* Auto-rename deprecated instruction names to current names.
 
 Version 15.4
 ============
