@@ -433,9 +433,10 @@ Note: This field should be always None in normal use."""
     """mapping of logical qubit names to physical qubit names, or None if using physical qubit names"""
     shots: int = Field(..., gt=0)
     """how many times to execute each circuit in the batch, must be greater than zero"""
-    circuit_duration_check: bool = Field(True)
-    """If True (default), circuits are disqualified on the server if they are too long compared to the
-T2 decoherence times of the QPU. Setting it to False disables the check, which should not be done in normal use."""
+    max_circuit_duration_over_t2: Optional[float] = Field(None)
+    """Circuits are disqualified on the server if they are longer than this ratio
+        of the T2 time of the qubits.
+        If set to 0.0, no circuits are disqualified. If set to None the server default value is used."""
     heralding_mode: HeraldingMode = Field(HeraldingMode.NONE)
     """which heralding mode to use during the execution of circuits in this request."""
 
@@ -790,7 +791,7 @@ class IQMClient:
         custom_settings: Optional[dict[str, Any]] = None,
         calibration_set_id: Optional[UUID] = None,
         shots: int = 1,
-        circuit_duration_check: bool = True,
+        max_circuit_duration_over_t2: Optional[float] = None,
         heralding_mode: HeraldingMode = HeraldingMode.NONE,
     ) -> UUID:
         """Submits a batch of quantum circuits for execution on a quantum computer.
@@ -804,8 +805,8 @@ class IQMClient:
                 Note: This field should always be ``None`` in normal use.
             calibration_set_id: ID of the calibration set to use, or ``None`` to use the latest one
             shots: number of times ``circuits`` are executed, value must be greater than zero
-            circuit_duration_check: whether to enable max circuit duration criteria for disqualification
-            heralding_mode: Heralding mode to use during the execution.
+            max_circuit_duration_over_t2: Circuits are disqualified on the server if they are longer than this ratio
+                of the T2 time of the qubits.
 
         Returns:
             ID for the created job. This ID is needed to query the job status and the execution results.
@@ -849,7 +850,7 @@ class IQMClient:
             custom_settings=custom_settings,
             calibration_set_id=calibration_set_id,
             shots=shots,
-            circuit_duration_check=circuit_duration_check,
+            max_circuit_duration_over_t2=max_circuit_duration_over_t2,
             heralding_mode=heralding_mode,
         )
 
