@@ -50,7 +50,7 @@
     <link rel="prev" title="iqm.iqm_client.iqm_client.QuantumArchitectureSpecification" href="iqm.iqm_client.iqm_client.QuantumArchitectureSpecification.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="2024-01-30"/>
+    <meta name="docbuild:last-update" content="2024-02-13"/>
   </head>
   
   
@@ -238,6 +238,9 @@
 <ul class="version_list">
     
       <li class="version_item current_version">dev</li>
+    
+    
+      <li class="version_item"><a href="../versions/16.0/index.html">16.0</a></li>
     
     
       <li class="version_item"><a href="../versions/16.0a4/index.html">16.0a4</a></li>
@@ -607,7 +610,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.RunRequest.calibration_set_id"><code class="docutils literal notranslate"><span class="pre">RunRequest.calibration_set_id</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.RunRequest.qubit_mapping"><code class="docutils literal notranslate"><span class="pre">RunRequest.qubit_mapping</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.RunRequest.shots"><code class="docutils literal notranslate"><span class="pre">RunRequest.shots</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.RunRequest.circuit_duration_check"><code class="docutils literal notranslate"><span class="pre">RunRequest.circuit_duration_check</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.RunRequest.max_circuit_duration_over_t2"><code class="docutils literal notranslate"><span class="pre">RunRequest.max_circuit_duration_over_t2</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.RunRequest.heralding_mode"><code class="docutils literal notranslate"><span class="pre">RunRequest.heralding_mode</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.RunRequest.model_computed_fields"><code class="docutils literal notranslate"><span class="pre">RunRequest.model_computed_fields</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.RunRequest.model_config"><code class="docutils literal notranslate"><span class="pre">RunRequest.model_config</span></code></a></li>
@@ -637,7 +640,7 @@ document.write(`
   <strong>
     
     You're reading the documentation for a development version.
-    For the latest released version, please have a look at <a href="../versions/16.0a4/index.html">16.0a4</a>.
+    For the latest released version, please have a look at <a href="../versions/16.0/index.html">16.0</a>.
     
   </strong>
 </div>
@@ -647,7 +650,7 @@ document.write(`
 <h1>iqm.iqm_client.iqm_client.RunRequest<a class="headerlink" href="#iqm-iqm-client-iqm-client-runrequest" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.RunRequest">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">iqm.iqm_client.iqm_client.</span></span><span class="sig-name descname"><span class="pre">RunRequest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">circuits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calibration_set_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit_mapping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shots</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">circuit_duration_check</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heralding_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">HeraldingMode.NONE</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm.iqm_client.iqm_client.RunRequest" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">iqm.iqm_client.iqm_client.</span></span><span class="sig-name descname"><span class="pre">RunRequest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">circuits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calibration_set_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit_mapping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shots</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_circuit_duration_over_t2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heralding_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">HeraldingMode.NONE</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm.iqm_client.iqm_client.RunRequest" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
 <p>Request for an IQM quantum computer to run a job that executes a batch of quantum circuits.</p>
 <p>Note: all circuits in a batch must measure the same qubits otherwise batch execution fails.</p>
@@ -678,8 +681,8 @@ document.write(`
 <tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.RunRequest.shots" title="iqm.iqm_client.iqm_client.RunRequest.shots"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shots</span></code></a></p></td>
 <td><p>how many times to execute each circuit in the batch, must be greater than zero</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.RunRequest.circuit_duration_check" title="iqm.iqm_client.iqm_client.RunRequest.circuit_duration_check"><code class="xref py py-obj docutils literal notranslate"><span class="pre">circuit_duration_check</span></code></a></p></td>
-<td><p>If True (default), circuits are disqualified on the server if they are too long compared to the T2 decoherence times of the QPU.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.RunRequest.max_circuit_duration_over_t2" title="iqm.iqm_client.iqm_client.RunRequest.max_circuit_duration_over_t2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_circuit_duration_over_t2</span></code></a></p></td>
+<td><p>Circuits are disqualified on the server if they are longer than this ratio of the T2 time of the qubits.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.RunRequest.heralding_mode" title="iqm.iqm_client.iqm_client.RunRequest.heralding_mode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">heralding_mode</span></code></a></p></td>
 <td><p>which heralding mode to use during the execution of circuits in this request.</p></td>
@@ -699,7 +702,7 @@ document.write(`
 <li><p><strong>calibration_set_id</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><em>UUID</em></a><em> | </em><em>None</em>) – </p></li>
 <li><p><strong>qubit_mapping</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference internal" href="iqm.iqm_client.iqm_client.SingleQubitMapping.html#iqm.iqm_client.iqm_client.SingleQubitMapping" title="iqm.iqm_client.iqm_client.SingleQubitMapping"><em>iqm.iqm_client.iqm_client.SingleQubitMapping</em></a><em>] </em><em>| </em><em>None</em>) – </p></li>
 <li><p><strong>shots</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – </p></li>
-<li><p><strong>circuit_duration_check</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – </p></li>
+<li><p><strong>max_circuit_duration_over_t2</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em> | </em><em>None</em>) – </p></li>
 <li><p><strong>heralding_mode</strong> (<a class="reference internal" href="iqm.iqm_client.iqm_client.HeraldingMode.html#iqm.iqm_client.iqm_client.HeraldingMode" title="iqm.iqm_client.iqm_client.HeraldingMode"><em>HeraldingMode</em></a>) – </p></li>
 </ul>
 </dd>
@@ -736,10 +739,11 @@ Note: This field should be always None in normal use.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.RunRequest.circuit_duration_check">
-<span class="sig-name descname"><span class="pre">circuit_duration_check</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#bool" title="(in Python v3.9)"><span class="pre">bool</span></a></em><a class="headerlink" href="#iqm.iqm_client.iqm_client.RunRequest.circuit_duration_check" title="Permalink to this definition">#</a></dt>
-<dd><p>If True (default), circuits are disqualified on the server if they are too long compared to the
-T2 decoherence times of the QPU. Setting it to False disables the check, which should not be done in normal use.</p>
+<dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.RunRequest.max_circuit_duration_over_t2">
+<span class="sig-name descname"><span class="pre">max_circuit_duration_over_t2</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#float" title="(in Python v3.9)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><span class="pre">None</span></a></em><a class="headerlink" href="#iqm.iqm_client.iqm_client.RunRequest.max_circuit_duration_over_t2" title="Permalink to this definition">#</a></dt>
+<dd><p>Circuits are disqualified on the server if they are longer than this ratio
+of the T2 time of the qubits.
+If set to 0.0, no circuits are disqualified. If set to None the server default value is used.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -762,7 +766,7 @@ T2 decoherence times of the QPU. Setting it to False disables the check, which s
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.RunRequest.model_fields">
-<span class="sig-name descname"><span class="pre">model_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">FieldInfo</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'calibration_set_id':</span> <span class="pre">FieldInfo(annotation=Union[UUID,</span> <span class="pre">NoneType],</span> <span class="pre">required=False),</span> <span class="pre">'circuit_duration_check':</span> <span class="pre">FieldInfo(annotation=bool,</span> <span class="pre">required=False,</span> <span class="pre">default=True),</span> <span class="pre">'circuits':</span> <span class="pre">FieldInfo(annotation=list[Circuit],</span> <span class="pre">required=True),</span> <span class="pre">'custom_settings':</span> <span class="pre">FieldInfo(annotation=Union[dict[str,</span> <span class="pre">Any],</span> <span class="pre">NoneType],</span> <span class="pre">required=False),</span> <span class="pre">'heralding_mode':</span> <span class="pre">FieldInfo(annotation=HeraldingMode,</span> <span class="pre">required=False,</span> <span class="pre">default=&lt;HeraldingMode.NONE:</span> <span class="pre">'none'&gt;),</span> <span class="pre">'qubit_mapping':</span> <span class="pre">FieldInfo(annotation=Union[list[SingleQubitMapping],</span> <span class="pre">NoneType],</span> <span class="pre">required=False),</span> <span class="pre">'shots':</span> <span class="pre">FieldInfo(annotation=int,</span> <span class="pre">required=True,</span> <span class="pre">metadata=[Gt(gt=0)])}</span></em><a class="headerlink" href="#iqm.iqm_client.iqm_client.RunRequest.model_fields" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">model_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">FieldInfo</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'calibration_set_id':</span> <span class="pre">FieldInfo(annotation=Union[UUID,</span> <span class="pre">NoneType],</span> <span class="pre">required=False),</span> <span class="pre">'circuits':</span> <span class="pre">FieldInfo(annotation=list[Circuit],</span> <span class="pre">required=True),</span> <span class="pre">'custom_settings':</span> <span class="pre">FieldInfo(annotation=Union[dict[str,</span> <span class="pre">Any],</span> <span class="pre">NoneType],</span> <span class="pre">required=False),</span> <span class="pre">'heralding_mode':</span> <span class="pre">FieldInfo(annotation=HeraldingMode,</span> <span class="pre">required=False,</span> <span class="pre">default=&lt;HeraldingMode.NONE:</span> <span class="pre">'none'&gt;),</span> <span class="pre">'max_circuit_duration_over_t2':</span> <span class="pre">FieldInfo(annotation=Union[float,</span> <span class="pre">NoneType],</span> <span class="pre">required=False),</span> <span class="pre">'qubit_mapping':</span> <span class="pre">FieldInfo(annotation=Union[list[SingleQubitMapping],</span> <span class="pre">NoneType],</span> <span class="pre">required=False),</span> <span class="pre">'shots':</span> <span class="pre">FieldInfo(annotation=int,</span> <span class="pre">required=True,</span> <span class="pre">metadata=[Gt(gt=0)])}</span></em><a class="headerlink" href="#iqm.iqm_client.iqm_client.RunRequest.model_fields" title="Permalink to this definition">#</a></dt>
 <dd><p>Metadata about the fields defined on the model,
 mapping of field names to [<cite>FieldInfo</cite>][pydantic.fields.FieldInfo].</p>
 <p>This replaces <cite>Model.__fields__</cite> from Pydantic V1.</p>
@@ -824,7 +828,7 @@ mapping of field names to [<cite>FieldInfo</cite>][pydantic.fields.FieldInfo].</
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.RunRequest.calibration_set_id"><code class="docutils literal notranslate"><span class="pre">RunRequest.calibration_set_id</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.RunRequest.qubit_mapping"><code class="docutils literal notranslate"><span class="pre">RunRequest.qubit_mapping</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.RunRequest.shots"><code class="docutils literal notranslate"><span class="pre">RunRequest.shots</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.RunRequest.circuit_duration_check"><code class="docutils literal notranslate"><span class="pre">RunRequest.circuit_duration_check</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.RunRequest.max_circuit_duration_over_t2"><code class="docutils literal notranslate"><span class="pre">RunRequest.max_circuit_duration_over_t2</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.RunRequest.heralding_mode"><code class="docutils literal notranslate"><span class="pre">RunRequest.heralding_mode</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.RunRequest.model_computed_fields"><code class="docutils literal notranslate"><span class="pre">RunRequest.model_computed_fields</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.RunRequest.model_config"><code class="docutils literal notranslate"><span class="pre">RunRequest.model_config</span></code></a></li>
@@ -864,7 +868,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2024-01-30.
+  Last updated on 2024-02-13.
   <br/>
 </p>
   </div>

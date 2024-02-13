@@ -50,7 +50,7 @@
     <link rel="prev" title="iqm.iqm_client.iqm_client.HeraldingMode" href="iqm.iqm_client.iqm_client.HeraldingMode.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="2024-01-30"/>
+    <meta name="docbuild:last-update" content="2024-02-13"/>
   </head>
   
   
@@ -238,6 +238,9 @@
 <ul class="version_list">
     
       <li class="version_item current_version">dev</li>
+    
+    
+      <li class="version_item"><a href="../versions/16.0/index.html">16.0</a></li>
     
     
       <li class="version_item"><a href="../versions/16.0a4/index.html">16.0a4</a></li>
@@ -635,7 +638,7 @@ document.write(`
   <strong>
     
     You're reading the documentation for a development version.
-    For the latest released version, please have a look at <a href="../versions/16.0a4/index.html">16.0a4</a>.
+    For the latest released version, please have a look at <a href="../versions/16.0/index.html">16.0</a>.
     
   </strong>
 </div>
@@ -726,7 +729,7 @@ Password must be set if <code class="docutils literal notranslate"><span class="
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.IQMClient.submit_circuits">
-<span class="sig-name descname"><span class="pre">submit_circuits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">circuits</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit_mapping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calibration_set_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">circuit_duration_check</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heralding_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">HeraldingMode.NONE</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm.iqm_client.iqm_client.IQMClient.submit_circuits" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">submit_circuits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">circuits</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit_mapping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calibration_set_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_circuit_duration_over_t2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heralding_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">HeraldingMode.NONE</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm.iqm_client.iqm_client.IQMClient.submit_circuits" title="Permalink to this definition">#</a></dt>
 <dd><p>Submits a batch of quantum circuits for execution on a quantum computer.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -739,7 +742,9 @@ Note that the <code class="docutils literal notranslate"><span class="pre">qubit
 Note: This field should always be <code class="docutils literal notranslate"><span class="pre">None</span></code> in normal use.</p></li>
 <li><p><strong>calibration_set_id</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><em>UUID</em></a><em> | </em><em>None</em>) – ID of the calibration set to use, or <code class="docutils literal notranslate"><span class="pre">None</span></code> to use the latest one</p></li>
 <li><p><strong>shots</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – number of times <code class="docutils literal notranslate"><span class="pre">circuits</span></code> are executed, value must be greater than zero</p></li>
-<li><p><strong>circuit_duration_check</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – whether to enable max circuit duration criteria for disqualification</p></li>
+<li><p><strong>max_circuit_duration_over_t2</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em> | </em><em>None</em>) – Circuits are disqualified on the server if they are longer than this ratio
+of the T2 time of the qubits. Setting this value to <code class="docutils literal notranslate"><span class="pre">0.0</span></code> turns off circuit duration checking.
+The default value <code class="docutils literal notranslate"><span class="pre">None</span></code> instructs server to use server’s default value in the checking.</p></li>
 <li><p><strong>heralding_mode</strong> (<a class="reference internal" href="iqm.iqm_client.iqm_client.HeraldingMode.html#iqm.iqm_client.iqm_client.HeraldingMode" title="iqm.iqm_client.iqm_client.HeraldingMode"><em>HeraldingMode</em></a>) – Heralding mode to use during the execution.</p></li>
 </ul>
 </dd>
@@ -1016,7 +1021,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2024-01-30.
+  Last updated on 2024-02-13.
   <br/>
 </p>
   </div>
