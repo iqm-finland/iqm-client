@@ -128,9 +128,11 @@ Note on circuit duration
 ------------------------
 
 Before performing circuit execution, IQM server checks how long it would take to run each circuit.
-If any circuit in a job would take too long to execute compared to the coherence time of the QPU, the server will disqualify the job, not execute any circuits, and return a detailed error message.
-In some special cases, it makes sense to disable this check by changing the default value of parameter ``circuit_duration_check`` of :meth:`IQMClient.submit_circuits` to ``False``.
-Disabling the circuit duration check may be limited to certain users or groups, depending on the server settings. In normal use, the circuit duration check should always remain enabled.
+If any circuit in a job would take too long to execute compared to the T2 time of the qubits, 
+the server will disqualify the job, not execute any circuits, and return a detailed error message.
+In some special cases, it makes sense to disable this check by changing the default value of parameter
+``max_circuit_duration_over_t2`` of :meth:`IQMClient.submit_circuits` to ``0.0`` or by making it large
+enough for the job to pass the check. If the value is not set at all, the server default value will be used.
 
 Note on environment variables
 -----------------------------
