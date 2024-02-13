@@ -807,7 +807,7 @@ class IQMClient:
             shots: number of times ``circuits`` are executed, value must be greater than zero
             max_circuit_duration_over_t2: Circuits are disqualified on the server if they are longer than this ratio
                 of the T2 time of the qubits. Setting this value to ``0.0`` turns off circuit duration checking.
-                The defaul value ``None`` instructs server to use server's default value in the checking.
+                The default value ``None`` instructs server to use server's default value in the checking.
             heralding_mode: Heralding mode to use during the execution.
 
         Returns:
