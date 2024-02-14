@@ -18,6 +18,10 @@ Contents
    integration_guide
    license
    authors
+
+.. toctree::
+   :maxdepth: 1
+
    changelog
 
 
