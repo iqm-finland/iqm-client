@@ -1,5 +1,0 @@
-<map id="inheritance23fdb94c85" name="inheritance23fdb94c85">
-<area shape="rect" id="node1" title="Usage docs: https://docs.pydantic.dev/2.6/concepts/models/" alt="" coords="5,31,100,56"/>
-<area shape="rect" id="node2" href="iqm.iqm_client.quantum_architecture.QuantumArchitecture.html#iqm.iqm_client.quantum_architecture.QuantumArchitecture" target="_top" title="Quantum architecture as returned by server." alt="" coords="189,5,351,31"/>
-<area shape="rect" id="node3" href="iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification.html#iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification" target="_top" title="Quantum architecture specification." alt="" coords="148,55,392,80"/>
-</map>
