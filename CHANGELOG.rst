@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 16.1
+============
+
+* Remove multiversion documentation. `#115 <https://github.com/iqm-finland/iqm-client/pull/115>`_
+
 Version 16.0
 ============
 
