@@ -23,6 +23,16 @@ from typing import Any, Optional
 from pydantic import BaseModel, Field, StrictStr, field_validator
 from pydantic_core.core_schema import ValidationInfo
 
+# Supported instruction configuration values:
+# - 'arity': the arity of the locus; use -1 to allow any arity.
+# - 'args': allowed arguments for the operation.
+# - 'directed': if True, the loci defined in the architecture description are considered directed.
+# - 'renamed_to': if set, indicates that this instruction name is deprecated, and IQM client will
+#    auto-rename it to the new name.
+# - 'check_locus': if False, skips the locus checking entirely. If set to the string
+#   value 'any_combination', will check that the qubits in the instruction locus are found
+#   in the architecture definition, but will allow any combination of them in.
+
 SUPPORTED_INSTRUCTIONS: dict[str, dict[str, Any]] = {
     'barrier': {
         'arity': -1,
@@ -44,6 +54,7 @@ SUPPORTED_INSTRUCTIONS: dict[str, dict[str, Any]] = {
         'args': {
             'key': (str,),
         },
+        'check_locus': 'any_combination',
     },
     'measurement': {  # deprecated
         'arity': -1,
@@ -51,6 +62,7 @@ SUPPORTED_INSTRUCTIONS: dict[str, dict[str, Any]] = {
             'key': (str,),
         },
         'renamed_to': 'measure',
+        'check_locus': 'any_combination',
     },
     'prx': {
         'arity': 1,
