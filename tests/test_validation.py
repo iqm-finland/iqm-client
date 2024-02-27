@@ -80,7 +80,7 @@ def test_allowed_measure_qubits(sample_move_architecture, qubits):
 @pytest.mark.parametrize('qubits', [['QB1', 'COMP_R'], ['COMP_R'], ['QB1', 'QB2', 'QB4'], ['QB4']])
 def test_disallowed_measure_qubits(sample_move_architecture, qubits):
     """
-    Tests that instruction validation succeeds for loci that are any combination of valid measure qubits
+    Tests that instruction validation fails for loci containing any qubits that are not valid measure qubits
     """
     arch = QuantumArchitecture(**sample_move_architecture).quantum_architecture
     with pytest.raises(CircuitExecutionError) as err:
