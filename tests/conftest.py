@@ -315,7 +315,7 @@ def run_request_with_duration_check_disabled(sample_circuit_logical) -> RunReque
             SingleQubitMapping(logical_name='Qubit A', physical_name='QB1'),
             SingleQubitMapping(logical_name='Qubit B', physical_name='QB2'),
         ],
-        circuit_duration_check=False,
+        max_circuit_duration_over_t2=0.0,
         heralding_mode=HeraldingMode.NONE,
     )
 
@@ -618,6 +618,6 @@ def submit_circuits_args(run_request: RunRequest) -> dict[str, Any]:
         'custom_settings': run_request.custom_settings,
         'calibration_set_id': run_request.calibration_set_id,
         'shots': run_request.shots,
-        'circuit_duration_check': run_request.circuit_duration_check,
+        'max_circuit_duration_over_t2': run_request.max_circuit_duration_over_t2,
         'heralding_mode': run_request.heralding_mode,
     }
