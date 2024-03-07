@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>iqm.iqm_client.iqm_client.AuthRequest &#8212; IQM client 16.1 documentation</title>
+    <title>iqm.iqm_client.iqm_client.AuthRequest &#8212; IQM client 17.0 documentation</title>
   
   
   
@@ -37,7 +37,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script src="../_static/documentation_options.js?v=632355d7"></script>
+    <script src="../_static/documentation_options.js?v=2405e226"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
@@ -49,7 +49,7 @@
     <link rel="prev" title="iqm.iqm_client.iqm_client.validate_circuit" href="iqm.iqm_client.iqm_client.validate_circuit.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="2024-02-26"/>
+    <meta name="docbuild:last-update" content="2024-03-07"/>
   </head>
   
   
@@ -136,8 +136,8 @@
       
     
     
-    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 16.1 documentation - Home"/>
-    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="IQM client 16.1 documentation - Home"/>`);</script>
+    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 17.0 documentation - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="IQM client 17.0 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -158,7 +158,14 @@
 <li class="toctree-l1"><a class="reference internal" href="../readme.html">IQM Client</a></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../API.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="iqm.iqm_client.html">iqm.iqm_client</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
-<li class="toctree-l3 current active has-children"><a class="reference internal" href="iqm.iqm_client.iqm_client.html">iqm.iqm_client.iqm_client</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l3 has-children"><a class="reference internal" href="iqm.iqm_client.instruction.html">iqm.iqm_client.instruction</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.instruction.get_current_instruction_name.html">iqm.iqm_client.instruction.get_current_instruction_name</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.instruction.is_directed_instruction.html">iqm.iqm_client.instruction.is_directed_instruction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.instruction.is_multi_qubit_instruction.html">iqm.iqm_client.instruction.is_multi_qubit_instruction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.instruction.Instruction.html">iqm.iqm_client.instruction.Instruction</a></li>
+</ul>
+</li>
+<li class="toctree-l3 current active has-children"><a class="reference internal" href="iqm.iqm_client.iqm_client.html">iqm.iqm_client.iqm_client</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.CircuitBatch.html">iqm.iqm_client.iqm_client.CircuitBatch</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.QubitMapping.html">iqm.iqm_client.iqm_client.QubitMapping</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.CircuitMeasurementResults.html">iqm.iqm_client.iqm_client.CircuitMeasurementResults</a></li>
@@ -172,10 +179,7 @@
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.GrantType.html">iqm.iqm_client.iqm_client.GrantType</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.HeraldingMode.html">iqm.iqm_client.iqm_client.HeraldingMode</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.IQMClient.html">iqm.iqm_client.iqm_client.IQMClient</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.Instruction.html">iqm.iqm_client.iqm_client.Instruction</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.Metadata.html">iqm.iqm_client.iqm_client.Metadata</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.QuantumArchitecture.html">iqm.iqm_client.iqm_client.QuantumArchitecture</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.QuantumArchitectureSpecification.html">iqm.iqm_client.iqm_client.QuantumArchitectureSpecification</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.RunRequest.html">iqm.iqm_client.iqm_client.RunRequest</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.RunResult.html">iqm.iqm_client.iqm_client.RunResult</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.RunStatus.html">iqm.iqm_client.iqm_client.RunStatus</a></li>
@@ -189,7 +193,12 @@
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.JobAbortionError.html">iqm.iqm_client.iqm_client.JobAbortionError</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="iqm.iqm_client.util.html">iqm.iqm_client.util</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="iqm.iqm_client.quantum_architecture.html">iqm.iqm_client.quantum_architecture</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.quantum_architecture.QuantumArchitecture.html">iqm.iqm_client.quantum_architecture.QuantumArchitecture</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification.html">iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="iqm.iqm_client.util.html">iqm.iqm_client.util</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.util.to_json_dict.html">iqm.iqm_client.util.to_json_dict</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.util.IQMJSONEncoder.html">iqm.iqm_client.util.IQMJSONEncoder</a></li>
 </ul>
@@ -353,14 +362,14 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.AuthRequest"><code class="docutils literal notranslate"><span class="pre">AuthRequest</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.AuthRequest.model_computed_fields"><code class="docutils literal notranslate"><span class="pre">AuthRequest.model_computed_fields</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.AuthRequest.model_config"><code class="docutils literal notranslate"><span class="pre">AuthRequest.model_config</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.AuthRequest.model_fields"><code class="docutils literal notranslate"><span class="pre">AuthRequest.model_fields</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.AuthRequest.client_id"><code class="docutils literal notranslate"><span class="pre">AuthRequest.client_id</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.AuthRequest.grant_type"><code class="docutils literal notranslate"><span class="pre">AuthRequest.grant_type</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.AuthRequest.username"><code class="docutils literal notranslate"><span class="pre">AuthRequest.username</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.AuthRequest.password"><code class="docutils literal notranslate"><span class="pre">AuthRequest.password</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.AuthRequest.refresh_token"><code class="docutils literal notranslate"><span class="pre">AuthRequest.refresh_token</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.AuthRequest.model_computed_fields"><code class="docutils literal notranslate"><span class="pre">AuthRequest.model_computed_fields</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.AuthRequest.model_config"><code class="docutils literal notranslate"><span class="pre">AuthRequest.model_config</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.AuthRequest.model_fields"><code class="docutils literal notranslate"><span class="pre">AuthRequest.model_fields</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -434,26 +443,6 @@ It uses field <code class="docutils literal notranslate"><span class="pre">clien
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.AuthRequest.model_computed_fields">
-<span class="sig-name descname"><span class="pre">model_computed_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ComputedFieldInfo</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#iqm.iqm_client.iqm_client.AuthRequest.model_computed_fields" title="Link to this definition">#</a></dt>
-<dd><p>A dictionary of computed field names and their corresponding <cite>ComputedFieldInfo</cite> objects.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.AuthRequest.model_config">
-<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#iqm.iqm_client.iqm_client.AuthRequest.model_config" title="Link to this definition">#</a></dt>
-<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.AuthRequest.model_fields">
-<span class="sig-name descname"><span class="pre">model_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">FieldInfo</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'client_id':</span> <span class="pre">FieldInfo(annotation=str,</span> <span class="pre">required=True),</span> <span class="pre">'grant_type':</span> <span class="pre">FieldInfo(annotation=Union[GrantType,</span> <span class="pre">NoneType],</span> <span class="pre">required=False),</span> <span class="pre">'password':</span> <span class="pre">FieldInfo(annotation=Union[str,</span> <span class="pre">NoneType],</span> <span class="pre">required=False),</span> <span class="pre">'refresh_token':</span> <span class="pre">FieldInfo(annotation=Union[str,</span> <span class="pre">NoneType],</span> <span class="pre">required=False),</span> <span class="pre">'username':</span> <span class="pre">FieldInfo(annotation=Union[str,</span> <span class="pre">NoneType],</span> <span class="pre">required=False)}</span></em><a class="headerlink" href="#iqm.iqm_client.iqm_client.AuthRequest.model_fields" title="Link to this definition">#</a></dt>
-<dd><p>Metadata about the fields defined on the model,
-mapping of field names to [<cite>FieldInfo</cite>][pydantic.fields.FieldInfo].</p>
-<p>This replaces <cite>Model.__fields__</cite> from Pydantic V1.</p>
-</dd></dl>
-
-<dl class="py attribute">
 <dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.AuthRequest.client_id">
 <span class="sig-name descname"><span class="pre">client_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></em><a class="headerlink" href="#iqm.iqm_client.iqm_client.AuthRequest.client_id" title="Link to this definition">#</a></dt>
 <dd><p>name of the client for all request types</p>
@@ -481,6 +470,26 @@ mapping of field names to [<cite>FieldInfo</cite>][pydantic.fields.FieldInfo].</
 <dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.AuthRequest.refresh_token">
 <span class="sig-name descname"><span class="pre">refresh_token</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><span class="pre">None</span></a></em><a class="headerlink" href="#iqm.iqm_client.iqm_client.AuthRequest.refresh_token" title="Link to this definition">#</a></dt>
 <dd><p>refresh token for grant type <code class="docutils literal notranslate"><span class="pre">'refresh_token'</span></code> and logout request</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.AuthRequest.model_computed_fields">
+<span class="sig-name descname"><span class="pre">model_computed_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ComputedFieldInfo</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#iqm.iqm_client.iqm_client.AuthRequest.model_computed_fields" title="Link to this definition">#</a></dt>
+<dd><p>A dictionary of computed field names and their corresponding <cite>ComputedFieldInfo</cite> objects.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.AuthRequest.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#iqm.iqm_client.iqm_client.AuthRequest.model_config" title="Link to this definition">#</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.AuthRequest.model_fields">
+<span class="sig-name descname"><span class="pre">model_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">FieldInfo</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'client_id':</span> <span class="pre">FieldInfo(annotation=str,</span> <span class="pre">required=True),</span> <span class="pre">'grant_type':</span> <span class="pre">FieldInfo(annotation=Union[GrantType,</span> <span class="pre">NoneType],</span> <span class="pre">required=False),</span> <span class="pre">'password':</span> <span class="pre">FieldInfo(annotation=Union[str,</span> <span class="pre">NoneType],</span> <span class="pre">required=False),</span> <span class="pre">'refresh_token':</span> <span class="pre">FieldInfo(annotation=Union[str,</span> <span class="pre">NoneType],</span> <span class="pre">required=False),</span> <span class="pre">'username':</span> <span class="pre">FieldInfo(annotation=Union[str,</span> <span class="pre">NoneType],</span> <span class="pre">required=False)}</span></em><a class="headerlink" href="#iqm.iqm_client.iqm_client.AuthRequest.model_fields" title="Link to this definition">#</a></dt>
+<dd><p>Metadata about the fields defined on the model,
+mapping of field names to [<cite>FieldInfo</cite>][pydantic.fields.FieldInfo].</p>
+<p>This replaces <cite>Model.__fields__</cite> from Pydantic V1.</p>
 </dd></dl>
 
 </dd></dl>
@@ -533,14 +542,14 @@ mapping of field names to [<cite>FieldInfo</cite>][pydantic.fields.FieldInfo].</
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.AuthRequest"><code class="docutils literal notranslate"><span class="pre">AuthRequest</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.AuthRequest.model_computed_fields"><code class="docutils literal notranslate"><span class="pre">AuthRequest.model_computed_fields</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.AuthRequest.model_config"><code class="docutils literal notranslate"><span class="pre">AuthRequest.model_config</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.AuthRequest.model_fields"><code class="docutils literal notranslate"><span class="pre">AuthRequest.model_fields</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.AuthRequest.client_id"><code class="docutils literal notranslate"><span class="pre">AuthRequest.client_id</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.AuthRequest.grant_type"><code class="docutils literal notranslate"><span class="pre">AuthRequest.grant_type</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.AuthRequest.username"><code class="docutils literal notranslate"><span class="pre">AuthRequest.username</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.AuthRequest.password"><code class="docutils literal notranslate"><span class="pre">AuthRequest.password</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.AuthRequest.refresh_token"><code class="docutils literal notranslate"><span class="pre">AuthRequest.refresh_token</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.AuthRequest.model_computed_fields"><code class="docutils literal notranslate"><span class="pre">AuthRequest.model_computed_fields</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.AuthRequest.model_config"><code class="docutils literal notranslate"><span class="pre">AuthRequest.model_config</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.AuthRequest.model_fields"><code class="docutils literal notranslate"><span class="pre">AuthRequest.model_fields</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -576,7 +585,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2024-02-26.
+  Last updated on 2024-03-07.
   <br/>
 </p>
   </div>

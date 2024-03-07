@@ -1,7 +1,7 @@
-iqm.iqm\_client.iqm\_client.QuantumArchitecture
-===============================================
+iqm.iqm\_client.quantum\_architecture.QuantumArchitecture
+=========================================================
 
-.. currentmodule:: iqm.iqm_client.iqm_client
+.. currentmodule:: iqm.iqm_client.quantum_architecture
 
 .. autoclass:: QuantumArchitecture
    :members:

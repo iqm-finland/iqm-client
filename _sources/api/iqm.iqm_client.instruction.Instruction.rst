@@ -1,7 +1,7 @@
-iqm.iqm\_client.iqm\_client.Instruction
+iqm.iqm\_client.instruction.Instruction
 =======================================
 
-.. currentmodule:: iqm.iqm_client.iqm_client
+.. currentmodule:: iqm.iqm_client.instruction
 
 .. autoclass:: Instruction
    :members:

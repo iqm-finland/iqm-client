@@ -23,6 +23,9 @@ iqm.iqm\_client.iqm\_client.IQMClient
       ~IQMClient._get_bearer_token
       ~IQMClient._retry_request_on_error
       ~IQMClient._update_tokens
+      ~IQMClient._validate_circuit_instructions
+      ~IQMClient._validate_instruction
+      ~IQMClient._validate_qubit_mapping
       ~IQMClient.abort_job
       ~IQMClient.close_auth_session
       ~IQMClient.get_quantum_architecture

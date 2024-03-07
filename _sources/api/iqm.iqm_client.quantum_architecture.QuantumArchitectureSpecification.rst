@@ -1,7 +1,7 @@
-iqm.iqm\_client.iqm\_client.QuantumArchitectureSpecification
-============================================================
+iqm.iqm\_client.quantum\_architecture.QuantumArchitectureSpecification
+======================================================================
 
-.. currentmodule:: iqm.iqm_client.iqm_client
+.. currentmodule:: iqm.iqm_client.quantum_architecture
 
 .. autoclass:: QuantumArchitectureSpecification
    :members:
@@ -30,5 +30,7 @@ iqm.iqm\_client.iqm\_client.QuantumArchitectureSpecification
 
    .. autosummary::
    
+      ~QuantumArchitectureSpecification.compare_operations
+      ~QuantumArchitectureSpecification.has_equivalent_operations
    
    

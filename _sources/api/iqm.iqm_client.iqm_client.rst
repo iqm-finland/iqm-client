@@ -44,10 +44,7 @@ iqm.iqm\_client.iqm\_client
       GrantType
       HeraldingMode
       IQMClient
-      Instruction
       Metadata
-      QuantumArchitecture
-      QuantumArchitectureSpecification
       RunRequest
       RunResult
       RunStatus
