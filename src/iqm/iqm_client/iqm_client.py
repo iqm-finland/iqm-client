@@ -33,6 +33,7 @@ measure          >= 1        ``key: str``                           Measurement 
 prx              1           ``angle_t: float``, ``phase_t: float`` Phased x-rotation gate.
 cz               2                                                  Controlled-Z gate.
 barrier          >= 1                                               Execution barrier.
+move             2                                                  Moves 1 state between resonator and qubit.
 ================ =========== ====================================== ===========
 
 For each Instruction you may also optionally specify :attr:`~Instruction.implementation`,
@@ -98,6 +99,30 @@ It is symmetric wrt. the qubits it's acting on, and takes no arguments.
    Instruction(name='cz', qubits=('alice', 'bob'), args={})
 
 
+MOVE
+----
+
+The MOVE operation is a unitary population exchange operation between a qubit and a resonator.
+Its effect is only defined in the invariant subspace :math:`S = \text{span}\{|00\rangle, |01\rangle, |10\rangle\}`,
+where it swaps the populations of the states :math:`|01\rangle` and :math:`|10\rangle`.
+Its effect on the orthogonal subspace is undefined.
+
+MOVE has the following presentation in the subspace :math:`S`:
+
+.. math:: \text{MOVE}_S = |00\rangle \langle 00| + a |10\rangle \langle 01| + a^{-1} |01\rangle \langle 10|,
+
+where :math:`a` is an undefined complex phase that is canceled when the MOVE gate is applied a second time.
+
+To ensure that the state of the qubit and resonator has no overlap with :math:`|11\rangle`, it is
+recommended that no single qubit gates are applied to the qubit in between a
+pair of MOVE operations.
+
+.. code-block:: python
+   :caption: Example
+
+   Instruction(name='move', qubits=('alice', 'resonator'), args={})
+
+
 Barrier
 -------
 
@@ -152,8 +177,11 @@ from typing import Any, Callable, Optional, Union
 from uuid import UUID
 import warnings
 
-from pydantic import BaseModel, Field, StrictStr, ValidationInfo, field_validator
+from pydantic import BaseModel, Field, field_validator
 import requests
+
+from iqm.iqm_client.instruction import SUPPORTED_INSTRUCTIONS, Instruction
+from iqm.iqm_client.quantum_architecture import QuantumArchitecture, QuantumArchitectureSpecification
 
 REQUESTS_TIMEOUT = float(os.environ.get('IQM_CLIENT_REQUESTS_TIMEOUT', 60.0))
 
@@ -163,56 +191,6 @@ REFRESH_MARGIN_SECONDS = 60
 
 AUTH_CLIENT_ID = 'iqm_client'
 AUTH_REALM = 'cortex'
-
-
-SUPPORTED_INSTRUCTIONS: dict[str, dict[str, Any]] = {
-    'barrier': {
-        'arity': -1,
-        'args': {},
-    },
-    'cz': {
-        'arity': 2,
-        'args': {},
-    },
-    'measure': {
-        'arity': -1,
-        'args': {
-            'key': (str,),
-        },
-    },
-    'measurement': {  # deprecated
-        'arity': -1,
-        'args': {
-            'key': (str,),
-        },
-    },
-    'prx': {
-        'arity': 1,
-        'args': {
-            'angle_t': (
-                float,
-                int,
-            ),
-            'phase_t': (
-                float,
-                int,
-            ),
-        },
-    },
-    'phased_rx': {  # deprecated
-        'arity': 1,
-        'args': {
-            'angle_t': (
-                float,
-                int,
-            ),
-            'phase_t': (
-                float,
-                int,
-            ),
-        },
-    },
-}
 
 
 class ClientConfigurationError(RuntimeError):
@@ -249,86 +227,6 @@ class Status(str, Enum):
     READY = 'ready'
     FAILED = 'failed'
     ABORTED = 'aborted'
-
-
-class Instruction(BaseModel):
-    """An instruction in a quantum circuit."""
-
-    name: str = Field(..., examples=['measure'])
-    """name of the quantum operation"""
-    implementation: Optional[StrictStr] = Field(None)
-    """name of the implementation, for experimental use only"""
-    qubits: tuple[StrictStr, ...] = Field(..., examples=[('alice',)])
-    """names of the logical qubits the operation acts on"""
-    args: dict[str, Any] = Field(..., examples=[{'key': 'm'}])
-    """arguments for the operation"""
-
-    @field_validator('name')
-    @classmethod
-    def name_validator(cls, value):
-        """Check if the name of instruction is set to one of the supported quantum operations"""
-        name = value
-        if name not in SUPPORTED_INSTRUCTIONS:
-            raise ValueError(
-                f'Unknown instruction "{name}". '
-                f'Supported instructions are \"{", ".join(SUPPORTED_INSTRUCTIONS.keys())}\"'
-            )
-        return name
-
-    @field_validator('implementation')
-    @classmethod
-    def implementation_validator(cls, value):
-        """Check if the implementation of the instruction is set to a non-empty string"""
-        implementation = value
-        if isinstance(implementation, str):
-            if not implementation:
-                raise ValueError('Implementation of the instruction should be None, or a non-empty string')
-        return implementation
-
-    @field_validator('qubits')
-    @classmethod
-    def qubits_validator(cls, value, info: ValidationInfo):
-        """Check if the instruction has the correct number of qubits according to the instruction's type"""
-        qubits = value
-        name = info.data.get('name')
-        if not name:
-            raise ValueError('Could not validate qubits because the name of the instruction did not pass validation')
-        arity = SUPPORTED_INSTRUCTIONS[name]['arity']
-        if (0 <= arity) and (arity != len(qubits)):
-            raise ValueError(
-                f'The "{name}" instruction acts on {arity} qubit(s), but {len(qubits)} were given: {qubits}'
-            )
-        return qubits
-
-    @field_validator('args')
-    @classmethod
-    def args_validator(cls, value, info: ValidationInfo):
-        """Check argument names and types for a given instruction"""
-        args = value
-        name = info.data.get('name')
-        if not name:
-            raise ValueError('Could not validate args because the name of the instruction did not pass validation')
-
-        # Check argument names
-        submitted_arg_names = set(args.keys())
-        supported_arg_names = set(SUPPORTED_INSTRUCTIONS[name]['args'].keys())
-        if submitted_arg_names != supported_arg_names:
-            raise ValueError(
-                f'The instruction "{name}" requires '
-                f'{tuple(supported_arg_names) if supported_arg_names else "no"} argument(s), '
-                f'but {tuple(submitted_arg_names)} were given'
-            )
-
-        # Check argument types
-        for arg_name, arg_value in args.items():
-            supported_arg_types = SUPPORTED_INSTRUCTIONS[name]['args'][arg_name]
-            if not isinstance(arg_value, supported_arg_types):
-                raise TypeError(
-                    f'The argument "{arg_name}" should be of one of the following supported types'
-                    f' {supported_arg_types}, but ({type(arg_value)}) was given'
-                )
-
-        return value
 
 
 class Circuit(BaseModel):
@@ -522,26 +420,6 @@ class RunStatus(BaseModel):
         """
         input_copy = inp.copy()
         return RunStatus(status=Status(input_copy.pop('status')), **input_copy)
-
-
-class QuantumArchitectureSpecification(BaseModel):
-    """Quantum architecture specification."""
-
-    name: str = Field(...)
-    """name of the quantum architecture"""
-    operations: list[str] = Field(...)
-    """list of operations supported by this quantum architecture"""
-    qubits: list[str] = Field(...)
-    """list of qubits of this quantum architecture"""
-    qubit_connectivity: list[list[str]] = Field(...)
-    """qubit connectivity of this quantum architecture"""
-
-
-class QuantumArchitecture(BaseModel):
-    """Quantum architecture as returned by server."""
-
-    quantum_architecture: QuantumArchitectureSpecification = Field(...)
-    """details about the quantum architecture"""
 
 
 class GrantType(str, Enum):
@@ -755,6 +633,7 @@ class IQMClient:
         self._tokens_file = tokens_file
         self._external_token = _get_external_token(tokens_file)
         self._token = token or os.environ.get('IQM_TOKEN')
+        self._architecture: QuantumArchitectureSpecification | None = None
         if not self._external_token:
             self._credentials = _get_credentials(credentials)
             self._update_tokens()
@@ -825,23 +704,12 @@ class IQMClient:
                     e.__traceback__
                 )
 
-        serialized_qubit_mapping: Optional[list[SingleQubitMapping]] = None
-        if qubit_mapping is not None:
-            # check if qubit mapping is injective
-            target_qubits = set(qubit_mapping.values())
-            if not len(target_qubits) == len(qubit_mapping):
-                raise ValueError('Multiple logical qubits map to the same physical qubit.')
+        architecture = self.get_quantum_architecture()
 
-            # check if qubit mapping covers all qubits in the circuits
-            for i, circuit in enumerate(circuits):
-                diff = circuit.all_qubits() - set(qubit_mapping)
-                if diff:
-                    raise ValueError(
-                        f"The qubits {diff} in circuit '{circuit.name}' at index {i} "
-                        f'are not found in the provided qubit mapping.'
-                    )
+        self._validate_qubit_mapping(architecture, circuits, qubit_mapping)
+        serialized_qubit_mapping = serialize_qubit_mapping(qubit_mapping) if qubit_mapping else None
 
-            serialized_qubit_mapping = serialize_qubit_mapping(qubit_mapping)
+        self._validate_circuit_instructions(architecture, circuits, qubit_mapping)
 
         # ``bearer_token`` can be ``None`` if cocos we're connecting does not use authentication
         bearer_token = self._get_bearer_token()
@@ -890,6 +758,118 @@ class IQMClient:
             return job_id
         except (json.decoder.JSONDecodeError, KeyError) as e:
             raise CircuitExecutionError(f'Invalid response: {result.text}, {e}') from e
+
+    @staticmethod
+    def _validate_qubit_mapping(
+        architecture: QuantumArchitectureSpecification,
+        circuits: CircuitBatch,
+        qubit_mapping: Optional[dict[str, str]] = None,
+    ):
+        """Validates the given qubit mapping, if defined.
+
+        Args:
+          architecture: the quantum architecture to check against
+          circuits: list of circuits to be checked
+          qubit_mapping: Mapping of logical qubit names to physical qubit names.
+              Can be set to ``None`` if all ``circuits`` already use physical qubit names.
+              Note that the ``qubit_mapping`` is used for all ``circuits``.
+
+        Raises:
+            CircuitExecutionError: IQM server specific exceptions
+        """
+        if qubit_mapping is None:
+            return
+
+        # check if qubit mapping is injective
+        target_qubits = set(qubit_mapping.values())
+        if not len(target_qubits) == len(qubit_mapping):
+            raise ValueError('Multiple logical qubits map to the same physical qubit.')
+
+        # check if qubit mapping covers all qubits in the circuits
+        for i, circuit in enumerate(circuits):
+            diff = circuit.all_qubits() - set(qubit_mapping)
+            if diff:
+                raise ValueError(
+                    f"The qubits {diff} in circuit '{circuit.name}' at index {i} "
+                    f'are not found in the provided qubit mapping.'
+                )
+
+        # check that each mapped qubit is defined in the quantum architecture
+        for _logical, physical in qubit_mapping.items():
+            if physical not in architecture.qubits:
+                raise CircuitExecutionError(f'Qubit {physical} not present in quantum architecture')
+
+    @staticmethod
+    def _validate_circuit_instructions(
+        architecture: QuantumArchitectureSpecification,
+        circuits: CircuitBatch,
+        qubit_mapping: Optional[dict[str, str]] = None,
+    ):
+        """Validates that the instructions target correct qubits in the given circuits.
+
+        Args:
+          architecture: the quantum architecture to check against
+          circuits: list of circuits to be checked
+          qubit_mapping: Mapping of logical qubit names to physical qubit names.
+              Can be set to ``None`` if all ``circuits`` already use physical qubit names.
+              Note that the ``qubit_mapping`` is used for all ``circuits``.
+
+        Raises:
+            CircuitExecutionError: IQM server specific exceptions
+        """
+        for circuit in circuits:
+            for instr in circuit.instructions:
+                IQMClient._validate_instruction(architecture, instr, qubit_mapping)
+
+    @staticmethod
+    def _validate_instruction(
+        architecture: QuantumArchitectureSpecification,
+        instruction: Instruction,
+        qubit_mapping: Optional[dict[str, str]] = None,
+    ):
+        """Validates that the instruction targets correct qubits in the given architecture.
+
+        Args:
+          architecture: the quantum architecture to check against
+          instruction: the instruction to check
+          qubit_mapping: Mapping of logical qubit names to physical qubit names.
+              Can be set to ``None`` if all ``circuits`` already use physical qubit names.
+              Note that the ``qubit_mapping`` is used for all ``circuits``.
+
+        Raises:
+            CircuitExecutionError: IQM server specific exceptions
+        """
+        if instruction.name not in architecture.operations:
+            raise ValueError(f"Instruction '{instruction.name}' is not supported by the quantum architecture.")
+        allowed_loci = architecture.operations[instruction.name]
+        qubits = [qubit_mapping[q] for q in instruction.qubits] if qubit_mapping else list(instruction.qubits)
+        info = SUPPORTED_INSTRUCTIONS[instruction.name]
+        check_locus = info['check_locus'] if 'check_locus' in info else None
+        if check_locus is False:
+            # Should skip locus check (e.g. for barrier)
+            return
+        if check_locus == 'any_combination':
+            # Check that all qubits in the locus are allowed by the architecture
+            allowed_qubits = set(q for locus in allowed_loci for q in locus)
+            for q in instruction.qubits:
+                mapped_q = qubit_mapping[q] if qubit_mapping else q
+                if mapped_q not in allowed_qubits:
+                    raise CircuitExecutionError(
+                        f'Qubit {q} = {mapped_q} is not allowed as locus for {instruction.name}'
+                        if qubit_mapping
+                        else f'Qubit {q} is not allowed as locus for {instruction.name}'
+                    )
+            return
+
+        # Check that locus matches one of the loci defined in architecture
+        is_directed = 'directed' in info and info['directed'] is True
+        all_loci = allowed_loci if is_directed else [qs for pair in allowed_loci for qs in [pair, pair[::-1]]]
+        if qubits not in all_loci:
+            raise CircuitExecutionError(
+                f'{instruction.qubits} = {tuple(qubits)} not allowed as locus for {instruction.name}'
+                if qubit_mapping
+                else f'{instruction.qubits} not allowed as locus for {instruction.name}'
+            )
 
     def get_run(self, job_id: UUID, *, timeout_secs: float = REQUESTS_TIMEOUT) -> RunResult:
         """Query the status and results of a submitted job.
@@ -1025,6 +1005,7 @@ class IQMClient:
 
     def get_quantum_architecture(self, *, timeout_secs: float = REQUESTS_TIMEOUT) -> QuantumArchitectureSpecification:
         """Retrieve quantum architecture from server.
+        Caches the result and returns the same result on later invocations.
 
         Args:
             timeout_secs: network request timeout
@@ -1037,6 +1018,9 @@ class IQMClient:
             ClientConfigurationError: if no valid authentication is provided
             HTTPException: HTTP exceptions
         """
+        if self._architecture:
+            return self._architecture
+
         result = requests.get(
             join(self._base_url, 'quantum-architecture'),
             headers=self._default_headers(),
@@ -1057,6 +1041,8 @@ class IQMClient:
             qa = QuantumArchitecture(**result.json()).quantum_architecture
         except (json.decoder.JSONDecodeError, KeyError) as e:
             raise CircuitExecutionError(f'Invalid response: {result.text}, {e}') from e
+        # Cache architecture so that later invocations do not need to query it again
+        self._architecture = qa
         return qa
 
     def close_auth_session(self) -> bool:

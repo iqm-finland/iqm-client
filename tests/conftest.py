@@ -154,32 +154,41 @@ def sample_circuit(sample_circuit_metadata):
     """
     A sample circuit for testing submit_circuit
     """
+    return create_sample_circuit(['QB1', 'QB2'], metadata=sample_circuit_metadata)
+
+
+@pytest.fixture
+def sample_circuit_logical(sample_circuit_metadata):
+    """
+    A sample circuit with logical names for testing submit_circuit
+    """
+    return create_sample_circuit(['Qubit A', 'Qubit B'], metadata=sample_circuit_metadata)
+
+
+def create_sample_circuit(qubits: list[str], metadata) -> Circuit:
     return Circuit(
         name='The circuit',
         instructions=[
             Instruction(
                 name='cz',
-                qubits=(
-                    'Qubit A',
-                    'Qubit B',
-                ),
+                qubits=tuple(qubits),
                 args={},
             ),
             Instruction(
                 name='phased_rx',
                 implementation='drag_gaussian',
-                qubits=('Qubit A',),
+                qubits=(qubits[0],),
                 args={'phase_t': 0.7, 'angle_t': 0.25},
             ),
             Instruction(
                 name='prx',
-                qubits=('Qubit A',),
+                qubits=(qubits[0],),
                 args={'phase_t': 0.3, 'angle_t': -0.2},
             ),
-            Instruction(name='measurement', qubits=('Qubit A',), args={'key': 'A'}),
-            Instruction(name='measure', qubits=('Qubit B',), args={'key': 'B'}),
+            Instruction(name='measurement', qubits=(qubits[0],), args={'key': 'A'}),
+            Instruction(name='measure', qubits=(qubits[1],), args={'key': 'B'}),
         ],
-        metadata=sample_circuit_metadata,
+        metadata=metadata,
     )
 
 
@@ -236,9 +245,9 @@ def run_request_with_heralding(sample_circuit) -> RunRequest:
 
 
 @pytest.fixture()
-def run_request_with_custom_settings(sample_circuit, settings_dict) -> RunRequest:
+def run_request_with_custom_settings(sample_circuit_logical, settings_dict) -> RunRequest:
     return RunRequest(
-        circuits=[sample_circuit],
+        circuits=[sample_circuit_logical],
         shots=10,
         qubit_mapping=[
             SingleQubitMapping(logical_name='Qubit A', physical_name='QB1'),
@@ -259,9 +268,9 @@ def run_request_without_qubit_mapping(sample_circuit) -> RunRequest:
 
 
 @pytest.fixture()
-def run_request_with_invalid_qubit_mapping(sample_circuit) -> RunRequest:
+def run_request_with_invalid_qubit_mapping(sample_circuit_logical) -> RunRequest:
     return RunRequest(
-        circuits=[sample_circuit],
+        circuits=[sample_circuit_logical],
         shots=10,
         qubit_mapping=[
             SingleQubitMapping(logical_name='Qubit A', physical_name='QB1'),
@@ -272,9 +281,9 @@ def run_request_with_invalid_qubit_mapping(sample_circuit) -> RunRequest:
 
 
 @pytest.fixture()
-def run_request_with_incomplete_qubit_mapping(sample_circuit) -> RunRequest:
+def run_request_with_incomplete_qubit_mapping(sample_circuit_logical) -> RunRequest:
     return RunRequest(
-        circuits=[sample_circuit],
+        circuits=[sample_circuit_logical],
         shots=10,
         qubit_mapping=[
             SingleQubitMapping(logical_name='Qubit A', physical_name='QB1'),
@@ -284,9 +293,9 @@ def run_request_with_incomplete_qubit_mapping(sample_circuit) -> RunRequest:
 
 
 @pytest.fixture()
-def run_request_with_calibration_set_id(sample_circuit, sample_calibration_set_id) -> RunRequest:
+def run_request_with_calibration_set_id(sample_circuit_logical, sample_calibration_set_id) -> RunRequest:
     return RunRequest(
-        circuits=[sample_circuit],
+        circuits=[sample_circuit_logical],
         shots=10,
         qubit_mapping=[
             SingleQubitMapping(logical_name='Qubit A', physical_name='QB1'),
@@ -298,9 +307,9 @@ def run_request_with_calibration_set_id(sample_circuit, sample_calibration_set_i
 
 
 @pytest.fixture()
-def run_request_with_duration_check_disabled(sample_circuit) -> RunRequest:
+def run_request_with_duration_check_disabled(sample_circuit_logical) -> RunRequest:
     return RunRequest(
-        circuits=[sample_circuit],
+        circuits=[sample_circuit_logical],
         shots=10,
         qubit_mapping=[
             SingleQubitMapping(logical_name='Qubit A', physical_name='QB1'),
@@ -393,7 +402,33 @@ def sample_quantum_architecture():
             'name': 'hercules',
             'qubits': ['QB1', 'QB2'],
             'qubit_connectivity': [['QB1', 'QB2']],
-            'operations': ['phased_rx', 'CZ'],
+            'operations': {
+                'phased_rx': [['QB1'], ['QB2']],
+                'cz': [['QB1', 'QB2']],
+                'measurement': [['QB1'], ['QB2']],
+            },
+        }
+    }
+
+
+@pytest.fixture
+def sample_move_architecture():
+    return {
+        'quantum_architecture': {
+            'name': 'hercules',
+            'qubits': ['COMP_R', 'QB1', 'QB2', 'QB3'],
+            'qubit_connectivity': [
+                ['QB1', 'COMP_R'],
+                ['QB2', 'COMP_R'],
+                ['QB3', 'COMP_R'],
+            ],
+            'operations': {
+                'prx': [['QB1'], ['QB2'], ['QB3']],
+                'cz': [['QB1', 'COMP_R'], ['QB2', 'COMP_R']],
+                'move': [['QB3', 'COMP_R']],
+                'measure': [['QB1'], ['QB2'], ['QB3']],
+                'barrier': [],
+            },
         }
     }
 

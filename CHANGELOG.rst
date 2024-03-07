@@ -2,6 +2,14 @@
 Changelog
 =========
 
+Version 17.0
+============
+
+* Extend quantum architecture specification to allow different loci for each operation. `#112 <https://github.com/iqm-finland/iqm-client/pull/112>`_
+* Allow the ``move`` instruction natively.
+* Validate instructions loci based on quantum architecture.
+* Auto-rename deprecated instruction names to current names.
+
 Version 16.1
 ============
 
