@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 17.1
+============
+
+* Support both extended and simple quantum architecture specification. `#117 <https://github.com/iqm-finland/iqm-client/pull/117>`_
+
 Version 17.0
 ============
 
