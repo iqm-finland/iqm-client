@@ -37,6 +37,18 @@ class QuantumArchitectureSpecification(BaseModel):
     """Qubit connectivity of this quantum architecture."""
 
     def __init__(self, **data):
+        # Convert a simplified quantum architecture to full quantum architecture
+        raw_operations = data.get("operations")
+        raw_qubits = data.get("qubits")
+        raw_qubit_connectivity = data.get("qubit_connectivity")
+        if isinstance(raw_operations, list):
+            data["operations"] = {
+                get_current_instruction_name(op): raw_qubit_connectivity
+                if is_multi_qubit_instruction(get_current_instruction_name(op))
+                else [[qb] for qb in raw_qubits]
+                for op in raw_operations
+            }
+
         super().__init__(**data)
         self.operations = {get_current_instruction_name(k): v for k, v in self.operations.items()}
 

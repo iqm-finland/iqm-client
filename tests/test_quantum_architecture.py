@@ -81,3 +81,16 @@ def to_arch(operations):
         qubit_connectivity=[['QB1', 'QB2'], ['QB2', 'QB3']],
         operations=operations,
     )
+
+
+def test_simplified_quantum_architecture():
+    simplified_architecture = QuantumArchitectureSpecification(
+        name='hercules',
+        qubits=['QB1', 'QB2', 'QB3'],
+        qubit_connectivity=[['QB1', 'QB2'], ['QB2', 'QB3']],
+        operations=['prx', 'cz'],
+    )
+    assert simplified_architecture.operations == {
+        'prx': [['QB1'], ['QB2'], ['QB3']],
+        'cz': [['QB1', 'QB2'], ['QB2', 'QB3']],
+    }
