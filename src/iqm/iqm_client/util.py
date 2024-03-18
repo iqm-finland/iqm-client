@@ -15,9 +15,11 @@
 Helpful utilities that can be used together with IQMClient.
 """
 from json import JSONEncoder, dumps, loads
-from typing import Any
+from typing import Any, TypeVar
 
 import numpy as np
+
+T = TypeVar('T')
 
 
 class IQMJSONEncoder(JSONEncoder):
@@ -43,4 +45,4 @@ def to_json_dict(obj: dict[str, Any]) -> dict:
     try:
         return loads(dumps(obj, allow_nan=False, cls=IQMJSONEncoder))
     except (ValueError, TypeError) as e:
-        raise ValueError("Object contains values that are not JSON serializable") from e
+        raise ValueError('Object contains values that are not JSON serializable') from e

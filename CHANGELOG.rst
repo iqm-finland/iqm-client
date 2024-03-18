@@ -2,10 +2,23 @@
 Changelog
 =========
 
-Version 16.2
+Version 17.2
 ============
 
 * Use GitHub Action as a Trusted Publisher to publish packages to PyPI. `#116 <https://github.com/iqm-finland/iqm-client/pull/116>`_
+
+Version 17.1
+============
+
+* Support both extended and simple quantum architecture specification. `#117 <https://github.com/iqm-finland/iqm-client/pull/117>`_
+
+Version 17.0
+============
+
+* Extend quantum architecture specification to allow different loci for each operation. `#112 <https://github.com/iqm-finland/iqm-client/pull/112>`_
+* Allow the ``move`` instruction natively.
+* Validate instructions loci based on quantum architecture.
+* Auto-rename deprecated instruction names to current names.
 
 Version 16.1
 ============
