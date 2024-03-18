@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 17.2
+============
+
+* Use GitHub Action as a Trusted Publisher to publish packages to PyPI. `#116 <https://github.com/iqm-finland/iqm-client/pull/116>`_
+
 Version 17.1
 ============
 
