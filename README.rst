@@ -22,6 +22,23 @@ If you want just this library, though, you can install it from the Python Packag
 
     $ pip install iqm-client
 
+Documentation
+=============
+
+Documentation for the latest version is `available online <https://iqm-finland.github.io/iqm-client/>`_. 
+You can build documentation for any older version locally by cloning the Git repository, checking out the 
+corresponding tag, and running the docs builder. For example, to build the documentation for version ``15.4``:
+
+.. code-block:: bash
+
+    $ git clone git@github.com:iqm-finland/iqm-client.git
+    $ cd iqm-client
+    $ git checkout 15.4
+    $ tox docs
+
+`tox docs` will build documentation at ``./build/sphinx/html``. This command requires ``tox,``, ``sphinx`` and 
+``sphinx-book-theme`` Python packages (see optional dependency labeled ``docs`` in ``pyproject.toml`` file); 
+you can install the necessary packages with ``pip install -e ".[dev,docs]"``
 
 Copyright
 =========
