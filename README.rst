@@ -34,10 +34,10 @@ corresponding tag, and running the docs builder. For example, to build the docum
     $ git clone git@github.com:iqm-finland/iqm-client.git
     $ cd iqm-client
     $ git checkout 15.4
-    $ tox docs
+    $ tox run -e docs
 
-`tox docs` will build documentation at ``./build/sphinx/html``. This command requires ``tox,``, ``sphinx`` and 
-``sphinx-book-theme`` Python packages (see optional dependency labeled ``docs`` in ``pyproject.toml`` file); 
+``tox run -e docs`` will build the documentation at ``./build/sphinx/html``. This command requires the ``tox,``, ``sphinx`` and 
+``sphinx-book-theme`` Python packages (see the ``docs`` optional dependency in :file:`pyproject.toml`); 
 you can install the necessary packages with ``pip install -e ".[dev,docs]"``
 
 Copyright
