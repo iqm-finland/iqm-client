@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 17.3
+============
+
+* Add new job states to support job delete operation in the backend. `#116 <https://github.com/iqm-finland/iqm-client/pull/119>`_
+
 Version 17.2
 ============
 
