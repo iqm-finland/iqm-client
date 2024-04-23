@@ -335,6 +335,20 @@ def pending_execution_job_result(sample_circuit):
 
 
 @pytest.fixture()
+def pending_deletion_job_result(sample_circuit):
+    return MockJsonResponse(
+        200, {'status': 'pending deletion', 'metadata': {'request': {'shots': 10, 'circuits': [sample_circuit]}}}
+    )
+
+
+@pytest.fixture()
+def deleted_job_result():
+    return MockJsonResponse(
+        200, {'status': 'deleted', 'metadata': {'request': {'shots': 1, 'circuits': []}}}
+    )
+
+
+@pytest.fixture()
 def ready_job_result(sample_circuit, sample_calibration_set_id):
     return MockJsonResponse(
         200,
