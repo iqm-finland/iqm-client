@@ -343,9 +343,7 @@ def pending_deletion_job_result(sample_circuit):
 
 @pytest.fixture()
 def deleted_job_result():
-    return MockJsonResponse(
-        200, {'status': 'deleted', 'metadata': {'request': {'shots': 1, 'circuits': []}}}
-    )
+    return MockJsonResponse(200, {'status': 'deleted', 'metadata': {'request': {'shots': 1, 'circuits': []}}})
 
 
 @pytest.fixture()
@@ -407,6 +405,16 @@ def pending_execution_status():
 @pytest.fixture()
 def ready_status():
     return MockJsonResponse(200, {'status': 'ready'})
+
+
+@pytest.fixture()
+def pending_deletion_status():
+    return MockJsonResponse(200, {'status': 'pending deletion'})
+
+
+@pytest.fixture()
+def deleted_status():
+    return MockJsonResponse(200, {'status': 'deleted'})
 
 
 @pytest.fixture

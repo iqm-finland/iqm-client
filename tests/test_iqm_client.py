@@ -312,21 +312,29 @@ def test_get_run_status_for_existing_run(
     pending_compilation_status,
     pending_execution_status,
     ready_status,
+    pending_deletion_status,
+    deleted_status,
     existing_run_id,
 ):
     """
     Tests getting the run status
     """
-    expect(requests, times=3).get(existing_job_status_url, **get_jobs_args()).thenReturn(
+    expect(requests, times=5).get(existing_job_status_url, **get_jobs_args()).thenReturn(
         pending_compilation_status
-    ).thenReturn(pending_execution_status).thenReturn(ready_status)
+    ).thenReturn(pending_execution_status).thenReturn(ready_status).thenReturn(pending_deletion_status).thenReturn(
+        deleted_status
+    )
 
     # First request gets status 'pending compilation'
     assert sample_client.get_run_status(existing_run_id).status == Status.PENDING_COMPILATION
     # Second request gets status 'pending execution'
     assert sample_client.get_run_status(existing_run_id).status == Status.PENDING_EXECUTION
-    # Second request gets status 'ready'
+    # Third request gets status 'ready'
     assert sample_client.get_run_status(existing_run_id).status == Status.READY
+    # Fourth request gets status 'pending deletion'
+    assert sample_client.get_run_status(existing_run_id).status == Status.PENDING_DELETION
+    # Fifth request gets status 'deleted'
+    assert sample_client.get_run_status(existing_run_id).status == Status.DELETED
 
     verifyNoUnwantedInteractions()
     unstub()
