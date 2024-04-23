@@ -227,6 +227,9 @@ class Status(str, Enum):
     READY = 'ready'
     FAILED = 'failed'
     ABORTED = 'aborted'
+    PENDING_DELETION = 'pending deletion'
+    DELETION_FAILED = 'deletion failed'
+    DELETED = 'deleted'
 
 
 class Circuit(BaseModel):
