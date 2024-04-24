@@ -17,8 +17,8 @@ Collection of transpile functions needed for transpiling to specific devices
 from enum import Enum
 from typing import Iterable, Optional, Union
 
-from iqm_client import Circuit, Instruction, IQMClient, QuantumArchitectureSpecification
-from iqm_client.instruction import is_multi_qubit_instruction
+from iqm.iqm_client import Circuit, Instruction, IQMClient, QuantumArchitectureSpecification
+from iqm.iqm_client.instruction import is_multi_qubit_instruction
 
 
 class ExistingMoveHandlingOptions(Enum):
@@ -55,10 +55,10 @@ def transpile_insert_moves(
     moveGate = 'move'
     existing_moves_in_circuit = (i for i in circuit.instructions if i.name == moveGate)
     if moveGate not in arch.operations.keys():
-        if not existing_moves:
+        if not existing_moves_in_circuit:
             return circuit
         raise ValueError('Circuit contains Move instructions, but device does not support them')
-    if existing_moves_in_circuit:
+    if len(existing_moves_in_circuit) > 0:
         if existing_moves is None:
             raise UserWarning('Circuit already contains Move Instructions, removing them before transpiling.')
         if existing_moves is None or existing_moves == ExistingMoveHandlingOptions.REMOVE:
@@ -77,6 +77,7 @@ def transpile_insert_moves(
                         Circuit(name='Transpile intermediate', instructions=current_instructions), arch=arch
                     )
                     new_instructions += c.instructions
+                    new_instructions.append(i)
             return Circuit(name=circuit.name, instructions=new_instructions, metadata=circuit.metadata)
     instructions = circuit.instructions
     resonators = (q for q in arch.qubits if q.startswith('COMP_R'))
