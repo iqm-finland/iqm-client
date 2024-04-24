@@ -818,6 +818,7 @@ class IQMClient:
             CircuitExecutionError: IQM server specific exceptions
         """
         for circuit in circuits:
+            IQMClient._validate_circuit_moves(architecture, circuit, qubit_mapping)
             for instr in circuit.instructions:
                 IQMClient._validate_instruction(architecture, instr, qubit_mapping)
 
@@ -870,6 +871,53 @@ class IQMClient:
                 if qubit_mapping
                 else f'{instruction.qubits} not allowed as locus for {instruction.name}'
             )
+
+    @staticmethod
+    def _validate_circuit_moves(
+        architecture: QuantumArchitectureSpecification,
+        circuit: Circuit,
+        qubit_mapping: Optional[dict[str, str]] = None,
+    ):
+        """Validates that the moves in the circuit are not exciting the resonator.
+
+        Args:
+          architecture: the quantum architecture to check against
+          circuit: the circuit to be checked
+          qubit_mapping: Mapping of logical qubit names to physical qubit names.
+              Can be set to ``None`` if the ``circuit`` already uses physical qubit names.
+        Raises:
+            CircuitExecutionError: IQM server specific exceptions
+        """
+        moveGate = 'move'
+        if moveGate not in architecture.operations.keys():
+            if any(i for i in circuit.instructions if i.name == moveGate):
+                raise CircuitExecutionError('Move instruction not allowed for given device architecture.')
+            return
+        if qubit_mapping:
+            reverse_mapping = {phys: log for log, phys in qubit_mapping.items()}
+            resonator_state_loc = {
+                reverse_mapping[q]: reverse_mapping[q] for q in architecture.qubits if q.startswith('COMP_R')
+            }
+        else:
+            resonator_state_loc = {q: q for q in architecture.qubits if q.startswith('COMP_R')}
+        for instr in circuit.instructions:
+            if any(qb in resonator_state_loc.values() for qb in instr.qubits):
+                if instr.name == moveGate:
+                    qb = resonator_state_loc[instr.qubits[1]]
+                    if qb == instr.qubits[1]:
+                        resonator_state_loc[qb] = instr.qubits[0]
+                    else:
+                        resonator_state_loc[instr.qubits[1]] = qb
+                else:
+                    print(resonator_state_loc)
+                    raise CircuitExecutionError(
+                        f'Instruction {instr.name} on {instr.qubits} while they hold a resonator state.'
+                    )
+            if instr.name == moveGate:
+                print(resonator_state_loc)
+                raise CircuitExecutionError(
+                    f'Move instruction between {instr.qubits} while neither holds a resonator state.'
+                )
 
     def get_run(self, job_id: UUID, *, timeout_secs: float = REQUESTS_TIMEOUT) -> RunResult:
         """Query the status and results of a submitted job.

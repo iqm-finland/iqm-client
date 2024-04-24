@@ -2,7 +2,7 @@ import re
 
 import pytest
 
-from iqm.iqm_client import CircuitExecutionError, Instruction, IQMClient, QuantumArchitecture
+from iqm.iqm_client import Circuit, CircuitExecutionError, Instruction, IQMClient, QuantumArchitecture
 
 sample_qb_mapping = {'0': 'COMP_R', '1': 'QB1', '2': 'QB2', '3': 'QB3'}
 reverse_qb_mapping = {value: key for key, value in sample_qb_mapping.items()}
@@ -101,3 +101,55 @@ def test_barrier(sample_move_architecture):
     IQMClient._validate_instruction(
         arch, Instruction(name='barrier', qubits=['QB1', 'COMP_R', 'QB2', 'QB3'], args={}), None
     )
+
+
+class TestMoveSafetyValidation:
+    """Tests the validation of safe Move instructions"""
+
+    move = Instruction(name='move', qubits=['QB3', 'COMP_R'], args={})
+    gate = Instruction(name='prx', qubits=['QB3'], args={'phase_t': 0.3, 'angle_t': -0.2})
+    cz = Instruction(name='cz', qubits=['QB2', 'COMP_R'], args={})
+
+    @staticmethod
+    def make_circuit_and_check(instructions: tuple[Instruction], arch: QuantumArchitecture, qubit_mapping=None):
+        circuit = Circuit(name='Move validation circuit', instructions=instructions)
+        IQMClient._validate_circuit_moves(arch.quantum_architecture, circuit, qubit_mapping)
+
+    def test_moves_paired(self, sample_move_architecture):
+        arch = QuantumArchitecture(**sample_move_architecture)
+        instructions = (TestMoveSafetyValidation.move,)
+        with pytest.raises(CircuitExecutionError) as err:
+            TestMoveSafetyValidation.make_circuit_and_check(instructions, arch)
+        TestMoveSafetyValidation.make_circuit_and_check(instructions * 2, arch)
+
+    def test_gates_between_moves(self, sample_move_architecture):
+        arch = QuantumArchitecture(**sample_move_architecture)
+        with pytest.raises(CircuitExecutionError) as err:
+            TestMoveSafetyValidation.make_circuit_and_check(
+                (TestMoveSafetyValidation.move, TestMoveSafetyValidation.gate, TestMoveSafetyValidation.move), arch
+            )
+        TestMoveSafetyValidation.make_circuit_and_check(
+            (
+                TestMoveSafetyValidation.gate,
+                TestMoveSafetyValidation.move,
+                TestMoveSafetyValidation.cz,
+                TestMoveSafetyValidation.move,
+            ),
+            arch,
+        )
+
+    def test_device_without_resonator(self, sample_quantum_architecture, sample_circuit):
+        arch = QuantumArchitecture(**sample_quantum_architecture)
+        with pytest.raises(CircuitExecutionError) as err:
+            TestMoveSafetyValidation.make_circuit_and_check((TestMoveSafetyValidation.move,), arch)
+        TestMoveSafetyValidation.make_circuit_and_check(sample_circuit.instructions, arch)
+
+    def test_qubit_mapping(self, sample_move_architecture):
+        arch = QuantumArchitecture(**sample_move_architecture)
+        move = Instruction(name='move', qubits=[reverse_qb_mapping[qb] for qb in ['QB3', 'COMP_R']], args={})
+        gate = Instruction(
+            name='prx', qubits=[reverse_qb_mapping[qb] for qb in ['QB3']], args={'phase_t': 0.3, 'angle_t': -0.2}
+        )
+        cz = Instruction(name='cz', qubits=[reverse_qb_mapping[qb] for qb in ['QB2', 'COMP_R']], args={})
+        TestMoveSafetyValidation.make_circuit_and_check((move, move), arch, sample_qb_mapping)
+        TestMoveSafetyValidation.make_circuit_and_check((gate, move, cz, move), arch, sample_qb_mapping)
