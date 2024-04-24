@@ -120,6 +120,16 @@ class TestMoveSafetyValidation:
         instructions = (TestMoveSafetyValidation.move,)
         with pytest.raises(CircuitExecutionError) as err:
             TestMoveSafetyValidation.make_circuit_and_check(instructions, arch)
+        with pytest.raises(CircuitExecutionError) as err:
+            TestMoveSafetyValidation.make_circuit_and_check((
+                TestMoveSafetyValidation.move,
+                Instruction(name='move', qubits=['QB2', 'COMP_R'], args={}),
+            ), arch)
+        with pytest.raises(CircuitExecutionError) as err:
+            TestMoveSafetyValidation.make_circuit_and_check((
+                TestMoveSafetyValidation.move,
+                Instruction(name='move', qubits=['COMP_R', 'QB3'], args={}),
+            ), arch)
         TestMoveSafetyValidation.make_circuit_and_check(instructions * 2, arch)
 
     def test_gates_between_moves(self, sample_move_architecture):

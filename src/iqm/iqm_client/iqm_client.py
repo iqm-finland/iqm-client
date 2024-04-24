@@ -903,21 +903,23 @@ class IQMClient:
         for instr in circuit.instructions:
             if any(qb in resonator_state_loc.values() for qb in instr.qubits):
                 if instr.name == moveGate:
-                    qb = resonator_state_loc[instr.qubits[1]]
-                    if qb == instr.qubits[1]:
-                        resonator_state_loc[qb] = instr.qubits[0]
+                    qb, res = instr.qubits
+                    if res not in resonator_state_loc.keys() or qb in resonator_state_loc.keys():
+                        raise CircuitExecutionError('Move instruction only allowed between qubit and resonator, not {instr.qubits}.')
+                    if resonator_state_loc[res] == res:
+                        resonator_state_loc[res] = qb
                     else:
-                        resonator_state_loc[instr.qubits[1]] = qb
+                        resonator_state_loc[res] = res
                 else:
-                    print(resonator_state_loc)
                     raise CircuitExecutionError(
                         f'Instruction {instr.name} on {instr.qubits} while they hold a resonator state.'
                     )
-            if instr.name == moveGate:
-                print(resonator_state_loc)
+            elif instr.name == moveGate:
                 raise CircuitExecutionError(
                     f'Move instruction between {instr.qubits} while neither holds a resonator state.'
                 )
+        if any(res != qb for res, qb in resonator_state_loc.items()):
+            raise CircuitExecutionError('Circuit ends while qubit state still in the resonator.')
 
     def get_run(self, job_id: UUID, *, timeout_secs: float = REQUESTS_TIMEOUT) -> RunResult:
         """Query the status and results of a submitted job.
