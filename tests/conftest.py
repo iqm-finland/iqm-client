@@ -452,6 +452,11 @@ def not_valid_json_response() -> MockTextResponse:
     return MockTextResponse(200, 'not a valid json')
 
 
+@pytest.fixture()
+def not_valid_client_configuration_response() -> MockTextResponse:
+    return MockTextResponse(400, 'not a valid client configuration')
+
+
 class MockJsonResponse:
     def __init__(self, status_code: int, json_data: dict, history: Optional[list[Response]] = None):
         self.status_code = status_code
