@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>iqm.iqm_client.iqm_client.RunRequest &#8212; IQM client 17.2 documentation</title>
+    <title>iqm.iqm_client.iqm_client.RunRequest &#8212; IQM client 17.3 documentation</title>
   
   
   
@@ -37,7 +37,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script src="../_static/documentation_options.js?v=888de05d"></script>
+    <script src="../_static/documentation_options.js?v=33716240"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
@@ -49,7 +49,7 @@
     <link rel="prev" title="iqm.iqm_client.iqm_client.Metadata" href="iqm.iqm_client.iqm_client.Metadata.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="2024-03-18"/>
+    <meta name="docbuild:last-update" content="2024-04-24"/>
   </head>
   
   
@@ -136,8 +136,8 @@
       
     
     
-    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 17.2 documentation - Home"/>
-    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="IQM client 17.2 documentation - Home"/>`);</script>
+    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 17.3 documentation - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="IQM client 17.3 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -505,7 +505,7 @@ If set to 0.0, no circuits are disqualified. If set to None the server default v
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.RunRequest.model_fields">
-<span class="sig-name descname"><span class="pre">model_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">FieldInfo</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'calibration_set_id':</span> <span class="pre">FieldInfo(annotation=Union[UUID,</span> <span class="pre">NoneType],</span> <span class="pre">required=False),</span> <span class="pre">'circuits':</span> <span class="pre">FieldInfo(annotation=list[Circuit],</span> <span class="pre">required=True),</span> <span class="pre">'custom_settings':</span> <span class="pre">FieldInfo(annotation=Union[dict[str,</span> <span class="pre">Any],</span> <span class="pre">NoneType],</span> <span class="pre">required=False),</span> <span class="pre">'heralding_mode':</span> <span class="pre">FieldInfo(annotation=HeraldingMode,</span> <span class="pre">required=False,</span> <span class="pre">default=&lt;HeraldingMode.NONE:</span> <span class="pre">'none'&gt;),</span> <span class="pre">'max_circuit_duration_over_t2':</span> <span class="pre">FieldInfo(annotation=Union[float,</span> <span class="pre">NoneType],</span> <span class="pre">required=False),</span> <span class="pre">'qubit_mapping':</span> <span class="pre">FieldInfo(annotation=Union[list[SingleQubitMapping],</span> <span class="pre">NoneType],</span> <span class="pre">required=False),</span> <span class="pre">'shots':</span> <span class="pre">FieldInfo(annotation=int,</span> <span class="pre">required=True,</span> <span class="pre">metadata=[Gt(gt=0)])}</span></em><a class="headerlink" href="#iqm.iqm_client.iqm_client.RunRequest.model_fields" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">model_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">FieldInfo</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'calibration_set_id':</span> <span class="pre">FieldInfo(annotation=Union[UUID,</span> <span class="pre">NoneType],</span> <span class="pre">required=False,</span> <span class="pre">default=None),</span> <span class="pre">'circuits':</span> <span class="pre">FieldInfo(annotation=list[Circuit],</span> <span class="pre">required=True),</span> <span class="pre">'custom_settings':</span> <span class="pre">FieldInfo(annotation=Union[dict[str,</span> <span class="pre">Any],</span> <span class="pre">NoneType],</span> <span class="pre">required=False,</span> <span class="pre">default=None),</span> <span class="pre">'heralding_mode':</span> <span class="pre">FieldInfo(annotation=HeraldingMode,</span> <span class="pre">required=False,</span> <span class="pre">default=&lt;HeraldingMode.NONE:</span> <span class="pre">'none'&gt;),</span> <span class="pre">'max_circuit_duration_over_t2':</span> <span class="pre">FieldInfo(annotation=Union[float,</span> <span class="pre">NoneType],</span> <span class="pre">required=False,</span> <span class="pre">default=None),</span> <span class="pre">'qubit_mapping':</span> <span class="pre">FieldInfo(annotation=Union[list[SingleQubitMapping],</span> <span class="pre">NoneType],</span> <span class="pre">required=False,</span> <span class="pre">default=None),</span> <span class="pre">'shots':</span> <span class="pre">FieldInfo(annotation=int,</span> <span class="pre">required=True,</span> <span class="pre">metadata=[Gt(gt=0)])}</span></em><a class="headerlink" href="#iqm.iqm_client.iqm_client.RunRequest.model_fields" title="Link to this definition">#</a></dt>
 <dd><p>Metadata about the fields defined on the model,
 mapping of field names to [<cite>FieldInfo</cite>][pydantic.fields.FieldInfo].</p>
 <p>This replaces <cite>Model.__fields__</cite> from Pydantic V1.</p>
@@ -606,7 +606,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2024-03-18.
+  Last updated on 2024-04-24.
   <br/>
 </p>
   </div>

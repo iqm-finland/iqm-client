@@ -18,6 +18,9 @@ iqm.iqm\_client.iqm\_client.Status
       ~Status.READY
       ~Status.FAILED
       ~Status.ABORTED
+      ~Status.PENDING_DELETION
+      ~Status.DELETION_FAILED
+      ~Status.DELETED
    
    
 

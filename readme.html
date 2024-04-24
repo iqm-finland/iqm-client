@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>IQM Client &#8212; IQM client 17.2 documentation</title>
+    <title>IQM Client &#8212; IQM client 17.3 documentation</title>
   
   
   
@@ -37,7 +37,7 @@
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script src="_static/documentation_options.js?v=888de05d"></script>
+    <script src="_static/documentation_options.js?v=33716240"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
@@ -49,7 +49,7 @@
     <link rel="prev" title="IQM client" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="2024-03-18"/>
+    <meta name="docbuild:last-update" content="2024-04-24"/>
   </head>
   
   
@@ -136,8 +136,8 @@
       
     
     
-    <img src="_static/logo.png" class="logo__image only-light" alt="IQM client 17.2 documentation - Home"/>
-    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="IQM client 17.2 documentation - Home"/>`);</script>
+    <img src="_static/logo.png" class="logo__image only-light" alt="IQM client 17.3 documentation - Home"/>
+    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="IQM client 17.3 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -362,6 +362,7 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#documentation">Documentation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#copyright">Copyright</a></li>
 </ul>
             </nav>
@@ -386,6 +387,21 @@ you can use for example the <a class="reference external" href="https://iqm-finl
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>iqm-client
 </pre></div>
 </div>
+</section>
+<section id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Link to this heading">#</a></h2>
+<p>Documentation for the latest version is <a class="reference external" href="https://iqm-finland.github.io/iqm-client/">available online</a>.
+You can build documentation for any older version locally by cloning the Git repository, checking out the
+corresponding tag, and running the docs builder. For example, to build the documentation for version <code class="docutils literal notranslate"><span class="pre">15.4</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:iqm-finland/iqm-client.git
+$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>iqm-client
+$<span class="w"> </span>git<span class="w"> </span>checkout<span class="w"> </span><span class="m">15</span>.4
+$<span class="w"> </span>tox<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>docs
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">tox</span> <span class="pre">run</span> <span class="pre">-e</span> <span class="pre">docs</span></code> will build the documentation at <code class="docutils literal notranslate"><span class="pre">./build/sphinx/html</span></code>. This command requires the <code class="docutils literal notranslate"><span class="pre">tox,</span></code>, <code class="docutils literal notranslate"><span class="pre">sphinx</span></code> and
+<code class="docutils literal notranslate"><span class="pre">sphinx-book-theme</span></code> Python packages (see the <code class="docutils literal notranslate"><span class="pre">docs</span></code> optional dependency in <code class="file docutils literal notranslate"><span class="pre">pyproject.toml</span></code>);
+you can install the necessary packages with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-e</span> <span class="pre">&quot;.[dev,docs]&quot;</span></code></p>
 </section>
 <section id="copyright">
 <h2>Copyright<a class="headerlink" href="#copyright" title="Link to this heading">#</a></h2>
@@ -440,6 +456,7 @@ you can use for example the <a class="reference external" href="https://iqm-finl
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#documentation">Documentation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#copyright">Copyright</a></li>
 </ul>
   </nav></div>
@@ -474,7 +491,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2024-03-18.
+  Last updated on 2024-04-24.
   <br/>
 </p>
   </div>
