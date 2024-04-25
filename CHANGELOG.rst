@@ -7,6 +7,8 @@ Version 16.1
 
 * Remove multiversion documentation. `#115 <https://github.com/iqm-finland/iqm-client/pull/115>`_
 
+* FiQCI: Support attaching `PROJECT_ID` environment variable content to circuit metadata.
+
 Version 16.0
 ============
 
