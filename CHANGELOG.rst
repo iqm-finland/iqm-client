@@ -2,6 +2,17 @@
 Changelog
 =========
 
+Version 16.1
+============
+
+* Remove multiversion documentation. `#115 <https://github.com/iqm-finland/iqm-client/pull/115>`_
+
+Version 16.0
+============
+
+* Remove ``circuit_duration_check`` parameter from ``RunRequest``. `#114 <https://github.com/iqm-finland/iqm-client/pull/114>`_
+* Add ``max_circuit_duration_over_t2`` parameter to ``RunRequest`` to control circuit disqualification threshold. `#114 <https://github.com/iqm-finland/iqm-client/pull/114>`_
+
 Version 15.4
 ============
 

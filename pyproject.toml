@@ -48,10 +48,8 @@ testing = [
     "jsons == 1.6.1",
 ]
 docs = [
-    "sphinx == 6.2.1",
-    "sphinx-book-theme == 1.0.1",
-    "beautifulsoup4 == 4.11.2",
-    "sphinx-multiversion-contrib == 0.3.2",
+    "sphinx == 7.2.6",
+    "sphinx-book-theme == 1.1.2",
 ]
 
 

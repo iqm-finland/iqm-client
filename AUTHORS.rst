@@ -10,3 +10,6 @@ Contributors
 * Olli Tyrkkö <otyrkko@meetiqm.com>
 * Rakhim Davletkaliyev <rakhim.davletkaliyev@meetiqm.com>
 * Matthias Beuerle <matthias.beuerle@meetiqm.com>
+* Janne Kotilahti <janne@meetiqm.com>
+* Vladimir Kukushkin <vladimir.kukushkin@meetiqm.com>
+* Ricardas Brazinskas <ricardas.brazinskas@meetiqm.com>
