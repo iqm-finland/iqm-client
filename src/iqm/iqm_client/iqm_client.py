@@ -754,6 +754,9 @@ class IQMClient:
         if result.status_code == 401:
             raise ClientAuthenticationError(f'Authentication failed: {result.text}')
 
+        if result.status_code == 400:
+            raise ClientConfigurationError(f'Client configuration error: {result.text}')
+
         result.raise_for_status()
 
         try:

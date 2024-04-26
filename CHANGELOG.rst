@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 17.4
+============
+
+* Raise ClientConfigurationError and display the details of the error upon receiving a HTTP 400 error response. `#120 <https://github.com/iqm-finland/iqm-client/pull/120>`_
+
 Version 17.3
 ============
 

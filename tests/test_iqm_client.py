@@ -580,6 +580,24 @@ def test_submit_circuits_throws_json_decode_error_if_received_not_json(
     unstub()
 
 
+def test_submit_circuits_throws_client_configuration_error_on_400(
+    sample_client,
+    jobs_url,
+    not_valid_client_configuration_response,
+    quantum_architecture_url,
+    quantum_architecture_success,
+):
+    """Test that an exception is raised when the response is 400"""
+    expect(requests, times=1).post(jobs_url, ...).thenReturn(not_valid_client_configuration_response)
+    expect(requests, times=1).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
+
+    with pytest.raises(ClientConfigurationError):
+        sample_client.submit_circuits([])
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
 def test_submit_circuits_validates_circuits(sample_client, sample_circuit):
     """
     Tests that <submit_circuits> validates the batch of provided circuits
