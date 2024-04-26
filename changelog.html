@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Changelog &#8212; IQM client 17.3 documentation</title>
+    <title>Changelog &#8212; IQM client 17.4 documentation</title>
   
   
   
@@ -37,7 +37,7 @@
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script src="_static/documentation_options.js?v=33716240"></script>
+    <script src="_static/documentation_options.js?v=a664e091"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
@@ -48,7 +48,7 @@
     <link rel="prev" title="Contributors" href="authors.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="2024-04-24"/>
+    <meta name="docbuild:last-update" content="2024-04-26"/>
   </head>
   
   
@@ -135,8 +135,8 @@
       
     
     
-    <img src="_static/logo.png" class="logo__image only-light" alt="IQM client 17.3 documentation - Home"/>
-    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="IQM client 17.3 documentation - Home"/>`);</script>
+    <img src="_static/logo.png" class="logo__image only-light" alt="IQM client 17.4 documentation - Home"/>
+    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="IQM client 17.4 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -360,6 +360,7 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-17-4">Version 17.4</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-17-3">Version 17.3</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-17-2">Version 17.2</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-17-1">Version 17.1</a></li>
@@ -452,11 +453,11 @@ document.write(`
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-1">Version 1.1</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id100">Fixes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id101">Fixes</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-0">Version 1.0</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id102">Features</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id103">Features</a></li>
 </ul>
 </li>
 </ul>
@@ -472,6 +473,12 @@ document.write(`
                   
   <section id="changelog">
 <span id="changes"></span><h1>Changelog<a class="headerlink" href="#changelog" title="Link to this heading">#</a></h1>
+<section id="version-17-4">
+<h2>Version 17.4<a class="headerlink" href="#version-17-4" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Raise ClientConfigurationError and display the details of the error upon receiving a HTTP 400 error response. <a class="reference external" href="https://github.com/iqm-finland/iqm-client/pull/120">#120</a></p></li>
+</ul>
+</section>
 <section id="version-17-3">
 <h2>Version 17.3<a class="headerlink" href="#version-17-3" title="Link to this heading">#</a></h2>
 <ul class="simple">
@@ -1008,8 +1015,8 @@ but still supported). <a class="reference external" href="https://github.com/iqm
 </section>
 <section id="version-1-1">
 <h2>Version 1.1<a class="headerlink" href="#version-1-1" title="Link to this heading">#</a></h2>
-<section id="id100">
-<h3>Fixes<a class="headerlink" href="#id100" title="Link to this heading">#</a></h3>
+<section id="id101">
+<h3>Fixes<a class="headerlink" href="#id101" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Changed example instruction phased_rx to measurement. <a class="reference external" href="https://github.com/iqm-finland/iqm-client/pull/2">#2</a></p></li>
 </ul>
@@ -1017,8 +1024,8 @@ but still supported). <a class="reference external" href="https://github.com/iqm
 </section>
 <section id="version-1-0">
 <h2>Version 1.0<a class="headerlink" href="#version-1-0" title="Link to this heading">#</a></h2>
-<section id="id102">
-<h3>Features<a class="headerlink" href="#id102" title="Link to this heading">#</a></h3>
+<section id="id103">
+<h3>Features<a class="headerlink" href="#id103" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Split IQM client from the Cirq on IQM library</p></li>
 </ul>
@@ -1062,6 +1069,7 @@ but still supported). <a class="reference external" href="https://github.com/iqm
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-17-4">Version 17.4</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-17-3">Version 17.3</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-17-2">Version 17.2</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-17-1">Version 17.1</a></li>
@@ -1154,11 +1162,11 @@ but still supported). <a class="reference external" href="https://github.com/iqm
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-1">Version 1.1</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id100">Fixes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id101">Fixes</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-0">Version 1.0</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id102">Features</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id103">Features</a></li>
 </ul>
 </li>
 </ul>
@@ -1194,7 +1202,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2024-04-24.
+  Last updated on 2024-04-26.
   <br/>
 </p>
   </div>
