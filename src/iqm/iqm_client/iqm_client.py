@@ -754,7 +754,7 @@ class IQMClient:
         if result.status_code == 401:
             raise ClientAuthenticationError(f'Authentication failed: {result.text}')
 
-        if result.status_code == 400:
+        if 400 <= result.status_code < 500:
             raise ClientConfigurationError(f'Client configuration error: {result.text}')
 
         result.raise_for_status()
@@ -1007,7 +1007,7 @@ class IQMClient:
             timeout=timeout_secs,
         )
         if result.status_code != 200:
-            raise JobAbortionError(result.json()['detail'])
+            raise JobAbortionError(result.text)
 
     def get_quantum_architecture(self, *, timeout_secs: float = REQUESTS_TIMEOUT) -> QuantumArchitectureSpecification:
         """Retrieve quantum architecture from server.

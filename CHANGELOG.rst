@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 17.5
+============
+
+* Show full response error in all cases of receiving a HTTP 4xx error response. `#123 <https://github.com/iqm-finland/iqm-client/pull/123>`_
+
 Version 17.4
 ============
 
