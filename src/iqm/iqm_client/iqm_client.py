@@ -487,6 +487,25 @@ class ExternalToken(BaseModel):
     """current access token of the session"""
 
 
+def update_batch_circuit_metadata(circuit_metadata, circuits):
+    """Iterates over circuits in batch and extends circuit metadata dictionary with
+    data from circuit_metadata
+
+    Args:
+        circuit_metadata: Key-value pairs representing additional circuit metadata
+        circuits: list of circuits for which metadata should be updated
+
+    Returns:
+        new list of circuits with updated metadata
+    """
+
+    for k, v in circuit_metadata.items():
+        for circuit in circuits:
+            circuit.metadata[k] = v
+
+    return circuits
+
+
 def serialize_qubit_mapping(qubit_mapping: dict[str, str]) -> list[SingleQubitMapping]:
     """Serializes a qubit mapping dict into the corresponding IQM data transfer format.
 
@@ -637,6 +656,7 @@ class IQMClient:
         if not self._external_token:
             self._credentials = _get_credentials(credentials)
             self._update_tokens()
+        self._project_id = os.environ.get('PROJECT_ID', None)
 
     def __del__(self):
         try:
@@ -710,6 +730,10 @@ class IQMClient:
         serialized_qubit_mapping = serialize_qubit_mapping(qubit_mapping) if qubit_mapping else None
 
         self._validate_circuit_instructions(architecture, circuits, qubit_mapping)
+
+        if self._project_id is not None:
+            # attach project id to circuit metadata
+            circuits = update_batch_circuit_metadata({'project_id': self._project_id}, circuits)
 
         # ``bearer_token`` can be ``None`` if cocos we're connecting does not use authentication
         bearer_token = self._get_bearer_token()
