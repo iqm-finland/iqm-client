@@ -2,6 +2,21 @@
 Changelog
 =========
 
+Version 17.5
+============
+
+* Show full response error in all cases of receiving a HTTP 4xx error response. `#123 <https://github.com/iqm-finland/iqm-client/pull/123>`_
+
+Version 17.4
+============
+
+* Raise ClientConfigurationError and display the details of the error upon receiving a HTTP 400 error response. `#120 <https://github.com/iqm-finland/iqm-client/pull/120>`_
+
+Version 17.3
+============
+
+* Add new job states to support job delete operation in the backend. `#119 <https://github.com/iqm-finland/iqm-client/pull/119>`_
+
 Version 17.2
 ============
 
