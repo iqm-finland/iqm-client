@@ -53,7 +53,7 @@ def transpile_insert_moves(
             Can be set to ``None`` if the ``circuit`` already uses physical qubit names.
     """
     moveGate = 'move'
-    existing_moves_in_circuit = (i for i in circuit.instructions if i.name == moveGate)
+    existing_moves_in_circuit = [i for i in circuit.instructions if i.name == moveGate]
     if moveGate not in arch.operations.keys():
         if not existing_moves_in_circuit:
             return circuit
@@ -67,8 +67,8 @@ def transpile_insert_moves(
             if existing_moves == ExistingMoveHandlingOptions.KEEP:
                 IQMClient._validate_circuit_moves(arch, circuit)
                 arch.validate_moves(circuit)  # TODO Maybe client or neither?
-            new_instructions = ()
-            current_instructions = ()
+            new_instructions = []
+            current_instructions = []
             for i in circuit.instructions:
                 if i.name != moveGate:
                     current_instructions.append(i)
@@ -82,13 +82,13 @@ def transpile_insert_moves(
     instructions = circuit.instructions
     resonators = (q for q in arch.qubits if q.startswith('COMP_R'))
     res_qb_map = {r: r for r in resonators}
-    new_instructions = ()
+    new_instructions = []
     for i in instructions:
         # TODO If gate not allowed, check resonators and place move
         # TODO If gate allowed, check resonators
         new_instructions.append(i)
 
-    return circuit
+    return Circuit(name=circuit.name, instructions=new_instructions)
 
 
 def transpile_remove_moves(circuit: Circuit) -> Circuit:
