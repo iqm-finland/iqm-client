@@ -910,9 +910,9 @@ class IQMClient:
                         resonator_state_loc[res] = qb
                     else:
                         resonator_state_loc[res] = res
-                else:
+                elif not any(qb in resonator_state_loc.keys() and resonator_state_loc[qb] == qb for qb in instr.qubits):
                     raise CircuitExecutionError(
-                        f'Instruction {instr.name} on {instr.qubits} while they hold a resonator state.'
+                        f'Instruction {instr.name} on {instr.qubits} while they hold a resonator state. Current resonator state locations: {resonator_state_loc}.'
                     )
             elif instr.name == moveGate:
                 raise CircuitExecutionError(
