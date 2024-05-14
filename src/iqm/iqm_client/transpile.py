@@ -47,7 +47,7 @@ class ResonatorStateTracker:
 
     moveGate = 'move'
 
-    def __init__(self, move_calibrations: dict[str, Iterable[str]]) -> None:
+    def __init__(self, move_calibrations: dict[str, list[str]]) -> None:
         self.move_calibrations = move_calibrations
         self.res_qb_map = {r: r for r in self.resonators}
 
@@ -59,7 +59,7 @@ class ResonatorStateTracker:
             arch (QuantumArchitectureSpecification): The architecture to track the resonator state on.
         """
         resonators = tuple(q for q in arch.qubits if q.startswith('COMP_R'))
-        move_calibrations = {
+        move_calibrations: dict[str, list[str]] = {
             r: [q for q, r2 in arch.operations[ResonatorStateTracker.moveGate] if r == r2] for r in resonators
         }
         return ResonatorStateTracker(move_calibrations)
@@ -82,7 +82,7 @@ class ResonatorStateTracker:
         Args:
             instructions (Iterable[Instruction]): The instructions to track the resonator state on.
         """
-        move_calibrations = {}
+        move_calibrations: dict[str, list[str]] = {}
         for i in instructions:
             if i.name == ResonatorStateTracker.moveGate:
                 q, r = i.qubits
@@ -124,7 +124,13 @@ class ResonatorStateTracker:
         else:
             raise CircuitExecutionError('Attempted move is not allowed.')
 
-    def create_move_instructions(self, qubit: str, resonator: str, apply_move: Optional[bool] = True):
+    def create_move_instructions(
+        self,
+        qubit: str,
+        resonator: str,
+        apply_move: Optional[bool] = True,
+        alt_qubit_names: Optional[dict[str, str]] = None,
+    ):
         """Create the move instructions needed to move qubit and resonator.
 
         Args:
@@ -140,12 +146,19 @@ class ResonatorStateTracker:
             other = self.res_qb_map[resonator]
             if apply_move:
                 self.apply_move(other, resonator)
-            yield Instruction(name=self.moveGate, qubits=(other, resonator), args={})
+            qbs = tuple(alt_qubit_names[q] if alt_qubit_names else q for q in [other, resonator])
+            yield Instruction(name=self.moveGate, qubits=qbs, args={})
         if apply_move:
             self.apply_move(qubit, resonator)
-        yield Instruction(name=self.moveGate, qubits=(qubit, resonator), args={})
+        qbs = tuple(alt_qubit_names[q] if alt_qubit_names else q for q in [qubit, resonator])
+        yield Instruction(name=self.moveGate, qubits=qbs, args={})
 
-    def reset_as_move_instructions(self, resonators: Optional[Iterable[str]] = None, apply_move: Optional[bool] = True):
+    def reset_as_move_instructions(
+        self,
+        resonators: Optional[Iterable[str]] = None,
+        apply_move: Optional[bool] = True,
+        alt_qubit_names: Optional[dict[str, str]] = None,
+    ):
         """Creates the move instructions needed to move all resonator states to their original state.
 
         Args:
@@ -155,13 +168,13 @@ class ResonatorStateTracker:
             Defaults to True.
 
         Returns:
-            list[Instuction]: The instructions needed to move all qubit states out of the resonators.
+            list[Instruction]: The instructions needed to move all qubit states out of the resonators.
         """
         if resonators is None:
             resonators = self.resonators
         instructions = []
         for r, q in [(r, q) for r, q in self.res_qb_map.items() if r != q and r in resonators]:
-            instructions += self.create_move_instructions(q, r, apply_move)
+            instructions += self.create_move_instructions(q, r, apply_move, alt_qubit_names)
         return instructions
 
     def available_resonators_to_move(self, qubits: Iterable[str]):
@@ -186,7 +199,7 @@ class ResonatorStateTracker:
         """
         return [r for r, q in self.res_qb_map.items() if q in qubits and q not in self.resonators]
 
-    def choose_move_pair(self, qubits: list[str], remaining_instructions: list[Instruction]):
+    def choose_move_pair(self, qubits: list[str], remaining_instructions: list[list[str]]):
         """Chooses which qubit of the given qubits to move into which resonator, given a sequence of instructions to be
         executed later for looking ahead.
 
@@ -210,12 +223,12 @@ class ResonatorStateTracker:
         r, q, _ = max(r_candidates, key=self._score_choice_heuristic)
         return r, q
 
-    def _score_choice_heuristic(self, args: tuple[str, str, tuple[Instruction]]):
+    def _score_choice_heuristic(self, args: tuple[str, str, list[list[str]]]):
         """A simple look ahead heuristic for choosing which qubit to move where. Counts the number of CZ gates until the
         qubit needs to be moved out.
 
         Args:
-            args (tuple[str, str, tuple[Instruction]]): resonator, qubit, instructions.
+            args (tuple[str, str, list[list[str]]): resonator, qubit, instructions.
 
         Returns:
             int: The count/score.
@@ -223,8 +236,8 @@ class ResonatorStateTracker:
         _, qb, circ = args
         score: int = 0
         for instr in circ:
-            if qb in instr.qubits:
-                if instr.name != 'cz':
+            if qb in instr:
+                if instr[0] != 'cz':
                     return score
                 score += 1
         return score
@@ -256,10 +269,15 @@ def transpile_insert_moves(
         existing_moves (ExistingMoveHandlingOptions, optional): Specifies how to deal with existing move instruction,
             If None, the function will use ExistingMoveHandlingOptions.REMOVE with a user warning if there are move
             instructions in the circuit. Defaults to None.
-        qubit_mapping (dict[str,str], optional): Mapping of logical qubit names to physical qubit names.
-            Can be set to ``None`` if the ``circuit`` already uses physical qubit names.
+          qubit_mapping: Mapping of logical qubit names to physical qubit names.
+              Can be set to ``None`` if all ``circuits`` already use physical qubit names.
     """
     res_status = ResonatorStateTracker.from_quantum_architecture_specification(arch)
+    if not qubit_mapping:
+        qubit_mapping = {}
+    for q in arch.qubits:
+        if q not in qubit_mapping.values():
+            qubit_mapping[q] = q
     existing_moves_in_circuit = [i for i in circuit.instructions if i.name == res_status.moveGate]
     if not res_status.supports_move:
         if not existing_moves_in_circuit:
@@ -282,8 +300,9 @@ def transpile_insert_moves(
                     f'Unable to transpile the circuit after validation error: {e.args[0]}'
                 ) from e
 
-    new_instructions = _transpile_insert_moves(circuit.instructions, res_status, arch, qubit_mapping)
-    new_instructions += res_status.reset_as_move_instructions()
+    rev_qubit_mapping = {v: k for k, v in qubit_mapping.items()}
+    new_instructions = _transpile_insert_moves(list(circuit.instructions), res_status, arch, qubit_mapping)
+    new_instructions += res_status.reset_as_move_instructions(alt_qubit_names=rev_qubit_mapping)
 
     return Circuit(name=circuit.name, instructions=new_instructions, metadata=circuit.metadata)
 
@@ -292,31 +311,38 @@ def _transpile_insert_moves(
     instructions: list[Instruction],
     res_status: ResonatorStateTracker,
     arch: QuantumArchitectureSpecification,
-    qubit_mapping: Optional[dict[str, str]] = None,
-) -> tuple[list[Instruction], dict[str, str]]:
-    czGate = 'cz'
+    qubit_mapping: dict[str, str],
+) -> list[Instruction]:
     new_instructions = []
+    rev_qubit_mapping = {v: k for k, v in qubit_mapping.items()}
     for idx, i in enumerate(instructions):
         try:
             IQMClient._validate_instruction(architecture=arch, instruction=i, qubit_mapping=qubit_mapping)
             new_instructions.append(i)
             if i.name == res_status.moveGate:
-                res_status.apply_move(*i.qubits)
+                res_status.apply_move(*[qubit_mapping[q] for q in i.qubits])
         except CircuitExecutionError as e:
-            res_match = res_status.qubits_in_resonator(i.qubits)
-            if i.name == czGate:
+            qubits = [qubit_mapping[q] for q in i.qubits]
+            res_match = res_status.qubits_in_resonator(qubits)
+            if i.name == 'cz':
                 if res_match:
                     r = res_match[0]
                     q1 = res_status.res_qb_map[r]
                     if len(res_match) > 1:
-                        new_instructions += res_status.reset_as_move_instructions(res_match[1:])
+                        new_instructions += res_status.reset_as_move_instructions(
+                            res_match[1:], alt_qubit_names=rev_qubit_mapping
+                        )
                 else:
-                    r, q1 = res_status.choose_move_pair(i.qubits, instructions[idx:])
-                    new_instructions += res_status.create_move_instructions(q1, r)
-                q2 = [q for q in i.qubits if q != q1][0]
-                new_instructions.append(Instruction(name=czGate, qubits=(q2, r), args={}))
+                    r, q1 = res_status.choose_move_pair(
+                        qubits, [[i.name] + [qubit_mapping[q] for q in i.qubits] for i in instructions[idx:]]
+                    )
+                    new_instructions += res_status.create_move_instructions(q1, r, alt_qubit_names=rev_qubit_mapping)
+                q2 = [q for q in qubits if q != q1][0]
+                new_instructions.append(
+                    Instruction(name='cz', qubits=(rev_qubit_mapping[q2], rev_qubit_mapping[r]), args={})
+                )
             elif res_match:
-                new_instructions += res_status.reset_as_move_instructions(res_match)
+                new_instructions += res_status.reset_as_move_instructions(res_match, alt_qubit_names=rev_qubit_mapping)
                 new_instructions.append(i)
             else:
                 raise CircuitExecutionError(

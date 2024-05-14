@@ -7,17 +7,19 @@ from iqm.iqm_client import (
     Instruction,
     IQMClient,
     QuantumArchitecture,
+    QuantumArchitectureSpecification,
     transpile_insert_moves,
     transpile_remove_moves,
 )
 
 
 class TestNaiveMoveTranspiler:
-    arch = None
-
     @pytest.fixture(autouse=True)
     def init_arch(self, sample_move_architecture):
-        self.arch = QuantumArchitecture(**sample_move_architecture).quantum_architecture
+        # pylint: disable=attribute-defined-outside-init
+        self.arch: QuantumArchitectureSpecification = QuantumArchitecture(
+            **sample_move_architecture
+        ).quantum_architecture
 
     @property
     def unsafe_circuit(self):
@@ -108,6 +110,22 @@ class TestNaiveMoveTranspiler:
         return Circuit(name='safe', instructions=instructions)
 
     @property
+    def mapped_circuit(self):
+        instructions = (
+            Instruction(
+                name='prx',
+                qubits=('A',),
+                args={'phase_t': 0.3, 'angle_t': -0.2},
+            ),
+            Instruction(
+                name='cz',
+                qubits=('A', 'B'),
+                args={},
+            ),
+        )
+        return Circuit(name='mapped', instructions=instructions), {'A': 'QB3', 'B': 'QB1'}
+
+    @property
     def ambiguous_circuit(self):
         instructions = (
             Instruction(
@@ -138,7 +156,6 @@ class TestNaiveMoveTranspiler:
         )
         return Circuit(name='ambiguous', instructions=instructions)
 
-    @pytest.mark.parametrize('qubits', [['QB1', 'QB2'], ['QB2'], ['QB1', 'QB2', 'QB3'], ['QB3', 'QB1'], ['QB1']])
     def insert(
         self,
         circuit,
@@ -164,6 +181,11 @@ class TestNaiveMoveTranspiler:
         return True
 
     def assert_valid_circuit(self, circuit, qb_map=None):
+        # pylint: disable=no-member
+        if qb_map:
+            for q in self.arch.qubits:
+                if q not in qb_map.values():
+                    qb_map[q] = q
         IQMClient._validate_circuit_instructions(self.arch, [circuit], qubit_mapping=qb_map)
 
     def check_moves_in_circuit(self, circuit: Circuit, moves: tuple[Instruction]):
@@ -229,4 +251,8 @@ class TestNaiveMoveTranspiler:
         assert self.check_moves_in_circuit(c3, moves3)
 
     def test_with_qubit_map(self):
-        raise NotImplementedError()
+        for handling_option in ExistingMoveHandlingOptions:
+            circuit, qb_map = self.mapped_circuit
+            c1 = self.insert(circuit, handling_option, qb_map)
+            self.assert_valid_circuit(c1, qb_map)
+            assert self.check_equiv_without_moves(c1, circuit)
