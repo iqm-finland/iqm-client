@@ -874,9 +874,7 @@ class IQMClient:
 
     @staticmethod
     def _validate_circuit_moves(
-        architecture: QuantumArchitectureSpecification,
-        circuit: Circuit,
-        qubit_mapping: Optional[dict[str, str]] = None,
+        architecture: QuantumArchitectureSpecification, circuit: Circuit, qubit_mapping: Optional[dict[str, str]] = None
     ):
         """Validates that the moves in the circuit are not exciting the resonator.
 
@@ -905,14 +903,14 @@ class IQMClient:
                 if instr.name == moveGate:
                     qb, res = instr.qubits
                     if res not in resonator_state_loc.keys() or qb in resonator_state_loc.keys():
-                        raise CircuitExecutionError('Move instruction only allowed between qubit and resonator, not {instr.qubits}.')
-                    if resonator_state_loc[res] == res:
-                        resonator_state_loc[res] = qb
-                    else:
-                        resonator_state_loc[res] = res
+                        raise CircuitExecutionError(
+                            'Move instruction only allowed between qubit and resonator, not {instr.qubits}.'
+                        )
+                    resonator_state_loc[res] = qb if resonator_state_loc[res] == res else res
                 elif not any(qb in resonator_state_loc.keys() and resonator_state_loc[qb] == qb for qb in instr.qubits):
                     raise CircuitExecutionError(
-                        f'Instruction {instr.name} on {instr.qubits} while they hold a resonator state. Current resonator state locations: {resonator_state_loc}.'
+                        f'Instruction {instr.name} on {instr.qubits} while they hold a resonator state. \
+                            Current resonator state locations: {resonator_state_loc}.'
                     )
             elif instr.name == moveGate:
                 raise CircuitExecutionError(

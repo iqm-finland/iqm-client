@@ -118,23 +118,29 @@ class TestMoveSafetyValidation:
     def test_moves_paired(self, sample_move_architecture):
         arch = QuantumArchitecture(**sample_move_architecture)
         instructions = (TestMoveSafetyValidation.move,)
-        with pytest.raises(CircuitExecutionError) as err:
+        with pytest.raises(CircuitExecutionError):
             TestMoveSafetyValidation.make_circuit_and_check(instructions, arch)
-        with pytest.raises(CircuitExecutionError) as err:
-            TestMoveSafetyValidation.make_circuit_and_check((
-                TestMoveSafetyValidation.move,
-                Instruction(name='move', qubits=['QB2', 'COMP_R'], args={}),
-            ), arch)
-        with pytest.raises(CircuitExecutionError) as err:
-            TestMoveSafetyValidation.make_circuit_and_check((
-                TestMoveSafetyValidation.move,
-                Instruction(name='move', qubits=['COMP_R', 'QB3'], args={}),
-            ), arch)
+        with pytest.raises(CircuitExecutionError):
+            TestMoveSafetyValidation.make_circuit_and_check(
+                (
+                    TestMoveSafetyValidation.move,
+                    Instruction(name='move', qubits=['QB2', 'COMP_R'], args={}),
+                ),
+                arch,
+            )
+        with pytest.raises(CircuitExecutionError):
+            TestMoveSafetyValidation.make_circuit_and_check(
+                (
+                    TestMoveSafetyValidation.move,
+                    Instruction(name='move', qubits=['COMP_R', 'QB3'], args={}),
+                ),
+                arch,
+            )
         TestMoveSafetyValidation.make_circuit_and_check(instructions * 2, arch)
 
     def test_gates_between_moves(self, sample_move_architecture):
         arch = QuantumArchitecture(**sample_move_architecture)
-        with pytest.raises(CircuitExecutionError) as err:
+        with pytest.raises(CircuitExecutionError):
             TestMoveSafetyValidation.make_circuit_and_check(
                 (TestMoveSafetyValidation.move, TestMoveSafetyValidation.gate, TestMoveSafetyValidation.move), arch
             )
@@ -150,7 +156,7 @@ class TestMoveSafetyValidation:
 
     def test_device_without_resonator(self, sample_quantum_architecture, sample_circuit):
         arch = QuantumArchitecture(**sample_quantum_architecture)
-        with pytest.raises(CircuitExecutionError) as err:
+        with pytest.raises(CircuitExecutionError):
             TestMoveSafetyValidation.make_circuit_and_check((TestMoveSafetyValidation.move,), arch)
         TestMoveSafetyValidation.make_circuit_and_check(sample_circuit.instructions, arch)
 
