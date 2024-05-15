@@ -263,26 +263,44 @@ def test_get_run_status_and_results_for_existing_run(
     sample_calibration_set_id,
     pending_compilation_job_result,
     pending_execution_job_result,
+    pending_deletion_job_result,
+    deleted_job_result,
     ready_job_result,
     existing_run_id,
 ):
     """
     Tests getting the run status
     """
-    expect(requests, times=3).get(existing_job_url, **get_jobs_args()).thenReturn(
+    expect(requests, times=5).get(existing_job_url, **get_jobs_args()).thenReturn(
         pending_compilation_job_result
-    ).thenReturn(pending_execution_job_result).thenReturn(ready_job_result)
+    ).thenReturn(pending_execution_job_result).thenReturn(ready_job_result).thenReturn(
+        pending_deletion_job_result
+    ).thenReturn(
+        deleted_job_result
+    )
 
     # First request gets status 'pending compilation'
     assert sample_client.get_run(existing_run_id).status == Status.PENDING_COMPILATION
+
     # Second requests gets status 'pending execution'
     assert sample_client.get_run(existing_run_id).status == Status.PENDING_EXECUTION
+
     # Third request gets status 'ready'
     job_result = sample_client.get_run(existing_run_id)
     assert job_result.status == Status.READY
     assert job_result.measurements is not None
     assert job_result.metadata.request.calibration_set_id == sample_calibration_set_id
     assert job_result.metadata.request.circuits[0].metadata == sample_circuit_metadata
+
+    # Fourth request gets status 'pending deletion'
+    assert sample_client.get_run(existing_run_id).status == Status.PENDING_DELETION
+
+    # Fifth request gets status 'deleted'
+    job_result = sample_client.get_run(existing_run_id)
+    assert job_result.status == Status.DELETED
+    assert job_result.measurements is None
+    assert job_result.metadata.request.circuits == []
+    assert job_result.metadata.request.shots == 1
 
     verifyNoUnwantedInteractions()
     unstub()
@@ -294,21 +312,29 @@ def test_get_run_status_for_existing_run(
     pending_compilation_status,
     pending_execution_status,
     ready_status,
+    pending_deletion_status,
+    deleted_status,
     existing_run_id,
 ):
     """
     Tests getting the run status
     """
-    expect(requests, times=3).get(existing_job_status_url, **get_jobs_args()).thenReturn(
+    expect(requests, times=5).get(existing_job_status_url, **get_jobs_args()).thenReturn(
         pending_compilation_status
-    ).thenReturn(pending_execution_status).thenReturn(ready_status)
+    ).thenReturn(pending_execution_status).thenReturn(ready_status).thenReturn(pending_deletion_status).thenReturn(
+        deleted_status
+    )
 
     # First request gets status 'pending compilation'
     assert sample_client.get_run_status(existing_run_id).status == Status.PENDING_COMPILATION
     # Second request gets status 'pending execution'
     assert sample_client.get_run_status(existing_run_id).status == Status.PENDING_EXECUTION
-    # Second request gets status 'ready'
+    # Third request gets status 'ready'
     assert sample_client.get_run_status(existing_run_id).status == Status.READY
+    # Fourth request gets status 'pending deletion'
+    assert sample_client.get_run_status(existing_run_id).status == Status.PENDING_DELETION
+    # Fifth request gets status 'deleted'
+    assert sample_client.get_run_status(existing_run_id).status == Status.DELETED
 
     verifyNoUnwantedInteractions()
     unstub()
@@ -548,6 +574,24 @@ def test_submit_circuits_throws_json_decode_error_if_received_not_json(
     expect(requests, times=1).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
 
     with pytest.raises(CircuitExecutionError):
+        sample_client.submit_circuits([])
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_submit_circuits_throws_client_configuration_error_on_400(
+    sample_client,
+    jobs_url,
+    not_valid_client_configuration_response,
+    quantum_architecture_url,
+    quantum_architecture_success,
+):
+    """Test that an exception is raised when the response is 400"""
+    expect(requests, times=1).post(jobs_url, ...).thenReturn(not_valid_client_configuration_response)
+    expect(requests, times=1).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
+
+    with pytest.raises(ClientConfigurationError):
         sample_client.submit_circuits([])
 
     verifyNoUnwantedInteractions()

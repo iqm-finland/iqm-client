@@ -335,6 +335,18 @@ def pending_execution_job_result(sample_circuit):
 
 
 @pytest.fixture()
+def pending_deletion_job_result(sample_circuit):
+    return MockJsonResponse(
+        200, {'status': 'pending deletion', 'metadata': {'request': {'shots': 10, 'circuits': [sample_circuit]}}}
+    )
+
+
+@pytest.fixture()
+def deleted_job_result():
+    return MockJsonResponse(200, {'status': 'deleted', 'metadata': {'request': {'shots': 1, 'circuits': []}}})
+
+
+@pytest.fixture()
 def ready_job_result(sample_circuit, sample_calibration_set_id):
     return MockJsonResponse(
         200,
@@ -393,6 +405,16 @@ def pending_execution_status():
 @pytest.fixture()
 def ready_status():
     return MockJsonResponse(200, {'status': 'ready'})
+
+
+@pytest.fixture()
+def pending_deletion_status():
+    return MockJsonResponse(200, {'status': 'pending deletion'})
+
+
+@pytest.fixture()
+def deleted_status():
+    return MockJsonResponse(200, {'status': 'deleted'})
 
 
 @pytest.fixture
@@ -468,6 +490,11 @@ class MockJsonResponse:
     def raise_for_status(self):
         if 400 <= self.status_code < 600:
             raise HTTPError(f'{self.status_code}', response=self)
+
+
+@pytest.fixture()
+def not_valid_client_configuration_response() -> MockJsonResponse:
+    return MockJsonResponse(400, {'detail': 'not a valid client configuration'})
 
 
 @pytest.fixture()
