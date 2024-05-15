@@ -188,7 +188,7 @@ class ResonatorStateTracker:
         """
         return {q: [r for r in self.resonators if q in self.move_calibrations[r]] for q in qubits}
 
-    def qubits_in_resonator(self, qubits: Iterable[str]):
+    def resonators_holding_qubits(self, qubits: Iterable[str]):
         """Returns the resonators that are currently holding one of the given qubit states.
 
         Args:
@@ -316,15 +316,23 @@ def _transpile_insert_moves(
     new_instructions = []
     rev_qubit_mapping = {v: k for k, v in qubit_mapping.items()}
     for idx, i in enumerate(instructions):
-        try:
-            IQMClient._validate_instruction(architecture=arch, instruction=i, qubit_mapping=qubit_mapping)
+        qubits = [qubit_mapping[q] for q in i.qubits]
+        res_match = res_status.resonators_holding_qubits(qubits)
+        if res_match and i.name not in ['cz', res_status.moveGate]:
+            new_instructions += res_status.reset_as_move_instructions(res_match, alt_qubit_names=rev_qubit_mapping)
             new_instructions.append(i)
-            if i.name == res_status.moveGate:
-                res_status.apply_move(*[qubit_mapping[q] for q in i.qubits])
-        except CircuitExecutionError as e:
-            qubits = [qubit_mapping[q] for q in i.qubits]
-            res_match = res_status.qubits_in_resonator(qubits)
-            if i.name == 'cz':
+        else:
+            try:
+                IQMClient._validate_instruction(architecture=arch, instruction=i, qubit_mapping=qubit_mapping)
+                new_instructions.append(i)
+                if i.name == res_status.moveGate:
+                    res_status.apply_move(*[qubit_mapping[q] for q in i.qubits])
+            except CircuitExecutionError as e:
+                if i.name != 'cz':
+                    raise CircuitExecutionError(
+                        f'Unable to transpile the circuit after validation error: {e.args[0]}'
+                    ) from e
+
                 if res_match:
                     r = res_match[0]
                     q1 = res_status.res_qb_map[r]
@@ -341,13 +349,6 @@ def _transpile_insert_moves(
                 new_instructions.append(
                     Instruction(name='cz', qubits=(rev_qubit_mapping[q2], rev_qubit_mapping[r]), args={})
                 )
-            elif res_match:
-                new_instructions += res_status.reset_as_move_instructions(res_match, alt_qubit_names=rev_qubit_mapping)
-                new_instructions.append(i)
-            else:
-                raise CircuitExecutionError(
-                    f'Unable to transpile the circuit after validation error: {e.args[0]}'
-                ) from e
     return new_instructions
 
 
