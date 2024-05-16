@@ -45,7 +45,7 @@ class ResonatorStateTracker:
         available, for each resonator, i.e. `move_calibrations[resonator] = [qubit]`
     """
 
-    moveGate = 'move'
+    move_gate = 'move'
 
     def __init__(self, move_calibrations: dict[str, list[str]]) -> None:
         self.move_calibrations = move_calibrations
@@ -60,7 +60,7 @@ class ResonatorStateTracker:
         """
         resonators = tuple(q for q in arch.qubits if q.startswith('COMP_R'))
         move_calibrations: dict[str, list[str]] = {
-            r: [q for q, r2 in arch.operations[ResonatorStateTracker.moveGate] if r == r2] for r in resonators
+            r: [q for q, r2 in arch.operations[ResonatorStateTracker.move_gate] if r == r2] for r in resonators
         }
         return ResonatorStateTracker(move_calibrations)
 
@@ -84,7 +84,7 @@ class ResonatorStateTracker:
         """
         move_calibrations: dict[str, list[str]] = {}
         for i in instructions:
-            if i.name == ResonatorStateTracker.moveGate:
+            if i.name == ResonatorStateTracker.move_gate:
                 q, r = i.qubits
                 if r in move_calibrations:
                     move_calibrations[r].append(q)
@@ -147,11 +147,11 @@ class ResonatorStateTracker:
             if apply_move:
                 self.apply_move(other, resonator)
             qbs = tuple(alt_qubit_names[q] if alt_qubit_names else q for q in [other, resonator])
-            yield Instruction(name=self.moveGate, qubits=qbs, args={})
+            yield Instruction(name=self.move_gate, qubits=qbs, args={})
         if apply_move:
             self.apply_move(qubit, resonator)
         qbs = tuple(alt_qubit_names[q] if alt_qubit_names else q for q in [qubit, resonator])
-        yield Instruction(name=self.moveGate, qubits=qbs, args={})
+        yield Instruction(name=self.move_gate, qubits=qbs, args={})
 
     def reset_as_move_instructions(
         self,
@@ -278,7 +278,7 @@ def transpile_insert_moves(
     for q in arch.qubits:
         if q not in qubit_mapping.values():
             qubit_mapping[q] = q
-    existing_moves_in_circuit = [i for i in circuit.instructions if i.name == res_status.moveGate]
+    existing_moves_in_circuit = [i for i in circuit.instructions if i.name == res_status.move_gate]
     if not res_status.supports_move:
         if not existing_moves_in_circuit:
             return circuit
@@ -318,14 +318,14 @@ def _transpile_insert_moves(
     for idx, i in enumerate(instructions):
         qubits = [qubit_mapping[q] for q in i.qubits]
         res_match = res_status.resonators_holding_qubits(qubits)
-        if res_match and i.name not in ['cz', res_status.moveGate]:
+        if res_match and i.name not in ['cz', res_status.move_gate]:
             new_instructions += res_status.reset_as_move_instructions(res_match, alt_qubit_names=rev_qubit_mapping)
             new_instructions.append(i)
         else:
             try:
                 IQMClient._validate_instruction(architecture=arch, instruction=i, qubit_mapping=qubit_mapping)
                 new_instructions.append(i)
-                if i.name == res_status.moveGate:
+                if i.name == res_status.move_gate:
                     res_status.apply_move(*[qubit_mapping[q] for q in i.qubits])
             except CircuitExecutionError as e:
                 if i.name != 'cz':
@@ -367,7 +367,7 @@ def transpile_remove_moves(circuit: Circuit) -> Circuit:
     res_status = ResonatorStateTracker.from_circuit(circuit)
     new_instructions = []
     for i in circuit.instructions:
-        if i.name == res_status.moveGate:
+        if i.name == res_status.move_gate:
             res_status.apply_move(*i.qubits)
         else:
             new_qubits = res_status.update_qubits_in_resonator(i.qubits)
