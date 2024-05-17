@@ -24,6 +24,7 @@ class TestNaiveMoveTranspiler:
 
     @property
     def unsafe_circuit(self):
+        """A circuit with moves and an unsafe prx"""
         instructions = (
             Instruction(
                 name='prx',
@@ -50,6 +51,7 @@ class TestNaiveMoveTranspiler:
 
     @property
     def safe_circuit(self):
+        """A partially transpiled circuit."""
         instructions = (
             Instruction(
                 name='prx',
@@ -86,6 +88,7 @@ class TestNaiveMoveTranspiler:
 
     @property
     def simple_circuit(self):
+        """An untranspiled circuit."""
         instructions = (
             Instruction(
                 name='prx',
@@ -117,6 +120,7 @@ class TestNaiveMoveTranspiler:
 
     @property
     def mapped_circuit(self):
+        """A circuit with different qubit names and a qubit mapping."""
         instructions = (
             Instruction(
                 name='prx',
@@ -133,6 +137,7 @@ class TestNaiveMoveTranspiler:
 
     @property
     def ambiguous_circuit(self):
+        """A circuit that is unclear how to compile it because there is only one move"""
         instructions = (
             Instruction(
                 name='prx',
@@ -202,6 +207,7 @@ class TestNaiveMoveTranspiler:
         return idx == len(moves)
 
     def test_no_moves_supported(self, sample_quantum_architecture):
+        """Tests transpiler for architectures without a resonator"""
         arch = QuantumArchitecture(**sample_quantum_architecture).quantum_architecture
         for option in ExistingMoveHandlingOptions:
             c1 = transpile_insert_moves(self.simple_circuit, arch, existing_moves=option)
@@ -214,6 +220,7 @@ class TestNaiveMoveTranspiler:
                 assert self.check_equiv_without_moves(self.safe_circuit, c2)
 
     def test_unspecified(self):
+        """Tests transpiler in case the handling option is not specified."""
         c1 = self.insert(self.simple_circuit)
         self.assert_valid_circuit(c1)
         assert self.check_equiv_without_moves(c1, self.simple_circuit)
@@ -222,6 +229,7 @@ class TestNaiveMoveTranspiler:
             assert self.check_equiv_without_moves(c2, self.safe_circuit)
 
     def test_normal_usage(self, sample_circuit):
+        """Tests basic usage of the transpile method"""
         for handling_option in ExistingMoveHandlingOptions:
             c1 = self.insert(self.simple_circuit, handling_option)
             self.assert_valid_circuit(c1)
@@ -230,6 +238,7 @@ class TestNaiveMoveTranspiler:
                 self.insert(sample_circuit, handling_option)  # untranspiled circuit
 
     def test_keep(self):
+        """Tests special cases for the KEEP option"""
         moves = tuple(i for i in self.safe_circuit.instructions if i.name == 'move')
         c1 = self.insert(self.safe_circuit, ExistingMoveHandlingOptions.KEEP)
         self.assert_valid_circuit(c1)
@@ -243,6 +252,7 @@ class TestNaiveMoveTranspiler:
         assert self.check_moves_in_circuit(c3, moves3)
 
     def test_remove(self):
+        """Tests if removing works as intended."""
         for c in [self.safe_circuit, self.unsafe_circuit, self.ambiguous_circuit]:
             moves = tuple(i for i in c.instructions if i.name == 'move')
             c1 = self.remove(c)
@@ -254,6 +264,7 @@ class TestNaiveMoveTranspiler:
             assert self.check_equiv_without_moves(c1, c1_direct)
 
     def test_trust(self):
+        """Tests if trust works as intended"""
         moves = tuple(i for i in self.safe_circuit.instructions if i.name == 'move')
         c1 = self.insert(self.safe_circuit, ExistingMoveHandlingOptions.TRUST)
         self.assert_valid_circuit(c1)
@@ -270,6 +281,7 @@ class TestNaiveMoveTranspiler:
         assert self.check_moves_in_circuit(c3, moves3)
 
     def test_with_qubit_map(self):
+        """Test if qubit mapping works as intended"""
         for handling_option in ExistingMoveHandlingOptions:
             circuit, qb_map = self.mapped_circuit
             c1 = self.insert(circuit, handling_option, qb_map)
@@ -277,6 +289,7 @@ class TestNaiveMoveTranspiler:
             assert self.check_equiv_without_moves(c1, circuit)
 
     def test_multiple_resonators(self, sample_move_architecture):
+        """Test if multiple resonators works."""
         sample_move_architecture['quantum_architecture']['qubits'].append('COMP_R2')
         sample_move_architecture['quantum_architecture']['operations']['move'].append(['QB1', 'COMP_R2'])
         arch = QuantumArchitecture(**sample_move_architecture).quantum_architecture
@@ -292,6 +305,7 @@ class TestNaiveMoveTranspiler:
         assert self.check_equiv_without_moves(circuit, transpiled_circuit)
 
     def test_broken_circuit(self):
+        """Test for a broken circuit"""
         c = Circuit(
             name='broken',
             instructions=(
@@ -310,12 +324,14 @@ class TestResonatorStateTracker:
     alt_qubit_names = {'COMP_R': 'A', 'QB1': 'B', 'QB3': 'C'}
 
     def test_apply_move(self, sample_quantum_architecture, sample_move_architecture):
+        # Check handling of an architecture without a resonator
         no_move_arch = QuantumArchitecture(**sample_quantum_architecture).quantum_architecture
         arch = QuantumArchitecture(**sample_move_architecture).quantum_architecture
         no_move_status = ResonatorStateTracker.from_quantum_architecture_specification(no_move_arch)
         assert not no_move_status.supports_move
         with pytest.raises(CircuitExecutionError):
             no_move_status.apply_move('QB1', 'QB2')
+        # Check handling of an architecture with resonator
         status = ResonatorStateTracker.from_quantum_architecture_specification(arch)
         assert status.supports_move
         status.apply_move('QB3', 'COMP_R')
@@ -335,6 +351,7 @@ class TestResonatorStateTracker:
         arch = QuantumArchitecture(**sample_move_architecture).quantum_architecture
         status = ResonatorStateTracker.from_quantum_architecture_specification(arch)
         instr = Instruction(name='move', qubits=('QB3', 'COMP_R'), args={})
+        # Check insertion without and with apply_move
         gen_instr = tuple(status.create_move_instructions('QB3', 'COMP_R', apply_move=False))
         assert len(gen_instr) == 1
         assert gen_instr[0] == instr
@@ -344,10 +361,12 @@ class TestResonatorStateTracker:
         assert gen_instr[0] == instr
         assert status.res_qb_map['COMP_R'] == 'QB3'
         status.res_qb_map['COMP_R'] = 'QB1'
+        # Check removal without and with apply_move
         gen_instr = tuple(status.create_move_instructions('QB3', 'COMP_R', apply_move=False))
         assert len(gen_instr) == 2
         assert gen_instr[0] == Instruction(name='move', qubits=('QB1', 'COMP_R'), args={})
         assert gen_instr[1] == instr
+        # Check with a qubit mapping
         gen_instr = tuple(
             status.create_move_instructions('QB3', 'COMP_R', apply_move=True, alt_qubit_names=self.alt_qubit_names)
         )
@@ -359,17 +378,21 @@ class TestResonatorStateTracker:
     def test_reset_as_move_instructions(self, sample_move_architecture):
         arch = QuantumArchitecture(**sample_move_architecture).quantum_architecture
         status = ResonatorStateTracker.from_quantum_architecture_specification(arch)
+        # No reset needed
         gen_instr = tuple(status.reset_as_move_instructions())
         assert len(gen_instr) == 0
+        # Reset with argument and not apply_move
         status.apply_move('QB3', 'COMP_R')
         gen_instr = tuple(status.reset_as_move_instructions(['COMP_R'], apply_move=False))
         assert len(gen_instr) == 1
         assert gen_instr[0] == Instruction(name='move', qubits=('QB3', 'COMP_R'), args={})
         assert status.res_qb_map['COMP_R'] == 'QB3'
+        # Reset without argument, with qubit mapping, and not apply_move
         gen_instr = tuple(status.reset_as_move_instructions(apply_move=False, alt_qubit_names=self.alt_qubit_names))
         assert len(gen_instr) == 1
         assert gen_instr[0] == Instruction(name='move', qubits=('C', 'A'), args={})
         assert status.res_qb_map['COMP_R'] == 'QB3'
+        # Reset without arguments and with apply_move
         gen_instr = tuple(status.reset_as_move_instructions(apply_move=True))
         assert len(gen_instr) == 1
         assert gen_instr[0] == Instruction(name='move', qubits=('QB3', 'COMP_R'), args={})

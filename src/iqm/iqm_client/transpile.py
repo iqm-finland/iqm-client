@@ -313,37 +313,56 @@ def _transpile_insert_moves(
     arch: QuantumArchitectureSpecification,
     qubit_mapping: dict[str, str],
 ) -> list[Instruction]:
+    """Helper function for transpile_insert_moves that inserts MOVE gates into a list of intstructions and changes the
+    existing instructions as needed.
+
+    Args:
+        instructions (list[Instruction]): The instructions in the circuit.
+        res_status (ResonatorStateTracker): The location of the resonator states at the start of the instructions. At
+        the end of this method this tracker is adjusted to reflect the state at the end of the returned instructions.
+        arch (QuantumArchitectureSpecification): The target quantum architecture.
+        qubit_mapping (dict[str, str]): Mapping from logical qubit names to physical qubit names.
+
+    Raises:
+        CircuitExecutionError: Raised when the circuit contains invalid gates that cannot be transpiled using this
+        method.
+
+    Returns:
+        list[Instruction]: The transpiled list of instructions.
+    """
     new_instructions = []
     rev_qubit_mapping = {v: k for k, v in qubit_mapping.items()}
     for idx, i in enumerate(instructions):
         qubits = [qubit_mapping[q] for q in i.qubits]
         res_match = res_status.resonators_holding_qubits(qubits)
         if res_match and i.name not in ['cz', res_status.move_gate]:
+            # We have a gate on a qubit in the resonator that cannot be executed on the resonator (incl. barriers)
             new_instructions += res_status.reset_as_move_instructions(res_match, alt_qubit_names=rev_qubit_mapping)
             new_instructions.append(i)
         else:
+            # Check if the instruction is valid, which raises an exception if not.
             try:
                 IQMClient._validate_instruction(architecture=arch, instruction=i, qubit_mapping=qubit_mapping)
-                new_instructions.append(i)
-                if i.name == res_status.move_gate:
+                new_instructions.append(i)  # No adjustment needed
+                if i.name == res_status.move_gate:  # update the tracker if needed
                     res_status.apply_move(*[qubit_mapping[q] for q in i.qubits])
             except CircuitExecutionError as e:
-                if i.name != 'cz':
+                if i.name != 'cz':  # We can only fix cz gates at this point
                     raise CircuitExecutionError(
                         f'Unable to transpile the circuit after validation error: {e.args[0]}'
                     ) from e
-
-                if res_match:
-                    r = res_match[0]
-                    q1 = res_status.res_qb_map[r]
-                    if len(res_match) > 1:
-                        new_instructions += res_status.reset_as_move_instructions(
-                            res_match[1:], alt_qubit_names=rev_qubit_mapping
-                        )
-                else:
-                    r, q1 = res_status.choose_move_pair(
-                        qubits, [[i.name] + [qubit_mapping[q] for q in i.qubits] for i in instructions[idx:]]
-                    )
+                remaining_instructions = [[i.name] + [qubit_mapping[q] for q in i.qubits] for i in instructions[idx:]]
+                # Pick which qubit-resonator pair to apply this cz to
+                # Pick from qubits already in a resonator or both targets if none off them are in a resonator
+                r, q1 = res_status.choose_move_pair(
+                    [res_status.res_qb_map[res] for res in res_match] if res_match else qubits, remaining_instructions
+                )
+                # remove the other qubit from the resonator if it was in
+                new_instructions += res_status.reset_as_move_instructions(
+                    [res for res in res_match if res != r], alt_qubit_names=rev_qubit_mapping
+                )
+                # move the qubit into the resonator if it was not yet in.
+                if not res_match:
                     new_instructions += res_status.create_move_instructions(q1, r, alt_qubit_names=rev_qubit_mapping)
                 q2 = [q for q in qubits if q != q1][0]
                 new_instructions.append(

@@ -890,13 +890,15 @@ class IQMClient:
           qubit_mapping: Mapping of logical qubit names to physical qubit names.
               Can be set to ``None`` if the ``circuit`` already uses physical qubit names.
         Raises:
-            CircuitExecutionError: IQM server specific exceptions
+            CircuitExecutionError: IQM server specific exceptions if the moves are invalid
         """
-        moveGate = 'move'
-        if moveGate not in architecture.operations.keys():
-            if any(i for i in circuit.instructions if i.name == moveGate):
+        move_gate = 'move'
+        # Check if MOVE gates are allowed an this architecture
+        if move_gate not in architecture.operations.keys():
+            if any(i for i in circuit.instructions if i.name == move_gate):
                 raise CircuitExecutionError('Move instruction not allowed for given device architecture.')
             return
+        # Track the location of the resonator state
         if qubit_mapping:
             reverse_mapping = {phys: log for log, phys in qubit_mapping.items()}
             resonator_state_loc = {
@@ -906,7 +908,7 @@ class IQMClient:
             resonator_state_loc = {q: q for q in architecture.qubits if q.startswith('COMP_R')}
         for instr in circuit.instructions:
             if any(qb in resonator_state_loc.values() for qb in instr.qubits):
-                if instr.name == moveGate:
+                if instr.name == move_gate:
                     qb, res = instr.qubits
                     if res not in resonator_state_loc.keys() or qb in resonator_state_loc.keys():
                         raise CircuitExecutionError(
@@ -918,7 +920,7 @@ class IQMClient:
                         f'Instruction {instr.name} on {instr.qubits} while they hold a resonator state. \
                             Current resonator state locations: {resonator_state_loc}.'
                     )
-            elif instr.name == moveGate:
+            elif instr.name == move_gate:
                 raise CircuitExecutionError(
                     f'Move instruction between {instr.qubits} while neither holds a resonator state.'
                 )
