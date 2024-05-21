@@ -46,6 +46,7 @@ testing = [
     "pylint-pydantic == 0.3.0",
     "types-requests == 2.28.9",
     "jsons == 1.6.1",
+    "freezegun == 1.5.1",
 ]
 docs = [
     "sphinx == 7.2.6",

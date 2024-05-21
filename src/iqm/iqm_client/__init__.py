@@ -15,9 +15,10 @@
 """
 from importlib.metadata import PackageNotFoundError, version
 
-from iqm.iqm_client.instruction import *
+from iqm.iqm_client.authentication import *
+from iqm.iqm_client.errors import *
 from iqm.iqm_client.iqm_client import *
-from iqm.iqm_client.quantum_architecture import *
+from iqm.iqm_client.models import *
 
 try:
     DIST_NAME = "iqm-client"
