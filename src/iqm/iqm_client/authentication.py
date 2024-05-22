@@ -232,11 +232,13 @@ class TokensFileReader(TokenProviderInterface):
             with open(self._path, 'r', encoding='utf-8') as file:
                 raw_data = file.read()
                 json_data = json.loads(raw_data)
-                token = json_data.get('access_token')
-        except (FileNotFoundError, json.decoder.JSONDecodeError):
+                token = json_data.get('access_token', '')
+            error = '' if token else 'no access token found in file'
+        except (FileNotFoundError, json.decoder.JSONDecodeError) as e:
             token = ''
+            error = str(e)
         if not token:
-            raise ClientAuthenticationError(f"Failed to read access token from file '{self._path}'")
+            raise ClientAuthenticationError(rf"Failed to read access token from file '{self._path}': {error}")
         return token
 
     def close(self) -> None:
