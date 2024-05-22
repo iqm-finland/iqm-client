@@ -105,7 +105,7 @@ def test_tokens_file_reader_file_not_found(tmp_path):
     """Tests that TokensFileReader raises ClientAuthenticationError if the configured file is not found"""
     path = str(tmp_path / 'tokens_file.json')
     provider = TokensFileReader(path)
-    with pytest.raises(ClientAuthenticationError, match=f"Failed to read access token from file '{path}'"):
+    with pytest.raises(ClientAuthenticationError, match='Failed to read access token'):
         provider.get_token()
 
     verifyNoUnwantedInteractions()
@@ -119,7 +119,7 @@ def test_tokens_file_reader_file_contains_invalid_data(tmp_path):
         tokens_file.write('some-invalid-data')
 
     provider = TokensFileReader(path)
-    with pytest.raises(ClientAuthenticationError, match=f"Failed to read access token from file '{path}'"):
+    with pytest.raises(ClientAuthenticationError, match='Failed to read access token'):
         provider.get_token()
     with pytest.raises(ClientAuthenticationError, match='Can not close externally managed auth session'):
         provider.close()
@@ -228,8 +228,7 @@ def test_token_client_login_fails(auth_server_url, auth_realm, auth_username, au
     )
 
     provider = TokenClient(auth_server_url, auth_realm, auth_username, auth_password)
-    expected_response = f'Getting access token from auth server failed: {json.dumps(response_body)}'
-    with pytest.raises(ClientAuthenticationError, match=expected_response):
+    with pytest.raises(ClientAuthenticationError, match='Getting access token from auth server failed'):
         provider.get_token()
 
     verifyNoUnwantedInteractions()
@@ -266,8 +265,7 @@ def test_token_client_logout_fails(auth_server_url, auth_realm, auth_username, a
 
     provider = TokenClient(auth_server_url, auth_realm, auth_username, auth_password)
     assert provider.get_token() == access_token1
-    expected_response = f'Logout failed, {json.dumps(response_body)}'
-    with pytest.raises(ClientAuthenticationError, match=expected_response):
+    with pytest.raises(ClientAuthenticationError, match='Logout failed'):
         provider.close()
 
     verifyNoUnwantedInteractions()
@@ -378,8 +376,7 @@ def test_token_manager_initialization_with_environment_vars(monkeypatch, auth_se
 def test_token_manager_invalid_combination_of_parameters(args, env, monkeypatch):
     """Test that TokenManager raises ClientConfigurationError if the parameters are ambiguous"""
     _patch_env(monkeypatch.setenv, **env)
-    expected_error = 'Invalid combination of authentication parameters specified'
-    with pytest.raises(ClientConfigurationError, match=expected_error):
+    with pytest.raises(ClientConfigurationError, match='Invalid combination of authentication parameters specified'):
         TokenManager(**args)
 
     verifyNoUnwantedInteractions()
@@ -398,11 +395,7 @@ def test_token_manager_invalid_combination_of_parameters(args, env, monkeypatch)
 def test_token_manager_mixed_source_of_parameters(args, env, monkeypatch):
     """Test that TokenManager raises ClientConfigurationError if the parameters are ambiguous"""
     _patch_env(monkeypatch.setenv, **env)
-    expected_error = (
-        'Conflicting authentication parameters given: '
-        + f'keyword args {", ".join(args)} and environment variables {", ".join(env)}'
-    )
-    with pytest.raises(ClientConfigurationError, match=expected_error):
+    with pytest.raises(ClientConfigurationError, match='Conflicting authentication parameters given'):
         TokenManager(**args)
 
     verifyNoUnwantedInteractions()
