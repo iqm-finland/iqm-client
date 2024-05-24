@@ -90,6 +90,11 @@ class TokenManager:
         ``IQM_AUTH_USERNAME`` and ``IQM_AUTH_PASSWORD``. All parameters must be given either
         as keyword arguments or as environment variables.
         """
+
+        def _format_names(variable_names: list[str]) -> str:
+            """Format a list of variable names"""
+            return ', '.join(f'"{name}"' for name in variable_names)
+
         auth_parameters: dict[str, str] = {}
 
         init_parameters = {
@@ -113,8 +118,8 @@ class TokenManager:
         if init_params_given and env_vars_given:
             raise ClientConfigurationError(
                 'Conflicting authentication parameters given: '
-                + f'keyword args {", ".join(init_params_given)} '
-                + f'and environment variables {", ".join(env_vars_given)}.'
+                + f'keyword args {_format_names(init_params_given)} '
+                + f'and environment variables {_format_names(env_vars_given)}.'
             )
 
         if env_vars_given:
@@ -195,7 +200,7 @@ class TokenProviderInterface(ABC):
         """
         Returns a valid access token.
 
-        Raises ClientAuthenticationError if acquiriung the token fails.
+        Raises ClientAuthenticationError if acquiring the token fails.
         """
 
     @abstractmethod
