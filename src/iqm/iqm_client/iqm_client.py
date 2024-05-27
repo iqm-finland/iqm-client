@@ -742,6 +742,9 @@ class IQMClient:
             # no OpenTelemetry, no problem
             pass
 
+        if os.environ.get('IQM_CLIENT_DEBUG') == '1':
+            print(f'\nIQM CLIENT DEBUGGING ENABLED\nSUBMITTING RUN REQUEST:\n{data.model_dump_json()}\n')
+
         result = self._retry_request_on_error(
             lambda: requests.post(
                 join(self._base_url, 'jobs'),
