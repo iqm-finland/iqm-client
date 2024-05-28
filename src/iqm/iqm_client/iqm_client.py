@@ -893,7 +893,7 @@ class IQMClient:
             CircuitExecutionError: IQM server specific exceptions if the moves are invalid
         """
         move_gate = 'move'
-        # Check if MOVE gates are allowed an this architecture
+        # Check if MOVE gates are allowed on this architecture
         if move_gate not in architecture.operations.keys():
             if any(i for i in circuit.instructions if i.name == move_gate):
                 raise CircuitExecutionError('Move instruction not allowed for given device architecture.')
