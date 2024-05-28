@@ -296,10 +296,7 @@ def transpile_insert_moves(
         try:
             IQMClient._validate_circuit_moves(arch, circuit, qubit_mapping=qubit_mapping)
         except CircuitExecutionError as e:
-            if e.args[0].startswith('Instruction prx on'):
-                raise CircuitExecutionError(
-                    f'Unable to transpile the circuit after validation error: {e.args[0]}'
-                ) from e
+            raise CircuitExecutionError(f'Unable to transpile the circuit after validation error: {e.args[0]}') from e
 
     rev_qubit_mapping = {v: k for k, v in qubit_mapping.items()}
     new_instructions = _transpile_insert_moves(list(circuit.instructions), res_status, arch, qubit_mapping)

@@ -243,13 +243,12 @@ class TestNaiveMoveTranspiler:
         c1 = self.insert(self.safe_circuit, ExistingMoveHandlingOptions.KEEP)
         self.assert_valid_circuit(c1)
         assert self.check_moves_in_circuit(c1, moves)
+
         with pytest.raises(CircuitExecutionError):
             self.insert(self.unsafe_circuit, ExistingMoveHandlingOptions.KEEP)
 
-        moves3 = tuple(i for i in self.ambiguous_circuit.instructions if i.name == 'move')
-        c3 = self.insert(self.ambiguous_circuit, ExistingMoveHandlingOptions.KEEP)
-        self.assert_valid_circuit(c3)
-        assert self.check_moves_in_circuit(c3, moves3)
+        with pytest.raises(CircuitExecutionError):
+            self.insert(self.ambiguous_circuit, ExistingMoveHandlingOptions.KEEP)
 
     def test_remove(self):
         """Tests if removing works as intended."""
