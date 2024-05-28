@@ -218,7 +218,8 @@ class ResonatorStateTracker:
         ]
         if len(r_candidates) == 0:
             raise CircuitExecutionError(
-                'Unable to route instruction because neither qubits can be moved to a resonator.'
+                f'Unable to insert MOVE gates because none of the qubits {qubits} share a resonator. '
+                + 'This can be resolved by routing the circuit first without resonators.'
             )
         r, q, _ = max(r_candidates, key=self._score_choice_heuristic)
         return r, q
