@@ -246,7 +246,7 @@ class TestNaiveMoveTranspiler:
         with pytest.raises(CircuitExecutionError):
             self.insert(self.unsafe_circuit, ExistingMoveHandlingOptions.KEEP)
 
-        moves3 = tuple(i for i in self.safe_circuit.instructions if i.name == 'move')
+        moves3 = tuple(i for i in self.ambiguous_circuit.instructions if i.name == 'move')
         c3 = self.insert(self.ambiguous_circuit, ExistingMoveHandlingOptions.KEEP)
         self.assert_valid_circuit(c3)
         assert self.check_moves_in_circuit(c3, moves3)
@@ -275,7 +275,7 @@ class TestNaiveMoveTranspiler:
         self.assert_valid_circuit(c2)
         assert self.check_moves_in_circuit(c2, moves2)
 
-        moves3 = tuple(i for i in self.safe_circuit.instructions if i.name == 'move')
+        moves3 = tuple(i for i in self.ambiguous_circuit.instructions if i.name == 'move')
         c3 = self.insert(self.ambiguous_circuit, ExistingMoveHandlingOptions.TRUST)
         self.assert_valid_circuit(c3)
         assert self.check_moves_in_circuit(c3, moves3)
