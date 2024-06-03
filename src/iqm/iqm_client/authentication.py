@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-r"""
+"""
 This module contains user authentication related classes and functions required by IQMClient.
 """
 from abc import ABC, abstractmethod
@@ -36,11 +36,11 @@ class TokenManager:
     TokenManager manages the access token required for user authentication.
 
     Args:
-        token: long-lived IQM token in plain text format.
-        tokens_file: path to a tokens file used for authentication.
-        auth_server_url: authentication server URL
-        username: username for logging into the authentication server
-        password: password for logging into the authentication server
+        token: Long-lived IQM token in plain text format
+        tokens_file: Path to a tokens file used for authentication
+        auth_server_url: Base URL of the authentication server
+        username: Username to log in to authentication server
+        password: Password to log in to authentication server
 
     The parameters can also be read from the environment variables IQM_TOKEN, IQM_TOKENS_FILE,
     IQM_AUTH_SERVER, IQM_AUTH_USERNAME, IQM_AUTH_PASSWORD. Environment variables can not be
@@ -72,25 +72,6 @@ class TokenManager:
         username: Optional[str] = None,
         password: Optional[str] = None,
     ):
-        """
-        Initializes and configures the TokenManager.
-
-        Keyword Args:
-            token (str): Optional long-lived token in plain text format.
-                If ``token`` is given no other user authentication parameters should be given.
-            tokens_file (str): Optional path to a tokens file used for authentication.
-                If ``tokens_file`` is given no other user authentication parameters should be given.
-            auth_server_url (str): Optional base URL of the authentication server.
-                If ``auth_server_url`` is given also ``username`` and ``password`` must be given.
-            username (str): Optional username to log in to authentication server.
-            password (str): Optional password to log in to authentication server.
-
-        Alternatively, the user authentication related keyword arguments can also be given in
-        environment variables ``IQM_TOKEN``, ``IQM_TOKENS_FILE``, ``IQM_AUTH_SERVER``,
-        ``IQM_AUTH_USERNAME`` and ``IQM_AUTH_PASSWORD``. All parameters must be given either
-        as keyword arguments or as environment variables.
-        """
-
         def _format_names(variable_names: list[str]) -> str:
             """Format a list of variable names"""
             return ', '.join(f'"{name}"' for name in variable_names)
