@@ -33,7 +33,7 @@ class CircuitExecutionError(RuntimeError):
 
 
 class APITimeoutError(CircuitExecutionError):
-    """Exception for when executing a job on the server takes too long."""
+    """Executing a job on the server took too long."""
 
 
 class JobAbortionError(RuntimeError):

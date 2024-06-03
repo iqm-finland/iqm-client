@@ -70,14 +70,14 @@ class IQMClient:
             for example the version information of the caller.
 
     Keyword Args:
-        token (str): Optional long-lived IQM token in plain text format.
+        token: Long-lived IQM token in plain text format.
             If ``token`` is given no other user authentication parameters should be given.
-        tokens_file (str): Optional path to a tokens file used for authentication.
+        tokens_file: Path to a tokens file used for authentication.
             If ``tokens_file`` is given no other user authentication parameters should be given.
-        auth_server_url (str): Optional base URL of the authentication server.
+        auth_server_url: Base URL of the authentication server.
             If ``auth_server_url`` is given also ``username`` and ``password`` must be given.
-        username (str): Optional username to log in to authentication server.
-        password (str): Optional password to log in to authentication server.
+        username: Username to log in to authentication server.
+        password: Password to log in to authentication server.
 
     Alternatively, the user authentication related keyword arguments can also be given in
     environment variables ``IQM_TOKEN``, ``IQM_TOKENS_FILE``, ``IQM_AUTH_SERVER``,

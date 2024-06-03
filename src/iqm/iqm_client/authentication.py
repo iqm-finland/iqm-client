@@ -94,19 +94,18 @@ class TokenManager:
             'username': 'IQM_AUTH_USERNAME',
             'password': 'IQM_AUTH_PASSWORD',
         }
-        env_vars_given = [value for key, value in env_variables.items() if os.environ.get(value)]
+        env_vars_given = [name for name in env_variables.values() if os.environ.get(name)]
 
         if init_params_given and env_vars_given:
             raise ClientConfigurationError(
-                'Conflicting authentication parameters given: '
-                + f'keyword args {_format_names(init_params_given)} '
-                + f'and environment variables {_format_names(env_vars_given)}.'
+                'Authentication parameters given both as initialisation args and as environment variabels: '
+                + f'initialisation args {_format_names(init_params_given)}, '
+                + f'environment variables {_format_names(env_vars_given)}.'
+                + ' Parameter sources must not be mixed.'
             )
 
         if env_vars_given:
-            env_parameters = {key: os.environ.get(value) for key, value in env_variables.items()}
-            auth_parameters = {key: str(value) for key, value in env_parameters.items() if value}
-
+            auth_parameters = {key: value for key, name in env_variables.items() if (value := os.environ.get(name))}
         else:
             auth_parameters = {key: str(value) for key, value in init_parameters.items() if value}
 
@@ -115,11 +114,11 @@ class TokenManager:
 
         if not auth_parameters:
             self._token_provider = None
-        elif set(auth_parameters) == set(['token']):
+        elif set(auth_parameters) == {'token'}:
             self._token_provider = ExternalToken(auth_parameters['token'])
-        elif set(auth_parameters) == set(['tokens_file']):
+        elif set(auth_parameters) == {'tokens_file'}:
             self._token_provider = TokensFileReader(auth_parameters['tokens_file'])
-        elif set(auth_parameters) == set(['auth_server_url', 'username', 'password']):
+        elif set(auth_parameters) == {'auth_server_url', 'username', 'password'}:
             self._token_provider = TokenClient(
                 auth_parameters['auth_server_url'],
                 AUTH_REALM,
@@ -135,7 +134,8 @@ class TokenManager:
         """
         Returns a valid bearer token, or None if no user authentication has been configured.
 
-        Raises ClientAuthenticationError if getting the token fails.
+        Raises:
+            ClientAuthenticationError: getting the token failed
         """
 
         if self._token_provider is None:
@@ -163,7 +163,7 @@ class TokenManager:
             True if closing was successful
 
         Raises:
-            ClientAuthenticationError: if closing failed
+            ClientAuthenticationError: closing failed
         """
         if self._token_provider is None:
             return False
@@ -181,12 +181,13 @@ class TokenProviderInterface(ABC):
         """
         Returns a valid access token.
 
-        Raises ClientAuthenticationError if acquiring the token fails.
+        Raises:
+            ClientAuthenticationError: acquiring the token failed
         """
 
     @abstractmethod
     def close(self) -> None:
-        """Closes authentication session. Returns True if closing was successful"""
+        """Closes authentication session."""
 
 
 class ExternalToken(TokenProviderInterface):
@@ -276,7 +277,7 @@ class TokenClient(TokenProviderInterface):
             raise ClientAuthenticationError('Server did not provide access token')
         return tokens['access_token']
 
-    def close(self):
+    def close(self) -> None:
         """Close authentication session"""
         if not self._refresh_token:
             raise ClientAuthenticationError('No auth session active')

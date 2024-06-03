@@ -95,8 +95,6 @@ SUPPORTED_INSTRUCTIONS: dict[str, dict[str, Any]] = {
 
 class Instruction(BaseModel):
     r"""
-    Instructions
-    ============
 
     The :class:`Instruction` class represents a native quantum operation.
 
@@ -351,11 +349,7 @@ def get_current_instruction_name(name: str):
 
 class Circuit(BaseModel):
     """
-    Circuits
-    ========
-
-    The :class:`Circuit` class represents quantum circuits to be executed, consisting of
-    native quantum operations, each represented by an instance of the :class:`Instruction` class.
+    Consists of native quantum operations, each represented by an instance of the :class:`Instruction` class.
     """
 
     name: str = Field(..., examples=['test circuit'])
@@ -417,9 +411,6 @@ def validate_circuit(circuit: Circuit) -> None:
 
     Args:
         circuit: a circuit that needs validation
-
-    Returns:
-         None
 
     Raises:
             pydantic.error_wrappers.ValidationError
@@ -602,10 +593,7 @@ class Status(str, Enum):
 
 class RunResult(BaseModel):
     """
-    Circuit output
-    ==============
-
-    The :class:`RunResult` class represents the results of the quantum circuit execution job.
+    Results of the quantum circuit execution job.
     If the job succeeded, :attr:`RunResult.measurements` contains the output of the batch of circuits,
     consisting of the results of the measurement operations in each circuit.
     It is a list of dictionaries, where each dict maps each measurement key to a 2D array of measurement
