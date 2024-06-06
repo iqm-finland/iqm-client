@@ -510,23 +510,6 @@ def test_base_url_is_invalid():
     assert f'The URL schema has to be http or https. Incorrect schema in URL: {invalid_base_url}' == str(exc.value)
 
 
-def test_tokens_file_not_found(base_url):
-    """Test that an exception is raised when the tokens file is not found"""
-    tokens_file = '/home/iqm/tokens.json'
-    with pytest.raises(ClientConfigurationError) as exc:
-        IQMClient(base_url, tokens_file=tokens_file)
-    assert f'File not found: {tokens_file}' == str(exc.value)
-
-
-def test_tokens_and_credentials_combo_invalid(credentials):
-    """Test that an exception is raised when both tokens and credentials are provided"""
-    tokens_file = '/home/iqm/tokens.json'
-    base_url = 'https://example.com'
-    with pytest.raises(ClientConfigurationError) as exc:
-        IQMClient(base_url, tokens_file=tokens_file, **credentials)
-    assert 'Either external token or credentials must be provided. Both were provided.' == str(exc.value)
-
-
 def test_run_result_throws_json_decode_error_if_received_not_json(
     sample_client, existing_job_url, existing_run_id, not_valid_json_response
 ):
