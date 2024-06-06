@@ -348,7 +348,8 @@ def get_current_instruction_name(name: str):
 
 
 class Circuit(BaseModel):
-    """
+    """Quantum circuit to be executed.
+
     Consists of native quantum operations, each represented by an instance of the :class:`Instruction` class.
     """
 
@@ -594,17 +595,17 @@ class Status(str, Enum):
 class RunResult(BaseModel):
     """
     Results of the quantum circuit execution job.
-    If the job succeeded, :attr:`RunResult.measurements` contains the output of the batch of circuits,
+    If the job succeeded, :attr:`measurements` contains the output of the batch of circuits,
     consisting of the results of the measurement operations in each circuit.
     It is a list of dictionaries, where each dict maps each measurement key to a 2D array of measurement
     results, represented as a nested list.
     ``RunResult.measurements[circuit_index][key][shot][qubit_index]`` is the result of measuring the
     ``qubit_index``'th qubit in measurement operation ``key`` in the shot ``shot`` in the
     ``circuit_index``'th circuit of the batch.
-    ``measurements`` is present iff the status is ``'ready'``.
-    ``message`` carries additional information for the ``'failed'`` status.
+    :attr:``measurements`` is present iff the status is ``'ready'``.
+    :attr:``message`` carries additional information for the ``'failed'`` status.
     If the status is ``'pending compilation'`` or ``'pending execution'``,
-    ``measurements`` and ``message`` are ``None``.
+    :attr:``measurements`` and :attr:``message`` are ``None``.
 
     The results are non-negative integers representing the computational basis state (for qubits, 0 or 1)
     that was the measurement outcome.
