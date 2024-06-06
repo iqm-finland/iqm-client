@@ -8,36 +8,36 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>iqm.iqm_client.iqm_client.IQMClient &#8212; IQM client 17.5 documentation</title>
+    <title>iqm.iqm_client.iqm_client.IQMClient &#8212; IQM client 17.6 documentation</title>
   
   
   
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
-  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=3ee479438cf8b5e0d341"></script>
 
-    <script src="../_static/documentation_options.js?v=1d98628c"></script>
+    <script src="../_static/documentation_options.js?v=0aece2ea"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
@@ -45,11 +45,11 @@
     <link rel="icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="iqm.iqm_client.iqm_client.Metadata" href="iqm.iqm_client.iqm_client.Metadata.html" />
-    <link rel="prev" title="iqm.iqm_client.iqm_client.HeraldingMode" href="iqm.iqm_client.iqm_client.HeraldingMode.html" />
+    <link rel="next" title="iqm.iqm_client.models" href="iqm.iqm_client.models.html" />
+    <link rel="prev" title="iqm.iqm_client.iqm_client" href="iqm.iqm_client.iqm_client.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="2024-05-06"/>
+    <meta name="docbuild:last-update" content="2024-06-06"/>
   </head>
   
   
@@ -57,27 +57,23 @@
 
   
   
-  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
-    <i class="fa-solid fa-arrow-up"></i>
-    Back to top
-  </button>
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
   
   <div class="search-button__wrapper">
     <div class="search-button__overlay"></div>
@@ -99,8 +95,13 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
     </header>
   
 
@@ -136,8 +137,8 @@
       
     
     
-    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 17.5 documentation - Home"/>
-    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="IQM client 17.5 documentation - Home"/>`);</script>
+    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 17.6 documentation - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="IQM client 17.6 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -156,57 +157,61 @@
     <div class="bd-toc-item navbar-nav active">
         <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../readme.html">IQM Client</a></li>
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="../API.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
-<li class="toctree-l2 current active has-children"><a class="reference internal" href="iqm.iqm_client.html">iqm.iqm_client</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
-<li class="toctree-l3 has-children"><a class="reference internal" href="iqm.iqm_client.instruction.html">iqm.iqm_client.instruction</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.instruction.get_current_instruction_name.html">iqm.iqm_client.instruction.get_current_instruction_name</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.instruction.is_directed_instruction.html">iqm.iqm_client.instruction.is_directed_instruction</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.instruction.is_multi_qubit_instruction.html">iqm.iqm_client.instruction.is_multi_qubit_instruction</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.instruction.Instruction.html">iqm.iqm_client.instruction.Instruction</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../API.html">API Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="iqm.iqm_client.html">iqm.iqm_client</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3 has-children"><a class="reference internal" href="iqm.iqm_client.authentication.html">iqm.iqm_client.authentication</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.authentication.ExternalToken.html">iqm.iqm_client.authentication.ExternalToken</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.authentication.TokenClient.html">iqm.iqm_client.authentication.TokenClient</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.authentication.TokenManager.html">iqm.iqm_client.authentication.TokenManager</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.authentication.TokenProviderInterface.html">iqm.iqm_client.authentication.TokenProviderInterface</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.authentication.TokensFileReader.html">iqm.iqm_client.authentication.TokensFileReader</a></li>
 </ul>
-</li>
-<li class="toctree-l3 current active has-children"><a class="reference internal" href="iqm.iqm_client.iqm_client.html">iqm.iqm_client.iqm_client</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.CircuitBatch.html">iqm.iqm_client.iqm_client.CircuitBatch</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.QubitMapping.html">iqm.iqm_client.iqm_client.QubitMapping</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.CircuitMeasurementResults.html">iqm.iqm_client.iqm_client.CircuitMeasurementResults</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.CircuitMeasurementResultsBatch.html">iqm.iqm_client.iqm_client.CircuitMeasurementResultsBatch</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.serialize_qubit_mapping.html">iqm.iqm_client.iqm_client.serialize_qubit_mapping</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.validate_circuit.html">iqm.iqm_client.iqm_client.validate_circuit</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.AuthRequest.html">iqm.iqm_client.iqm_client.AuthRequest</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.Circuit.html">iqm.iqm_client.iqm_client.Circuit</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.Credentials.html">iqm.iqm_client.iqm_client.Credentials</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.ExternalToken.html">iqm.iqm_client.iqm_client.ExternalToken</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.GrantType.html">iqm.iqm_client.iqm_client.GrantType</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.HeraldingMode.html">iqm.iqm_client.iqm_client.HeraldingMode</a></li>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="iqm.iqm_client.errors.html">iqm.iqm_client.errors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.APITimeoutError.html">iqm.iqm_client.errors.APITimeoutError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.CircuitExecutionError.html">iqm.iqm_client.errors.CircuitExecutionError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.CircuitValidationError.html">iqm.iqm_client.errors.CircuitValidationError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.ClientAuthenticationError.html">iqm.iqm_client.errors.ClientAuthenticationError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.ClientConfigurationError.html">iqm.iqm_client.errors.ClientConfigurationError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.JobAbortionError.html">iqm.iqm_client.errors.JobAbortionError</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 current active has-children"><a class="reference internal" href="iqm.iqm_client.iqm_client.html">iqm.iqm_client.iqm_client</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l4 current active"><a class="current reference internal" href="#">iqm.iqm_client.iqm_client.IQMClient</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.Metadata.html">iqm.iqm_client.iqm_client.Metadata</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.RunRequest.html">iqm.iqm_client.iqm_client.RunRequest</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.RunResult.html">iqm.iqm_client.iqm_client.RunResult</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.RunStatus.html">iqm.iqm_client.iqm_client.RunStatus</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.SingleQubitMapping.html">iqm.iqm_client.iqm_client.SingleQubitMapping</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.Status.html">iqm.iqm_client.iqm_client.Status</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.APITimeoutError.html">iqm.iqm_client.iqm_client.APITimeoutError</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.CircuitExecutionError.html">iqm.iqm_client.iqm_client.CircuitExecutionError</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.CircuitValidationError.html">iqm.iqm_client.iqm_client.CircuitValidationError</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.ClientAuthenticationError.html">iqm.iqm_client.iqm_client.ClientAuthenticationError</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.ClientConfigurationError.html">iqm.iqm_client.iqm_client.ClientConfigurationError</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.JobAbortionError.html">iqm.iqm_client.iqm_client.JobAbortionError</a></li>
 </ul>
-</li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="iqm.iqm_client.quantum_architecture.html">iqm.iqm_client.quantum_architecture</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.quantum_architecture.QuantumArchitecture.html">iqm.iqm_client.quantum_architecture.QuantumArchitecture</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification.html">iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification</a></li>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="iqm.iqm_client.models.html">iqm.iqm_client.models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.CircuitBatch.html">iqm.iqm_client.models.CircuitBatch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.QubitMapping.html">iqm.iqm_client.models.QubitMapping</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.CircuitMeasurementResults.html">iqm.iqm_client.models.CircuitMeasurementResults</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.CircuitMeasurementResultsBatch.html">iqm.iqm_client.models.CircuitMeasurementResultsBatch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.get_current_instruction_name.html">iqm.iqm_client.models.get_current_instruction_name</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.is_directed_instruction.html">iqm.iqm_client.models.is_directed_instruction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.is_multi_qubit_instruction.html">iqm.iqm_client.models.is_multi_qubit_instruction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.serialize_qubit_mapping.html">iqm.iqm_client.models.serialize_qubit_mapping</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.validate_circuit.html">iqm.iqm_client.models.validate_circuit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.Circuit.html">iqm.iqm_client.models.Circuit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.HeraldingMode.html">iqm.iqm_client.models.HeraldingMode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.Instruction.html">iqm.iqm_client.models.Instruction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.Metadata.html">iqm.iqm_client.models.Metadata</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.QuantumArchitecture.html">iqm.iqm_client.models.QuantumArchitecture</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.QuantumArchitectureSpecification.html">iqm.iqm_client.models.QuantumArchitectureSpecification</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.RunRequest.html">iqm.iqm_client.models.RunRequest</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.RunResult.html">iqm.iqm_client.models.RunResult</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.RunStatus.html">iqm.iqm_client.models.RunStatus</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.SingleQubitMapping.html">iqm.iqm_client.models.SingleQubitMapping</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.Status.html">iqm.iqm_client.models.Status</a></li>
 </ul>
-</li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="iqm.iqm_client.util.html">iqm.iqm_client.util</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="iqm.iqm_client.util.html">iqm.iqm_client.util</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.util.to_json_dict.html">iqm.iqm_client.util.to_json_dict</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.util.IQMJSONEncoder.html">iqm.iqm_client.util.IQMJSONEncoder</a></li>
 </ul>
-</li>
+</details></li>
 </ul>
-</li>
+</details></li>
 </ul>
-</li>
+</details></li>
 <li class="toctree-l1"><a class="reference internal" href="../integration_guide.html">Integration Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../license.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../authors.html">Contributors</a></li>
@@ -228,7 +233,7 @@
 
       </div>
       
-      <main id="main-content" class="bd-main">
+      <main id="main-content" class="bd-main" role="main">
         
         
 
@@ -237,7 +242,7 @@
           <div class="bd-content">
             <div class="bd-article-container">
               
-              <div class="bd-header-article">
+              <div class="bd-header-article d-print-none">
 <div class="header-article-items header-article__inner">
   
     <div class="header-article-items__start">
@@ -387,7 +392,7 @@ document.write(`
 <h1>iqm.iqm_client.iqm_client.IQMClient<a class="headerlink" href="#iqm-iqm-client-iqm-client-iqmclient" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.IQMClient">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">iqm.iqm_client.iqm_client.</span></span><span class="sig-name descname"><span class="pre">IQMClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_signature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tokens_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">credentials</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm.iqm_client.iqm_client.IQMClient" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">iqm.iqm_client.iqm_client.</span></span><span class="sig-name descname"><span class="pre">IQMClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_signature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tokens_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth_server_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm.iqm_client.iqm_client.IQMClient" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.9/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Provides access to IQM quantum computers.</p>
 <dl class="field-list simple">
@@ -398,32 +403,24 @@ document.write(`
 it sends to the server. The signature is appended to IQMClients own version
 information and is intended to carry additional version information,
 for example the version information of the caller.</p></li>
-<li><p><strong>tokens_file</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – Optional path to a tokens file used for authentication.
-This can also be set in the IQM_TOKENS_FILE environment variable.
-If tokens_file is set, auth_server_url, username and password
-must not be set.</p></li>
-<li><p><strong>token</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – If an IQM token is long-lived and the server provides it in plain text format,
-it can be passed in this argument. It can also be provided in the IQM_TOKEN
-environment variable. If <code class="docutils literal notranslate"><span class="pre">tokens_file</span></code> (or IQM_TOKENS_FILE) is set, it will
-override the value of this token.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Keyword Arguments<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>auth_server_url</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Optional base URL of the authentication server.
-This can also be set in the IQM_AUTH_SERVER environment variable.
-If unset, requests will be sent unauthenticated.</p></li>
-<li><p><strong>username</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Optional username to log in to authentication server.
-This can also be set in the IQM_AUTH_USERNAME environment variable.
-Username must be set if <code class="docutils literal notranslate"><span class="pre">auth_server_url</span></code> is set.</p></li>
-<li><p><strong>password</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Optional password to log in to authentication server.
-This can also be set in the IQM_AUTH_PASSWORD environment variable.
-Password must be set if <code class="docutils literal notranslate"><span class="pre">auth_server_url</span></code> is set.</p></li>
+<li><p><strong>token</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – Long-lived IQM token in plain text format.
+If <code class="docutils literal notranslate"><span class="pre">token</span></code> is given no other user authentication parameters should be given.</p></li>
+<li><p><strong>tokens_file</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – Path to a tokens file used for authentication.
+If <code class="docutils literal notranslate"><span class="pre">tokens_file</span></code> is given no other user authentication parameters should be given.</p></li>
+<li><p><strong>auth_server_url</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – Base URL of the authentication server.
+If <code class="docutils literal notranslate"><span class="pre">auth_server_url</span></code> is given also <code class="docutils literal notranslate"><span class="pre">username</span></code> and <code class="docutils literal notranslate"><span class="pre">password</span></code> must be given.</p></li>
+<li><p><strong>username</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – Username to log in to authentication server.</p></li>
+<li><p><strong>password</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – Password to log in to authentication server.</p></li>
 </ul>
 </dd>
 </dl>
+<p>Alternatively, the user authentication related keyword arguments can also be given in
+environment variables <code class="docutils literal notranslate"><span class="pre">IQM_TOKEN</span></code>, <code class="docutils literal notranslate"><span class="pre">IQM_TOKENS_FILE</span></code>, <code class="docutils literal notranslate"><span class="pre">IQM_AUTH_SERVER</span></code>,
+<code class="docutils literal notranslate"><span class="pre">IQM_AUTH_USERNAME</span></code> and <code class="docutils literal notranslate"><span class="pre">IQM_AUTH_PASSWORD</span></code>. All parameters must be given either
+as keyword arguments or as environment variables. Same combination restrictions apply
+for values given as environment variables as for keyword arguments.</p>
 <p class="rubric">Methods</p>
-<table class="autosummary longtable table autosummary">
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__del__</span></code>()</p></td>
 <td><p></p></td>
@@ -431,14 +428,8 @@ Password must be set if <code class="docutils literal notranslate"><span class="
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_default_headers</span></code>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_get_bearer_token</span></code>([retries])</p></td>
-<td><p>Make a bearer token for Authorization header.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_retry_request_on_error</span></code>(request)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_retry_request_on_error</span></code>(request)</p></td>
 <td><p>This is a temporary workaround for 502 errors.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_update_tokens</span></code>()</p></td>
-<td><p>Update access token and refresh token.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_validate_circuit_instructions</span></code>(architecture, ...)</p></td>
 <td><p>Validates that the instructions target correct qubits in the given circuits.</p></td>
@@ -475,6 +466,7 @@ Password must be set if <code class="docutils literal notranslate"><span class="
 </tr>
 </tbody>
 </table>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.IQMClient.submit_circuits">
 <span class="sig-name descname"><span class="pre">submit_circuits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">circuits</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit_mapping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calibration_set_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_circuit_duration_over_t2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heralding_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">HeraldingMode.NONE</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm.iqm_client.iqm_client.IQMClient.submit_circuits" title="Link to this definition">#</a></dt>
@@ -482,7 +474,7 @@ Password must be set if <code class="docutils literal notranslate"><span class="
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>circuits</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference internal" href="iqm.iqm_client.iqm_client.Circuit.html#iqm.iqm_client.iqm_client.Circuit" title="iqm.iqm_client.iqm_client.Circuit"><em>Circuit</em></a><em>]</em>) – list of circuits to be executed</p></li>
+<li><p><strong>circuits</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference internal" href="iqm.iqm_client.models.Circuit.html#iqm.iqm_client.models.Circuit" title="iqm.iqm_client.models.Circuit"><em>Circuit</em></a><em>]</em>) – list of circuits to be executed</p></li>
 <li><p><strong>qubit_mapping</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>] </em><em>| </em><em>None</em>) – Mapping of logical qubit names to physical qubit names.
 Can be set to <code class="docutils literal notranslate"><span class="pre">None</span></code> if all <code class="docutils literal notranslate"><span class="pre">circuits</span></code> already use physical qubit names.
 Note that the <code class="docutils literal notranslate"><span class="pre">qubit_mapping</span></code> is used for all <code class="docutils literal notranslate"><span class="pre">circuits</span></code>.</p></li>
@@ -493,7 +485,7 @@ Note: This field should always be <code class="docutils literal notranslate"><sp
 <li><p><strong>max_circuit_duration_over_t2</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em> | </em><em>None</em>) – Circuits are disqualified on the server if they are longer than this ratio
 of the T2 time of the qubits. Setting this value to <code class="docutils literal notranslate"><span class="pre">0.0</span></code> turns off circuit duration checking.
 The default value <code class="docutils literal notranslate"><span class="pre">None</span></code> instructs server to use server’s default value in the checking.</p></li>
-<li><p><strong>heralding_mode</strong> (<a class="reference internal" href="iqm.iqm_client.iqm_client.HeraldingMode.html#iqm.iqm_client.iqm_client.HeraldingMode" title="iqm.iqm_client.iqm_client.HeraldingMode"><em>HeraldingMode</em></a>) – Heralding mode to use during the execution.</p></li>
+<li><p><strong>heralding_mode</strong> (<a class="reference internal" href="iqm.iqm_client.models.HeraldingMode.html#iqm.iqm_client.models.HeraldingMode" title="iqm.iqm_client.models.HeraldingMode"><em>HeraldingMode</em></a>) – Heralding mode to use during the execution.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -521,12 +513,12 @@ The default value <code class="docutils literal notranslate"><span class="pre">N
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><a class="reference internal" href="iqm.iqm_client.iqm_client.CircuitExecutionError.html#iqm.iqm_client.iqm_client.CircuitExecutionError" title="iqm.iqm_client.iqm_client.CircuitExecutionError"><strong>CircuitExecutionError</strong></a> – IQM server specific exceptions</p></li>
+<li><p><a class="reference internal" href="iqm.iqm_client.errors.CircuitExecutionError.html#iqm.iqm_client.errors.CircuitExecutionError" title="iqm.iqm_client.errors.CircuitExecutionError"><strong>CircuitExecutionError</strong></a> – IQM server specific exceptions</p></li>
 <li><p><strong>HTTPException</strong> – HTTP exceptions</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="iqm.iqm_client.iqm_client.RunResult.html#iqm.iqm_client.iqm_client.RunResult" title="iqm.iqm_client.iqm_client.RunResult"><em>RunResult</em></a></p>
+<dd class="field-even"><p><a class="reference internal" href="iqm.iqm_client.models.RunResult.html#iqm.iqm_client.models.RunResult" title="iqm.iqm_client.models.RunResult"><em>RunResult</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -547,12 +539,12 @@ The default value <code class="docutils literal notranslate"><span class="pre">N
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><a class="reference internal" href="iqm.iqm_client.iqm_client.CircuitExecutionError.html#iqm.iqm_client.iqm_client.CircuitExecutionError" title="iqm.iqm_client.iqm_client.CircuitExecutionError"><strong>CircuitExecutionError</strong></a> – IQM server specific exceptions</p></li>
+<li><p><a class="reference internal" href="iqm.iqm_client.errors.CircuitExecutionError.html#iqm.iqm_client.errors.CircuitExecutionError" title="iqm.iqm_client.errors.CircuitExecutionError"><strong>CircuitExecutionError</strong></a> – IQM server specific exceptions</p></li>
 <li><p><strong>HTTPException</strong> – HTTP exceptions</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="iqm.iqm_client.iqm_client.RunStatus.html#iqm.iqm_client.iqm_client.RunStatus" title="iqm.iqm_client.iqm_client.RunStatus"><em>RunStatus</em></a></p>
+<dd class="field-even"><p><a class="reference internal" href="iqm.iqm_client.models.RunStatus.html#iqm.iqm_client.models.RunStatus" title="iqm.iqm_client.models.RunStatus"><em>RunStatus</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -572,10 +564,10 @@ The default value <code class="docutils literal notranslate"><span class="pre">N
 <dd class="field-even"><p>job result</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="iqm.iqm_client.iqm_client.APITimeoutError.html#iqm.iqm_client.iqm_client.APITimeoutError" title="iqm.iqm_client.iqm_client.APITimeoutError"><strong>APITimeoutError</strong></a> – time exceeded the set timeout</p>
+<dd class="field-odd"><p><a class="reference internal" href="iqm.iqm_client.errors.APITimeoutError.html#iqm.iqm_client.errors.APITimeoutError" title="iqm.iqm_client.errors.APITimeoutError"><strong>APITimeoutError</strong></a> – time exceeded the set timeout</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="iqm.iqm_client.iqm_client.RunResult.html#iqm.iqm_client.iqm_client.RunResult" title="iqm.iqm_client.iqm_client.RunResult"><em>RunResult</em></a></p>
+<dd class="field-even"><p><a class="reference internal" href="iqm.iqm_client.models.RunResult.html#iqm.iqm_client.models.RunResult" title="iqm.iqm_client.models.RunResult"><em>RunResult</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -600,10 +592,10 @@ we will find the job is still pending at least for the first query.</p>
 <dd class="field-even"><p>job result</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="iqm.iqm_client.iqm_client.APITimeoutError.html#iqm.iqm_client.iqm_client.APITimeoutError" title="iqm.iqm_client.iqm_client.APITimeoutError"><strong>APITimeoutError</strong></a> – time exceeded the set timeout</p>
+<dd class="field-odd"><p><a class="reference internal" href="iqm.iqm_client.errors.APITimeoutError.html#iqm.iqm_client.errors.APITimeoutError" title="iqm.iqm_client.errors.APITimeoutError"><strong>APITimeoutError</strong></a> – time exceeded the set timeout</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="iqm.iqm_client.iqm_client.RunResult.html#iqm.iqm_client.iqm_client.RunResult" title="iqm.iqm_client.iqm_client.RunResult"><em>RunResult</em></a></p>
+<dd class="field-even"><p><a class="reference internal" href="iqm.iqm_client.models.RunResult.html#iqm.iqm_client.models.RunResult" title="iqm.iqm_client.models.RunResult"><em>RunResult</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -622,7 +614,7 @@ we will find the job is still pending at least for the first query.</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>HTTPException</strong> – HTTP exceptions</p></li>
-<li><p><a class="reference internal" href="iqm.iqm_client.iqm_client.JobAbortionError.html#iqm.iqm_client.iqm_client.JobAbortionError" title="iqm.iqm_client.iqm_client.JobAbortionError"><strong>JobAbortionError</strong></a> – if aborting the job failed</p></li>
+<li><p><a class="reference internal" href="iqm.iqm_client.errors.JobAbortionError.html#iqm.iqm_client.errors.JobAbortionError" title="iqm.iqm_client.errors.JobAbortionError"><strong>JobAbortionError</strong></a> – if aborting the job failed</p></li>
 </ul>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -645,13 +637,13 @@ Caches the result and returns the same result on later invocations.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><a class="reference internal" href="iqm.iqm_client.iqm_client.APITimeoutError.html#iqm.iqm_client.iqm_client.APITimeoutError" title="iqm.iqm_client.iqm_client.APITimeoutError"><strong>APITimeoutError</strong></a> – time exceeded the set timeout</p></li>
-<li><p><a class="reference internal" href="iqm.iqm_client.iqm_client.ClientConfigurationError.html#iqm.iqm_client.iqm_client.ClientConfigurationError" title="iqm.iqm_client.iqm_client.ClientConfigurationError"><strong>ClientConfigurationError</strong></a> – if no valid authentication is provided</p></li>
+<li><p><a class="reference internal" href="iqm.iqm_client.errors.APITimeoutError.html#iqm.iqm_client.errors.APITimeoutError" title="iqm.iqm_client.errors.APITimeoutError"><strong>APITimeoutError</strong></a> – time exceeded the set timeout</p></li>
+<li><p><a class="reference internal" href="iqm.iqm_client.errors.ClientConfigurationError.html#iqm.iqm_client.errors.ClientConfigurationError" title="iqm.iqm_client.errors.ClientConfigurationError"><strong>ClientConfigurationError</strong></a> – if no valid authentication is provided</p></li>
 <li><p><strong>HTTPException</strong> – HTTP exceptions</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification.html#iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification" title="iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification"><em>QuantumArchitectureSpecification</em></a></p>
+<dd class="field-even"><p><a class="reference internal" href="iqm.iqm_client.models.QuantumArchitectureSpecification.html#iqm.iqm_client.models.QuantumArchitectureSpecification" title="iqm.iqm_client.models.QuantumArchitectureSpecification"><em>QuantumArchitectureSpecification</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -666,8 +658,8 @@ Caches the result and returns the same result on later invocations.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><a class="reference internal" href="iqm.iqm_client.iqm_client.ClientAuthenticationError.html#iqm.iqm_client.iqm_client.ClientAuthenticationError" title="iqm.iqm_client.iqm_client.ClientAuthenticationError"><strong>ClientAuthenticationError</strong></a> – if logout failed</p></li>
-<li><p><a class="reference internal" href="iqm.iqm_client.iqm_client.ClientAuthenticationError.html#iqm.iqm_client.iqm_client.ClientAuthenticationError" title="iqm.iqm_client.iqm_client.ClientAuthenticationError"><strong>ClientAuthenticationError</strong></a> – if asked to close externally managed authentication session</p></li>
+<li><p><a class="reference internal" href="iqm.iqm_client.errors.ClientAuthenticationError.html#iqm.iqm_client.errors.ClientAuthenticationError" title="iqm.iqm_client.errors.ClientAuthenticationError"><strong>ClientAuthenticationError</strong></a> – if logout failed</p></li>
+<li><p><a class="reference internal" href="iqm.iqm_client.errors.ClientAuthenticationError.html#iqm.iqm_client.errors.ClientAuthenticationError" title="iqm.iqm_client.errors.ClientAuthenticationError"><strong>ClientAuthenticationError</strong></a> – if asked to close externally managed authentication session</p></li>
 </ul>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -688,24 +680,24 @@ Caches the result and returns the same result on later invocations.</p>
               
               
               
-                <footer class="prev-next-footer">
+                <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="iqm.iqm_client.iqm_client.HeraldingMode.html"
+       href="iqm.iqm_client.iqm_client.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">iqm.iqm_client.iqm_client.HeraldingMode</p>
+        <p class="prev-next-title">iqm.iqm_client.iqm_client</p>
       </div>
     </a>
     <a class="right-next"
-       href="iqm.iqm_client.iqm_client.Metadata.html"
+       href="iqm.iqm_client.models.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">iqm.iqm_client.iqm_client.Metadata</p>
+        <p class="prev-next-title">iqm.iqm_client.models</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -769,7 +761,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2024-05-06.
+  Last updated on 2024-06-06.
   <br/>
 </p>
   </div>
@@ -787,8 +779,8 @@ By IQM client developers
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341"></script>
 
   <footer class="bd-footer">
   </footer>

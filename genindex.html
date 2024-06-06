@@ -7,36 +7,36 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Index &#8212; IQM client 17.5 documentation</title>
+    <title>Index &#8212; IQM client 17.6 documentation</title>
   
   
   
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
 
   
-  <link href="_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=384b581d" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
-  <script src="_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=3ee479438cf8b5e0d341"></script>
 
-    <script src="_static/documentation_options.js?v=1d98628c"></script>
+    <script src="_static/documentation_options.js?v=0aece2ea"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
@@ -46,7 +46,7 @@
     <link rel="search" title="Search" href="search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="2024-05-06"/>
+    <meta name="docbuild:last-update" content="2024-06-06"/>
   </head>
   
   
@@ -54,27 +54,23 @@
 
   
   
-  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
-    <i class="fa-solid fa-arrow-up"></i>
-    Back to top
-  </button>
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
   
   <div class="search-button__wrapper">
     <div class="search-button__overlay"></div>
@@ -96,8 +92,13 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
     </header>
   
 
@@ -135,8 +136,8 @@
       
     
     
-    <img src="_static/logo.png" class="logo__image only-light" alt="IQM client 17.5 documentation - Home"/>
-    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="IQM client 17.5 documentation - Home"/>`);</script>
+    <img src="_static/logo.png" class="logo__image only-light" alt="IQM client 17.6 documentation - Home"/>
+    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="IQM client 17.6 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -155,57 +156,61 @@
     <div class="bd-toc-item navbar-nav active">
         <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="readme.html">IQM Client</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="API.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="api/iqm.iqm_client.html">iqm.iqm_client</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="api/iqm.iqm_client.instruction.html">iqm.iqm_client.instruction</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.instruction.get_current_instruction_name.html">iqm.iqm_client.instruction.get_current_instruction_name</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.instruction.is_directed_instruction.html">iqm.iqm_client.instruction.is_directed_instruction</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.instruction.is_multi_qubit_instruction.html">iqm.iqm_client.instruction.is_multi_qubit_instruction</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.instruction.Instruction.html">iqm.iqm_client.instruction.Instruction</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="API.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/iqm.iqm_client.html">iqm.iqm_client</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/iqm.iqm_client.authentication.html">iqm.iqm_client.authentication</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.authentication.ExternalToken.html">iqm.iqm_client.authentication.ExternalToken</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.authentication.TokenClient.html">iqm.iqm_client.authentication.TokenClient</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.authentication.TokenManager.html">iqm.iqm_client.authentication.TokenManager</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.authentication.TokenProviderInterface.html">iqm.iqm_client.authentication.TokenProviderInterface</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.authentication.TokensFileReader.html">iqm.iqm_client.authentication.TokensFileReader</a></li>
 </ul>
-</li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="api/iqm.iqm_client.iqm_client.html">iqm.iqm_client.iqm_client</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.iqm_client.CircuitBatch.html">iqm.iqm_client.iqm_client.CircuitBatch</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.iqm_client.QubitMapping.html">iqm.iqm_client.iqm_client.QubitMapping</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.iqm_client.CircuitMeasurementResults.html">iqm.iqm_client.iqm_client.CircuitMeasurementResults</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.iqm_client.CircuitMeasurementResultsBatch.html">iqm.iqm_client.iqm_client.CircuitMeasurementResultsBatch</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.iqm_client.serialize_qubit_mapping.html">iqm.iqm_client.iqm_client.serialize_qubit_mapping</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.iqm_client.validate_circuit.html">iqm.iqm_client.iqm_client.validate_circuit</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.iqm_client.AuthRequest.html">iqm.iqm_client.iqm_client.AuthRequest</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.iqm_client.Circuit.html">iqm.iqm_client.iqm_client.Circuit</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.iqm_client.Credentials.html">iqm.iqm_client.iqm_client.Credentials</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.iqm_client.ExternalToken.html">iqm.iqm_client.iqm_client.ExternalToken</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.iqm_client.GrantType.html">iqm.iqm_client.iqm_client.GrantType</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.iqm_client.HeraldingMode.html">iqm.iqm_client.iqm_client.HeraldingMode</a></li>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/iqm.iqm_client.errors.html">iqm.iqm_client.errors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.errors.APITimeoutError.html">iqm.iqm_client.errors.APITimeoutError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.errors.CircuitExecutionError.html">iqm.iqm_client.errors.CircuitExecutionError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.errors.CircuitValidationError.html">iqm.iqm_client.errors.CircuitValidationError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.errors.ClientAuthenticationError.html">iqm.iqm_client.errors.ClientAuthenticationError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.errors.ClientConfigurationError.html">iqm.iqm_client.errors.ClientConfigurationError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.errors.JobAbortionError.html">iqm.iqm_client.errors.JobAbortionError</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/iqm.iqm_client.iqm_client.html">iqm.iqm_client.iqm_client</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.iqm_client.IQMClient.html">iqm.iqm_client.iqm_client.IQMClient</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.iqm_client.Metadata.html">iqm.iqm_client.iqm_client.Metadata</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.iqm_client.RunRequest.html">iqm.iqm_client.iqm_client.RunRequest</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.iqm_client.RunResult.html">iqm.iqm_client.iqm_client.RunResult</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.iqm_client.RunStatus.html">iqm.iqm_client.iqm_client.RunStatus</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.iqm_client.SingleQubitMapping.html">iqm.iqm_client.iqm_client.SingleQubitMapping</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.iqm_client.Status.html">iqm.iqm_client.iqm_client.Status</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.iqm_client.APITimeoutError.html">iqm.iqm_client.iqm_client.APITimeoutError</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.iqm_client.CircuitExecutionError.html">iqm.iqm_client.iqm_client.CircuitExecutionError</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.iqm_client.CircuitValidationError.html">iqm.iqm_client.iqm_client.CircuitValidationError</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.iqm_client.ClientAuthenticationError.html">iqm.iqm_client.iqm_client.ClientAuthenticationError</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.iqm_client.ClientConfigurationError.html">iqm.iqm_client.iqm_client.ClientConfigurationError</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.iqm_client.JobAbortionError.html">iqm.iqm_client.iqm_client.JobAbortionError</a></li>
 </ul>
-</li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="api/iqm.iqm_client.quantum_architecture.html">iqm.iqm_client.quantum_architecture</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.quantum_architecture.QuantumArchitecture.html">iqm.iqm_client.quantum_architecture.QuantumArchitecture</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification.html">iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification</a></li>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/iqm.iqm_client.models.html">iqm.iqm_client.models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.models.CircuitBatch.html">iqm.iqm_client.models.CircuitBatch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.models.QubitMapping.html">iqm.iqm_client.models.QubitMapping</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.models.CircuitMeasurementResults.html">iqm.iqm_client.models.CircuitMeasurementResults</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.models.CircuitMeasurementResultsBatch.html">iqm.iqm_client.models.CircuitMeasurementResultsBatch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.models.get_current_instruction_name.html">iqm.iqm_client.models.get_current_instruction_name</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.models.is_directed_instruction.html">iqm.iqm_client.models.is_directed_instruction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.models.is_multi_qubit_instruction.html">iqm.iqm_client.models.is_multi_qubit_instruction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.models.serialize_qubit_mapping.html">iqm.iqm_client.models.serialize_qubit_mapping</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.models.validate_circuit.html">iqm.iqm_client.models.validate_circuit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.models.Circuit.html">iqm.iqm_client.models.Circuit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.models.HeraldingMode.html">iqm.iqm_client.models.HeraldingMode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.models.Instruction.html">iqm.iqm_client.models.Instruction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.models.Metadata.html">iqm.iqm_client.models.Metadata</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.models.QuantumArchitecture.html">iqm.iqm_client.models.QuantumArchitecture</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.models.QuantumArchitectureSpecification.html">iqm.iqm_client.models.QuantumArchitectureSpecification</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.models.RunRequest.html">iqm.iqm_client.models.RunRequest</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.models.RunResult.html">iqm.iqm_client.models.RunResult</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.models.RunStatus.html">iqm.iqm_client.models.RunStatus</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.models.SingleQubitMapping.html">iqm.iqm_client.models.SingleQubitMapping</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.models.Status.html">iqm.iqm_client.models.Status</a></li>
 </ul>
-</li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="api/iqm.iqm_client.util.html">iqm.iqm_client.util</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="api/iqm.iqm_client.util.html">iqm.iqm_client.util</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.util.to_json_dict.html">iqm.iqm_client.util.to_json_dict</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.util.IQMJSONEncoder.html">iqm.iqm_client.util.IQMJSONEncoder</a></li>
 </ul>
-</li>
+</details></li>
 </ul>
-</li>
+</details></li>
 </ul>
-</li>
+</details></li>
 <li class="toctree-l1"><a class="reference internal" href="integration_guide.html">Integration Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="authors.html">Contributors</a></li>
@@ -227,7 +232,7 @@
 
       </div>
       
-      <main id="main-content" class="bd-main">
+      <main id="main-content" class="bd-main" role="main">
         
         
 
@@ -236,7 +241,7 @@
           <div class="bd-content">
             <div class="bd-article-container">
               
-              <div class="bd-header-article">
+              <div class="bd-header-article d-print-none">
 <div class="header-article-items header-article__inner">
   
     <div class="header-article-items__start">
@@ -336,7 +341,6 @@ document.write(`
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
- | <a href="#U"><strong>U</strong></a>
  | <a href="#V"><strong>V</strong></a>
  | <a href="#W"><strong>W</strong></a>
  | <a href="#Z"><strong>Z</strong></a>
@@ -347,29 +351,15 @@ document.write(`
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#iqm.iqm_client.iqm_client.IQMClient.abort_job">abort_job() (iqm.iqm_client.iqm_client.IQMClient method)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.iqm_client.Credentials.html#iqm.iqm_client.iqm_client.Credentials.access_token">access_token (iqm.iqm_client.iqm_client.Credentials attribute)</a>
-
-      <ul>
-        <li><a href="api/iqm.iqm_client.iqm_client.ExternalToken.html#iqm.iqm_client.iqm_client.ExternalToken.access_token">(iqm.iqm_client.iqm_client.ExternalToken attribute)</a>
-</li>
-      </ul></li>
-      <li><a href="api/iqm.iqm_client.iqm_client.Circuit.html#iqm.iqm_client.iqm_client.Circuit.all_qubits">all_qubits() (iqm.iqm_client.iqm_client.Circuit method)</a>
-</li>
-      <li><a href="api/iqm.iqm_client.iqm_client.APITimeoutError.html#iqm.iqm_client.iqm_client.APITimeoutError">APITimeoutError</a>
+      <li><a href="api/iqm.iqm_client.models.Circuit.html#iqm.iqm_client.models.Circuit.all_qubits">all_qubits() (iqm.iqm_client.models.Circuit method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/iqm.iqm_client.instruction.Instruction.html#iqm.iqm_client.instruction.Instruction.args">args (iqm.iqm_client.instruction.Instruction attribute)</a>
+      <li><a href="api/iqm.iqm_client.errors.APITimeoutError.html#iqm.iqm_client.errors.APITimeoutError">APITimeoutError</a>
 </li>
-      <li><a href="api/iqm.iqm_client.instruction.Instruction.html#iqm.iqm_client.instruction.Instruction.args_validator">args_validator() (iqm.iqm_client.instruction.Instruction class method)</a>
+      <li><a href="api/iqm.iqm_client.models.Instruction.html#iqm.iqm_client.models.Instruction.args">args (iqm.iqm_client.models.Instruction attribute)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.iqm_client.Credentials.html#iqm.iqm_client.iqm_client.Credentials.auth_server_url">auth_server_url (iqm.iqm_client.iqm_client.Credentials attribute)</a>
-
-      <ul>
-        <li><a href="api/iqm.iqm_client.iqm_client.ExternalToken.html#iqm.iqm_client.iqm_client.ExternalToken.auth_server_url">(iqm.iqm_client.iqm_client.ExternalToken attribute)</a>
-</li>
-      </ul></li>
-      <li><a href="api/iqm.iqm_client.iqm_client.AuthRequest.html#iqm.iqm_client.iqm_client.AuthRequest">AuthRequest (class in iqm.iqm_client.iqm_client)</a>
+      <li><a href="api/iqm.iqm_client.models.Instruction.html#iqm.iqm_client.models.Instruction.args_validator">args_validator() (iqm.iqm_client.models.Instruction class method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -377,43 +367,51 @@ document.write(`
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/iqm.iqm_client.iqm_client.Metadata.html#iqm.iqm_client.iqm_client.Metadata.calibration_set_id">calibration_set_id (iqm.iqm_client.iqm_client.Metadata attribute)</a>
+      <li><a href="api/iqm.iqm_client.models.Metadata.html#iqm.iqm_client.models.Metadata.calibration_set_id">calibration_set_id (iqm.iqm_client.models.Metadata attribute)</a>
 
       <ul>
-        <li><a href="api/iqm.iqm_client.iqm_client.RunRequest.html#iqm.iqm_client.iqm_client.RunRequest.calibration_set_id">(iqm.iqm_client.iqm_client.RunRequest attribute)</a>
+        <li><a href="api/iqm.iqm_client.models.RunRequest.html#iqm.iqm_client.models.RunRequest.calibration_set_id">(iqm.iqm_client.models.RunRequest attribute)</a>
 </li>
       </ul></li>
-      <li><a href="api/iqm.iqm_client.iqm_client.Circuit.html#iqm.iqm_client.iqm_client.Circuit">Circuit (class in iqm.iqm_client.iqm_client)</a>
+      <li><a href="api/iqm.iqm_client.models.Circuit.html#iqm.iqm_client.models.Circuit">Circuit (class in iqm.iqm_client.models)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.iqm_client.CircuitBatch.html#iqm.iqm_client.iqm_client.CircuitBatch">CircuitBatch (in module iqm.iqm_client.iqm_client)</a>
+      <li><a href="api/iqm.iqm_client.models.CircuitBatch.html#iqm.iqm_client.models.CircuitBatch">CircuitBatch (in module iqm.iqm_client.models)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.iqm_client.CircuitExecutionError.html#iqm.iqm_client.iqm_client.CircuitExecutionError">CircuitExecutionError</a>
+      <li><a href="api/iqm.iqm_client.errors.CircuitExecutionError.html#iqm.iqm_client.errors.CircuitExecutionError">CircuitExecutionError</a>
 </li>
-      <li><a href="api/iqm.iqm_client.iqm_client.CircuitMeasurementResults.html#iqm.iqm_client.iqm_client.CircuitMeasurementResults">CircuitMeasurementResults (in module iqm.iqm_client.iqm_client)</a>
+      <li><a href="api/iqm.iqm_client.models.CircuitMeasurementResults.html#iqm.iqm_client.models.CircuitMeasurementResults">CircuitMeasurementResults (in module iqm.iqm_client.models)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.iqm_client.CircuitMeasurementResultsBatch.html#iqm.iqm_client.iqm_client.CircuitMeasurementResultsBatch">CircuitMeasurementResultsBatch (in module iqm.iqm_client.iqm_client)</a>
+      <li><a href="api/iqm.iqm_client.models.CircuitMeasurementResultsBatch.html#iqm.iqm_client.models.CircuitMeasurementResultsBatch">CircuitMeasurementResultsBatch (in module iqm.iqm_client.models)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.iqm_client.RunRequest.html#iqm.iqm_client.iqm_client.RunRequest.circuits">circuits (iqm.iqm_client.iqm_client.RunRequest attribute)</a>
+      <li><a href="api/iqm.iqm_client.models.RunRequest.html#iqm.iqm_client.models.RunRequest.circuits">circuits (iqm.iqm_client.models.RunRequest attribute)</a>
+</li>
+      <li><a href="api/iqm.iqm_client.errors.CircuitValidationError.html#iqm.iqm_client.errors.CircuitValidationError">CircuitValidationError</a>
+</li>
+      <li><a href="api/iqm.iqm_client.errors.ClientAuthenticationError.html#iqm.iqm_client.errors.ClientAuthenticationError">ClientAuthenticationError</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/iqm.iqm_client.iqm_client.CircuitValidationError.html#iqm.iqm_client.iqm_client.CircuitValidationError">CircuitValidationError</a>
+      <li><a href="api/iqm.iqm_client.errors.ClientConfigurationError.html#iqm.iqm_client.errors.ClientConfigurationError">ClientConfigurationError</a>
 </li>
-      <li><a href="api/iqm.iqm_client.iqm_client.AuthRequest.html#iqm.iqm_client.iqm_client.AuthRequest.client_id">client_id (iqm.iqm_client.iqm_client.AuthRequest attribute)</a>
+      <li><a href="api/iqm.iqm_client.authentication.ExternalToken.html#iqm.iqm_client.authentication.ExternalToken.close">close() (iqm.iqm_client.authentication.ExternalToken method)</a>
+
+      <ul>
+        <li><a href="api/iqm.iqm_client.authentication.TokenClient.html#iqm.iqm_client.authentication.TokenClient.close">(iqm.iqm_client.authentication.TokenClient method)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.iqm_client.ClientAuthenticationError.html#iqm.iqm_client.iqm_client.ClientAuthenticationError">ClientAuthenticationError</a>
+        <li><a href="api/iqm.iqm_client.authentication.TokenManager.html#iqm.iqm_client.authentication.TokenManager.close">(iqm.iqm_client.authentication.TokenManager method)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.iqm_client.ClientConfigurationError.html#iqm.iqm_client.iqm_client.ClientConfigurationError">ClientConfigurationError</a>
+        <li><a href="api/iqm.iqm_client.authentication.TokenProviderInterface.html#iqm.iqm_client.authentication.TokenProviderInterface.close">(iqm.iqm_client.authentication.TokenProviderInterface method)</a>
 </li>
+        <li><a href="api/iqm.iqm_client.authentication.TokensFileReader.html#iqm.iqm_client.authentication.TokensFileReader.close">(iqm.iqm_client.authentication.TokensFileReader method)</a>
+</li>
+      </ul></li>
       <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#iqm.iqm_client.iqm_client.IQMClient.close_auth_session">close_auth_session() (iqm.iqm_client.iqm_client.IQMClient method)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.iqm_client.Metadata.html#iqm.iqm_client.iqm_client.Metadata.cocos_version">cocos_version (iqm.iqm_client.iqm_client.Metadata attribute)</a>
+      <li><a href="api/iqm.iqm_client.models.Metadata.html#iqm.iqm_client.models.Metadata.cocos_version">cocos_version (iqm.iqm_client.models.Metadata attribute)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification.html#iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification.compare_operations">compare_operations() (iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification static method)</a>
+      <li><a href="api/iqm.iqm_client.models.QuantumArchitectureSpecification.html#iqm.iqm_client.models.QuantumArchitectureSpecification.compare_operations">compare_operations() (iqm.iqm_client.models.QuantumArchitectureSpecification static method)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.iqm_client.Credentials.html#iqm.iqm_client.iqm_client.Credentials">Credentials (class in iqm.iqm_client.iqm_client)</a>
-</li>
-      <li><a href="api/iqm.iqm_client.iqm_client.RunRequest.html#iqm.iqm_client.iqm_client.RunRequest.custom_settings">custom_settings (iqm.iqm_client.iqm_client.RunRequest attribute)</a>
+      <li><a href="api/iqm.iqm_client.models.RunRequest.html#iqm.iqm_client.models.RunRequest.custom_settings">custom_settings (iqm.iqm_client.models.RunRequest attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -429,7 +427,7 @@ document.write(`
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/iqm.iqm_client.iqm_client.ExternalToken.html#iqm.iqm_client.iqm_client.ExternalToken">ExternalToken (class in iqm.iqm_client.iqm_client)</a>
+      <li><a href="api/iqm.iqm_client.authentication.ExternalToken.html#iqm.iqm_client.authentication.ExternalToken">ExternalToken (class in iqm.iqm_client.authentication)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -437,10 +435,10 @@ document.write(`
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/iqm.iqm_client.iqm_client.RunResult.html#iqm.iqm_client.iqm_client.RunResult.from_dict">from_dict() (iqm.iqm_client.iqm_client.RunResult static method)</a>
+      <li><a href="api/iqm.iqm_client.models.RunResult.html#iqm.iqm_client.models.RunResult.from_dict">from_dict() (iqm.iqm_client.models.RunResult static method)</a>
 
       <ul>
-        <li><a href="api/iqm.iqm_client.iqm_client.RunStatus.html#iqm.iqm_client.iqm_client.RunStatus.from_dict">(iqm.iqm_client.iqm_client.RunStatus static method)</a>
+        <li><a href="api/iqm.iqm_client.models.RunStatus.html#iqm.iqm_client.models.RunStatus.from_dict">(iqm.iqm_client.models.RunStatus static method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -449,7 +447,9 @@ document.write(`
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/iqm.iqm_client.instruction.get_current_instruction_name.html#iqm.iqm_client.instruction.get_current_instruction_name">get_current_instruction_name() (in module iqm.iqm_client.instruction)</a>
+      <li><a href="api/iqm.iqm_client.authentication.TokenManager.html#iqm.iqm_client.authentication.TokenManager.get_bearer_token">get_bearer_token() (iqm.iqm_client.authentication.TokenManager method)</a>
+</li>
+      <li><a href="api/iqm.iqm_client.models.get_current_instruction_name.html#iqm.iqm_client.models.get_current_instruction_name">get_current_instruction_name() (in module iqm.iqm_client.models)</a>
 </li>
       <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#iqm.iqm_client.iqm_client.IQMClient.get_quantum_architecture">get_quantum_architecture() (iqm.iqm_client.iqm_client.IQMClient method)</a>
 </li>
@@ -459,23 +459,29 @@ document.write(`
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#iqm.iqm_client.iqm_client.IQMClient.get_run_status">get_run_status() (iqm.iqm_client.iqm_client.IQMClient method)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.iqm_client.AuthRequest.html#iqm.iqm_client.iqm_client.AuthRequest.grant_type">grant_type (iqm.iqm_client.iqm_client.AuthRequest attribute)</a>
+      <li><a href="api/iqm.iqm_client.authentication.ExternalToken.html#iqm.iqm_client.authentication.ExternalToken.get_token">get_token() (iqm.iqm_client.authentication.ExternalToken method)</a>
+
+      <ul>
+        <li><a href="api/iqm.iqm_client.authentication.TokenClient.html#iqm.iqm_client.authentication.TokenClient.get_token">(iqm.iqm_client.authentication.TokenClient method)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.iqm_client.GrantType.html#iqm.iqm_client.iqm_client.GrantType">GrantType (class in iqm.iqm_client.iqm_client)</a>
+        <li><a href="api/iqm.iqm_client.authentication.TokenProviderInterface.html#iqm.iqm_client.authentication.TokenProviderInterface.get_token">(iqm.iqm_client.authentication.TokenProviderInterface method)</a>
 </li>
+        <li><a href="api/iqm.iqm_client.authentication.TokensFileReader.html#iqm.iqm_client.authentication.TokensFileReader.get_token">(iqm.iqm_client.authentication.TokensFileReader method)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="H">H</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification.html#iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification.has_equivalent_operations">has_equivalent_operations() (iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification method)</a>
+      <li><a href="api/iqm.iqm_client.models.QuantumArchitectureSpecification.html#iqm.iqm_client.models.QuantumArchitectureSpecification.has_equivalent_operations">has_equivalent_operations() (iqm.iqm_client.models.QuantumArchitectureSpecification method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/iqm.iqm_client.iqm_client.RunRequest.html#iqm.iqm_client.iqm_client.RunRequest.heralding_mode">heralding_mode (iqm.iqm_client.iqm_client.RunRequest attribute)</a>
+      <li><a href="api/iqm.iqm_client.models.RunRequest.html#iqm.iqm_client.models.RunRequest.heralding_mode">heralding_mode (iqm.iqm_client.models.RunRequest attribute)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.iqm_client.HeraldingMode.html#iqm.iqm_client.iqm_client.HeraldingMode">HeraldingMode (class in iqm.iqm_client.iqm_client)</a>
+      <li><a href="api/iqm.iqm_client.models.HeraldingMode.html#iqm.iqm_client.models.HeraldingMode">HeraldingMode (class in iqm.iqm_client.models)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -483,15 +489,15 @@ document.write(`
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/iqm.iqm_client.instruction.Instruction.html#iqm.iqm_client.instruction.Instruction.implementation">implementation (iqm.iqm_client.instruction.Instruction attribute)</a>
+      <li><a href="api/iqm.iqm_client.models.Instruction.html#iqm.iqm_client.models.Instruction.implementation">implementation (iqm.iqm_client.models.Instruction attribute)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.instruction.Instruction.html#iqm.iqm_client.instruction.Instruction.implementation_validator">implementation_validator() (iqm.iqm_client.instruction.Instruction class method)</a>
+      <li><a href="api/iqm.iqm_client.models.Instruction.html#iqm.iqm_client.models.Instruction.implementation_validator">implementation_validator() (iqm.iqm_client.models.Instruction class method)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.instruction.Instruction.html#iqm.iqm_client.instruction.Instruction">Instruction (class in iqm.iqm_client.instruction)</a>
+      <li><a href="api/iqm.iqm_client.models.Instruction.html#iqm.iqm_client.models.Instruction">Instruction (class in iqm.iqm_client.models)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.iqm_client.Circuit.html#iqm.iqm_client.iqm_client.Circuit.instructions">instructions (iqm.iqm_client.iqm_client.Circuit attribute)</a>
+      <li><a href="api/iqm.iqm_client.models.Circuit.html#iqm.iqm_client.models.Circuit.instructions">instructions (iqm.iqm_client.models.Circuit attribute)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.iqm_client.Circuit.html#iqm.iqm_client.iqm_client.Circuit.instructions_validator">instructions_validator() (iqm.iqm_client.iqm_client.Circuit class method)</a>
+      <li><a href="api/iqm.iqm_client.models.Circuit.html#iqm.iqm_client.models.Circuit.instructions_validator">instructions_validator() (iqm.iqm_client.models.Circuit class method)</a>
 </li>
       <li>
     iqm.iqm_client
@@ -501,10 +507,17 @@ document.write(`
 </li>
       </ul></li>
       <li>
-    iqm.iqm_client.instruction
+    iqm.iqm_client.authentication
 
       <ul>
-        <li><a href="api/iqm.iqm_client.instruction.html#module-iqm.iqm_client.instruction">module</a>
+        <li><a href="api/iqm.iqm_client.authentication.html#module-iqm.iqm_client.authentication">module</a>
+</li>
+      </ul></li>
+      <li>
+    iqm.iqm_client.errors
+
+      <ul>
+        <li><a href="api/iqm.iqm_client.errors.html#module-iqm.iqm_client.errors">module</a>
 </li>
       </ul></li>
   </ul></td>
@@ -517,10 +530,10 @@ document.write(`
 </li>
       </ul></li>
       <li>
-    iqm.iqm_client.quantum_architecture
+    iqm.iqm_client.models
 
       <ul>
-        <li><a href="api/iqm.iqm_client.quantum_architecture.html#module-iqm.iqm_client.quantum_architecture">module</a>
+        <li><a href="api/iqm.iqm_client.models.html#module-iqm.iqm_client.models">module</a>
 </li>
       </ul></li>
       <li>
@@ -534,9 +547,9 @@ document.write(`
 </li>
       <li><a href="api/iqm.iqm_client.util.IQMJSONEncoder.html#iqm.iqm_client.util.IQMJSONEncoder">IQMJSONEncoder (class in iqm.iqm_client.util)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.instruction.is_directed_instruction.html#iqm.iqm_client.instruction.is_directed_instruction">is_directed_instruction() (in module iqm.iqm_client.instruction)</a>
+      <li><a href="api/iqm.iqm_client.models.is_directed_instruction.html#iqm.iqm_client.models.is_directed_instruction">is_directed_instruction() (in module iqm.iqm_client.models)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.instruction.is_multi_qubit_instruction.html#iqm.iqm_client.instruction.is_multi_qubit_instruction">is_multi_qubit_instruction() (in module iqm.iqm_client.instruction)</a>
+      <li><a href="api/iqm.iqm_client.models.is_multi_qubit_instruction.html#iqm.iqm_client.models.is_multi_qubit_instruction">is_multi_qubit_instruction() (in module iqm.iqm_client.models)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -544,7 +557,7 @@ document.write(`
 <h2 id="J">J</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/iqm.iqm_client.iqm_client.JobAbortionError.html#iqm.iqm_client.iqm_client.JobAbortionError">JobAbortionError</a>
+      <li><a href="api/iqm.iqm_client.errors.JobAbortionError.html#iqm.iqm_client.errors.JobAbortionError">JobAbortionError</a>
 </li>
   </ul></td>
 </tr></table>
@@ -552,7 +565,7 @@ document.write(`
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/iqm.iqm_client.iqm_client.SingleQubitMapping.html#iqm.iqm_client.iqm_client.SingleQubitMapping.logical_name">logical_name (iqm.iqm_client.iqm_client.SingleQubitMapping attribute)</a>
+      <li><a href="api/iqm.iqm_client.models.SingleQubitMapping.html#iqm.iqm_client.models.SingleQubitMapping.logical_name">logical_name (iqm.iqm_client.models.SingleQubitMapping attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -560,102 +573,84 @@ document.write(`
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/iqm.iqm_client.iqm_client.RunRequest.html#iqm.iqm_client.iqm_client.RunRequest.max_circuit_duration_over_t2">max_circuit_duration_over_t2 (iqm.iqm_client.iqm_client.RunRequest attribute)</a>
+      <li><a href="api/iqm.iqm_client.models.RunRequest.html#iqm.iqm_client.models.RunRequest.max_circuit_duration_over_t2">max_circuit_duration_over_t2 (iqm.iqm_client.models.RunRequest attribute)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.iqm_client.RunResult.html#iqm.iqm_client.iqm_client.RunResult.measurements">measurements (iqm.iqm_client.iqm_client.RunResult attribute)</a>
+      <li><a href="api/iqm.iqm_client.models.RunResult.html#iqm.iqm_client.models.RunResult.measurements">measurements (iqm.iqm_client.models.RunResult attribute)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.iqm_client.RunResult.html#iqm.iqm_client.iqm_client.RunResult.message">message (iqm.iqm_client.iqm_client.RunResult attribute)</a>
+      <li><a href="api/iqm.iqm_client.models.RunResult.html#iqm.iqm_client.models.RunResult.message">message (iqm.iqm_client.models.RunResult attribute)</a>
 
       <ul>
-        <li><a href="api/iqm.iqm_client.iqm_client.RunStatus.html#iqm.iqm_client.iqm_client.RunStatus.message">(iqm.iqm_client.iqm_client.RunStatus attribute)</a>
+        <li><a href="api/iqm.iqm_client.models.RunStatus.html#iqm.iqm_client.models.RunStatus.message">(iqm.iqm_client.models.RunStatus attribute)</a>
 </li>
       </ul></li>
-      <li><a href="api/iqm.iqm_client.iqm_client.Metadata.html#iqm.iqm_client.iqm_client.Metadata">Metadata (class in iqm.iqm_client.iqm_client)</a>
+      <li><a href="api/iqm.iqm_client.models.Metadata.html#iqm.iqm_client.models.Metadata">Metadata (class in iqm.iqm_client.models)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.iqm_client.Circuit.html#iqm.iqm_client.iqm_client.Circuit.metadata">metadata (iqm.iqm_client.iqm_client.Circuit attribute)</a>
+      <li><a href="api/iqm.iqm_client.models.Circuit.html#iqm.iqm_client.models.Circuit.metadata">metadata (iqm.iqm_client.models.Circuit attribute)</a>
 
       <ul>
-        <li><a href="api/iqm.iqm_client.iqm_client.RunResult.html#iqm.iqm_client.iqm_client.RunResult.metadata">(iqm.iqm_client.iqm_client.RunResult attribute)</a>
+        <li><a href="api/iqm.iqm_client.models.RunResult.html#iqm.iqm_client.models.RunResult.metadata">(iqm.iqm_client.models.RunResult attribute)</a>
 </li>
       </ul></li>
-      <li><a href="api/iqm.iqm_client.instruction.Instruction.html#iqm.iqm_client.instruction.Instruction.model_computed_fields">model_computed_fields (iqm.iqm_client.instruction.Instruction attribute)</a>
+      <li><a href="api/iqm.iqm_client.models.Circuit.html#iqm.iqm_client.models.Circuit.model_computed_fields">model_computed_fields (iqm.iqm_client.models.Circuit attribute)</a>
 
       <ul>
-        <li><a href="api/iqm.iqm_client.iqm_client.AuthRequest.html#iqm.iqm_client.iqm_client.AuthRequest.model_computed_fields">(iqm.iqm_client.iqm_client.AuthRequest attribute)</a>
+        <li><a href="api/iqm.iqm_client.models.Instruction.html#iqm.iqm_client.models.Instruction.model_computed_fields">(iqm.iqm_client.models.Instruction attribute)</a>
 </li>
-        <li><a href="api/iqm.iqm_client.iqm_client.Circuit.html#iqm.iqm_client.iqm_client.Circuit.model_computed_fields">(iqm.iqm_client.iqm_client.Circuit attribute)</a>
+        <li><a href="api/iqm.iqm_client.models.Metadata.html#iqm.iqm_client.models.Metadata.model_computed_fields">(iqm.iqm_client.models.Metadata attribute)</a>
 </li>
-        <li><a href="api/iqm.iqm_client.iqm_client.Credentials.html#iqm.iqm_client.iqm_client.Credentials.model_computed_fields">(iqm.iqm_client.iqm_client.Credentials attribute)</a>
+        <li><a href="api/iqm.iqm_client.models.QuantumArchitecture.html#iqm.iqm_client.models.QuantumArchitecture.model_computed_fields">(iqm.iqm_client.models.QuantumArchitecture attribute)</a>
 </li>
-        <li><a href="api/iqm.iqm_client.iqm_client.ExternalToken.html#iqm.iqm_client.iqm_client.ExternalToken.model_computed_fields">(iqm.iqm_client.iqm_client.ExternalToken attribute)</a>
+        <li><a href="api/iqm.iqm_client.models.QuantumArchitectureSpecification.html#iqm.iqm_client.models.QuantumArchitectureSpecification.model_computed_fields">(iqm.iqm_client.models.QuantumArchitectureSpecification attribute)</a>
 </li>
-        <li><a href="api/iqm.iqm_client.iqm_client.Metadata.html#iqm.iqm_client.iqm_client.Metadata.model_computed_fields">(iqm.iqm_client.iqm_client.Metadata attribute)</a>
+        <li><a href="api/iqm.iqm_client.models.RunRequest.html#iqm.iqm_client.models.RunRequest.model_computed_fields">(iqm.iqm_client.models.RunRequest attribute)</a>
 </li>
-        <li><a href="api/iqm.iqm_client.iqm_client.RunRequest.html#iqm.iqm_client.iqm_client.RunRequest.model_computed_fields">(iqm.iqm_client.iqm_client.RunRequest attribute)</a>
+        <li><a href="api/iqm.iqm_client.models.RunResult.html#iqm.iqm_client.models.RunResult.model_computed_fields">(iqm.iqm_client.models.RunResult attribute)</a>
 </li>
-        <li><a href="api/iqm.iqm_client.iqm_client.RunResult.html#iqm.iqm_client.iqm_client.RunResult.model_computed_fields">(iqm.iqm_client.iqm_client.RunResult attribute)</a>
+        <li><a href="api/iqm.iqm_client.models.RunStatus.html#iqm.iqm_client.models.RunStatus.model_computed_fields">(iqm.iqm_client.models.RunStatus attribute)</a>
 </li>
-        <li><a href="api/iqm.iqm_client.iqm_client.RunStatus.html#iqm.iqm_client.iqm_client.RunStatus.model_computed_fields">(iqm.iqm_client.iqm_client.RunStatus attribute)</a>
-</li>
-        <li><a href="api/iqm.iqm_client.iqm_client.SingleQubitMapping.html#iqm.iqm_client.iqm_client.SingleQubitMapping.model_computed_fields">(iqm.iqm_client.iqm_client.SingleQubitMapping attribute)</a>
-</li>
-        <li><a href="api/iqm.iqm_client.quantum_architecture.QuantumArchitecture.html#iqm.iqm_client.quantum_architecture.QuantumArchitecture.model_computed_fields">(iqm.iqm_client.quantum_architecture.QuantumArchitecture attribute)</a>
-</li>
-        <li><a href="api/iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification.html#iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification.model_computed_fields">(iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification attribute)</a>
+        <li><a href="api/iqm.iqm_client.models.SingleQubitMapping.html#iqm.iqm_client.models.SingleQubitMapping.model_computed_fields">(iqm.iqm_client.models.SingleQubitMapping attribute)</a>
 </li>
       </ul></li>
-      <li><a href="api/iqm.iqm_client.instruction.Instruction.html#iqm.iqm_client.instruction.Instruction.model_config">model_config (iqm.iqm_client.instruction.Instruction attribute)</a>
+      <li><a href="api/iqm.iqm_client.models.Circuit.html#iqm.iqm_client.models.Circuit.model_config">model_config (iqm.iqm_client.models.Circuit attribute)</a>
 
       <ul>
-        <li><a href="api/iqm.iqm_client.iqm_client.AuthRequest.html#iqm.iqm_client.iqm_client.AuthRequest.model_config">(iqm.iqm_client.iqm_client.AuthRequest attribute)</a>
+        <li><a href="api/iqm.iqm_client.models.Instruction.html#iqm.iqm_client.models.Instruction.model_config">(iqm.iqm_client.models.Instruction attribute)</a>
 </li>
-        <li><a href="api/iqm.iqm_client.iqm_client.Circuit.html#iqm.iqm_client.iqm_client.Circuit.model_config">(iqm.iqm_client.iqm_client.Circuit attribute)</a>
+        <li><a href="api/iqm.iqm_client.models.Metadata.html#iqm.iqm_client.models.Metadata.model_config">(iqm.iqm_client.models.Metadata attribute)</a>
 </li>
-        <li><a href="api/iqm.iqm_client.iqm_client.Credentials.html#iqm.iqm_client.iqm_client.Credentials.model_config">(iqm.iqm_client.iqm_client.Credentials attribute)</a>
+        <li><a href="api/iqm.iqm_client.models.QuantumArchitecture.html#iqm.iqm_client.models.QuantumArchitecture.model_config">(iqm.iqm_client.models.QuantumArchitecture attribute)</a>
 </li>
-        <li><a href="api/iqm.iqm_client.iqm_client.ExternalToken.html#iqm.iqm_client.iqm_client.ExternalToken.model_config">(iqm.iqm_client.iqm_client.ExternalToken attribute)</a>
+        <li><a href="api/iqm.iqm_client.models.QuantumArchitectureSpecification.html#iqm.iqm_client.models.QuantumArchitectureSpecification.model_config">(iqm.iqm_client.models.QuantumArchitectureSpecification attribute)</a>
 </li>
-        <li><a href="api/iqm.iqm_client.iqm_client.Metadata.html#iqm.iqm_client.iqm_client.Metadata.model_config">(iqm.iqm_client.iqm_client.Metadata attribute)</a>
+        <li><a href="api/iqm.iqm_client.models.RunRequest.html#iqm.iqm_client.models.RunRequest.model_config">(iqm.iqm_client.models.RunRequest attribute)</a>
 </li>
-        <li><a href="api/iqm.iqm_client.iqm_client.RunRequest.html#iqm.iqm_client.iqm_client.RunRequest.model_config">(iqm.iqm_client.iqm_client.RunRequest attribute)</a>
+        <li><a href="api/iqm.iqm_client.models.RunResult.html#iqm.iqm_client.models.RunResult.model_config">(iqm.iqm_client.models.RunResult attribute)</a>
 </li>
-        <li><a href="api/iqm.iqm_client.iqm_client.RunResult.html#iqm.iqm_client.iqm_client.RunResult.model_config">(iqm.iqm_client.iqm_client.RunResult attribute)</a>
+        <li><a href="api/iqm.iqm_client.models.RunStatus.html#iqm.iqm_client.models.RunStatus.model_config">(iqm.iqm_client.models.RunStatus attribute)</a>
 </li>
-        <li><a href="api/iqm.iqm_client.iqm_client.RunStatus.html#iqm.iqm_client.iqm_client.RunStatus.model_config">(iqm.iqm_client.iqm_client.RunStatus attribute)</a>
-</li>
-        <li><a href="api/iqm.iqm_client.iqm_client.SingleQubitMapping.html#iqm.iqm_client.iqm_client.SingleQubitMapping.model_config">(iqm.iqm_client.iqm_client.SingleQubitMapping attribute)</a>
-</li>
-        <li><a href="api/iqm.iqm_client.quantum_architecture.QuantumArchitecture.html#iqm.iqm_client.quantum_architecture.QuantumArchitecture.model_config">(iqm.iqm_client.quantum_architecture.QuantumArchitecture attribute)</a>
-</li>
-        <li><a href="api/iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification.html#iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification.model_config">(iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification attribute)</a>
+        <li><a href="api/iqm.iqm_client.models.SingleQubitMapping.html#iqm.iqm_client.models.SingleQubitMapping.model_config">(iqm.iqm_client.models.SingleQubitMapping attribute)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/iqm.iqm_client.instruction.Instruction.html#iqm.iqm_client.instruction.Instruction.model_fields">model_fields (iqm.iqm_client.instruction.Instruction attribute)</a>
+      <li><a href="api/iqm.iqm_client.models.Circuit.html#iqm.iqm_client.models.Circuit.model_fields">model_fields (iqm.iqm_client.models.Circuit attribute)</a>
 
       <ul>
-        <li><a href="api/iqm.iqm_client.iqm_client.AuthRequest.html#iqm.iqm_client.iqm_client.AuthRequest.model_fields">(iqm.iqm_client.iqm_client.AuthRequest attribute)</a>
+        <li><a href="api/iqm.iqm_client.models.Instruction.html#iqm.iqm_client.models.Instruction.model_fields">(iqm.iqm_client.models.Instruction attribute)</a>
 </li>
-        <li><a href="api/iqm.iqm_client.iqm_client.Circuit.html#iqm.iqm_client.iqm_client.Circuit.model_fields">(iqm.iqm_client.iqm_client.Circuit attribute)</a>
+        <li><a href="api/iqm.iqm_client.models.Metadata.html#iqm.iqm_client.models.Metadata.model_fields">(iqm.iqm_client.models.Metadata attribute)</a>
 </li>
-        <li><a href="api/iqm.iqm_client.iqm_client.Credentials.html#iqm.iqm_client.iqm_client.Credentials.model_fields">(iqm.iqm_client.iqm_client.Credentials attribute)</a>
+        <li><a href="api/iqm.iqm_client.models.QuantumArchitecture.html#iqm.iqm_client.models.QuantumArchitecture.model_fields">(iqm.iqm_client.models.QuantumArchitecture attribute)</a>
 </li>
-        <li><a href="api/iqm.iqm_client.iqm_client.ExternalToken.html#iqm.iqm_client.iqm_client.ExternalToken.model_fields">(iqm.iqm_client.iqm_client.ExternalToken attribute)</a>
+        <li><a href="api/iqm.iqm_client.models.QuantumArchitectureSpecification.html#iqm.iqm_client.models.QuantumArchitectureSpecification.model_fields">(iqm.iqm_client.models.QuantumArchitectureSpecification attribute)</a>
 </li>
-        <li><a href="api/iqm.iqm_client.iqm_client.Metadata.html#iqm.iqm_client.iqm_client.Metadata.model_fields">(iqm.iqm_client.iqm_client.Metadata attribute)</a>
+        <li><a href="api/iqm.iqm_client.models.RunRequest.html#iqm.iqm_client.models.RunRequest.model_fields">(iqm.iqm_client.models.RunRequest attribute)</a>
 </li>
-        <li><a href="api/iqm.iqm_client.iqm_client.RunRequest.html#iqm.iqm_client.iqm_client.RunRequest.model_fields">(iqm.iqm_client.iqm_client.RunRequest attribute)</a>
+        <li><a href="api/iqm.iqm_client.models.RunResult.html#iqm.iqm_client.models.RunResult.model_fields">(iqm.iqm_client.models.RunResult attribute)</a>
 </li>
-        <li><a href="api/iqm.iqm_client.iqm_client.RunResult.html#iqm.iqm_client.iqm_client.RunResult.model_fields">(iqm.iqm_client.iqm_client.RunResult attribute)</a>
+        <li><a href="api/iqm.iqm_client.models.RunStatus.html#iqm.iqm_client.models.RunStatus.model_fields">(iqm.iqm_client.models.RunStatus attribute)</a>
 </li>
-        <li><a href="api/iqm.iqm_client.iqm_client.RunStatus.html#iqm.iqm_client.iqm_client.RunStatus.model_fields">(iqm.iqm_client.iqm_client.RunStatus attribute)</a>
-</li>
-        <li><a href="api/iqm.iqm_client.iqm_client.SingleQubitMapping.html#iqm.iqm_client.iqm_client.SingleQubitMapping.model_fields">(iqm.iqm_client.iqm_client.SingleQubitMapping attribute)</a>
-</li>
-        <li><a href="api/iqm.iqm_client.quantum_architecture.QuantumArchitecture.html#iqm.iqm_client.quantum_architecture.QuantumArchitecture.model_fields">(iqm.iqm_client.quantum_architecture.QuantumArchitecture attribute)</a>
-</li>
-        <li><a href="api/iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification.html#iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification.model_fields">(iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification attribute)</a>
+        <li><a href="api/iqm.iqm_client.models.SingleQubitMapping.html#iqm.iqm_client.models.SingleQubitMapping.model_fields">(iqm.iqm_client.models.SingleQubitMapping attribute)</a>
 </li>
       </ul></li>
       <li>
@@ -664,11 +659,13 @@ document.write(`
       <ul>
         <li><a href="api/iqm.iqm_client.html#module-iqm.iqm_client">iqm.iqm_client</a>
 </li>
-        <li><a href="api/iqm.iqm_client.instruction.html#module-iqm.iqm_client.instruction">iqm.iqm_client.instruction</a>
+        <li><a href="api/iqm.iqm_client.authentication.html#module-iqm.iqm_client.authentication">iqm.iqm_client.authentication</a>
+</li>
+        <li><a href="api/iqm.iqm_client.errors.html#module-iqm.iqm_client.errors">iqm.iqm_client.errors</a>
 </li>
         <li><a href="api/iqm.iqm_client.iqm_client.html#module-iqm.iqm_client.iqm_client">iqm.iqm_client.iqm_client</a>
 </li>
-        <li><a href="api/iqm.iqm_client.quantum_architecture.html#module-iqm.iqm_client.quantum_architecture">iqm.iqm_client.quantum_architecture</a>
+        <li><a href="api/iqm.iqm_client.models.html#module-iqm.iqm_client.models">iqm.iqm_client.models</a>
 </li>
         <li><a href="api/iqm.iqm_client.util.html#module-iqm.iqm_client.util">iqm.iqm_client.util</a>
 </li>
@@ -679,23 +676,23 @@ document.write(`
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/iqm.iqm_client.instruction.Instruction.html#iqm.iqm_client.instruction.Instruction.name">name (iqm.iqm_client.instruction.Instruction attribute)</a>
+      <li><a href="api/iqm.iqm_client.models.Circuit.html#iqm.iqm_client.models.Circuit.name">name (iqm.iqm_client.models.Circuit attribute)</a>
 
       <ul>
-        <li><a href="api/iqm.iqm_client.iqm_client.Circuit.html#iqm.iqm_client.iqm_client.Circuit.name">(iqm.iqm_client.iqm_client.Circuit attribute)</a>
+        <li><a href="api/iqm.iqm_client.models.Instruction.html#iqm.iqm_client.models.Instruction.name">(iqm.iqm_client.models.Instruction attribute)</a>
 </li>
-        <li><a href="api/iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification.html#iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification.name">(iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification attribute)</a>
+        <li><a href="api/iqm.iqm_client.models.QuantumArchitectureSpecification.html#iqm.iqm_client.models.QuantumArchitectureSpecification.name">(iqm.iqm_client.models.QuantumArchitectureSpecification attribute)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/iqm.iqm_client.instruction.Instruction.html#iqm.iqm_client.instruction.Instruction.name_validator">name_validator() (iqm.iqm_client.instruction.Instruction class method)</a>
+      <li><a href="api/iqm.iqm_client.models.Circuit.html#iqm.iqm_client.models.Circuit.name_validator">name_validator() (iqm.iqm_client.models.Circuit class method)</a>
 
       <ul>
-        <li><a href="api/iqm.iqm_client.iqm_client.Circuit.html#iqm.iqm_client.iqm_client.Circuit.name_validator">(iqm.iqm_client.iqm_client.Circuit class method)</a>
+        <li><a href="api/iqm.iqm_client.models.Instruction.html#iqm.iqm_client.models.Instruction.name_validator">(iqm.iqm_client.models.Instruction class method)</a>
 </li>
       </ul></li>
-      <li><a href="api/iqm.iqm_client.iqm_client.HeraldingMode.html#iqm.iqm_client.iqm_client.HeraldingMode.NONE">NONE (iqm.iqm_client.iqm_client.HeraldingMode attribute)</a>
+      <li><a href="api/iqm.iqm_client.models.HeraldingMode.html#iqm.iqm_client.models.HeraldingMode.NONE">NONE (iqm.iqm_client.models.HeraldingMode attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -703,7 +700,7 @@ document.write(`
 <h2 id="O">O</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification.html#iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification.operations">operations (iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification attribute)</a>
+      <li><a href="api/iqm.iqm_client.models.QuantumArchitectureSpecification.html#iqm.iqm_client.models.QuantumArchitectureSpecification.operations">operations (iqm.iqm_client.models.QuantumArchitectureSpecification attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -711,15 +708,7 @@ document.write(`
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/iqm.iqm_client.iqm_client.AuthRequest.html#iqm.iqm_client.iqm_client.AuthRequest.password">password (iqm.iqm_client.iqm_client.AuthRequest attribute)</a>
-
-      <ul>
-        <li><a href="api/iqm.iqm_client.iqm_client.Credentials.html#iqm.iqm_client.iqm_client.Credentials.password">(iqm.iqm_client.iqm_client.Credentials attribute)</a>
-</li>
-      </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/iqm.iqm_client.iqm_client.SingleQubitMapping.html#iqm.iqm_client.iqm_client.SingleQubitMapping.physical_name">physical_name (iqm.iqm_client.iqm_client.SingleQubitMapping attribute)</a>
+      <li><a href="api/iqm.iqm_client.models.SingleQubitMapping.html#iqm.iqm_client.models.SingleQubitMapping.physical_name">physical_name (iqm.iqm_client.models.SingleQubitMapping attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -727,27 +716,27 @@ document.write(`
 <h2 id="Q">Q</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/iqm.iqm_client.quantum_architecture.QuantumArchitecture.html#iqm.iqm_client.quantum_architecture.QuantumArchitecture.quantum_architecture">quantum_architecture (iqm.iqm_client.quantum_architecture.QuantumArchitecture attribute)</a>
+      <li><a href="api/iqm.iqm_client.models.QuantumArchitecture.html#iqm.iqm_client.models.QuantumArchitecture.quantum_architecture">quantum_architecture (iqm.iqm_client.models.QuantumArchitecture attribute)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.quantum_architecture.QuantumArchitecture.html#iqm.iqm_client.quantum_architecture.QuantumArchitecture">QuantumArchitecture (class in iqm.iqm_client.quantum_architecture)</a>
+      <li><a href="api/iqm.iqm_client.models.QuantumArchitecture.html#iqm.iqm_client.models.QuantumArchitecture">QuantumArchitecture (class in iqm.iqm_client.models)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification.html#iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification">QuantumArchitectureSpecification (class in iqm.iqm_client.quantum_architecture)</a>
+      <li><a href="api/iqm.iqm_client.models.QuantumArchitectureSpecification.html#iqm.iqm_client.models.QuantumArchitectureSpecification">QuantumArchitectureSpecification (class in iqm.iqm_client.models)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification.html#iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification.qubit_connectivity">qubit_connectivity (iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification attribute)</a>
+      <li><a href="api/iqm.iqm_client.models.QuantumArchitectureSpecification.html#iqm.iqm_client.models.QuantumArchitectureSpecification.qubit_connectivity">qubit_connectivity (iqm.iqm_client.models.QuantumArchitectureSpecification attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/iqm.iqm_client.iqm_client.RunRequest.html#iqm.iqm_client.iqm_client.RunRequest.qubit_mapping">qubit_mapping (iqm.iqm_client.iqm_client.RunRequest attribute)</a>
+      <li><a href="api/iqm.iqm_client.models.RunRequest.html#iqm.iqm_client.models.RunRequest.qubit_mapping">qubit_mapping (iqm.iqm_client.models.RunRequest attribute)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.iqm_client.QubitMapping.html#iqm.iqm_client.iqm_client.QubitMapping">QubitMapping (in module iqm.iqm_client.iqm_client)</a>
+      <li><a href="api/iqm.iqm_client.models.QubitMapping.html#iqm.iqm_client.models.QubitMapping">QubitMapping (in module iqm.iqm_client.models)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.instruction.Instruction.html#iqm.iqm_client.instruction.Instruction.qubits">qubits (iqm.iqm_client.instruction.Instruction attribute)</a>
+      <li><a href="api/iqm.iqm_client.models.Instruction.html#iqm.iqm_client.models.Instruction.qubits">qubits (iqm.iqm_client.models.Instruction attribute)</a>
 
       <ul>
-        <li><a href="api/iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification.html#iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification.qubits">(iqm.iqm_client.quantum_architecture.QuantumArchitectureSpecification attribute)</a>
+        <li><a href="api/iqm.iqm_client.models.QuantumArchitectureSpecification.html#iqm.iqm_client.models.QuantumArchitectureSpecification.qubits">(iqm.iqm_client.models.QuantumArchitectureSpecification attribute)</a>
 </li>
       </ul></li>
-      <li><a href="api/iqm.iqm_client.instruction.Instruction.html#iqm.iqm_client.instruction.Instruction.qubits_validator">qubits_validator() (iqm.iqm_client.instruction.Instruction class method)</a>
+      <li><a href="api/iqm.iqm_client.models.Instruction.html#iqm.iqm_client.models.Instruction.qubits_validator">qubits_validator() (iqm.iqm_client.models.Instruction class method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -755,21 +744,15 @@ document.write(`
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/iqm.iqm_client.iqm_client.AuthRequest.html#iqm.iqm_client.iqm_client.AuthRequest.refresh_token">refresh_token (iqm.iqm_client.iqm_client.AuthRequest attribute)</a>
-
-      <ul>
-        <li><a href="api/iqm.iqm_client.iqm_client.Credentials.html#iqm.iqm_client.iqm_client.Credentials.refresh_token">(iqm.iqm_client.iqm_client.Credentials attribute)</a>
+      <li><a href="api/iqm.iqm_client.models.Metadata.html#iqm.iqm_client.models.Metadata.request">request (iqm.iqm_client.models.Metadata attribute)</a>
 </li>
-      </ul></li>
-      <li><a href="api/iqm.iqm_client.iqm_client.Metadata.html#iqm.iqm_client.iqm_client.Metadata.request">request (iqm.iqm_client.iqm_client.Metadata attribute)</a>
+      <li><a href="api/iqm.iqm_client.models.RunRequest.html#iqm.iqm_client.models.RunRequest">RunRequest (class in iqm.iqm_client.models)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/iqm.iqm_client.iqm_client.RunRequest.html#iqm.iqm_client.iqm_client.RunRequest">RunRequest (class in iqm.iqm_client.iqm_client)</a>
+      <li><a href="api/iqm.iqm_client.models.RunResult.html#iqm.iqm_client.models.RunResult">RunResult (class in iqm.iqm_client.models)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.iqm_client.RunResult.html#iqm.iqm_client.iqm_client.RunResult">RunResult (class in iqm.iqm_client.iqm_client)</a>
-</li>
-      <li><a href="api/iqm.iqm_client.iqm_client.RunStatus.html#iqm.iqm_client.iqm_client.RunStatus">RunStatus (class in iqm.iqm_client.iqm_client)</a>
+      <li><a href="api/iqm.iqm_client.models.RunStatus.html#iqm.iqm_client.models.RunStatus">RunStatus (class in iqm.iqm_client.models)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -777,20 +760,20 @@ document.write(`
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/iqm.iqm_client.iqm_client.serialize_qubit_mapping.html#iqm.iqm_client.iqm_client.serialize_qubit_mapping">serialize_qubit_mapping() (in module iqm.iqm_client.iqm_client)</a>
+      <li><a href="api/iqm.iqm_client.models.serialize_qubit_mapping.html#iqm.iqm_client.models.serialize_qubit_mapping">serialize_qubit_mapping() (in module iqm.iqm_client.models)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.iqm_client.RunRequest.html#iqm.iqm_client.iqm_client.RunRequest.shots">shots (iqm.iqm_client.iqm_client.RunRequest attribute)</a>
+      <li><a href="api/iqm.iqm_client.models.RunRequest.html#iqm.iqm_client.models.RunRequest.shots">shots (iqm.iqm_client.models.RunRequest attribute)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.iqm_client.SingleQubitMapping.html#iqm.iqm_client.iqm_client.SingleQubitMapping">SingleQubitMapping (class in iqm.iqm_client.iqm_client)</a>
+      <li><a href="api/iqm.iqm_client.models.SingleQubitMapping.html#iqm.iqm_client.models.SingleQubitMapping">SingleQubitMapping (class in iqm.iqm_client.models)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/iqm.iqm_client.iqm_client.Status.html#iqm.iqm_client.iqm_client.Status">Status (class in iqm.iqm_client.iqm_client)</a>
+      <li><a href="api/iqm.iqm_client.models.Status.html#iqm.iqm_client.models.Status">Status (class in iqm.iqm_client.models)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.iqm_client.RunResult.html#iqm.iqm_client.iqm_client.RunResult.status">status (iqm.iqm_client.iqm_client.RunResult attribute)</a>
+      <li><a href="api/iqm.iqm_client.models.RunResult.html#iqm.iqm_client.models.RunResult.status">status (iqm.iqm_client.models.RunResult attribute)</a>
 
       <ul>
-        <li><a href="api/iqm.iqm_client.iqm_client.RunStatus.html#iqm.iqm_client.iqm_client.RunStatus.status">(iqm.iqm_client.iqm_client.RunStatus attribute)</a>
+        <li><a href="api/iqm.iqm_client.models.RunStatus.html#iqm.iqm_client.models.RunStatus.status">(iqm.iqm_client.models.RunStatus attribute)</a>
 </li>
       </ul></li>
       <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#iqm.iqm_client.iqm_client.IQMClient.submit_circuits">submit_circuits() (iqm.iqm_client.iqm_client.IQMClient method)</a>
@@ -801,31 +784,29 @@ document.write(`
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/iqm.iqm_client.iqm_client.Metadata.html#iqm.iqm_client.iqm_client.Metadata.timestamps">timestamps (iqm.iqm_client.iqm_client.Metadata attribute)</a>
+      <li><a href="api/iqm.iqm_client.authentication.TokenManager.html#iqm.iqm_client.authentication.TokenManager.time_left_seconds">time_left_seconds() (iqm.iqm_client.authentication.TokenManager static method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/iqm.iqm_client.models.Metadata.html#iqm.iqm_client.models.Metadata.timestamps">timestamps (iqm.iqm_client.models.Metadata attribute)</a>
+</li>
       <li><a href="api/iqm.iqm_client.util.to_json_dict.html#iqm.iqm_client.util.to_json_dict">to_json_dict() (in module iqm.iqm_client.util)</a>
 </li>
   </ul></td>
-</tr></table>
-
-<h2 id="U">U</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/iqm.iqm_client.iqm_client.AuthRequest.html#iqm.iqm_client.iqm_client.AuthRequest.username">username (iqm.iqm_client.iqm_client.AuthRequest attribute)</a>
-
-      <ul>
-        <li><a href="api/iqm.iqm_client.iqm_client.Credentials.html#iqm.iqm_client.iqm_client.Credentials.username">(iqm.iqm_client.iqm_client.Credentials attribute)</a>
+      <li><a href="api/iqm.iqm_client.authentication.TokenClient.html#iqm.iqm_client.authentication.TokenClient">TokenClient (class in iqm.iqm_client.authentication)</a>
 </li>
-      </ul></li>
+      <li><a href="api/iqm.iqm_client.authentication.TokenManager.html#iqm.iqm_client.authentication.TokenManager">TokenManager (class in iqm.iqm_client.authentication)</a>
+</li>
+      <li><a href="api/iqm.iqm_client.authentication.TokenProviderInterface.html#iqm.iqm_client.authentication.TokenProviderInterface">TokenProviderInterface (class in iqm.iqm_client.authentication)</a>
+</li>
+      <li><a href="api/iqm.iqm_client.authentication.TokensFileReader.html#iqm.iqm_client.authentication.TokensFileReader">TokensFileReader (class in iqm.iqm_client.authentication)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/iqm.iqm_client.iqm_client.validate_circuit.html#iqm.iqm_client.iqm_client.validate_circuit">validate_circuit() (in module iqm.iqm_client.iqm_client)</a>
+      <li><a href="api/iqm.iqm_client.models.validate_circuit.html#iqm.iqm_client.models.validate_circuit">validate_circuit() (in module iqm.iqm_client.models)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -839,10 +820,10 @@ document.write(`
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/iqm.iqm_client.iqm_client.RunResult.html#iqm.iqm_client.iqm_client.RunResult.warnings">warnings (iqm.iqm_client.iqm_client.RunResult attribute)</a>
+      <li><a href="api/iqm.iqm_client.models.RunResult.html#iqm.iqm_client.models.RunResult.warnings">warnings (iqm.iqm_client.models.RunResult attribute)</a>
 
       <ul>
-        <li><a href="api/iqm.iqm_client.iqm_client.RunStatus.html#iqm.iqm_client.iqm_client.RunStatus.warnings">(iqm.iqm_client.iqm_client.RunStatus attribute)</a>
+        <li><a href="api/iqm.iqm_client.models.RunStatus.html#iqm.iqm_client.models.RunStatus.warnings">(iqm.iqm_client.models.RunStatus attribute)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -851,7 +832,7 @@ document.write(`
 <h2 id="Z">Z</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/iqm.iqm_client.iqm_client.HeraldingMode.html#iqm.iqm_client.iqm_client.HeraldingMode.ZEROS">ZEROS (iqm.iqm_client.iqm_client.HeraldingMode attribute)</a>
+      <li><a href="api/iqm.iqm_client.models.HeraldingMode.html#iqm.iqm_client.models.HeraldingMode.ZEROS">ZEROS (iqm.iqm_client.models.HeraldingMode attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -865,7 +846,7 @@ document.write(`
               
               
               
-                <footer class="prev-next-footer">
+                <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
 </div>
@@ -874,8 +855,6 @@ document.write(`
             </div>
             
             
-              
-                <div class="bd-sidebar-secondary bd-toc"></div>
               
             
           </div>
@@ -905,7 +884,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2024-05-06.
+  Last updated on 2024-06-06.
   <br/>
 </p>
   </div>
@@ -923,8 +902,8 @@ By IQM client developers
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+  <script src="_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341"></script>
 
   <footer class="bd-footer">
   </footer>

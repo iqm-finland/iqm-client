@@ -5,27 +5,9 @@ iqm.iqm\_client.iqm\_client
 
    
    
-   .. rubric:: Module Attributes
-
-   .. autosummary::
-      :toctree:
-   
-      CircuitBatch
-      QubitMapping
-      CircuitMeasurementResults
-      CircuitMeasurementResultsBatch
-   
    
 
    
-   
-   .. rubric:: Functions
-
-   .. autosummary::
-      :toctree:
-   
-      serialize_qubit_mapping
-      validate_circuit
    
    
 
@@ -37,35 +19,11 @@ iqm.iqm\_client.iqm\_client
       :toctree:
       :template: autosummary-class-template.rst
    
-      AuthRequest
-      Circuit
-      Credentials
-      ExternalToken
-      GrantType
-      HeraldingMode
       IQMClient
-      Metadata
-      RunRequest
-      RunResult
-      RunStatus
-      SingleQubitMapping
-      Status
    
    
 
    
-   
-   .. rubric:: Exceptions
-
-   .. autosummary::
-      :toctree:
-   
-      APITimeoutError
-      CircuitExecutionError
-      CircuitValidationError
-      ClientAuthenticationError
-      ClientConfigurationError
-      JobAbortionError
    
    
 

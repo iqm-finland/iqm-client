@@ -20,9 +20,7 @@ iqm.iqm\_client.iqm\_client.IQMClient
    
       ~IQMClient.__del__
       ~IQMClient._default_headers
-      ~IQMClient._get_bearer_token
       ~IQMClient._retry_request_on_error
-      ~IQMClient._update_tokens
       ~IQMClient._validate_circuit_instructions
       ~IQMClient._validate_instruction
       ~IQMClient._validate_qubit_mapping
