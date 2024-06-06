@@ -68,8 +68,6 @@ class IQMClient:
             it sends to the server. The signature is appended to IQMClients own version
             information and is intended to carry additional version information,
             for example the version information of the caller.
-
-    Keyword Args:
         token: Long-lived IQM token in plain text format.
             If ``token`` is given no other user authentication parameters should be given.
         tokens_file: Path to a tokens file used for authentication.

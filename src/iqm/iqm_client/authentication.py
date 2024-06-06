@@ -98,7 +98,7 @@ class TokenManager:
 
         if init_params_given and env_vars_given:
             raise ClientConfigurationError(
-                'Authentication parameters given both as initialisation args and as environment variabels: '
+                'Authentication parameters given both as initialisation args and as environment variables: '
                 + f'initialisation args {_format_names(init_params_given)}, '
                 + f'environment variables {_format_names(env_vars_given)}.'
                 + ' Parameter sources must not be mixed.'
@@ -187,7 +187,11 @@ class TokenProviderInterface(ABC):
 
     @abstractmethod
     def close(self) -> None:
-        """Closes authentication session."""
+        """Closes authentication session.
+
+        Raises:
+            ClientAuthenticationError: closing the session failed
+        """
 
 
 class ExternalToken(TokenProviderInterface):

@@ -395,7 +395,7 @@ def test_token_manager_invalid_combination_of_parameters(args, env, monkeypatch)
 def test_token_manager_mixed_source_of_parameters(args, env, monkeypatch):
     """Test that TokenManager raises ClientConfigurationError if the parameters are ambiguous"""
     _patch_env(monkeypatch.setenv, **env)
-    error_message = 'Authentication parameters given both as initialisation args and as environment variabels'
+    error_message = 'Authentication parameters given both as initialisation args and as environment variables'
     with pytest.raises(ClientConfigurationError, match=error_message):
         TokenManager(**args)
 
