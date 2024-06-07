@@ -602,10 +602,10 @@ class RunResult(BaseModel):
     ``RunResult.measurements[circuit_index][key][shot][qubit_index]`` is the result of measuring the
     ``qubit_index``'th qubit in measurement operation ``key`` in the shot ``shot`` in the
     ``circuit_index``'th circuit of the batch.
-    :attr:``measurements`` is present iff the status is ``'ready'``.
-    :attr:``message`` carries additional information for the ``'failed'`` status.
+    :attr:`measurements` is present iff the status is ``'ready'``.
+    :attr:`message` carries additional information for the ``'failed'`` status.
     If the status is ``'pending compilation'`` or ``'pending execution'``,
-    :attr:``measurements`` and :attr:``message`` are ``None``.
+    :attr:`measurements` and :attr:`message` are ``None``.
 
     The results are non-negative integers representing the computational basis state (for qubits, 0 or 1)
     that was the measurement outcome.
