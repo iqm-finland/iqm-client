@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>iqm.iqm_client.models.RunResult &#8212; IQM client 17.6 documentation</title>
+    <title>iqm.iqm_client.models.RunResult &#8212; IQM client 17.7 documentation</title>
   
   
   
@@ -37,7 +37,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=3ee479438cf8b5e0d341"></script>
 
-    <script src="../_static/documentation_options.js?v=0aece2ea"></script>
+    <script src="../_static/documentation_options.js?v=b11060f7"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
@@ -49,7 +49,7 @@
     <link rel="prev" title="iqm.iqm_client.models.RunRequest" href="iqm.iqm_client.models.RunRequest.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="2024-06-06"/>
+    <meta name="docbuild:last-update" content="2024-06-11"/>
   </head>
   
   
@@ -137,8 +137,8 @@
       
     
     
-    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 17.6 documentation - Home"/>
-    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="IQM client 17.6 documentation - Home"/>`);</script>
+    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 17.7 documentation - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="IQM client 17.7 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -403,10 +403,10 @@ results, represented as a nested list.
 <code class="docutils literal notranslate"><span class="pre">RunResult.measurements[circuit_index][key][shot][qubit_index]</span></code> is the result of measuring the
 <code class="docutils literal notranslate"><span class="pre">qubit_index</span></code>’th qubit in measurement operation <code class="docutils literal notranslate"><span class="pre">key</span></code> in the shot <code class="docutils literal notranslate"><span class="pre">shot</span></code> in the
 <code class="docutils literal notranslate"><span class="pre">circuit_index</span></code>’th circuit of the batch.
-:attr:<code class="docutils literal notranslate"><span class="pre">measurements</span></code> is present iff the status is <code class="docutils literal notranslate"><span class="pre">'ready'</span></code>.
-:attr:<code class="docutils literal notranslate"><span class="pre">message</span></code> carries additional information for the <code class="docutils literal notranslate"><span class="pre">'failed'</span></code> status.
+<a class="reference internal" href="#iqm.iqm_client.models.RunResult.measurements" title="iqm.iqm_client.models.RunResult.measurements"><code class="xref py py-attr docutils literal notranslate"><span class="pre">measurements</span></code></a> is present iff the status is <code class="docutils literal notranslate"><span class="pre">'ready'</span></code>.
+<a class="reference internal" href="#iqm.iqm_client.models.RunResult.message" title="iqm.iqm_client.models.RunResult.message"><code class="xref py py-attr docutils literal notranslate"><span class="pre">message</span></code></a> carries additional information for the <code class="docutils literal notranslate"><span class="pre">'failed'</span></code> status.
 If the status is <code class="docutils literal notranslate"><span class="pre">'pending</span> <span class="pre">compilation'</span></code> or <code class="docutils literal notranslate"><span class="pre">'pending</span> <span class="pre">execution'</span></code>,
-:attr:<code class="docutils literal notranslate"><span class="pre">measurements</span></code> and :attr:<code class="docutils literal notranslate"><span class="pre">message</span></code> are <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<a class="reference internal" href="#iqm.iqm_client.models.RunResult.measurements" title="iqm.iqm_client.models.RunResult.measurements"><code class="xref py py-attr docutils literal notranslate"><span class="pre">measurements</span></code></a> and <a class="reference internal" href="#iqm.iqm_client.models.RunResult.message" title="iqm.iqm_client.models.RunResult.message"><code class="xref py py-attr docutils literal notranslate"><span class="pre">message</span></code></a> are <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 <p>The results are non-negative integers representing the computational basis state (for qubits, 0 or 1)
 that was the measurement outcome.</p>
 <hr class="docutils" />
@@ -621,7 +621,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2024-06-06.
+  Last updated on 2024-06-11.
   <br/>
 </p>
   </div>
