@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 17.7
+============
+
+* Update documentation. `#128 <https://github.com/iqm-finland/iqm-client/pull/128>`_
+
 Version 17.6
 ============
 
