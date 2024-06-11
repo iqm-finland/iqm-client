@@ -24,20 +24,13 @@ import time
 from typing import Any, Optional
 from uuid import UUID
 
-from mockito import expect, mock, when
-from mockito.matchers import ANY
 import pytest
-import requests
 from requests import HTTPError, Response
 
 from iqm.iqm_client import (
-    AUTH_CLIENT_ID,
-    AUTH_REALM,
     DIST_NAME,
     REQUESTS_TIMEOUT,
-    AuthRequest,
     Circuit,
-    GrantType,
     HeraldingMode,
     Instruction,
     IQMClient,
@@ -74,34 +67,16 @@ def missing_run_id() -> UUID:
 
 @pytest.fixture()
 def sample_client(base_url) -> IQMClient:
-    return IQMClient(url=base_url)
+    client = IQMClient(url=base_url)
+    client._token_manager = None  # Do not use authentication
+    return client
 
 
 @pytest.fixture()
 def client_with_signature(base_url) -> IQMClient:
-    return IQMClient(url=base_url, client_signature='some-signature')
-
-
-@pytest.fixture()
-def credentials(base_url):
-    return {
-        'auth_server_url': f'{base_url}/auth',
-        'username': 'some_username',
-        'password': 'some_password',
-    }
-
-
-@pytest.fixture()
-def client_with_credentials(base_url, credentials):
-    prepare_tokens(300, 300, **credentials)
-    return IQMClient(url=base_url, **credentials)
-
-
-@pytest.fixture()
-def client_with_external_token(tokens_dict, credentials):
-    prepare_tokens(300, 300, **credentials)
-    tokens_path = os.path.dirname(os.path.realpath(__file__)) + '/resources/tokens.json'
-    return IQMClient(tokens_dict['auth_server_url'], tokens_file=tokens_path)
+    client = IQMClient(url=base_url, client_signature='some-signature')
+    client._token_manager = None  # Do not use authentication
+    return client
 
 
 @pytest.fixture()
@@ -131,16 +106,6 @@ def settings_dict():
     """
     settings_path = os.path.dirname(os.path.realpath(__file__)) + '/resources/settings.json'
     with open(settings_path, 'r', encoding='utf-8') as f:
-        return json.loads(f.read())
-
-
-@pytest.fixture
-def tokens_dict():
-    """
-    Reads and parses tokens file into a dictionary
-    """
-    tokens_path = os.path.dirname(os.path.realpath(__file__)) + '/resources/tokens.json'
-    with open(tokens_path, 'r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -522,50 +487,6 @@ def abort_job_failed() -> MockJsonResponse:
     return MockJsonResponse(400, {'detail': 'failed to abort job'})
 
 
-def prepare_tokens(
-    access_token_lifetime: int,
-    refresh_token_lifetime: int,
-    previous_refresh_token: Optional[str] = None,
-    status_code: int = 200,
-    **credentials,
-) -> dict[str, str]:
-    """Prepare tokens and set them to be returned for a token request.
-
-    Args:
-        access_token_lifetime: seconds from current time to access token expire time
-        refresh_token_lifetime: seconds from current time to refresh token expire time
-        previous_refresh_token: refresh token to be used in refresh request
-        status_code: status code to return for token request
-        credentials: dict containing auth_server_url, username and password
-
-    Returns:
-         Prepared tokens as a dict.
-    """
-    if previous_refresh_token is None:
-        request_data = AuthRequest(
-            client_id=AUTH_CLIENT_ID,
-            grant_type=GrantType.PASSWORD,
-            username=credentials['username'],
-            password=credentials['password'],
-        )
-    else:
-        request_data = AuthRequest(
-            client_id=AUTH_CLIENT_ID, grant_type=GrantType.REFRESH, refresh_token=previous_refresh_token
-        )
-
-    tokens = {
-        'access_token': make_token('Bearer', access_token_lifetime),
-        'refresh_token': make_token('Refresh', refresh_token_lifetime),
-    }
-    when(requests).post(
-        f'{credentials["auth_server_url"]}/realms/{AUTH_REALM}/protocol/openid-connect/token',
-        data=request_data.model_dump(exclude_none=True),
-        timeout=REQUESTS_TIMEOUT,
-    ).thenReturn(MockJsonResponse(status_code, tokens))
-
-    return tokens
-
-
 def make_token(token_type: str, lifetime: int) -> str:
     """Encode given token type and expire time as a token.
 
@@ -580,22 +501,6 @@ def make_token(token_type: str, lifetime: int) -> str:
     body = f'{{ "typ": "{token_type}", "exp": {int(time.time()) + lifetime} }}'
     body = b64encode(body.encode('utf-8')).decode('utf-8')
     return f'{empty}.{body}.{empty}'
-
-
-def expect_logout(auth_server_url: str, refresh_token: str, timeout: float = ANY(float)):
-    """Prepare for logout request.
-
-    Args:
-        auth_server_url: base URL of the authentication server
-        refresh_token: refresh token expected to be used in the request
-        timeout: expected timeout value, if any
-    """
-    request_data = AuthRequest(client_id=AUTH_CLIENT_ID, refresh_token=refresh_token)
-    expect(requests, times=1).post(
-        f'{auth_server_url}/realms/{AUTH_REALM}/protocol/openid-connect/logout',
-        data=request_data.model_dump(exclude_none=True),
-        timeout=timeout,
-    ).thenReturn(mock({'status_code': 204, 'text': '{}'}))
 
 
 def post_jobs_args(

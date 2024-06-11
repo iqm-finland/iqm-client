@@ -2,10 +2,16 @@
 Changelog
 =========
 
-Version 17.6
+Version 17.7
 ============
 
 * Added the naive move transpilation method for unified transpilation behavior for different external APIs. `#124 <https://github.com/iqm-finland/iqm-client/pull/124>`_
+
+Version 17.6
+============
+
+* Move all data models to ``iqm.iqm_client.models``. `#125 <https://github.com/iqm-finland/iqm-client/pull/125>`_
+* Refactor user authentication and check authentication parameters for conflicts. `#125 <https://github.com/iqm-finland/iqm-client/pull/125>`_
 
 Version 17.5
 ============
