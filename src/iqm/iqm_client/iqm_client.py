@@ -41,6 +41,7 @@ from iqm.iqm_client.errors import (
 )
 from iqm.iqm_client.models import (
     SUPPORTED_INSTRUCTIONS,
+    Circuit,
     CircuitBatch,
     HeraldingMode,
     Instruction,
