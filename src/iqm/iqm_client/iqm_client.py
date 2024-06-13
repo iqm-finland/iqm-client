@@ -346,22 +346,22 @@ class IQMClient:
     @staticmethod
     def _validate_circuit_moves(
         architecture: QuantumArchitectureSpecification, circuit: Circuit, qubit_mapping: Optional[dict[str, str]] = None
-    ):
-        """Validates that the moves in the circuit are not exciting the resonator.
+    ) -> None:
+        """Validates that the MOVE gates in the circuit are not exciting the resonator.
 
         Args:
-          architecture: the quantum architecture to check against
-          circuit: the circuit to be checked
+          architecture: Quantum architecture to check against.
+          circuit: Quantum circuit to validate.
           qubit_mapping: Mapping of logical qubit names to physical qubit names.
               Can be set to ``None`` if the ``circuit`` already uses physical qubit names.
         Raises:
-            CircuitExecutionError: IQM server specific exceptions if the moves are invalid
+            CircuitExecutionError: ``circuit`` fails the validation
         """
         move_gate = 'move'
         # Check if MOVE gates are allowed on this architecture
         if move_gate not in architecture.operations.keys():
-            if any(i for i in circuit.instructions if i.name == move_gate):
-                raise CircuitExecutionError('Move instruction not allowed for given device architecture.')
+            if any(i.name == move_gate for i in circuit.instructions):
+                raise CircuitExecutionError('MOVE instruction is not supported by the given device architecture.')
             return
         # Track the location of the resonator state
         if qubit_mapping:
