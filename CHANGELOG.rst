@@ -2,10 +2,15 @@
 Changelog
 =========
 
-Version 17.7
+Version 17.8
 ============
 
 * Added the naive move transpilation method for unified transpilation behavior for different external APIs. `#124 <https://github.com/iqm-finland/iqm-client/pull/124>`_
+
+Version 17.7
+============
+
+* Update documentation. `#128 <https://github.com/iqm-finland/iqm-client/pull/128>`_
 
 Version 17.6
 ============
