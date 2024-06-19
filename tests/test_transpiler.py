@@ -291,6 +291,7 @@ class TestNaiveMoveTranspiler:
         """Test if multiple resonators works."""
         sample_move_architecture['quantum_architecture']['qubits'].append('COMP_R2')
         sample_move_architecture['quantum_architecture']['operations']['move'].append(['QB1', 'COMP_R2'])
+        # Test with bad architecture
         arch = QuantumArchitecture(**sample_move_architecture).quantum_architecture
         circuit = Circuit(
             name='multi resonators',
@@ -300,7 +301,19 @@ class TestNaiveMoveTranspiler:
                 Instruction(name='cz', qubits=('QB1', 'QB3'), args={}),
             ),
         )
+        with pytest.raises(CircuitExecutionError):
+            transpiled_circuit = transpile_insert_moves(circuit, arch)
+
+        # Add the necessary CZ gates to make it a good architecture.
+        sample_move_architecture['quantum_architecture']['operations']['cz'] += (
+            [qb, 'COMP_R2'] for qb in sample_move_architecture['quantum_architecture']['qubits']
+        )
+        arch = QuantumArchitecture(**sample_move_architecture).quantum_architecture
         transpiled_circuit = transpile_insert_moves(circuit, arch)
+        IQMClient._validate_circuit_instructions(arch, [transpiled_circuit])
+
+        print(transpiled_circuit)
+
         assert self.check_equiv_without_moves(circuit, transpiled_circuit)
 
     def test_broken_circuit(self):
@@ -421,7 +434,10 @@ class TestResonatorStateTracker:
         status = ResonatorStateTracker.from_quantum_architecture_specification(arch)
         with pytest.raises(CircuitExecutionError):
             status.choose_move_pair(['QB1', 'QB2'], [])
-        r, q = status.choose_move_pair(['QB1', 'QB2', 'QB3'], [['cz', 'QB2', 'QB3'], ['prx', 'QB2'], ['prx', 'QB3']])
+        resonator_candidates = status.choose_move_pair(
+            ['QB1', 'QB2', 'QB3'], [['cz', 'QB2', 'QB3'], ['prx', 'QB2'], ['prx', 'QB3']]
+        )
+        r, q, _ = resonator_candidates[0]
         assert r == 'COMP_R'
         assert q == 'QB3'
 

@@ -199,7 +199,9 @@ class ResonatorStateTracker:
         """
         return [r for r, q in self.res_qb_map.items() if q in qubits and q not in self.resonators]
 
-    def choose_move_pair(self, qubits: list[str], remaining_instructions: list[list[str]]):
+    def choose_move_pair(
+        self, qubits: list[str], remaining_instructions: list[list[str]]
+    ) -> list[tuple[str, str, list[list[str]]]]:
         """Chooses which qubit of the given qubits to move into which resonator, given a sequence of instructions to be
         executed later for looking ahead.
 
@@ -211,7 +213,7 @@ class ResonatorStateTracker:
             CircuitExecutionError: When no move pair is available, most likely because the circuit was not routed.
 
         Returns:
-            tuple[str, str]: The resonator and qubit chosen to apply the move on.
+            list[tuple[str, str, list[list[str]]]]: A sorted preference list of resonator and qubit chosen to apply the move on.
         """
         r_candidates = [
             (r, q, remaining_instructions) for q, rs in self.available_resonators_to_move(qubits).items() for r in rs
@@ -221,8 +223,8 @@ class ResonatorStateTracker:
                 f'Unable to insert MOVE gates because none of the qubits {qubits} share a resonator. '
                 + 'This can be resolved by routing the circuit first without resonators.'
             )
-        r, q, _ = max(r_candidates, key=self._score_choice_heuristic)
-        return r, q
+        resonator_candidates = list(sorted(r_candidates, key=self._score_choice_heuristic, reverse=True))
+        return resonator_candidates
 
     def _score_choice_heuristic(self, args: tuple[str, str, list[list[str]]]):
         """A simple look ahead heuristic for choosing which qubit to move where. Counts the number of CZ gates until the
@@ -352,9 +354,26 @@ def _transpile_insert_moves(
                 remaining_instructions = [[i.name] + [qubit_mapping[q] for q in i.qubits] for i in instructions[idx:]]
                 # Pick which qubit-resonator pair to apply this cz to
                 # Pick from qubits already in a resonator or both targets if none off them are in a resonator
-                r, q1 = res_status.choose_move_pair(
+                resonator_candidates = res_status.choose_move_pair(
                     [res_status.res_qb_map[res] for res in res_match] if res_match else qubits, remaining_instructions
                 )
+                candidate_found = False
+                while resonator_candidates and not candidate_found:
+                    r, q1, _ = resonator_candidates.pop(0)
+                    q2 = [q for q in qubits if q != q1][0]
+                    instruction = Instruction(name='cz', qubits=(rev_qubit_mapping[q2], rev_qubit_mapping[r]), args={})
+                    try:
+                        IQMClient._validate_instruction(
+                            architecture=arch, instruction=instruction, qubit_mapping=qubit_mapping
+                        )
+                        candidate_found = True
+                        print("Found:", instruction)
+                    except CircuitExecutionError as e:
+                        candidate_found = False
+                        print("Not found:", instruction)
+                if not candidate_found:
+                    raise CircuitExecutionError('Unable to find a valid resonator-qubit pair to apply the CZ gate to.')
+
                 # remove the other qubit from the resonator if it was in
                 new_instructions += res_status.reset_as_move_instructions(
                     [res for res in res_match if res != r], alt_qubit_names=rev_qubit_mapping
@@ -362,10 +381,7 @@ def _transpile_insert_moves(
                 # move the qubit into the resonator if it was not yet in.
                 if not res_match:
                     new_instructions += res_status.create_move_instructions(q1, r, alt_qubit_names=rev_qubit_mapping)
-                q2 = [q for q in qubits if q != q1][0]
-                new_instructions.append(
-                    Instruction(name='cz', qubits=(rev_qubit_mapping[q2], rev_qubit_mapping[r]), args={})
-                )
+                new_instructions.append(instruction)
     return new_instructions
 
 
