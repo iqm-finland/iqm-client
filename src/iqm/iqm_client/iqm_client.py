@@ -350,10 +350,10 @@ class IQMClient:
         """Validates that the MOVE gates in the circuit are not exciting the resonator.
 
         Args:
-          architecture: Quantum architecture to check against.
-          circuit: Quantum circuit to validate.
-          qubit_mapping: Mapping of logical qubit names to physical qubit names.
-              Can be set to ``None`` if the ``circuit`` already uses physical qubit names.
+            architecture: Quantum architecture to check against.
+            circuit: Quantum circuit to validate.
+            qubit_mapping: Mapping of logical qubit names to physical qubit names.
+                Can be set to ``None`` if the ``circuit`` already uses physical qubit names.
         Raises:
             CircuitExecutionError: ``circuit`` fails the validation
         """
