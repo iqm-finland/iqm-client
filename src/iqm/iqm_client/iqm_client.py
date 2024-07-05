@@ -54,6 +54,7 @@ from iqm.iqm_client.models import (
     serialize_qubit_mapping,
     validate_circuit,
 )
+from iqm.iqm_client.options import CircuitCompilationOptions
 
 REQUESTS_TIMEOUT = float(os.environ.get('IQM_CLIENT_REQUESTS_TIMEOUT', 60.0))
 DEFAULT_TIMEOUT_SECONDS = 900
@@ -143,8 +144,7 @@ class IQMClient:
         custom_settings: Optional[dict[str, Any]] = None,
         calibration_set_id: Optional[UUID] = None,
         shots: int = 1,
-        max_circuit_duration_over_t2: Optional[float] = None,
-        heralding_mode: HeraldingMode = HeraldingMode.NONE,
+        options: CircuitCompilationOptions = CircuitCompilationOptions(),
     ) -> UUID:
         """Submits a batch of quantum circuits for execution on a quantum computer.
 
@@ -157,11 +157,7 @@ class IQMClient:
                 Note: This field should always be ``None`` in normal use.
             calibration_set_id: ID of the calibration set to use, or ``None`` to use the latest one
             shots: number of times ``circuits`` are executed, value must be greater than zero
-            max_circuit_duration_over_t2: Circuits are disqualified on the server if they are longer than this ratio
-                of the T2 time of the qubits. Setting this value to ``0.0`` turns off circuit duration checking.
-                The default value ``None`` instructs server to use server's default value in the checking.
-            heralding_mode: Heralding mode to use during the execution.
-
+            options: Various discrete options for quantum circuit compilation to pulse schedule.
         Returns:
             ID for the created job. This ID is needed to query the job status and the execution results.
         """
@@ -184,14 +180,18 @@ class IQMClient:
 
         self._validate_circuit_instructions(architecture, circuits, qubit_mapping)
 
+        new_options = options._validate_and_fill_in(architecture, circuits)
+
         data = RunRequest(
             qubit_mapping=serialized_qubit_mapping,
             circuits=circuits,
             custom_settings=custom_settings,
             calibration_set_id=calibration_set_id,
             shots=shots,
-            max_circuit_duration_over_t2=max_circuit_duration_over_t2,
-            heralding_mode=heralding_mode,
+            max_circuit_duration_over_t2=new_options.max_circuit_duration_over_t2,
+            heralding_mode=new_options.heralding_mode,
+            move_gate_validation=new_options.move_gate_validation,
+            move_gate_frame_tracking=new_options.move_gate_frame_tracking,
         )
 
         headers = {'Expect': '100-Continue', **self._default_headers()}

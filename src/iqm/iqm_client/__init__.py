@@ -20,6 +20,7 @@ from iqm.iqm_client.errors import *
 from iqm.iqm_client.iqm_client import *
 from iqm.iqm_client.models import *
 from iqm.iqm_client.transpile import *
+from iqm.iqm_client.options import *
 
 try:
     DIST_NAME = "iqm-client"

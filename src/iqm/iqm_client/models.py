@@ -22,6 +22,8 @@ from uuid import UUID
 from pydantic import BaseModel, Field, StrictStr, field_validator
 from pydantic_core.core_schema import ValidationInfo
 
+from iqm.iqm_client.options import HeraldingMode, MoveGateValidationMode, MoveGateFrameTrackingMode
+
 # Supported instruction configuration values:
 # - 'arity': the arity of the locus; use -1 to allow any arity.
 # - 'args': allowed arguments for the operation.
@@ -445,21 +447,6 @@ def serialize_qubit_mapping(qubit_mapping: dict[str, str]) -> list[SingleQubitMa
     return [SingleQubitMapping(logical_name=k, physical_name=v) for k, v in qubit_mapping.items()]
 
 
-class HeraldingMode(str, Enum):
-    """Heralding mode for circuit execution.
-
-    Heralding is the practice of generating data about the state of qubits prior to execution of a circuit.
-    This can be achieved by measuring the qubits immediately before executing each shot for a circuit."""
-
-    NONE = 'none'
-    """Do not do any heralding."""
-    ZEROS = 'zeros'
-    """Perform a heralding measurement, only retain shots with an all-zeros result.
-
-    Note: in this mode, the number of shots returned after execution will be less or equal to the requested amount
-    due to the post-selection based on heralding data."""
-
-
 class QuantumArchitectureSpecification(BaseModel):
     """Quantum architecture specification."""
 
@@ -479,9 +466,11 @@ class QuantumArchitectureSpecification(BaseModel):
         raw_qubit_connectivity = data.get('qubit_connectivity')
         if isinstance(raw_operations, list):
             data['operations'] = {
-                get_current_instruction_name(op): raw_qubit_connectivity
-                if is_multi_qubit_instruction(get_current_instruction_name(op))
-                else [[qb] for qb in raw_qubits]
+                get_current_instruction_name(op): (
+                    raw_qubit_connectivity
+                    if is_multi_qubit_instruction(get_current_instruction_name(op))
+                    else [[qb] for qb in raw_qubits]
+                )
                 for op in raw_operations
             }
 
@@ -552,6 +541,16 @@ Note: This field should be always None in normal use."""
         If set to 0.0, no circuits are disqualified. If set to None the server default value is used."""
     heralding_mode: HeraldingMode = Field(HeraldingMode.NONE)
     """which heralding mode to use during the execution of circuits in this request."""
+
+    move_validation_mode: MoveGateValidationMode = Field(MoveGateValidationMode.STRICT)
+    """Which method of MOVE gate validation to use for circuit compilation. By default, the MOVE gate
+    validation is "strict": MOVE gates have to come in pairs without any prx gates between MOVE gates.
+    If set to "allow_prx", prx gates between MOVE gates are not validated. If set to "none", MOVE gate validation
+    is skipped altogether."""
+    move_gate_frame_tracking_mode: MoveGateFrameTrackingMode = Field(MoveGateFrameTrackingMode.FULL)
+    """Which method of MOVE gate frame tracking to use for circuit compilation. By default ("full"), frame
+    tracking is applied as normal. If set to "no_detuning_correction", phase detuning corrections are
+    not added into the schedule by the compiler and need to be specified by an advanced user in the circuit."""
 
 
 CircuitMeasurementResults = dict[str, list[list[int]]]

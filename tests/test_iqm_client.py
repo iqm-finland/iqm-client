@@ -24,6 +24,7 @@ from iqm.iqm_client import (
     CircuitValidationError,
     ClientConfigurationError,
     HeraldingMode,
+    CircuitCompilationOptions,
     IQMClient,
     JobAbortionError,
     QuantumArchitectureSpecification,
@@ -178,7 +179,7 @@ def test_submit_circuits_sets_heralding_mode_in_run_request(
     expect(requests, times=1).post(jobs_url, **post_jobs_args(run_request_with_heralding)).thenReturn(submit_success)
     expect(requests, times=1).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
 
-    assert submit_circuits_args(run_request_with_heralding)['heralding_mode'] == expected_heralding_mode
+    assert submit_circuits_args(run_request_with_heralding)['options'].heralding_mode == expected_heralding_mode
     sample_client.submit_circuits(**submit_circuits_args(run_request_with_heralding))
 
     verifyNoUnwantedInteractions()
@@ -215,7 +216,9 @@ def test_submit_circuits_raises_with_invalid_heralding_mode(
     """
     when(requests).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
     with pytest.raises(ValueError, match="Input should be 'none' or 'zeros'"):
-        sample_client.submit_circuits(circuits=[], shots=10, heralding_mode='invalid')
+        sample_client.submit_circuits(
+            circuits=[], shots=10, options=CircuitCompilationOptions(heralding_mode='invalid')
+        )
 
 
 def test_get_run_adds_user_agent(

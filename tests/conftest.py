@@ -31,6 +31,7 @@ from iqm.iqm_client import (
     DIST_NAME,
     REQUESTS_TIMEOUT,
     Circuit,
+    CircuitCompilationOptions,
     HeraldingMode,
     Instruction,
     IQMClient,
@@ -550,6 +551,10 @@ def submit_circuits_args(run_request: RunRequest) -> dict[str, Any]:
         'custom_settings': run_request.custom_settings,
         'calibration_set_id': run_request.calibration_set_id,
         'shots': run_request.shots,
-        'max_circuit_duration_over_t2': run_request.max_circuit_duration_over_t2,
-        'heralding_mode': run_request.heralding_mode,
+        'options': CircuitCompilationOptions(
+            max_circuit_duration_over_t2=run_request.max_circuit_duration_over_t2,
+            heralding_mode=run_request.heralding_mode,
+            move_gate_validation=run_request.move_validation_mode,
+            move_gate_frame_tracking=run_request.move_gate_frame_tracking_mode,
+        ),
     }
