@@ -633,6 +633,7 @@ class IQMClient:
             Password must be set if ``auth_server_url`` is set.
     """
 
+    # pylint: disable=too-many-instance-attributes
     def __init__(
         self,
         url: str,
@@ -660,6 +661,7 @@ class IQMClient:
             self._credentials = _get_credentials(credentials)
             self._update_tokens()
         self._project_id = os.environ.get('PROJECT_ID', None)
+        self._job_id = os.environ.get('SLURM_JOB_ID', None)
 
     def __del__(self):
         try:
@@ -734,10 +736,16 @@ class IQMClient:
 
         self._validate_circuit_instructions(architecture, circuits, qubit_mapping)
 
-        if self._project_id is not None:
-            # attach project id to circuit metadata
-            circuits = update_batch_circuit_metadata({'project_id': self._project_id}, circuits)
-
+        # Metadata to attach to circuits
+        additional_metadata = {
+            'project_id': self._project_id,
+            'job_id': self._job_id
+        }
+        # Filter the metadata
+        additional_metadata = {k: v for k,v in additional_metadata.items()  if v is not None}
+        # Attach metadata to circuits metadata
+        circuits = update_batch_circuit_metadata(additional_metadata, circuits)
+        
         # ``bearer_token`` can be ``None`` if cocos we're connecting does not use authentication
         bearer_token = self._get_bearer_token()
 
