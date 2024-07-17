@@ -38,9 +38,9 @@ def test_iqm_client_initializes_with_project_id_and_job_id(base_url):
     del os.environ['PROJECT_ID']
     del os.environ['SLURM_JOB_ID']
     assert sample_client._project_id == 'ABC123'
-    assert sample_client._job_id == 'DEF456'
+    assert sample_client._slurm_job_id == 'DEF456'
 
-def test_update_batch_circuit_matadata(sample_circuit):
+def test_update_batch_circuit_metadata(sample_circuit):
     """Test updating batch circuit metadata."""
     metadata = {'project_id': 'ABC123'}
     circuits = update_batch_circuit_metadata(metadata, [sample_circuit])
