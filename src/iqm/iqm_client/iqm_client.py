@@ -661,7 +661,7 @@ class IQMClient:
             self._credentials = _get_credentials(credentials)
             self._update_tokens()
         self._project_id = os.environ.get('PROJECT_ID', None)
-        self._job_id = os.environ.get('SLURM_JOB_ID', None)
+        self._slurm_job_id = os.environ.get('SLURM_JOB_ID', None)
 
     def __del__(self):
         try:
@@ -739,7 +739,7 @@ class IQMClient:
         # Metadata to attach to circuits
         additional_metadata = {
             'project_id': self._project_id,
-            'job_id': self._job_id
+            'slurm_job_id': self._slurm_job_id
         }
         # Filter the metadata
         additional_metadata = {k: v for k,v in additional_metadata.items()  if v is not None}
