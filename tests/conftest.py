@@ -35,6 +35,8 @@ from iqm.iqm_client import (
     HeraldingMode,
     Instruction,
     IQMClient,
+    MoveGateFrameTrackingMode,
+    MoveGateValidationMode,
     RunRequest,
     SingleQubitMapping,
     __version__,
@@ -159,6 +161,28 @@ def create_sample_circuit(qubits: list[str], metadata) -> Circuit:
 
 
 @pytest.fixture
+def sample_move_circuit():
+    instructions = (
+        Instruction(
+            name='prx',
+            qubits=('QB1',),
+            args={'phase_t': 0.3, 'angle_t': -0.2},
+        ),
+        Instruction(
+            name='cz',
+            qubits=('QB1', 'COMP_R'),
+            args={},
+        ),
+        Instruction(
+            name='cz',
+            qubits=('QB2', 'COMP_R'),
+            args={},
+        ),
+    )
+    return Circuit(name='COMP_R circuit', instructions=instructions)
+
+
+@pytest.fixture
 def sample_circuit_with_raw_instructions(sample_circuit_metadata):
     """
     A sample circuit with instructions defined by dicts for testing if
@@ -207,6 +231,43 @@ def run_request_with_heralding(sample_circuit) -> RunRequest:
         circuits=[sample_circuit],
         shots=10,
         heralding_mode=HeraldingMode.ZEROS,
+    )
+
+
+@pytest.fixture()
+def run_request_with_move_validation(sample_circuit) -> RunRequest:
+    return RunRequest(
+        circuits=[sample_circuit],
+        shots=10,
+        move_validation_mode=MoveGateValidationMode.STRICT,
+    )
+
+
+@pytest.fixture()
+def run_request_with_incompatible_options(sample_circuit) -> RunRequest:
+    return RunRequest(
+        circuits=[sample_circuit],
+        shots=10,
+        move_validation_mode=MoveGateValidationMode.NONE,
+        move_gate_frame_tracking_mode=MoveGateFrameTrackingMode.FULL,
+    )
+
+
+@pytest.fixture()
+def run_request_without_prx_move_validation(sample_circuit) -> RunRequest:
+    return RunRequest(
+        circuits=[sample_circuit],
+        shots=10,
+        move_validation_mode=MoveGateValidationMode.ALLOW_PRX,
+    )
+
+
+@pytest.fixture()
+def run_request_with_move_gate_frame_tracking(sample_circuit) -> RunRequest:
+    return RunRequest(
+        circuits=[sample_circuit],
+        shots=10,
+        move_gate_frame_tracking_mode=MoveGateFrameTrackingMode.FULL,
     )
 
 
@@ -476,6 +537,11 @@ def submit_failed_auth() -> MockJsonResponse:
 @pytest.fixture()
 def quantum_architecture_success(sample_quantum_architecture) -> MockJsonResponse:
     return MockJsonResponse(200, sample_quantum_architecture)
+
+
+@pytest.fixture()
+def move_architecture_success(sample_move_architecture) -> MockJsonResponse:
+    return MockJsonResponse(200, sample_move_architecture)
 
 
 @pytest.fixture()

@@ -20,11 +20,11 @@ import requests
 from requests import HTTPError
 
 from iqm.iqm_client import (
+    CircuitCompilationOptions,
     CircuitExecutionError,
     CircuitValidationError,
     ClientConfigurationError,
     HeraldingMode,
-    CircuitCompilationOptions,
     IQMClient,
     JobAbortionError,
     QuantumArchitectureSpecification,
@@ -57,7 +57,8 @@ def test_submit_circuits_adds_user_agent(
     expect(requests, times=1).post(jobs_url, **post_jobs_args(minimal_run_request)).thenReturn(submit_success)
     expect(requests, times=1).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
 
-    sample_client.submit_circuits(**submit_circuits_args(minimal_run_request))
+    with pytest.warns(UserWarning, match='.+Ignoring the option.'):
+        sample_client.submit_circuits(**submit_circuits_args(minimal_run_request))
 
     verifyNoUnwantedInteractions()
     unstub()
@@ -79,7 +80,8 @@ def test_submit_circuits_adds_user_agent_with_client_signature(
     ).thenReturn(submit_success)
     expect(requests, times=1).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
 
-    client_with_signature.submit_circuits(**submit_circuits_args(minimal_run_request))
+    with pytest.warns(UserWarning, match='.+Ignoring the option.'):
+        client_with_signature.submit_circuits(**submit_circuits_args(minimal_run_request))
 
     verifyNoUnwantedInteractions()
     unstub()
@@ -101,6 +103,11 @@ def test_submit_circuits_adds_user_agent_with_client_signature(
         ('run_request_without_qubit_mapping', True, None),
         ('run_request_with_calibration_set_id', True, None),
         ('run_request_with_duration_check_disabled', True, None),
+        (
+            'run_request_with_incompatible_options',
+            False,
+            'Unable to perform full MOVE gate frame tracking if MOVE gate validation is not "strict" or "allow_prx".',
+        ),
     ],
 )
 def test_submit_circuits_returns_id(
@@ -123,9 +130,9 @@ def test_submit_circuits_returns_id(
 
     if valid_request:
         expect(requests, times=1).post(jobs_url, **post_jobs_args(run_request)).thenReturn(submit_success)
-
     if error_message is None:
-        assert sample_client.submit_circuits(**submit_circuits_args(run_request)) == existing_run_id
+        with pytest.warns(UserWarning, match='.+Ignoring the option.'):
+            assert sample_client.submit_circuits(**submit_circuits_args(run_request)) == existing_run_id
     else:
         with pytest.raises(ValueError, match=error_message):
             sample_client.submit_circuits(**submit_circuits_args(run_request))
@@ -180,7 +187,8 @@ def test_submit_circuits_sets_heralding_mode_in_run_request(
     expect(requests, times=1).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
 
     assert submit_circuits_args(run_request_with_heralding)['options'].heralding_mode == expected_heralding_mode
-    sample_client.submit_circuits(**submit_circuits_args(run_request_with_heralding))
+    with pytest.warns(UserWarning, match='.+Ignoring the option.'):
+        sample_client.submit_circuits(**submit_circuits_args(run_request_with_heralding))
 
     verifyNoUnwantedInteractions()
     unstub()
@@ -201,7 +209,8 @@ def test_submit_circuits_gets_architecture_once(
     expect(requests, times=1).post(jobs_url, **post_jobs_args(minimal_run_request)).thenReturn(submit_success)
     # Get architecture explicitly and then submit job
     sample_client.get_quantum_architecture()
-    sample_client.submit_circuits(**submit_circuits_args(minimal_run_request))
+    with pytest.warns(UserWarning, match='.+Ignoring the option.'):
+        sample_client.submit_circuits(**submit_circuits_args(minimal_run_request))
     verifyNoUnwantedInteractions()
     unstub()
 
@@ -714,6 +723,45 @@ def test_abort_job_failed(status_code, sample_client, existing_job_url, existing
 
     with pytest.raises(JobAbortionError):
         sample_client.abort_job(existing_run_id)
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+@pytest.mark.parametrize(
+    'run_request_name, quantum_architecture_name',
+    [
+        ('run_request_with_move_validation', 'quantum_architecture_success'),
+        ('run_request_without_prx_move_validation', 'quantum_architecture_success'),
+        ('run_request_with_move_gate_frame_tracking', 'quantum_architecture_success'),
+        ('run_request_with_move_validation', 'move_architecture_success'),
+        ('run_request_without_prx_move_validation', 'move_architecture_success'),
+        ('run_request_with_move_gate_frame_tracking', 'move_architecture_success'),
+    ],
+)
+def test_warning_useless_compiler_options(
+    sample_client,
+    sample_move_circuit,
+    jobs_url,
+    run_request_name,
+    request,
+    submit_success,
+    quantum_architecture_url,
+    quantum_architecture_name,
+):
+    """
+    Tests submitting circuits for execution
+    """
+    run_request = request.getfixturevalue(run_request_name)
+    quantum_architecture_success = request.getfixturevalue(quantum_architecture_name)
+    if quantum_architecture_name == 'move_architecture_success':
+        run_request.circuits = [sample_move_circuit]
+    print(run_request)
+    when(requests).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
+    expect(requests, times=1).post(jobs_url, **post_jobs_args(run_request)).thenReturn(submit_success)
+
+    with pytest.warns(UserWarning, match='.+Ignoring the option.'):
+        sample_client.submit_circuits(**submit_circuits_args(run_request))
 
     verifyNoUnwantedInteractions()
     unstub()

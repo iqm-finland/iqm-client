@@ -43,7 +43,7 @@ from iqm.iqm_client.models import (
     SUPPORTED_INSTRUCTIONS,
     Circuit,
     CircuitBatch,
-    HeraldingMode,
+    CircuitCompilationOptions,
     Instruction,
     QuantumArchitecture,
     QuantumArchitectureSpecification,
@@ -54,7 +54,6 @@ from iqm.iqm_client.models import (
     serialize_qubit_mapping,
     validate_circuit,
 )
-from iqm.iqm_client.options import CircuitCompilationOptions
 
 REQUESTS_TIMEOUT = float(os.environ.get('IQM_CLIENT_REQUESTS_TIMEOUT', 60.0))
 DEFAULT_TIMEOUT_SECONDS = 900
@@ -190,8 +189,8 @@ class IQMClient:
             shots=shots,
             max_circuit_duration_over_t2=new_options.max_circuit_duration_over_t2,
             heralding_mode=new_options.heralding_mode,
-            move_gate_validation=new_options.move_gate_validation,
-            move_gate_frame_tracking=new_options.move_gate_frame_tracking,
+            move_validation_mode=new_options.move_gate_validation,
+            move_gate_frame_tracking_mode=new_options.move_gate_frame_tracking,
         )
 
         headers = {'Expect': '100-Continue', **self._default_headers()}
