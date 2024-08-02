@@ -379,7 +379,9 @@ class IQMClient:
                             'Move instruction only allowed between qubit and resonator, not {instr.qubits}.'
                         )
                     resonator_state_loc[res] = qb if resonator_state_loc[res] == res else res
-                elif not any(qb in resonator_state_loc.keys() and resonator_state_loc[qb] == qb for qb in instr.qubits):
+                elif instr.name != "barrier" and not any(
+                    qb in resonator_state_loc.keys() and resonator_state_loc[qb] == qb for qb in instr.qubits
+                ):
                     raise CircuitExecutionError(
                         f'Instruction {instr.name} on {instr.qubits} while they hold a resonator state. \
                             Current resonator state locations: {resonator_state_loc}.'
