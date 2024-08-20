@@ -143,7 +143,7 @@ class IQMClient:
         custom_settings: Optional[dict[str, Any]] = None,
         calibration_set_id: Optional[UUID] = None,
         shots: int = 1,
-        options: CircuitCompilationOptions = CircuitCompilationOptions(),
+        options: Optional[CircuitCompilationOptions] = None,
     ) -> UUID:
         """Submits a batch of quantum circuits for execution on a quantum computer.
 
@@ -163,6 +163,8 @@ class IQMClient:
 
         if shots < 1:
             raise ValueError('Number of shots must be greater than zero.')
+        if options is None:
+            options = CircuitCompilationOptions()
 
         for i, circuit in enumerate(circuits):
             try:
@@ -179,7 +181,7 @@ class IQMClient:
 
         self._validate_circuit_instructions(architecture, circuits, qubit_mapping)
 
-        new_options = options._validate_and_fill_in(architecture, circuits)
+        options._validate_sensible_use(architecture, circuits)
 
         data = RunRequest(
             qubit_mapping=serialized_qubit_mapping,
@@ -187,10 +189,10 @@ class IQMClient:
             custom_settings=custom_settings,
             calibration_set_id=calibration_set_id,
             shots=shots,
-            max_circuit_duration_over_t2=new_options.max_circuit_duration_over_t2,
-            heralding_mode=new_options.heralding_mode,
-            move_validation_mode=new_options.move_gate_validation,
-            move_gate_frame_tracking_mode=new_options.move_gate_frame_tracking,
+            max_circuit_duration_over_t2=options.max_circuit_duration_over_t2,
+            heralding_mode=options.heralding_mode,
+            move_validation_mode=options.move_gate_validation,
+            move_gate_frame_tracking_mode=options.move_gate_frame_tracking,
         )
 
         headers = {'Expect': '100-Continue', **self._default_headers()}

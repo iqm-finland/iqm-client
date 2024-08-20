@@ -15,6 +15,7 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Final, Optional, Union
 from uuid import UUID
@@ -556,27 +557,26 @@ class MoveGateFrameTrackingMode(Enum):
     """Do not perform any MOVE gate frame tracking. The user is expected to do these manually."""
 
 
+@dataclass(frozen=True)
 class CircuitCompilationOptions:
-    """Various discrete options for quantum circuit compilation to pulse schedule."""
+    """Various discrete options for quantum circuit compilation to pulse schedule.
 
-    def __init__(
-        self,
-        max_circuit_duration_over_t2: Optional[float] = None,
-        heralding_mode: Optional[HeraldingMode] = None,
-        move_gate_validation: Optional[MoveGateValidationMode] = None,
-        move_gate_frame_tracking: Optional[MoveGateFrameTrackingMode] = None,
-    ) -> None:
-        """Initialize the circuit compilation options.
+    max_circuit_duration_over_t2:  Circuits are disqualified on the server if they are longer than this ratio
+        of the T2 time of the qubits. Setting this value to ``0.0`` turns off circuit duration checking.
+        The default value ``None`` instructs server to use server's default value in the checking.
+    heralding_mode: Heralding mode to use during the execution.
+    move_gate_validation: The MOVE gate validation mode for circuit compilation.
+    move_gate_frame_tracking: The MOVE gate frame tracking mode for circuit compilation.
+    """
 
-        Args:
-            max_circuit_duration_over_t2:  Circuits are disqualified on the server if they are longer than this ratio
-                of the T2 time of the qubits. Setting this value to ``0.0`` turns off circuit duration checking.
-                The default value ``None`` instructs server to use server's default value in the checking.
-            heralding_mode: Heralding mode to use during the execution.
-            move_gate_validation: The MOVE gate validation mode for circuit compilation.
-            move_gate_frame_tracking: The MOVE gate frame tracking mode for circuit compilation.
-        """
-        if move_gate_frame_tracking == MoveGateFrameTrackingMode.FULL and move_gate_validation not in [
+    max_circuit_duration_over_t2: Optional[float] = None
+    heralding_mode: HeraldingMode = HeraldingMode.NONE
+    move_gate_validation: MoveGateValidationMode = MoveGateValidationMode.STRICT
+    move_gate_frame_tracking: MoveGateFrameTrackingMode = MoveGateFrameTrackingMode.FULL
+
+    def __post_init__(self):
+        """Validate the options."""
+        if self.move_gate_frame_tracking == MoveGateFrameTrackingMode.FULL and self.move_gate_validation not in [
             MoveGateValidationMode.STRICT,
             MoveGateValidationMode.ALLOW_PRX,
             None,
@@ -585,14 +585,8 @@ class CircuitCompilationOptions:
                 'Unable to perform full MOVE gate frame tracking if MOVE gate validation is not'
                 + ' "strict" or "allow_prx".'
             )
-        self.max_circuit_duration_over_t2 = max_circuit_duration_over_t2
-        self.heralding_mode = heralding_mode
-        self.move_gate_validation = move_gate_validation
-        self.move_gate_frame_tracking = move_gate_frame_tracking
 
-    def _validate_and_fill_in(
-        self, arch: QuantumArchitectureSpecification, circuit: 'CircuitBatch'
-    ) -> 'CircuitCompilationOptions':
+    def _validate_sensible_use(self, arch: QuantumArchitectureSpecification, circuit: 'CircuitBatch') -> None:
         """Validate the options and fill in the missing values."""
         if 'move' not in arch.operations.keys():
             if self.move_gate_validation is not None:
@@ -608,26 +602,6 @@ class CircuitCompilationOptions:
                 warnings.warn(
                     'MOVE gate frame tracking is only relevant for circuits with MOVE gates. Ignoring the option.'
                 )
-        new_options = CircuitCompilationOptions(
-            max_circuit_duration_over_t2=self.max_circuit_duration_over_t2,
-            heralding_mode=self.heralding_mode if self.heralding_mode is not None else HeraldingMode.NONE,
-            move_gate_validation=(
-                self.move_gate_validation if self.move_gate_validation is not None else MoveGateValidationMode.STRICT
-            ),
-            move_gate_frame_tracking=(
-                self.move_gate_frame_tracking
-                if self.move_gate_frame_tracking is not None
-                else MoveGateFrameTrackingMode.FULL
-            ),
-        )
-        return new_options
-
-    def __str__(self) -> str:
-        return (
-            f'CircuitCompilationOptions(max_circuit_duration_over_t2={self.max_circuit_duration_over_t2}, '
-            f'heralding_mode={self.heralding_mode}, move_gate_validation={self.move_gate_validation}, '
-            f'move_gate_frame_tracking={self.move_gate_frame_tracking})'
-        )
 
 
 class RunRequest(BaseModel):
