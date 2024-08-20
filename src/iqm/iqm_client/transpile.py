@@ -41,14 +41,14 @@ class ResonatorStateTracker:
     gates.
 
     Args:
-        move_calibrations: A dictionary describing between which qubits a move gate is
-        available, for each resonator, i.e. `move_calibrations[resonator] = [qubit]`
+        available_moves: A dictionary describing between which qubits a move gate is
+        available, for each resonator, i.e. `available_moves[resonator] = [qubit]`
     """
 
     move_gate = 'move'
 
-    def __init__(self, move_calibrations: dict[str, list[str]]) -> None:
-        self.move_calibrations = move_calibrations
+    def __init__(self, available_moves: dict[str, list[str]]) -> None:
+        self.available_moves = available_moves
         self.res_qb_map = {r: r for r in self.resonators}
 
     @staticmethod
@@ -59,10 +59,10 @@ class ResonatorStateTracker:
             arch: The architecture to track the resonator state on.
         """
         resonators = tuple(q for q in arch.qubits if q.startswith('COMP_R'))
-        move_calibrations: dict[str, list[str]] = {
+        available_moves: dict[str, list[str]] = {
             r: [q for q, r2 in arch.operations[ResonatorStateTracker.move_gate] if r == r2] for r in resonators
         }
-        return ResonatorStateTracker(move_calibrations)
+        return ResonatorStateTracker(available_moves)
 
     @staticmethod
     def from_circuit(circuit: Circuit) -> 'ResonatorStateTracker':
@@ -82,25 +82,22 @@ class ResonatorStateTracker:
         Args:
             instructions: The instructions to track the resonator state on.
         """
-        move_calibrations: dict[str, list[str]] = {}
+        available_moves: dict[str, list[str]] = {}
         for i in instructions:
             if i.name == ResonatorStateTracker.move_gate:
                 q, r = i.qubits
-                if r in move_calibrations:
-                    move_calibrations[r].append(q)
-                else:
-                    move_calibrations[r] = [q]
-        return ResonatorStateTracker(move_calibrations)
+                available_moves.setdefault(r, []).append(q)
+        return ResonatorStateTracker(available_moves)
 
     @property
     def resonators(self) -> Iterable[str]:
         """Getter for the resonator registers that are being tracked."""
-        return self.move_calibrations
+        return self.available_moves
 
     @property
     def supports_move(self) -> bool:
         """Bool whether any move gate is allowed."""
-        return self.move_calibrations != {}
+        return bool(self.available_moves)
 
     def apply_move(self, qubit: str, resonator: str) -> None:
         """Apply the logical changes of the resonator state location when a move gate between qubit and resonator is
@@ -117,7 +114,7 @@ class ResonatorStateTracker:
         """
         if (
             resonator in self.resonators
-            and qubit in self.move_calibrations[resonator]
+            and qubit in self.available_moves[resonator]
             and self.res_qb_map[resonator] in [qubit, resonator]
         ):
             self.res_qb_map[resonator] = qubit if self.res_qb_map[resonator] == resonator else resonator
@@ -131,13 +128,15 @@ class ResonatorStateTracker:
         apply_move: Optional[bool] = True,
         alt_qubit_names: Optional[dict[str, str]] = None,
     ) -> Iterable[Instruction]:
-        """Create the move instructions needed to move qubit and resonator.
+        """Create the move instructions needed to move the given resonator state into the resonator if needed and then
+        move resonator state to the given qubit.
 
         Args:
             qubit: The qubit
             resonator: The resonator
             apply_move: Whether the moves should be applied to the resonator tracking state.
             Defaults to True.
+            alt_qubit_names: Mapping of logical qubit names to physical qubit names.
 
         Yields:
             The one or two move instructions needed.
@@ -186,7 +185,7 @@ class ResonatorStateTracker:
         Returns:
             The dict that maps each qubit to a list of resonators.
         """
-        return {q: [r for r in self.resonators if q in self.move_calibrations[r]] for q in qubits}
+        return {q: [r for r in self.resonators if q in self.available_moves[r]] for q in qubits}
 
     def resonators_holding_qubits(self, qubits: Iterable[str]) -> list[str]:
         """Returns the resonators that are currently holding one of the given qubit states.
@@ -254,7 +253,7 @@ class ResonatorStateTracker:
         Returns:
             The remapped qubits
         """
-        return [self.res_qb_map[q] if q in self.res_qb_map else q for q in qubits]
+        return [self.res_qb_map.get(q, q) for q in qubits]
 
 
 def transpile_insert_moves(
