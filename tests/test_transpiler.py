@@ -17,6 +17,8 @@ from iqm.iqm_client.transpile import ResonatorStateTracker
 
 
 class TestNaiveMoveTranspiler:
+    # pylint: disable=too-many-public-methods
+
     @pytest.fixture(autouse=True)
     def init_arch(self, sample_move_architecture: dict[str, Any]):
         # pylint: disable=attribute-defined-outside-init
@@ -332,6 +334,78 @@ class TestNaiveMoveTranspiler:
         )
         with pytest.raises(CircuitExecutionError):
             self.insert(c, qb_map={'QB5': 'QB5'})
+
+    def test_unavailable_cz(self):
+        """Test for unavailable CZ gates. This test reproduces the bug COMP-1485."""
+        # pylint: disable=inconsistent-quotes
+        arch_json = {
+            "quantum_architecture": {
+                "name": "Ndonis",
+                "operations": {
+                    "prx": [["QB1"], ["QB2"]],
+                    "cz": [["QB2", "COMP_R"]],
+                    "move": [["QB1", "COMP_R"], ["QB2", "COMP_R"]],
+                    "measure": [["QB1"], ["QB2"]],
+                    "barrier": [],
+                },
+                "qubits": ["COMP_R", "QB1", "QB2"],
+                "qubit_connectivity": [["QB1", "COMP_R"], ["QB2", "COMP_R"]],
+            }
+        }
+
+        c = Circuit(
+            name='bell',
+            instructions=(  # prx uses wrong values for the H gate, but that's not the point of this test
+                Instruction(
+                    name='prx',
+                    qubits=('QB1',),
+                    args={'phase_t': 0.3, 'angle_t': -0.2},
+                ),
+                Instruction(
+                    name='prx',
+                    qubits=('QB2',),
+                    args={'phase_t': 0.3, 'angle_t': -0.2},
+                ),
+                Instruction(
+                    name='cz',
+                    qubits=('QB1', 'QB2'),
+                    args={},
+                ),
+                Instruction(
+                    name='prx',
+                    qubits=('QB2',),
+                    args={'phase_t': 0.3, 'angle_t': -0.2},
+                ),
+            ),
+        )
+        c2 = c = Circuit(
+            name='bell',
+            instructions=(  # prx uses wrong values for the H gate, but that's not the point of this test
+                Instruction(
+                    name='prx',
+                    qubits=('QB1',),
+                    args={'phase_t': 0.3, 'angle_t': -0.2},
+                ),
+                Instruction(
+                    name='prx',
+                    qubits=('QB2',),
+                    args={'phase_t': 0.3, 'angle_t': -0.2},
+                ),
+                Instruction(
+                    name='cz',
+                    qubits=('QB2', 'QB1'),  # Swapped qubits
+                    args={},
+                ),
+                Instruction(
+                    name='prx',
+                    qubits=('QB2',),
+                    args={'phase_t': 0.3, 'angle_t': -0.2},
+                ),
+            ),
+        )
+        arch = QuantumArchitecture(**arch_json).quantum_architecture
+        circuits = [transpile_insert_moves(c, arch=arch), transpile_insert_moves(c2, arch=arch)]
+        IQMClient._validate_circuit_instructions(arch, circuits)
 
 
 class TestResonatorStateTracker:
