@@ -241,8 +241,7 @@ class Instruction(BaseModel):
         name = value
         if name not in SUPPORTED_INSTRUCTIONS:
             raise ValueError(
-                f'Unknown instruction "{name}". '
-                f'Supported instructions are \"{", ".join(SUPPORTED_INSTRUCTIONS.keys())}\"'
+                f'Unknown instruction "{name}". ' f'Supported instructions are \"{", ".join(SUPPORTED_INSTRUCTIONS)}\"'
             )
         return name
 
@@ -281,8 +280,8 @@ class Instruction(BaseModel):
             raise ValueError('Could not validate args because the name of the instruction did not pass validation')
 
         # Check argument names
-        submitted_arg_names = set(args.keys())
-        supported_arg_names = set(SUPPORTED_INSTRUCTIONS[name]['args'].keys())
+        submitted_arg_names = set(args)
+        supported_arg_names = set(SUPPORTED_INSTRUCTIONS[name]['args'])
         if submitted_arg_names != supported_arg_names:
             raise ValueError(
                 f'The instruction "{name}" requires '
@@ -493,7 +492,7 @@ class QuantumArchitectureSpecification(BaseModel):
         Returns:
              True if the operation and the loci are equivalent.
         """
-        if set(ops1.keys()) != set(ops2.keys()):
+        if set(ops1) != set(ops2):
             return False
         for [op, c1] in ops1.items():
             c2 = ops2[op]
@@ -588,7 +587,7 @@ class CircuitCompilationOptions:
 
     def _validate_sensible_use(self, arch: QuantumArchitectureSpecification, circuit: 'CircuitBatch') -> None:
         """Validate the options and fill in the missing values."""
-        if 'move' not in arch.operations.keys():
+        if 'move' not in arch.operations:
             if self.move_gate_validation is not None:
                 warnings.warn('MOVE gate validation is not supported by the architecture. Ignoring the option.')
             elif self.move_gate_frame_tracking is not None:

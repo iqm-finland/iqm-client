@@ -360,7 +360,7 @@ class IQMClient:
         """
         move_gate = 'move'
         # Check if MOVE gates are allowed on this architecture
-        if move_gate not in architecture.operations.keys():
+        if move_gate not in architecture.operations:
             if any(i.name == move_gate for i in circuit.instructions):
                 raise CircuitExecutionError('MOVE instruction is not supported by the given device architecture.')
             return
@@ -376,13 +376,13 @@ class IQMClient:
             if any(qb in resonator_state_loc.values() for qb in instr.qubits):
                 if instr.name == move_gate:
                     qb, res = instr.qubits
-                    if res not in resonator_state_loc.keys() or qb in resonator_state_loc.keys():
+                    if res not in resonator_state_loc or qb in resonator_state_loc:
                         raise CircuitExecutionError(
                             'Move instruction only allowed between qubit and resonator, not {instr.qubits}.'
                         )
                     resonator_state_loc[res] = qb if resonator_state_loc[res] == res else res
                 elif instr.name != 'barrier' and not any(
-                    qb in resonator_state_loc.keys() and resonator_state_loc[qb] == qb for qb in instr.qubits
+                    qb in resonator_state_loc and resonator_state_loc[qb] == qb for qb in instr.qubits
                 ):
                     raise CircuitExecutionError(
                         f'Instruction {instr.name} on {instr.qubits} while they hold a resonator state. \

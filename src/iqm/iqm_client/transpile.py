@@ -95,7 +95,7 @@ class ResonatorStateTracker:
     @property
     def resonators(self) -> Iterable[str]:
         """Getter for the resonator registers that are being tracked."""
-        return self.move_calibrations.keys()
+        return self.move_calibrations
 
     @property
     def supports_move(self) -> bool:
