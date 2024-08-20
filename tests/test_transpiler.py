@@ -320,10 +320,10 @@ class TestNaiveMoveTranspiler:
 
         assert self.check_equiv_without_moves(circuit, transpiled_circuit)
 
-    def test_broken_circuit(self):
-        """Test for a broken circuit"""
+    def test_circuit_on_nonexisting_qubits(self):
+        """Test for a broken circuit on a non-existing qubit in the architecture."""
         c = Circuit(
-            name='broken',
+            name='QB5 does not exist',
             instructions=(
                 Instruction(
                     name='prx',
