@@ -125,7 +125,7 @@ IQM does not provide an open source circuit transpilation library, so this will 
 To obtain the necessary information for circuit transpilation, :meth:`IQMClient.get_quantum_architecture` returns the names of the qubits, qubit connectivity,
 and native operations. This information should enable circuit transpilation for IQM quantum architectures.
 
-With the notable exception of transpiling the MOVE gate for the IQM quantum computers with a computational resonator.
+With the notable exception of transpiling the MOVE gate for the IQM quantum computers with a computational resonator for which some specialized transpilation logic function are provided.
 The MOVE gate is a special gate that moves the state of a qubit to and from the computational resonator such that the qubit can interact with other qubits connected to the resonator.
 For this, we provide users with two transpile functions: :meth:`transpile_insert_moves` and :meth:`transpile_remove_moves`.
 These functions can be used to insert or remove MOVE gates from the circuit, respectively. 
