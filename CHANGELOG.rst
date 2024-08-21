@@ -6,12 +6,12 @@ Version 17.8
 ============
 
 * Added the naive MOVE transpilation method for unified transpilation behavior for different external APIs. `#124 <https://github.com/iqm-finland/iqm-client/pull/124>`_
-* Added class for compilation options `CircuitCompilationOptions` to allow for more fine-grained control over the compilation process. (breaking change)
-    * `IQMClient.submit_circuit` now takes a `CircuitCompilationOptions` parameter instead of `max_circuit_duration_over_t2` and `heralding_mode`.
-    * Moved the existing `max_circuit_duration_over_t2` parameter to `CircuitCompilationOptions`.
-    * Moved the existing `heralding_mode` parameter to `CircuitCompilationOptions`.
-    * Introduced new option `move_gate_validation` to turn off MOVE gate validation during compilation (ADVANCED).
-    * Introduced new option `move_gate_frame_tracking` to turn off frame tracking for the MOVE gate (ADVANCED).
+* Added class for compilation options :class:`CircuitCompilationOptions` to allow for more fine-grained control over the compilation process. (breaking change)
+    * :meth:`IQMClient.submit_circuit` now takes a :class:`CircuitCompilationOptions` parameter instead of ``max_circuit_duration_over_t2`` and ``heralding_mode``.
+    * Moved the existing ``max_circuit_duration_over_t2`` parameter to :class:`CircuitCompilationOptions`.
+    * Moved the existing ``heralding_mode`` parameter to :class:`CircuitCompilationOptions`.
+    * Introduced new option ``move_gate_validation`` to turn off MOVE gate validation during compilation (ADVANCED).
+    * Introduced new option ``move_gate_frame_tracking`` to turn off frame tracking for the MOVE gate (ADVANCED).
 
 Version 17.7
 ============

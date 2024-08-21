@@ -125,13 +125,13 @@ IQM does not provide an open source circuit transpilation library, so this will 
 To obtain the necessary information for circuit transpilation, :meth:`IQMClient.get_quantum_architecture` returns the names of the qubits, qubit connectivity,
 and native operations. This information should enable circuit transpilation for IQM quantum architectures.
 
-With the notable exception of transpiling the MOVE gate for the IQM quantum computers with a computational resonator for which some specialized transpilation logic function are provided.
-The MOVE gate is a special gate that moves the state of a qubit to and from the computational resonator such that the qubit can interact with other qubits connected to the resonator.
-For this, we provide users with two transpile functions: :meth:`transpile_insert_moves` and :meth:`transpile_remove_moves`.
+The notable exception is the transpilation of MOVE gates for IQM quantum computers with computational resonators, for which some specialized transpilation logic is provided.
+The MOVE gate moves the state of a qubit to an empty computational resonator, and vice versa, so that the qubit can interact with other qubits connected to the resonator.
+For this, we provide users with two transpilation functions: :func:`transpile_insert_moves` and :func:`transpile_remove_moves`.
 These functions can be used to insert or remove MOVE gates from the circuit, respectively. 
 
-:meth:`transpile_insert_moves` assumes that the circuit is already transpiled by third party software to an architecture where the computational resonator has been abstracted away.
-To abstract away the computational resonator, the connectivity graph is modified such that the qubits are also connected to each other as if they were connected to a shared computational resonator.
+:func:`transpile_insert_moves` assumes that the circuit is already transpiled by third party software to an architecture where the computational resonator has been abstracted away.
+To abstract away the computational resonator, the connectivity graph is modified such that all the qubits connected to a common resonator are instead connected directly to each other.
 The function can take a ``qubit_mapping`` to rename the qubits in the circuit to match the physical qubit names.
 Additionally, the function can take the optional argument ``existing_moves`` to specify how this transpiler pass should handle the case where some MOVE gates are already present in the circuit. The options are specified by the enum :class:`ExistingMoveHandlingOptions`.
 By default the function warns the user if MOVE gates are already present in the circuit but the ``existing_moves`` argument is not given, before proceeding to remove the existing MOVE gates and inserting new ones. 
