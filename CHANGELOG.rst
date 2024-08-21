@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 17.8
+============
+
+* Allow inspecting a run request before submitting it for execution. `#129 <https://github.com/iqm-finland/iqm-client/pull/129>`_
+
 Version 17.7
 ============
 

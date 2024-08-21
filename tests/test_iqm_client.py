@@ -14,6 +14,8 @@
 """Tests for the IQM client.
 """
 # pylint: disable=too-many-arguments
+import uuid
+
 from mockito import expect, unstub, verifyNoUnwantedInteractions, when
 import pytest
 import requests
@@ -711,6 +713,42 @@ def test_abort_job_failed(status_code, sample_client, existing_job_url, existing
 
     with pytest.raises(JobAbortionError):
         sample_client.abort_job(existing_run_id)
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+@pytest.mark.parametrize(
+    'params',
+    [
+        {},
+        {'heralding_mode': HeraldingMode.ZEROS},
+        {'custom_settings': {'some_setting': 1}},
+        {'calibration_set_id': uuid.uuid4()},
+        {'max_circuit_duration_over_t2': 0.0},
+        {'qubit_mapping': {'QB1': 'QB2', 'QB2': 'QB1'}},
+    ],
+)
+def test_create_and_submit_run_request(
+    sample_client,
+    sample_circuit,
+    jobs_url,
+    submit_success,
+    existing_run_id,
+    quantum_architecture_url,
+    quantum_architecture_success,
+    params,
+):
+    """
+    Tests that calling create_run_request and then submit_run_request is equivalent to calling submit_circuits.
+    """
+    when(requests).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
+
+    run_request = sample_client.create_run_request([sample_circuit], **params)
+
+    expect(requests, times=2).post(jobs_url, **post_jobs_args(run_request)).thenReturn(submit_success)
+    assert sample_client.submit_run_request(run_request) == existing_run_id
+    assert sample_client.submit_circuits([sample_circuit], **params) == existing_run_id
 
     verifyNoUnwantedInteractions()
     unstub()
