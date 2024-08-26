@@ -1,5 +1,5 @@
 <map id="inheritance587d2887de" name="inheritance587d2887de">
-<area shape="rect" id="node1" title="Usage docs: https://docs.pydantic.dev/2.7/concepts/models/" alt="" coords="5,301,100,327"/>
+<area shape="rect" id="node1" title="Usage docs: https://docs.pydantic.dev/2.8/concepts/models/" alt="" coords="5,301,100,327"/>
 <area shape="rect" id="node2" href="iqm.iqm_client.models.Circuit.html#iqm.iqm_client.models.Circuit" target="_top" title="Quantum circuit to be executed." alt="" coords="234,104,306,129"/>
 <area shape="rect" id="node5" href="iqm.iqm_client.models.Instruction.html#iqm.iqm_client.models.Instruction" target="_top" title="The :class:`Instruction` class represents a native quantum operation." alt="" coords="225,153,315,179"/>
 <area shape="rect" id="node6" href="iqm.iqm_client.models.Metadata.html#iqm.iqm_client.models.Metadata" target="_top" title="Metadata describing a circuit execution job." alt="" coords="228,203,312,228"/>

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>iqm.iqm_client.iqm_client.IQMClient &#8212; IQM client 17.7 documentation</title>
+    <title>iqm.iqm_client.iqm_client.IQMClient &#8212; IQM client 17.8 documentation</title>
   
   
   
@@ -18,12 +18,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
@@ -33,11 +33,11 @@
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341" />
-  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=3ee479438cf8b5e0d341"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=b11060f7"></script>
+    <script src="../_static/documentation_options.js?v=fbb6e109"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
@@ -49,7 +49,7 @@
     <link rel="prev" title="iqm.iqm_client.iqm_client" href="iqm.iqm_client.iqm_client.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="2024-06-11"/>
+    <meta name="docbuild:last-update" content="2024-08-26"/>
   </head>
   
   
@@ -125,6 +125,8 @@
         <div class="sidebar-primary-item">
 
   
+    
+  
 
 <a class="navbar-brand logo" href="../index.html">
   
@@ -137,8 +139,8 @@
       
     
     
-    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 17.7 documentation - Home"/>
-    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="IQM client 17.7 documentation - Home"/>`);</script>
+    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 17.8 documentation - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="IQM client 17.8 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -146,7 +148,7 @@
 
  <script>
  document.write(`
-   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
     <span class="search-button__default-text">Search</span>
     <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
@@ -327,10 +329,10 @@
 
 <script>
 document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
   </button>
 `);
 </script>
@@ -338,7 +340,7 @@ document.write(`
 
 <script>
 document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
   </button>
 `);
@@ -368,6 +370,8 @@ document.write(`
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.IQMClient"><code class="docutils literal notranslate"><span class="pre">IQMClient</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.IQMClient.submit_circuits"><code class="docutils literal notranslate"><span class="pre">IQMClient.submit_circuits()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.IQMClient.create_run_request"><code class="docutils literal notranslate"><span class="pre">IQMClient.create_run_request()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.IQMClient.submit_run_request"><code class="docutils literal notranslate"><span class="pre">IQMClient.submit_run_request()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.IQMClient.get_run"><code class="docutils literal notranslate"><span class="pre">IQMClient.get_run()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.IQMClient.get_run_status"><code class="docutils literal notranslate"><span class="pre">IQMClient.get_run_status()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.IQMClient.wait_for_compilation"><code class="docutils literal notranslate"><span class="pre">IQMClient.wait_for_compilation()</span></code></a></li>
@@ -446,17 +450,23 @@ for values given as environment variables as for keyword arguments.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.IQMClient.close_auth_session" title="iqm.iqm_client.iqm_client.IQMClient.close_auth_session"><code class="xref py py-obj docutils literal notranslate"><span class="pre">close_auth_session</span></code></a>()</p></td>
 <td><p>Terminate session with authentication server if there was one created.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.IQMClient.get_quantum_architecture" title="iqm.iqm_client.iqm_client.IQMClient.get_quantum_architecture"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_quantum_architecture</span></code></a>(*[, timeout_secs])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.IQMClient.create_run_request" title="iqm.iqm_client.iqm_client.IQMClient.create_run_request"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_run_request</span></code></a>(circuits, *[, ...])</p></td>
+<td><p>Creates a run request for executing circuits without sending it to the server.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.IQMClient.get_quantum_architecture" title="iqm.iqm_client.iqm_client.IQMClient.get_quantum_architecture"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_quantum_architecture</span></code></a>(*[, timeout_secs])</p></td>
 <td><p>Retrieve quantum architecture from server.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.IQMClient.get_run" title="iqm.iqm_client.iqm_client.IQMClient.get_run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_run</span></code></a>(job_id, *[, timeout_secs])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.IQMClient.get_run" title="iqm.iqm_client.iqm_client.IQMClient.get_run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_run</span></code></a>(job_id, *[, timeout_secs])</p></td>
 <td><p>Query the status and results of a submitted job.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.IQMClient.get_run_status" title="iqm.iqm_client.iqm_client.IQMClient.get_run_status"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_run_status</span></code></a>(job_id, *[, timeout_secs])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.IQMClient.get_run_status" title="iqm.iqm_client.iqm_client.IQMClient.get_run_status"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_run_status</span></code></a>(job_id, *[, timeout_secs])</p></td>
 <td><p>Query the status of a submitted job.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.IQMClient.submit_circuits" title="iqm.iqm_client.iqm_client.IQMClient.submit_circuits"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit_circuits</span></code></a>(circuits, *[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.IQMClient.submit_circuits" title="iqm.iqm_client.iqm_client.IQMClient.submit_circuits"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit_circuits</span></code></a>(circuits, *[, ...])</p></td>
 <td><p>Submits a batch of quantum circuits for execution on a quantum computer.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.IQMClient.submit_run_request" title="iqm.iqm_client.iqm_client.IQMClient.submit_run_request"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit_run_request</span></code></a>(run_request)</p></td>
+<td><p>Submits a run request for execution on a quantum computer.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.IQMClient.wait_for_compilation" title="iqm.iqm_client.iqm_client.IQMClient.wait_for_compilation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait_for_compilation</span></code></a>(job_id[, timeout_secs])</p></td>
 <td><p>Poll results until a job is either pending execution, ready, failed, aborted, or timed out.</p></td>
@@ -493,6 +503,54 @@ The default value <code class="docutils literal notranslate"><span class="pre">N
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><em>UUID</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.IQMClient.create_run_request">
+<span class="sig-name descname"><span class="pre">create_run_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">circuits</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit_mapping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calibration_set_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_circuit_duration_over_t2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heralding_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">HeraldingMode.NONE</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm.iqm_client.iqm_client.IQMClient.create_run_request" title="Link to this definition">#</a></dt>
+<dd><p>Creates a run request for executing circuits without sending it to the server.</p>
+<p>This is called inside <a class="reference internal" href="#iqm.iqm_client.iqm_client.IQMClient.submit_circuits" title="iqm.iqm_client.iqm_client.IQMClient.submit_circuits"><code class="xref py py-meth docutils literal notranslate"><span class="pre">submit_circuits()</span></code></a> and does not need to be called separately in normal usage.</p>
+<p>Can be used to inspect the run request that would be submitted by <a class="reference internal" href="#iqm.iqm_client.iqm_client.IQMClient.submit_circuits" title="iqm.iqm_client.iqm_client.IQMClient.submit_circuits"><code class="xref py py-meth docutils literal notranslate"><span class="pre">submit_circuits()</span></code></a>, without actually
+submitting it for execution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>circuits</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference internal" href="iqm.iqm_client.models.Circuit.html#iqm.iqm_client.models.Circuit" title="iqm.iqm_client.models.Circuit"><em>Circuit</em></a><em>]</em>) – list of circuits to be executed</p></li>
+<li><p><strong>qubit_mapping</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>] </em><em>| </em><em>None</em>) – Mapping of logical qubit names to physical qubit names.
+Can be set to <code class="docutils literal notranslate"><span class="pre">None</span></code> if all <code class="docutils literal notranslate"><span class="pre">circuits</span></code> already use physical qubit names.
+Note that the <code class="docutils literal notranslate"><span class="pre">qubit_mapping</span></code> is used for all <code class="docutils literal notranslate"><span class="pre">circuits</span></code>.</p></li>
+<li><p><strong>custom_settings</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><em>Any</em></a><em>] </em><em>| </em><em>None</em>) – Custom settings to override default settings and calibration data.
+Note: This field should always be <code class="docutils literal notranslate"><span class="pre">None</span></code> in normal use.</p></li>
+<li><p><strong>calibration_set_id</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><em>UUID</em></a><em> | </em><em>None</em>) – ID of the calibration set to use, or <code class="docutils literal notranslate"><span class="pre">None</span></code> to use the latest one</p></li>
+<li><p><strong>shots</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – number of times <code class="docutils literal notranslate"><span class="pre">circuits</span></code> are executed, value must be greater than zero</p></li>
+<li><p><strong>max_circuit_duration_over_t2</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em> | </em><em>None</em>) – Circuits are disqualified on the server if they are longer than this ratio
+of the T2 time of the qubits. Setting this value to <code class="docutils literal notranslate"><span class="pre">0.0</span></code> turns off circuit duration checking.
+The default value <code class="docutils literal notranslate"><span class="pre">None</span></code> instructs server to use server’s default value in the checking.</p></li>
+<li><p><strong>heralding_mode</strong> (<a class="reference internal" href="iqm.iqm_client.models.HeraldingMode.html#iqm.iqm_client.models.HeraldingMode" title="iqm.iqm_client.models.HeraldingMode"><em>HeraldingMode</em></a>) – Heralding mode to use during the execution.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>RunRequest that would be submitted by equivalent call to <a class="reference internal" href="#iqm.iqm_client.iqm_client.IQMClient.submit_circuits" title="iqm.iqm_client.iqm_client.IQMClient.submit_circuits"><code class="xref py py-meth docutils literal notranslate"><span class="pre">submit_circuits()</span></code></a>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="iqm.iqm_client.models.RunRequest.html#iqm.iqm_client.models.RunRequest" title="iqm.iqm_client.models.RunRequest"><em>RunRequest</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.IQMClient.submit_run_request">
+<span class="sig-name descname"><span class="pre">submit_run_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm.iqm_client.iqm_client.IQMClient.submit_run_request" title="Link to this definition">#</a></dt>
+<dd><p>Submits a run request for execution on a quantum computer.</p>
+<p>This is called inside <a class="reference internal" href="#iqm.iqm_client.iqm_client.IQMClient.submit_circuits" title="iqm.iqm_client.iqm_client.IQMClient.submit_circuits"><code class="xref py py-meth docutils literal notranslate"><span class="pre">submit_circuits()</span></code></a> and does not need to be called separately in normal usage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>run_request</strong> (<a class="reference internal" href="iqm.iqm_client.models.RunRequest.html#iqm.iqm_client.models.RunRequest" title="iqm.iqm_client.models.RunRequest"><em>RunRequest</em></a>) – the run request to be submitted for execution.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ID for the created job. This ID is needed to query the job status and the execution results.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -719,6 +777,8 @@ Caches the result and returns the same result on later invocations.</p>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.IQMClient"><code class="docutils literal notranslate"><span class="pre">IQMClient</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.IQMClient.submit_circuits"><code class="docutils literal notranslate"><span class="pre">IQMClient.submit_circuits()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.IQMClient.create_run_request"><code class="docutils literal notranslate"><span class="pre">IQMClient.create_run_request()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.IQMClient.submit_run_request"><code class="docutils literal notranslate"><span class="pre">IQMClient.submit_run_request()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.IQMClient.get_run"><code class="docutils literal notranslate"><span class="pre">IQMClient.get_run()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.IQMClient.get_run_status"><code class="docutils literal notranslate"><span class="pre">IQMClient.get_run_status()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.IQMClient.wait_for_compilation"><code class="docutils literal notranslate"><span class="pre">IQMClient.wait_for_compilation()</span></code></a></li>
@@ -761,7 +821,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2024-06-11.
+  Last updated on 2024-08-26.
   <br/>
 </p>
   </div>
@@ -779,8 +839,8 @@ By IQM client developers
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
   <footer class="bd-footer">
   </footer>

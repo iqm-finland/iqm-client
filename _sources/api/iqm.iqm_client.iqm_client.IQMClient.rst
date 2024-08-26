@@ -26,10 +26,12 @@ iqm.iqm\_client.iqm\_client.IQMClient
       ~IQMClient._validate_qubit_mapping
       ~IQMClient.abort_job
       ~IQMClient.close_auth_session
+      ~IQMClient.create_run_request
       ~IQMClient.get_quantum_architecture
       ~IQMClient.get_run
       ~IQMClient.get_run_status
       ~IQMClient.submit_circuits
+      ~IQMClient.submit_run_request
       ~IQMClient.wait_for_compilation
       ~IQMClient.wait_for_results
    
