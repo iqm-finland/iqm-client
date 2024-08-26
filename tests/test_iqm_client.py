@@ -729,10 +729,10 @@ def test_abort_job_failed(status_code, sample_client, existing_job_url, existing
     'params',
     [
         {},
-        {'heralding_mode': HeraldingMode.ZEROS},
+        {'options': CircuitCompilationOptions(heralding_mode=HeraldingMode.ZEROS)},
         {'custom_settings': {'some_setting': 1}},
         {'calibration_set_id': uuid.uuid4()},
-        {'max_circuit_duration_over_t2': 0.0},
+        {'options': CircuitCompilationOptions(max_circuit_duration_over_t2=0.0)},
         {'qubit_mapping': {'QB1': 'QB2', 'QB2': 'QB1'}},
     ],
 )

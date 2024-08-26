@@ -166,8 +166,7 @@ class IQMClient:
             custom_settings=custom_settings,
             calibration_set_id=calibration_set_id,
             shots=shots,
-            max_circuit_duration_over_t2=max_circuit_duration_over_t2,
-            heralding_mode=heralding_mode,
+            options=options,
         )
         job_id = self.submit_run_request(run_request)
         return job_id
@@ -180,8 +179,7 @@ class IQMClient:
         custom_settings: Optional[dict[str, Any]] = None,
         calibration_set_id: Optional[UUID] = None,
         shots: int = 1,
-        max_circuit_duration_over_t2: Optional[float] = None,
-        heralding_mode: HeraldingMode = HeraldingMode.NONE,
+        options: Optional[CircuitCompilationOptions] = None,
     ) -> RunRequest:
         """Creates a run request for executing circuits without sending it to the server.
 
