@@ -156,7 +156,7 @@ class IQMClient:
                 Note: This field should always be ``None`` in normal use.
             calibration_set_id: ID of the calibration set to use, or ``None`` to use the latest one
             shots: number of times ``circuits`` are executed, value must be greater than zero
-            options: Various discrete options for quantum circuit compilation to pulse schedule.
+            options: Various discrete options for compiling quantum circuits to pulse schedules.
         Returns:
             ID for the created job. This ID is needed to query the job status and the execution results.
         """
