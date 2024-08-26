@@ -282,6 +282,11 @@ def transpile_insert_moves(
         if q not in qubit_mapping.values():
             qubit_mapping[q] = q
     existing_moves_in_circuit = [i for i in circuit.instructions if i.name == res_status.move_gate]
+
+    if existing_moves is None and len(existing_moves_in_circuit) > 0:
+        warnings.warn('Circuit already contains Move Instructions, removing them before transpiling.')
+        existing_moves = ExistingMoveHandlingOptions.REMOVE
+
     if not res_status.supports_move:
         if not existing_moves_in_circuit:
             return circuit
@@ -289,9 +294,6 @@ def transpile_insert_moves(
             return transpile_remove_moves(circuit)
         raise ValueError('Circuit contains Move instructions, but device does not support them')
 
-    if existing_moves is None and len(existing_moves_in_circuit) > 0:
-        warnings.warn('Circuit already contains Move Instructions, removing them before transpiling.')
-        existing_moves = ExistingMoveHandlingOptions.REMOVE
     if existing_moves is None or existing_moves == ExistingMoveHandlingOptions.REMOVE:
         circuit = transpile_remove_moves(circuit)
     elif existing_moves == ExistingMoveHandlingOptions.KEEP:
