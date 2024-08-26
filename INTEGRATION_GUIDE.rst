@@ -142,6 +142,28 @@ It can be also used standalone to remove the MOVE gates from an existing circuit
 For example, a user might want to run a circuit that was originally transpiled for a device with a computational resonator on a device without a computational resonator.
 This function allows the user to remove the MOVE gates from the circuit before transpiling it to another quantum architecture.
 
+
+.. code-block:: python
+
+    from iqm.iqm_client import Circuit, IQMClient, transpile_insert_moves, transpile_remove_moves
+
+    circuit = Circuit(name="quantum_circuit", instructions=[...])
+    backend_with_resonator = IQMClient("url_to_backend_with_resonator")
+    backend_without_resonator = IQMClient("url_to_backend_without_resonator")
+
+    # intended use
+    circuit_with_moves = transpile_insert_moves(circuit, backend_with_resonator.get_quantum_architecture())
+    circuit_without_moves = transpile_remove_moves(circuit_with_moves)
+
+    backend_with_resonator.submit_circuits([circuit_with_moves])
+    backend_without_resonator.submit_circuits([circuit_without_moves])
+
+    # Using the transpile_insert_moves on a device that does not support MOVE gates does nothing.
+    assert circuit == transpile_insert_moves(circuit, backend_without_resonator.get_quantum_architecture())
+    # Unless the circuit had MOVE gates, then it can remove them with the existing_moves argument.
+    alt_circuit_without_moves = transpile_insert_moves(circuit, backend_without_resonator.get_quantum_architecture(), existing_moves=ExistingMoveHandlingOptions.REMOVE)
+
+
 Note on qubit mapping
 ---------------------
 
