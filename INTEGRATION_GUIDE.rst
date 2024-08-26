@@ -182,6 +182,9 @@ Once set, this environment variable will control network request timeouts for IQ
 
 Set ``IQM_CLIENT_SECONDS_BETWEEN_CALLS`` to control the polling frequency when waiting for compilation and run results with IQM Client methods ``wait_for_compilation`` and ``wait_for_results``. The default value is set to 1 second.
 
+Set ``IQM_CLIENT_DEBUG=1`` to print the run request when it is submitted for execution in
+:meth:`.IQMClient.submit_circuits` or :meth:`.IQMClient.submit_run_request`. To inspect the run request without sending
+it for execution, use :meth:`.IQMClient.create_run_request`.
 
 Integration testing
 -------------------

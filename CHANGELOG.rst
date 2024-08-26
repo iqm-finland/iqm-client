@@ -13,6 +13,12 @@ Version 18.0
     * Introduced new option ``move_gate_validation`` to turn off MOVE gate validation during compilation (ADVANCED).
     * Introduced new option ``move_gate_frame_tracking`` to turn off frame tracking for the MOVE gate (ADVANCED).
 
+
+Version 17.8
+============
+
+* Allow inspecting a run request before submitting it for execution. `#129 <https://github.com/iqm-finland/iqm-client/pull/129>`_
+
 Version 17.7
 ============
 
