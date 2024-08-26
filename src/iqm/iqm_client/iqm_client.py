@@ -164,7 +164,53 @@ class IQMClient:
         Returns:
             ID for the created job. This ID is needed to query the job status and the execution results.
         """
+        run_request = self.create_run_request(
+            circuits=circuits,
+            qubit_mapping=qubit_mapping,
+            custom_settings=custom_settings,
+            calibration_set_id=calibration_set_id,
+            shots=shots,
+            max_circuit_duration_over_t2=max_circuit_duration_over_t2,
+            heralding_mode=heralding_mode,
+        )
+        job_id = self.submit_run_request(run_request)
+        return job_id
 
+    def create_run_request(
+        self,
+        circuits: CircuitBatch,
+        *,
+        qubit_mapping: Optional[dict[str, str]] = None,
+        custom_settings: Optional[dict[str, Any]] = None,
+        calibration_set_id: Optional[UUID] = None,
+        shots: int = 1,
+        max_circuit_duration_over_t2: Optional[float] = None,
+        heralding_mode: HeraldingMode = HeraldingMode.NONE,
+    ) -> RunRequest:
+        """Creates a run request for executing circuits without sending it to the server.
+
+        This is called inside :meth:`submit_circuits` and does not need to be called separately in normal usage.
+
+        Can be used to inspect the run request that would be submitted by :meth:`submit_circuits`, without actually
+        submitting it for execution.
+
+        Args:
+            circuits: list of circuits to be executed
+            qubit_mapping: Mapping of logical qubit names to physical qubit names.
+                Can be set to ``None`` if all ``circuits`` already use physical qubit names.
+                Note that the ``qubit_mapping`` is used for all ``circuits``.
+            custom_settings: Custom settings to override default settings and calibration data.
+                Note: This field should always be ``None`` in normal use.
+            calibration_set_id: ID of the calibration set to use, or ``None`` to use the latest one
+            shots: number of times ``circuits`` are executed, value must be greater than zero
+            max_circuit_duration_over_t2: Circuits are disqualified on the server if they are longer than this ratio
+                of the T2 time of the qubits. Setting this value to ``0.0`` turns off circuit duration checking.
+                The default value ``None`` instructs server to use server's default value in the checking.
+            heralding_mode: Heralding mode to use during the execution.
+
+        Returns:
+            RunRequest that would be submitted by equivalent call to :meth:`submit_circuits`.
+        """
         if shots < 1:
             raise ValueError('Number of shots must be greater than zero.')
 
@@ -183,7 +229,7 @@ class IQMClient:
 
         self._validate_circuit_instructions(architecture, circuits, qubit_mapping)
 
-        data = RunRequest(
+        return RunRequest(
             qubit_mapping=serialized_qubit_mapping,
             circuits=circuits,
             custom_settings=custom_settings,
@@ -193,8 +239,18 @@ class IQMClient:
             heralding_mode=heralding_mode,
         )
 
-        headers = {'Expect': '100-Continue', **self._default_headers()}
+    def submit_run_request(self, run_request: RunRequest):
+        """Submits a run request for execution on a quantum computer.
 
+        This is called inside :meth:`submit_circuits` and does not need to be called separately in normal usage.
+
+        Args:
+            run_request: the run request to be submitted for execution.
+
+        Returns:
+            ID for the created job. This ID is needed to query the job status and the execution results.
+        """
+        headers = {'Expect': '100-Continue', **self._default_headers()}
         try:
             # check if someone is trying to profile us with OpenTelemetry
             # pylint: disable=import-outside-toplevel
@@ -206,10 +262,13 @@ class IQMClient:
             # no OpenTelemetry, no problem
             pass
 
+        if os.environ.get('IQM_CLIENT_DEBUG') == '1':
+            print(f'\nIQM CLIENT DEBUGGING ENABLED\nSUBMITTING RUN REQUEST:\n{run_request}\n')
+
         result = self._retry_request_on_error(
             lambda: requests.post(
                 join(self._base_url, 'jobs'),
-                json=json.loads(data.model_dump_json(exclude_none=True)),
+                json=json.loads(run_request.model_dump_json(exclude_none=True)),
                 headers=headers,
                 timeout=REQUESTS_TIMEOUT,
             )
