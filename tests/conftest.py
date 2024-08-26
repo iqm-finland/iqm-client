@@ -161,7 +161,7 @@ def create_sample_circuit(qubits: list[str], metadata) -> Circuit:
 
 
 @pytest.fixture
-def sample_move_circuit():
+def sample_resonator_circuit():
     instructions = (
         Instruction(
             name='prx',

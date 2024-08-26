@@ -181,8 +181,6 @@ class IQMClient:
 
         self._validate_circuit_instructions(architecture, circuits, qubit_mapping)
 
-        options._validate_sensible_use(architecture, circuits)
-
         data = RunRequest(
             qubit_mapping=serialized_qubit_mapping,
             circuits=circuits,
@@ -365,14 +363,16 @@ class IQMClient:
                 raise CircuitExecutionError('MOVE instruction is not supported by the given device architecture.')
             return
         # Track the location of the resonator state
+        # TODO use architecture.computational_resonators when available instead of using COMP_R.
         if qubit_mapping:
             reverse_mapping = {phys: log for log, phys in qubit_mapping.items()}
-            resonator_state_loc = {
+            resonator_state_loc = {  # Resonator: Location
                 reverse_mapping[q]: reverse_mapping[q] for q in architecture.qubits if q.startswith('COMP_R')
             }
         else:
-            resonator_state_loc = {q: q for q in architecture.qubits if q.startswith('COMP_R')}
+            resonator_state_loc = {q: q for q in architecture.qubits if q.startswith('COMP_R')}  # Resonator: Location
         for instr in circuit.instructions:
+            # If any of the gate arguments are holding the |0> state of the resonator, we need to check the instruction
             if any(qb in resonator_state_loc.values() for qb in instr.qubits):
                 # We are using a qubit or resonator state that is currently in the resonator.
                 if instr.name == move_gate:
@@ -386,6 +386,7 @@ class IQMClient:
                         raise CircuitExecutionError(
                             f'MOVE instruction between {instr.qubits} while qubit state is in another resonator.'
                         )
+                    # Update the resonator state location
                     resonator_state_loc[res] = qb if resonator_state_loc[res] == res else res
                 elif instr.name not in ['barrier'] and any(
                     qb in resonator_state_loc.values() and (qb, qb) not in resonator_state_loc.items()
@@ -398,7 +399,8 @@ class IQMClient:
                     )
             elif instr.name == move_gate:
                 raise CircuitExecutionError(
-                    f'MOVE instruction between {instr.qubits} while neither holds a resonator state.'
+                    f'MOVE instruction between {instr.qubits} while neither holds a resonator state, and neither \
+                    qubits are in a resonator.'
                 )
         if any(res != qb for res, qb in resonator_state_loc.items()):
             raise CircuitExecutionError('Circuit ends while qubit state still in the resonator.')

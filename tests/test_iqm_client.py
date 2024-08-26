@@ -57,8 +57,7 @@ def test_submit_circuits_adds_user_agent(
     expect(requests, times=1).post(jobs_url, **post_jobs_args(minimal_run_request)).thenReturn(submit_success)
     expect(requests, times=1).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
 
-    with pytest.warns(UserWarning, match='.+Ignoring the option.'):
-        sample_client.submit_circuits(**submit_circuits_args(minimal_run_request))
+    sample_client.submit_circuits(**submit_circuits_args(minimal_run_request))
 
     verifyNoUnwantedInteractions()
     unstub()
@@ -80,8 +79,7 @@ def test_submit_circuits_adds_user_agent_with_client_signature(
     ).thenReturn(submit_success)
     expect(requests, times=1).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
 
-    with pytest.warns(UserWarning, match='.+Ignoring the option.'):
-        client_with_signature.submit_circuits(**submit_circuits_args(minimal_run_request))
+    client_with_signature.submit_circuits(**submit_circuits_args(minimal_run_request))
 
     verifyNoUnwantedInteractions()
     unstub()
@@ -131,8 +129,7 @@ def test_submit_circuits_returns_id(
     if valid_request:
         expect(requests, times=1).post(jobs_url, **post_jobs_args(run_request)).thenReturn(submit_success)
     if error_message is None:
-        with pytest.warns(UserWarning, match='.+Ignoring the option.'):
-            assert sample_client.submit_circuits(**submit_circuits_args(run_request)) == existing_run_id
+        assert sample_client.submit_circuits(**submit_circuits_args(run_request)) == existing_run_id
     else:
         with pytest.raises(ValueError, match=error_message):
             sample_client.submit_circuits(**submit_circuits_args(run_request))
@@ -187,8 +184,7 @@ def test_submit_circuits_sets_heralding_mode_in_run_request(
     expect(requests, times=1).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
 
     assert submit_circuits_args(run_request_with_heralding)['options'].heralding_mode == expected_heralding_mode
-    with pytest.warns(UserWarning, match='.+Ignoring the option.'):
-        sample_client.submit_circuits(**submit_circuits_args(run_request_with_heralding))
+    sample_client.submit_circuits(**submit_circuits_args(run_request_with_heralding))
 
     verifyNoUnwantedInteractions()
     unstub()
@@ -209,8 +205,7 @@ def test_submit_circuits_gets_architecture_once(
     expect(requests, times=1).post(jobs_url, **post_jobs_args(minimal_run_request)).thenReturn(submit_success)
     # Get architecture explicitly and then submit job
     sample_client.get_quantum_architecture()
-    with pytest.warns(UserWarning, match='.+Ignoring the option.'):
-        sample_client.submit_circuits(**submit_circuits_args(minimal_run_request))
+    sample_client.submit_circuits(**submit_circuits_args(minimal_run_request))
     verifyNoUnwantedInteractions()
     unstub()
 
@@ -739,9 +734,9 @@ def test_abort_job_failed(status_code, sample_client, existing_job_url, existing
         ('run_request_with_move_gate_frame_tracking', 'move_architecture_success'),
     ],
 )
-def test_warning_useless_compiler_options(
+def test_useless_compiler_options(
     sample_client,
-    sample_move_circuit,
+    sample_resonator_circuit,
     jobs_url,
     run_request_name,
     request,
@@ -755,13 +750,13 @@ def test_warning_useless_compiler_options(
     run_request = request.getfixturevalue(run_request_name)
     quantum_architecture_success = request.getfixturevalue(quantum_architecture_name)
     if quantum_architecture_name == 'move_architecture_success':
-        run_request.circuits = [sample_move_circuit]
+        run_request.circuits = [sample_resonator_circuit]
     print(run_request)
     when(requests).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
     expect(requests, times=1).post(jobs_url, **post_jobs_args(run_request)).thenReturn(submit_success)
 
-    with pytest.warns(UserWarning, match='.+Ignoring the option.'):
-        sample_client.submit_circuits(**submit_circuits_args(run_request))
+    # This used to warn, but no longer does
+    sample_client.submit_circuits(**submit_circuits_args(run_request))
 
     verifyNoUnwantedInteractions()
     unstub()

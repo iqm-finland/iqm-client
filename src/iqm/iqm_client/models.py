@@ -19,7 +19,6 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Final, Optional, Union
 from uuid import UUID
-import warnings
 
 from pydantic import BaseModel, Field, StrictStr, field_validator
 from pydantic_core.core_schema import ValidationInfo
@@ -532,7 +531,7 @@ class HeraldingMode(str, Enum):
     due to the post-selection based on heralding data."""
 
 
-class MoveGateValidationMode(Enum):
+class MoveGateValidationMode(str, Enum):
     """MOVE gate validation mode for circuit compilation. This options is meant for advanced users."""
 
     STRICT: Final[str] = 'strict'
@@ -544,7 +543,7 @@ class MoveGateValidationMode(Enum):
     """Do not perform any MOVE gate validation."""
 
 
-class MoveGateFrameTrackingMode(Enum):
+class MoveGateFrameTrackingMode(str, Enum):
     """MOVE gate frame tracking mode for circuit compilation. This option is meant for advanced users."""
 
     FULL: Final[str] = 'full'
@@ -558,20 +557,20 @@ class MoveGateFrameTrackingMode(Enum):
 
 @dataclass(frozen=True)
 class CircuitCompilationOptions:
-    """Various discrete options for quantum circuit compilation to pulse schedule.
-
-    max_circuit_duration_over_t2:  Circuits are disqualified on the server if they are longer than this ratio
-        of the T2 time of the qubits. Setting this value to ``0.0`` turns off circuit duration checking.
-        The default value ``None`` instructs server to use server's default value in the checking.
-    heralding_mode: Heralding mode to use during the execution.
-    move_gate_validation: The MOVE gate validation mode for circuit compilation.
-    move_gate_frame_tracking: The MOVE gate frame tracking mode for circuit compilation.
-    """
+    """Various discrete options for quantum circuit compilation to pulse schedule."""
 
     max_circuit_duration_over_t2: Optional[float] = None
+    """Circuits are disqualified on the server if they are longer than this ratio
+        of the T2 time of the qubits. Setting this value to ``0.0`` turns off circuit duration checking.
+        The default value ``None`` instructs server to use server's default value in the checking."""
     heralding_mode: HeraldingMode = HeraldingMode.NONE
+    """Heralding mode to use during the execution."""
     move_gate_validation: MoveGateValidationMode = MoveGateValidationMode.STRICT
+    """MOVE gate validation mode for circuit compilation. This options is ignored on devices that do not support MOVE 
+        and for circuits that do not contain MOVE gates."""
     move_gate_frame_tracking: MoveGateFrameTrackingMode = MoveGateFrameTrackingMode.FULL
+    """MOVE gate frame tracking mode for circuit compilation. This options is ignored on devices that do not support 
+        MOVE and for circuits that do not contain MOVE gates."""
 
     def __post_init__(self):
         """Validate the options."""
@@ -584,23 +583,6 @@ class CircuitCompilationOptions:
                 'Unable to perform full MOVE gate frame tracking if MOVE gate validation is not'
                 + ' "strict" or "allow_prx".'
             )
-
-    def _validate_sensible_use(self, arch: QuantumArchitectureSpecification, circuit: 'CircuitBatch') -> None:
-        """Validate the options and fill in the missing values."""
-        if 'move' not in arch.operations:
-            if self.move_gate_validation is not None:
-                warnings.warn('MOVE gate validation is not supported by the architecture. Ignoring the option.')
-            elif self.move_gate_frame_tracking is not None:
-                warnings.warn('MOVE gate frame tracking is not supported by the architecture. Ignoring the option.')
-        elif not any(i.name == 'move' for c in circuit for i in c.instructions):
-            if self.move_gate_validation is not None:
-                warnings.warn(
-                    'MOVE gate validation is only relevant for circuits with MOVE gates. Ignoring the option.'
-                )
-            elif self.move_gate_frame_tracking is not None:
-                warnings.warn(
-                    'MOVE gate frame tracking is only relevant for circuits with MOVE gates. Ignoring the option.'
-                )
 
 
 class RunRequest(BaseModel):
@@ -628,14 +610,9 @@ Note: This field should be always None in normal use."""
     """which heralding mode to use during the execution of circuits in this request."""
 
     move_validation_mode: MoveGateValidationMode = Field(MoveGateValidationMode.STRICT)
-    """Which method of MOVE gate validation to use for circuit compilation. By default, the MOVE gate
-    validation is "strict": MOVE gates have to come in pairs without any prx gates between MOVE gates.
-    If set to "allow_prx", prx gates between MOVE gates are not validated. If set to "none", MOVE gate validation
-    is skipped altogether."""
+    """Which method of MOVE gate validation to use for circuit compilation."""
     move_gate_frame_tracking_mode: MoveGateFrameTrackingMode = Field(MoveGateFrameTrackingMode.FULL)
-    """Which method of MOVE gate frame tracking to use for circuit compilation. By default ('full'), frame
-    tracking is applied as normal. If set to "no_detuning_correction", phase detuning corrections are
-    not added into the schedule by the compiler and need to be specified by an advanced user in the circuit."""
+    """Which method of MOVE gate frame tracking to use for circuit compilation."""
 
 
 CircuitMeasurementResults = dict[str, list[list[int]]]

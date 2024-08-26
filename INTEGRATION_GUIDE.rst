@@ -130,14 +130,17 @@ The MOVE gate is a special gate that moves the state of a qubit to and from the 
 For this, we provide users with two transpile functions: :meth:`transpile_insert_moves` and :meth:`transpile_remove_moves`.
 These functions can be used to insert or remove MOVE gates from the circuit, respectively. 
 
-:meth:`transpile_insert_moves` assumes that the circuit is already transpiled by third party software to an architecture where the computational resonator has been abstracted away.
+:meth:`transpile_insert_moves` is a transpiler pass for inserting MOVE gates into a circuit for devices witha  computational resonator. 
+It assumes that the circuit is already transpiled by third party software to an architecture where the computational resonator has been abstracted away.
 To abstract away the computational resonator, the connectivity graph is modified such that the qubits are also connected to each other as if they were connected to a shared computational resonator.
 The function can take a ``qubit_mapping`` to rename the qubits in the circuit to match the physical qubit names.
 Additionally, the function can take the optional argument ``existing_moves`` to specify how this transpiler pass should handle the case where some MOVE gates are already present in the circuit. The options are specified by the enum :class:`ExistingMoveHandlingOptions`.
 By default the function warns the user if MOVE gates are already present in the circuit but the ``existing_moves`` argument is not given, before proceeding to remove the existing MOVE gates and inserting new ones. 
 
-:meth:`transpile_remove_moves` can be used to remove the MOVE gates from an existing circuit such that it can be used on a device without a computational resonator or optimized by third party software that does not support the MOVE gate.
-
+:meth:`transpile_remove_moves` is a helper function for :meth:`transpile_insert_moves` to remove existing MOVE gates from a quantum circuit.
+It can be also used standalone to remove the MOVE gates from an existing circuit such that it can be used on a device without a computational resonator, or optimized by third party software that does not support the MOVE gate.
+For example, a user might want to run a circuit that was originally transpiled for a device with a computational resonator on a device without a computational resonator.
+This function allows the user to remove the MOVE gates from the circuit before transpiling it to another quantum architecture.
 
 Note on qubit mapping
 ---------------------

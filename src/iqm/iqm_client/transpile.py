@@ -21,24 +21,21 @@ import warnings
 from iqm.iqm_client import Circuit, CircuitExecutionError, Instruction, IQMClient, QuantumArchitectureSpecification
 
 
-class ExistingMoveHandlingOptions(Enum):
-    """Transpile options for handling of existing Move instructions.
-
-    KEEP: the transpiler will keep the move instructions as specified checking if they are correct,
-            adding more as needed.
-    REMOVE: the transpiler will remove the instructions and add new ones.
-    TRUST: the transpiler will keep the move instructions without checking if they are correct,
-            and add more as needed.
-    """
+class ExistingMoveHandlingOptions(str, Enum):
+    """Transpile options for handling of existing MOVE instructions."""
 
     KEEP = 'keep'
+    """Transpiler will keep the move instructions as specified checking if they are correct, adding more as needed."""
     REMOVE = 'remove'
+    """Transpiler will remove the instructions and add new ones."""
     TRUST = 'trust'
+    """Transpiler will keep the move instructions without checking if they are correct, and add more as needed."""
 
 
 class ResonatorStateTracker:
-    """Class for tracking the location of the resonator states on the quantum computer as they are moved with the move
-    gates.
+    """Class for tracking the location of the |0> state of the resonators on the quantum computer as they are moved
+    with the MOVE gates because the MOVE gate is not defined when acting on a |11> state. This is equivalent to tracking
+    the which qubit state has been MOVEd into which resonator.
 
     Args:
         available_moves: A dictionary describing between which qubits a move gate is
@@ -58,6 +55,7 @@ class ResonatorStateTracker:
         Args:
             arch: The architecture to track the resonator state on.
         """
+        # TODO use architecture.computational_resonators when available instead of using COMP_R.
         resonators = tuple(q for q in arch.qubits if q.startswith('COMP_R'))
         available_moves: dict[str, list[str]] = {
             r: [q for q, r2 in arch.operations[ResonatorStateTracker.move_gate] if r == r2] for r in resonators
@@ -264,6 +262,9 @@ def transpile_insert_moves(
 ) -> Circuit:
     """Transpile method that inserts moves to the circuit according to a given architecture specification.
     The function does nothing if the given architecture specification does not support move Instructions.
+    Note that this method assumes that the circuit is already transpiled to a coupling map/architecture where the
+    resonator has been abstracted away, i.e. the edges of the coupling map that contain resonators are replaced by
+    edges between the other qubit and all qubits that can be moved to that resonator.
 
     Args:
         circuit: The circuit to add Move instructions to.
