@@ -15,8 +15,9 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Optional, Union
+from typing import Any, Final, Optional, Union
 from uuid import UUID
 
 from pydantic import BaseModel, Field, StrictStr, field_validator
@@ -239,8 +240,7 @@ class Instruction(BaseModel):
         name = value
         if name not in SUPPORTED_INSTRUCTIONS:
             raise ValueError(
-                f'Unknown instruction "{name}". '
-                f'Supported instructions are \"{", ".join(SUPPORTED_INSTRUCTIONS.keys())}\"'
+                f'Unknown instruction "{name}". ' f'Supported instructions are \"{", ".join(SUPPORTED_INSTRUCTIONS)}\"'
             )
         return name
 
@@ -279,8 +279,8 @@ class Instruction(BaseModel):
             raise ValueError('Could not validate args because the name of the instruction did not pass validation')
 
         # Check argument names
-        submitted_arg_names = set(args.keys())
-        supported_arg_names = set(SUPPORTED_INSTRUCTIONS[name]['args'].keys())
+        submitted_arg_names = set(args)
+        supported_arg_names = set(SUPPORTED_INSTRUCTIONS[name]['args'])
         if submitted_arg_names != supported_arg_names:
             raise ValueError(
                 f'The instruction "{name}" requires '
@@ -445,21 +445,6 @@ def serialize_qubit_mapping(qubit_mapping: dict[str, str]) -> list[SingleQubitMa
     return [SingleQubitMapping(logical_name=k, physical_name=v) for k, v in qubit_mapping.items()]
 
 
-class HeraldingMode(str, Enum):
-    """Heralding mode for circuit execution.
-
-    Heralding is the practice of generating data about the state of qubits prior to execution of a circuit.
-    This can be achieved by measuring the qubits immediately before executing each shot for a circuit."""
-
-    NONE = 'none'
-    """Do not do any heralding."""
-    ZEROS = 'zeros'
-    """Perform a heralding measurement, only retain shots with an all-zeros result.
-
-    Note: in this mode, the number of shots returned after execution will be less or equal to the requested amount
-    due to the post-selection based on heralding data."""
-
-
 class QuantumArchitectureSpecification(BaseModel):
     """Quantum architecture specification."""
 
@@ -479,9 +464,11 @@ class QuantumArchitectureSpecification(BaseModel):
         raw_qubit_connectivity = data.get('qubit_connectivity')
         if isinstance(raw_operations, list):
             data['operations'] = {
-                get_current_instruction_name(op): raw_qubit_connectivity
-                if is_multi_qubit_instruction(get_current_instruction_name(op))
-                else [[qb] for qb in raw_qubits]
+                get_current_instruction_name(op): (
+                    raw_qubit_connectivity
+                    if is_multi_qubit_instruction(get_current_instruction_name(op))
+                    else [[qb] for qb in raw_qubits]
+                )
                 for op in raw_operations
             }
 
@@ -504,7 +491,7 @@ class QuantumArchitectureSpecification(BaseModel):
         Returns:
              True if the operation and the loci are equivalent.
         """
-        if set(ops1.keys()) != set(ops2.keys()):
+        if set(ops1) != set(ops2):
             return False
         for [op, c1] in ops1.items():
             c2 = ops2[op]
@@ -527,6 +514,75 @@ class QuantumArchitecture(BaseModel):
 
     quantum_architecture: QuantumArchitectureSpecification = Field(...)
     """Details about the quantum architecture."""
+
+
+class HeraldingMode(str, Enum):
+    """Heralding mode for circuit execution.
+
+    Heralding is the practice of generating data about the state of qubits prior to execution of a circuit.
+    This can be achieved by measuring the qubits immediately before executing each shot for a circuit."""
+
+    NONE = 'none'
+    """Do not do any heralding."""
+    ZEROS = 'zeros'
+    """Perform a heralding measurement after qubit initialization, only retain shots with an all-zeros result.
+
+    Note: in this mode, the number of shots returned after execution will be less or equal to the requested amount
+    due to the post-selection based on heralding data."""
+
+
+class MoveGateValidationMode(str, Enum):
+    """MOVE gate validation mode for circuit compilation. This options is meant for advanced users."""
+
+    STRICT: Final[str] = 'strict'
+    """Perform standard MOVE gate validation: MOVE gates must only appear in sandwiches, with no gates acting on the
+    MOVE qubit inside the sandwich."""
+    ALLOW_PRX: Final[str] = 'allow_prx'
+    """Allow PRX gates on the MOVE qubit inside MOVE sandwiches during validation."""
+    NONE: Final[str] = 'none'
+    """Do not perform any MOVE gate validation."""
+
+
+class MoveGateFrameTrackingMode(str, Enum):
+    """MOVE gate frame tracking mode for circuit compilation. This option is meant for advanced users."""
+
+    FULL: Final[str] = 'full'
+    """Perform complete MOVE gate frame tracking."""
+    NO_DETUNING_CORRECTION: Final[str] = 'no_detuning_correction'
+    """Do not add the phase detuning corrections to the pulse schedule for the MOVE gate. The user is expected to do
+    these manually."""
+    NONE: Final[str] = 'none'
+    """Do not perform any MOVE gate frame tracking. The user is expected to do these manually."""
+
+
+@dataclass(frozen=True)
+class CircuitCompilationOptions:
+    """Various discrete options for quantum circuit compilation to pulse schedule."""
+
+    max_circuit_duration_over_t2: Optional[float] = None
+    """Circuits are disqualified on the server if they are longer than this ratio
+        of the T2 time of the qubits. Setting this value to ``0.0`` turns off circuit duration checking.
+        The default value ``None`` instructs server to use server's default value in the checking."""
+    heralding_mode: HeraldingMode = HeraldingMode.NONE
+    """Heralding mode to use during the execution."""
+    move_gate_validation: MoveGateValidationMode = MoveGateValidationMode.STRICT
+    """MOVE gate validation mode for circuit compilation. This options is ignored on devices that do not support MOVE 
+        and for circuits that do not contain MOVE gates."""
+    move_gate_frame_tracking: MoveGateFrameTrackingMode = MoveGateFrameTrackingMode.FULL
+    """MOVE gate frame tracking mode for circuit compilation. This options is ignored on devices that do not support 
+        MOVE and for circuits that do not contain MOVE gates."""
+
+    def __post_init__(self):
+        """Validate the options."""
+        if self.move_gate_frame_tracking == MoveGateFrameTrackingMode.FULL and self.move_gate_validation not in [
+            MoveGateValidationMode.STRICT,
+            MoveGateValidationMode.ALLOW_PRX,
+            None,
+        ]:
+            raise ValueError(
+                'Unable to perform full MOVE gate frame tracking if MOVE gate validation is not'
+                + ' "strict" or "allow_prx".'
+            )
 
 
 class RunRequest(BaseModel):
@@ -552,6 +608,11 @@ Note: This field should be always None in normal use."""
         If set to 0.0, no circuits are disqualified. If set to None the server default value is used."""
     heralding_mode: HeraldingMode = Field(HeraldingMode.NONE)
     """which heralding mode to use during the execution of circuits in this request."""
+
+    move_validation_mode: MoveGateValidationMode = Field(MoveGateValidationMode.STRICT)
+    """Which method of MOVE gate validation to use for circuit compilation."""
+    move_gate_frame_tracking_mode: MoveGateFrameTrackingMode = Field(MoveGateFrameTrackingMode.FULL)
+    """Which method of MOVE gate frame tracking to use for circuit compilation."""
 
 
 CircuitMeasurementResults = dict[str, list[list[int]]]

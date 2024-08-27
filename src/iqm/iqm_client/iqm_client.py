@@ -41,8 +41,9 @@ from iqm.iqm_client.errors import (
 )
 from iqm.iqm_client.models import (
     SUPPORTED_INSTRUCTIONS,
+    Circuit,
     CircuitBatch,
-    HeraldingMode,
+    CircuitCompilationOptions,
     Instruction,
     QuantumArchitecture,
     QuantumArchitectureSpecification,
@@ -142,8 +143,7 @@ class IQMClient:
         custom_settings: Optional[dict[str, Any]] = None,
         calibration_set_id: Optional[UUID] = None,
         shots: int = 1,
-        max_circuit_duration_over_t2: Optional[float] = None,
-        heralding_mode: HeraldingMode = HeraldingMode.NONE,
+        options: Optional[CircuitCompilationOptions] = None,
     ) -> UUID:
         """Submits a batch of quantum circuits for execution on a quantum computer.
 
@@ -156,11 +156,7 @@ class IQMClient:
                 Note: This field should always be ``None`` in normal use.
             calibration_set_id: ID of the calibration set to use, or ``None`` to use the latest one
             shots: number of times ``circuits`` are executed, value must be greater than zero
-            max_circuit_duration_over_t2: Circuits are disqualified on the server if they are longer than this ratio
-                of the T2 time of the qubits. Setting this value to ``0.0`` turns off circuit duration checking.
-                The default value ``None`` instructs server to use server's default value in the checking.
-            heralding_mode: Heralding mode to use during the execution.
-
+            options: Various discrete options for compiling quantum circuits to pulse schedules.
         Returns:
             ID for the created job. This ID is needed to query the job status and the execution results.
         """
@@ -170,8 +166,7 @@ class IQMClient:
             custom_settings=custom_settings,
             calibration_set_id=calibration_set_id,
             shots=shots,
-            max_circuit_duration_over_t2=max_circuit_duration_over_t2,
-            heralding_mode=heralding_mode,
+            options=options,
         )
         job_id = self.submit_run_request(run_request)
         return job_id
@@ -184,8 +179,7 @@ class IQMClient:
         custom_settings: Optional[dict[str, Any]] = None,
         calibration_set_id: Optional[UUID] = None,
         shots: int = 1,
-        max_circuit_duration_over_t2: Optional[float] = None,
-        heralding_mode: HeraldingMode = HeraldingMode.NONE,
+        options: Optional[CircuitCompilationOptions] = None,
     ) -> RunRequest:
         """Creates a run request for executing circuits without sending it to the server.
 
@@ -213,6 +207,8 @@ class IQMClient:
         """
         if shots < 1:
             raise ValueError('Number of shots must be greater than zero.')
+        if options is None:
+            options = CircuitCompilationOptions()
 
         for i, circuit in enumerate(circuits):
             try:
@@ -235,8 +231,10 @@ class IQMClient:
             custom_settings=custom_settings,
             calibration_set_id=calibration_set_id,
             shots=shots,
-            max_circuit_duration_over_t2=max_circuit_duration_over_t2,
-            heralding_mode=heralding_mode,
+            max_circuit_duration_over_t2=options.max_circuit_duration_over_t2,
+            heralding_mode=options.heralding_mode,
+            move_validation_mode=options.move_gate_validation,
+            move_gate_frame_tracking_mode=options.move_gate_frame_tracking,
         )
 
     def submit_run_request(self, run_request: RunRequest):
@@ -347,6 +345,7 @@ class IQMClient:
             CircuitExecutionError: IQM server specific exceptions
         """
         for circuit in circuits:
+            IQMClient._validate_circuit_moves(architecture, circuit, qubit_mapping)
             for instr in circuit.instructions:
                 IQMClient._validate_instruction(architecture, instr, qubit_mapping)
 
@@ -399,6 +398,69 @@ class IQMClient:
                 if qubit_mapping
                 else f'{instruction.qubits} not allowed as locus for {instruction.name}'
             )
+
+    @staticmethod
+    def _validate_circuit_moves(
+        architecture: QuantumArchitectureSpecification, circuit: Circuit, qubit_mapping: Optional[dict[str, str]] = None
+    ) -> None:
+        """Validates that the MOVE gates in the circuit are not exciting the resonator.
+
+        Args:
+            architecture: Quantum architecture to check against.
+            circuit: Quantum circuit to validate.
+            qubit_mapping: Mapping of logical qubit names to physical qubit names.
+                Can be set to ``None`` if the ``circuit`` already uses physical qubit names.
+        Raises:
+            CircuitExecutionError: ``circuit`` fails the validation
+        """
+        move_gate = 'move'
+        # Check if MOVE gates are allowed on this architecture
+        if move_gate not in architecture.operations:
+            if any(i.name == move_gate for i in circuit.instructions):
+                raise CircuitExecutionError('MOVE instruction is not supported by the given device architecture.')
+            return
+        # Track the location of the resonator state
+        # TODO use architecture.computational_resonators when available instead of using COMP_R.
+        if qubit_mapping:
+            reverse_mapping = {phys: log for log, phys in qubit_mapping.items()}
+            resonator_state_loc = {  # Resonator: Location
+                reverse_mapping[q]: reverse_mapping[q] for q in architecture.qubits if q.startswith('COMP_R')
+            }
+        else:
+            resonator_state_loc = {q: q for q in architecture.qubits if q.startswith('COMP_R')}  # Resonator: Location
+        for instr in circuit.instructions:
+            # If any of the gate arguments are holding the |0> state of the resonator, we need to check the instruction
+            if any(qb in resonator_state_loc.values() for qb in instr.qubits):
+                # We are using a qubit or resonator state that is currently in the resonator.
+                if instr.name == move_gate:
+                    qb, res = instr.qubits
+                    # Check if qb is a qubit and res a resonator.
+                    if res not in resonator_state_loc or qb in resonator_state_loc:
+                        raise CircuitExecutionError(
+                            f'MOVE instruction only allowed between qubit and resonator, not {instr.qubits}.'
+                        )
+                    if resonator_state_loc[res] not in [qb, res]:
+                        raise CircuitExecutionError(
+                            f'MOVE instruction between {instr.qubits} while qubit state is in another resonator.'
+                        )
+                    # Update the resonator state location
+                    resonator_state_loc[res] = qb if resonator_state_loc[res] == res else res
+                elif instr.name not in ['barrier'] and any(
+                    qb in resonator_state_loc.values() and (qb, qb) not in resonator_state_loc.items()
+                    for qb in instr.qubits
+                ):
+                    # The instruction is using a qubit that is holding a resonator state but it is not the resonator
+                    raise CircuitExecutionError(
+                        f'Instruction {instr.name} on {instr.qubits} while they hold a resonator state. \
+                            Qubit states currently moved to resonator(s): {resonator_state_loc}.'
+                    )
+            elif instr.name == move_gate:
+                raise CircuitExecutionError(
+                    f'MOVE instruction between {instr.qubits} while neither holds a resonator state, and neither \
+                    qubits are in a resonator.'
+                )
+        if any(res != qb for res, qb in resonator_state_loc.items()):
+            raise CircuitExecutionError('Circuit ends while qubit state still in the resonator.')
 
     def get_run(self, job_id: UUID, *, timeout_secs: float = REQUESTS_TIMEOUT) -> RunResult:
         """Query the status and results of a submitted job.

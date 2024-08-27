@@ -22,6 +22,7 @@ import requests
 from requests import HTTPError
 
 from iqm.iqm_client import (
+    CircuitCompilationOptions,
     CircuitExecutionError,
     CircuitValidationError,
     ClientConfigurationError,
@@ -102,6 +103,11 @@ def test_submit_circuits_adds_user_agent_with_client_signature(
         ('run_request_without_qubit_mapping', True, None),
         ('run_request_with_calibration_set_id', True, None),
         ('run_request_with_duration_check_disabled', True, None),
+        (
+            'run_request_with_incompatible_options',
+            False,
+            'Unable to perform full MOVE gate frame tracking if MOVE gate validation is not "strict" or "allow_prx".',
+        ),
     ],
 )
 def test_submit_circuits_returns_id(
@@ -124,7 +130,6 @@ def test_submit_circuits_returns_id(
 
     if valid_request:
         expect(requests, times=1).post(jobs_url, **post_jobs_args(run_request)).thenReturn(submit_success)
-
     if error_message is None:
         assert sample_client.submit_circuits(**submit_circuits_args(run_request)) == existing_run_id
     else:
@@ -180,7 +185,7 @@ def test_submit_circuits_sets_heralding_mode_in_run_request(
     expect(requests, times=1).post(jobs_url, **post_jobs_args(run_request_with_heralding)).thenReturn(submit_success)
     expect(requests, times=1).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
 
-    assert submit_circuits_args(run_request_with_heralding)['heralding_mode'] == expected_heralding_mode
+    assert submit_circuits_args(run_request_with_heralding)['options'].heralding_mode == expected_heralding_mode
     sample_client.submit_circuits(**submit_circuits_args(run_request_with_heralding))
 
     verifyNoUnwantedInteractions()
@@ -217,7 +222,9 @@ def test_submit_circuits_raises_with_invalid_heralding_mode(
     """
     when(requests).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
     with pytest.raises(ValueError, match="Input should be 'none' or 'zeros'"):
-        sample_client.submit_circuits(circuits=[], shots=10, heralding_mode='invalid')
+        sample_client.submit_circuits(
+            circuits=[], shots=10, options=CircuitCompilationOptions(heralding_mode='invalid')
+        )
 
 
 def test_get_run_adds_user_agent(
@@ -722,10 +729,10 @@ def test_abort_job_failed(status_code, sample_client, existing_job_url, existing
     'params',
     [
         {},
-        {'heralding_mode': HeraldingMode.ZEROS},
+        {'options': CircuitCompilationOptions(heralding_mode=HeraldingMode.ZEROS)},
         {'custom_settings': {'some_setting': 1}},
         {'calibration_set_id': uuid.uuid4()},
-        {'max_circuit_duration_over_t2': 0.0},
+        {'options': CircuitCompilationOptions(max_circuit_duration_over_t2=0.0)},
         {'qubit_mapping': {'QB1': 'QB2', 'QB2': 'QB1'}},
     ],
 )
@@ -749,6 +756,45 @@ def test_create_and_submit_run_request(
     expect(requests, times=2).post(jobs_url, **post_jobs_args(run_request)).thenReturn(submit_success)
     assert sample_client.submit_run_request(run_request) == existing_run_id
     assert sample_client.submit_circuits([sample_circuit], **params) == existing_run_id
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+@pytest.mark.parametrize(
+    'run_request_name, quantum_architecture_name',
+    [
+        ('run_request_with_move_validation', 'quantum_architecture_success'),
+        ('run_request_without_prx_move_validation', 'quantum_architecture_success'),
+        ('run_request_with_move_gate_frame_tracking', 'quantum_architecture_success'),
+        ('run_request_with_move_validation', 'move_architecture_success'),
+        ('run_request_without_prx_move_validation', 'move_architecture_success'),
+        ('run_request_with_move_gate_frame_tracking', 'move_architecture_success'),
+    ],
+)
+def test_useless_compiler_options(
+    sample_client,
+    sample_resonator_circuit,
+    jobs_url,
+    run_request_name,
+    request,
+    submit_success,
+    quantum_architecture_url,
+    quantum_architecture_name,
+):
+    """
+    Tests submitting circuits for execution
+    """
+    run_request = request.getfixturevalue(run_request_name)
+    quantum_architecture_success = request.getfixturevalue(quantum_architecture_name)
+    if quantum_architecture_name == 'move_architecture_success':
+        run_request.circuits = [sample_resonator_circuit]
+    print(run_request)
+    when(requests).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
+    expect(requests, times=1).post(jobs_url, **post_jobs_args(run_request)).thenReturn(submit_success)
+
+    # This used to warn, but no longer does
+    sample_client.submit_circuits(**submit_circuits_args(run_request))
 
     verifyNoUnwantedInteractions()
     unstub()
