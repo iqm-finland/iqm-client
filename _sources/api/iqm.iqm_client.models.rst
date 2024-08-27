@@ -41,9 +41,12 @@ iqm.iqm\_client.models
       :template: autosummary-class-template.rst
    
       Circuit
+      CircuitCompilationOptions
       HeraldingMode
       Instruction
       Metadata
+      MoveGateFrameTrackingMode
+      MoveGateValidationMode
       QuantumArchitecture
       QuantumArchitectureSpecification
       RunRequest

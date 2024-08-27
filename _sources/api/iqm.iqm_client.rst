@@ -32,6 +32,7 @@
    ~iqm.iqm_client.errors
    ~iqm.iqm_client.iqm_client
    ~iqm.iqm_client.models
+   ~iqm.iqm_client.transpile
    ~iqm.iqm_client.util
 
 

@@ -22,6 +22,7 @@ iqm.iqm\_client.iqm\_client.IQMClient
       ~IQMClient._default_headers
       ~IQMClient._retry_request_on_error
       ~IQMClient._validate_circuit_instructions
+      ~IQMClient._validate_circuit_moves
       ~IQMClient._validate_instruction
       ~IQMClient._validate_qubit_mapping
       ~IQMClient.abort_job

@@ -23,6 +23,8 @@ iqm.iqm\_client.models.RunRequest
       ~RunRequest.shots
       ~RunRequest.max_circuit_duration_over_t2
       ~RunRequest.heralding_mode
+      ~RunRequest.move_validation_mode
+      ~RunRequest.move_gate_frame_tracking_mode
    
    
 
