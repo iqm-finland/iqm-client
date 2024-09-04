@@ -2,6 +2,13 @@
 Changelog
 =========
 
+Version 18.1  
+============
+
+* Added `isort` formating to the tox configuration, so it is automatically run when running `tox -e format`.
+* Bugfix: Fix the issue where the `CircuitCompilationOptions` was not used in local circuit validation when using the `submit_circuit` method (COMP-1491).  
+* Improved testing to catch the bug above.
+
 Version 18.0  
 ============
 
@@ -12,6 +19,7 @@ Version 18.0
     * Moved the existing ``heralding_mode`` parameter to :class:`CircuitCompilationOptions`.
     * Introduced new option ``move_gate_validation`` to turn off MOVE gate validation during compilation (ADVANCED).
     * Introduced new option ``move_gate_frame_tracking`` to turn off frame tracking for the MOVE gate (ADVANCED).
+    * New options can only be used on stations with `CoCoS` version 29.9 or later that support the MOVE gate instruction. Otherwise, the options will be ignored. 
 
 
 Version 17.8

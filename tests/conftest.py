@@ -169,6 +169,11 @@ def sample_resonator_circuit():
             args={'phase_t': 0.3, 'angle_t': -0.2},
         ),
         Instruction(
+            name='move',
+            qubits=('QB3', 'COMP_R'),
+            args={},
+        ),
+        Instruction(
             name='cz',
             qubits=('QB1', 'COMP_R'),
             args={},
@@ -178,8 +183,40 @@ def sample_resonator_circuit():
             qubits=('QB2', 'COMP_R'),
             args={},
         ),
+        Instruction(
+            name='move',
+            qubits=('QB3', 'COMP_R'),
+            args={},
+        ),
     )
     return Circuit(name='COMP_R circuit', instructions=instructions)
+
+
+@pytest.fixture
+def move_circuit_with_prx_in_the_sandwich():
+    instructions = (
+        Instruction(
+            name='prx',
+            qubits=('QB1',),
+            args={'phase_t': 0.3, 'angle_t': -0.2},
+        ),
+        Instruction(
+            name='move',
+            qubits=('QB3', 'COMP_R'),
+            args={},
+        ),
+        Instruction(
+            name='prx',
+            qubits=('QB3',),
+            args={'phase_t': 0.3, 'angle_t': -0.2},
+        ),
+        Instruction(
+            name='move',
+            qubits=('QB3', 'COMP_R'),
+            args={},
+        ),
+    )
+    return Circuit(name='COMP_R circuit with PRX in the sandwich', instructions=instructions)
 
 
 @pytest.fixture

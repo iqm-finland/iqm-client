@@ -45,6 +45,7 @@ from iqm.iqm_client.models import (
     CircuitBatch,
     CircuitCompilationOptions,
     Instruction,
+    MoveGateValidationMode,
     QuantumArchitecture,
     QuantumArchitectureSpecification,
     RunRequest,
@@ -223,7 +224,9 @@ class IQMClient:
         self._validate_qubit_mapping(architecture, circuits, qubit_mapping)
         serialized_qubit_mapping = serialize_qubit_mapping(qubit_mapping) if qubit_mapping else None
 
-        self._validate_circuit_instructions(architecture, circuits, qubit_mapping)
+        self._validate_circuit_instructions(
+            architecture, circuits, qubit_mapping, validate_moves=options.move_gate_validation
+        )
 
         return RunRequest(
             qubit_mapping=serialized_qubit_mapping,
@@ -331,23 +334,25 @@ class IQMClient:
         architecture: QuantumArchitectureSpecification,
         circuits: CircuitBatch,
         qubit_mapping: Optional[dict[str, str]] = None,
+        validate_moves: MoveGateValidationMode = MoveGateValidationMode.STRICT,
     ):
         """Validates that the instructions target correct qubits in the given circuits.
 
         Args:
-          architecture: the quantum architecture to check against
-          circuits: list of circuits to be checked
-          qubit_mapping: Mapping of logical qubit names to physical qubit names.
-              Can be set to ``None`` if all ``circuits`` already use physical qubit names.
-              Note that the ``qubit_mapping`` is used for all ``circuits``.
-
+            architecture: the quantum architecture to check against
+            circuits: list of circuits to be checked
+            qubit_mapping: Mapping of logical qubit names to physical qubit names.
+                Can be set to ``None`` if all ``circuits`` already use physical qubit names.
+                Note that the ``qubit_mapping`` is used for all ``circuits``.
+            validate_moves: Option for bypassing full or partial MOVE gate validation as described in
+                :class:`MoveGateValidationMode`.
         Raises:
             CircuitExecutionError: IQM server specific exceptions
         """
         for circuit in circuits:
-            IQMClient._validate_circuit_moves(architecture, circuit, qubit_mapping)
             for instr in circuit.instructions:
                 IQMClient._validate_instruction(architecture, instr, qubit_mapping)
+            IQMClient._validate_circuit_moves(architecture, circuit, qubit_mapping, validate_moves=validate_moves)
 
     @staticmethod
     def _validate_instruction(
@@ -401,7 +406,10 @@ class IQMClient:
 
     @staticmethod
     def _validate_circuit_moves(
-        architecture: QuantumArchitectureSpecification, circuit: Circuit, qubit_mapping: Optional[dict[str, str]] = None
+        architecture: QuantumArchitectureSpecification,
+        circuit: Circuit,
+        qubit_mapping: Optional[dict[str, str]] = None,
+        validate_moves: MoveGateValidationMode = MoveGateValidationMode.STRICT,
     ) -> None:
         """Validates that the MOVE gates in the circuit are not exciting the resonator.
 
@@ -410,9 +418,14 @@ class IQMClient:
             circuit: Quantum circuit to validate.
             qubit_mapping: Mapping of logical qubit names to physical qubit names.
                 Can be set to ``None`` if the ``circuit`` already uses physical qubit names.
+            validate_moves: Option for bypassing full or partial MOVE gate validation as described in
+                :class:`MoveGateValidationMode`.
         Raises:
             CircuitExecutionError: ``circuit`` fails the validation
         """
+        # pylint: disable=too-many-branches
+        if validate_moves == MoveGateValidationMode.NONE:
+            return
         move_gate = 'move'
         # Check if MOVE gates are allowed on this architecture
         if move_gate not in architecture.operations:
@@ -445,9 +458,13 @@ class IQMClient:
                         )
                     # Update the resonator state location
                     resonator_state_loc[res] = qb if resonator_state_loc[res] == res else res
-                elif instr.name not in ['barrier'] and any(
-                    qb in resonator_state_loc.values() and (qb, qb) not in resonator_state_loc.items()
-                    for qb in instr.qubits
+                elif (
+                    validate_moves != MoveGateValidationMode.ALLOW_PRX
+                    and instr.name not in ['barrier']
+                    and any(
+                        qb in resonator_state_loc.values() and (qb, qb) not in resonator_state_loc.items()
+                        for qb in instr.qubits
+                    )
                 ):
                     # The instruction is using a qubit that is holding a resonator state but it is not the resonator
                     raise CircuitExecutionError(

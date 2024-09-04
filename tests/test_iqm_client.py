@@ -762,19 +762,23 @@ def test_create_and_submit_run_request(
 
 
 @pytest.mark.parametrize(
-    'run_request_name, quantum_architecture_name',
+    'run_request_name, quantum_architecture_name, sample_circuit_name',
     [
-        ('run_request_with_move_validation', 'quantum_architecture_success'),
-        ('run_request_without_prx_move_validation', 'quantum_architecture_success'),
-        ('run_request_with_move_gate_frame_tracking', 'quantum_architecture_success'),
-        ('run_request_with_move_validation', 'move_architecture_success'),
-        ('run_request_without_prx_move_validation', 'move_architecture_success'),
-        ('run_request_with_move_gate_frame_tracking', 'move_architecture_success'),
+        (run_request, success_result, sample_circuit)
+        for run_request in [
+            'run_request_with_move_validation',
+            'run_request_without_prx_move_validation',
+            'run_request_with_move_gate_frame_tracking',
+        ]
+        for success_result, sample_circuit in zip(
+            ['quantum_architecture_success', 'move_architecture_success', 'move_architecture_success'],
+            ['sample_circuit', 'sample_resonator_circuit', 'move_circuit_with_prx_in_the_sandwich'],
+        )
     ],
 )
-def test_useless_compiler_options(
+def test_compiler_options_are_used_and_sent(
     sample_client,
-    sample_resonator_circuit,
+    sample_circuit_name,
     jobs_url,
     run_request_name,
     request,
@@ -787,14 +791,18 @@ def test_useless_compiler_options(
     """
     run_request = request.getfixturevalue(run_request_name)
     quantum_architecture_success = request.getfixturevalue(quantum_architecture_name)
-    if quantum_architecture_name == 'move_architecture_success':
-        run_request.circuits = [sample_resonator_circuit]
-    print(run_request)
-    when(requests).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
-    expect(requests, times=1).post(jobs_url, **post_jobs_args(run_request)).thenReturn(submit_success)
+    run_request.circuits = [request.getfixturevalue(sample_circuit_name)]
 
-    # This used to warn, but no longer does
-    sample_client.submit_circuits(**submit_circuits_args(run_request))
+    when(requests).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
+    if (
+        sample_circuit_name != 'move_circuit_with_prx_in_the_sandwich'  # Valid circuit
+        or run_request_name == 'run_request_without_prx_move_validation'  # Validation is turned off
+    ):
+        expect(requests, times=1).post(jobs_url, **post_jobs_args(run_request)).thenReturn(submit_success)
+        sample_client.submit_circuits(**submit_circuits_args(run_request))
+    else:  # Invalid circuit and validation is turned on.
+        with pytest.raises(CircuitExecutionError):
+            sample_client.submit_circuits(**submit_circuits_args(run_request))
 
     verifyNoUnwantedInteractions()
     unstub()
