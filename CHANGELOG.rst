@@ -5,8 +5,8 @@ Changelog
 Version 18.1  
 ============
 
-* Added `isort` formating to the tox configuration, so it is automatically run when running `tox -e format`.
-* Bugfix: Fix the issue where the `CircuitCompilationOptions` was not used in local circuit validation when using the `submit_circuit` method (COMP-1491).  
+* Added `isort` formating to the tox configuration, so it is automatically run when running `tox -e format`. `#130 <https://github.com/iqm-finland/iqm-client/pull/130>`_
+* Bugfix: Fix the issue where the `CircuitCompilationOptions` was not used in local circuit validation when using the `submit_circuit` method (COMP-1491).  `#130 <https://github.com/iqm-finland/iqm-client/pull/130>`_
 * Improved testing to catch the bug above.
 
 Version 18.0  
