@@ -161,65 +161,6 @@ def create_sample_circuit(qubits: list[str], metadata) -> Circuit:
 
 
 @pytest.fixture
-def sample_resonator_circuit():
-    instructions = (
-        Instruction(
-            name='prx',
-            qubits=('QB1',),
-            args={'phase_t': 0.3, 'angle_t': -0.2},
-        ),
-        Instruction(
-            name='move',
-            qubits=('QB3', 'COMP_R'),
-            args={},
-        ),
-        Instruction(
-            name='cz',
-            qubits=('QB1', 'COMP_R'),
-            args={},
-        ),
-        Instruction(
-            name='cz',
-            qubits=('QB2', 'COMP_R'),
-            args={},
-        ),
-        Instruction(
-            name='move',
-            qubits=('QB3', 'COMP_R'),
-            args={},
-        ),
-    )
-    return Circuit(name='COMP_R circuit', instructions=instructions)
-
-
-@pytest.fixture
-def move_circuit_with_prx_in_the_sandwich():
-    instructions = (
-        Instruction(
-            name='prx',
-            qubits=('QB1',),
-            args={'phase_t': 0.3, 'angle_t': -0.2},
-        ),
-        Instruction(
-            name='move',
-            qubits=('QB3', 'COMP_R'),
-            args={},
-        ),
-        Instruction(
-            name='prx',
-            qubits=('QB3',),
-            args={'phase_t': 0.3, 'angle_t': -0.2},
-        ),
-        Instruction(
-            name='move',
-            qubits=('QB3', 'COMP_R'),
-            args={},
-        ),
-    )
-    return Circuit(name='COMP_R circuit with PRX in the sandwich', instructions=instructions)
-
-
-@pytest.fixture
 def sample_circuit_with_raw_instructions(sample_circuit_metadata):
     """
     A sample circuit with instructions defined by dicts for testing if
@@ -502,11 +443,14 @@ def sample_move_architecture():
     return {
         'quantum_architecture': {
             'name': 'hercules',
-            'qubits': ['COMP_R', 'QB1', 'QB2', 'QB3'],
+            'qubits': ['COMP_R', 'QB1', 'QB2', 'QB3', 'COMP_R2'],
             'qubit_connectivity': [
                 ['QB1', 'COMP_R'],
                 ['QB2', 'COMP_R'],
                 ['QB3', 'COMP_R'],
+                ['QB1', 'COMP_R2'],
+                ['QB2', 'COMP_R2'],
+                ['QB3', 'COMP_R2'],
             ],
             'operations': {
                 'prx': [['QB1'], ['QB2'], ['QB3']],

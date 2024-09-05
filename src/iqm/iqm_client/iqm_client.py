@@ -418,8 +418,7 @@ class IQMClient:
             circuit: Quantum circuit to validate.
             qubit_mapping: Mapping of logical qubit names to physical qubit names.
                 Can be set to ``None`` if the ``circuit`` already uses physical qubit names.
-            validate_moves: Option for bypassing full or partial MOVE gate validation as described in
-                :class:`MoveGateValidationMode`.
+            validate_moves: Option for bypassing full or partial MOVE gate validation.
         Raises:
             CircuitExecutionError: ``circuit`` fails the validation
         """
@@ -432,52 +431,67 @@ class IQMClient:
             if any(i.name == move_gate for i in circuit.instructions):
                 raise CircuitExecutionError('MOVE instruction is not supported by the given device architecture.')
             return
-        # Track the location of the resonator state
-        # TODO use architecture.computational_resonators when available instead of using COMP_R.
+
+        # some gates are allowed in MOVE sandwiches
+        allowed_gates = {'barrier'}
+        if validate_moves == MoveGateValidationMode.ALLOW_PRX:
+            allowed_gates.add('prx')
+
+        # TODO use architecture.computational_resonators when available instead of relying on COMP_R prefix.
+        all_resonators = {q for q in architecture.qubits if q.startswith('COMP_R')}
+        all_qubits = set(architecture.qubits) - all_resonators
         if qubit_mapping:
             reverse_mapping = {phys: log for log, phys in qubit_mapping.items()}
-            resonator_state_loc = {  # Resonator: Location
-                reverse_mapping[q]: reverse_mapping[q] for q in architecture.qubits if q.startswith('COMP_R')
-            }
-        else:
-            resonator_state_loc = {q: q for q in architecture.qubits if q.startswith('COMP_R')}  # Resonator: Location
-        for instr in circuit.instructions:
-            # If any of the gate arguments are holding the |0> state of the resonator, we need to check the instruction
-            if any(qb in resonator_state_loc.values() for qb in instr.qubits):
-                # We are using a qubit or resonator state that is currently in the resonator.
-                if instr.name == move_gate:
-                    qb, res = instr.qubits
-                    # Check if qb is a qubit and res a resonator.
-                    if res not in resonator_state_loc or qb in resonator_state_loc:
-                        raise CircuitExecutionError(
-                            f'MOVE instruction only allowed between qubit and resonator, not {instr.qubits}.'
-                        )
-                    if resonator_state_loc[res] not in [qb, res]:
-                        raise CircuitExecutionError(
-                            f'MOVE instruction between {instr.qubits} while qubit state is in another resonator.'
-                        )
-                    # Update the resonator state location
-                    resonator_state_loc[res] = qb if resonator_state_loc[res] == res else res
-                elif (
-                    validate_moves != MoveGateValidationMode.ALLOW_PRX
-                    and instr.name not in ['barrier']
-                    and any(
-                        qb in resonator_state_loc.values() and (qb, qb) not in resonator_state_loc.items()
-                        for qb in instr.qubits
-                    )
-                ):
-                    # The instruction is using a qubit that is holding a resonator state but it is not the resonator
+            all_resonators = {reverse_mapping[q] for q in all_resonators}
+            all_qubits = {reverse_mapping[q] for q in all_qubits}
+
+        # Mapping from resonator to the qubit whose state it holds. Resonators not in the map hold no qubit state.
+        resonator_occupations: dict[str, str] = {}
+        # Qubits whose states are currently moved to a resonator
+        moved_qubits: set[str] = set()
+
+        if qubit_mapping:
+            reverse_mapping = {phys: log for log, phys in qubit_mapping.items()}
+
+        for inst in circuit.instructions:
+            if inst.name == 'move':
+                qubit, resonator = inst.qubits
+                if not (qubit in all_qubits and resonator in all_resonators):
                     raise CircuitExecutionError(
-                        f'Instruction {instr.name} on {instr.qubits} while they hold a resonator state. \
-                            Qubit states currently moved to resonator(s): {resonator_state_loc}.'
+                        f'MOVE instructions are only allowed between qubit and resonator, not {inst.qubits}.'
                     )
-            elif instr.name == move_gate:
-                raise CircuitExecutionError(
-                    f'MOVE instruction between {instr.qubits} while neither holds a resonator state, and neither \
-                    qubits are in a resonator.'
-                )
-        if any(res != qb for res, qb in resonator_state_loc.items()):
-            raise CircuitExecutionError('Circuit ends while qubit state still in the resonator.')
+
+                if (resonator_qubit := resonator_occupations.get(resonator)) is None:
+                    # Beginning MOVE: check that the qubit hasn't been moved to another resonator
+                    if qubit in moved_qubits:
+                        raise CircuitExecutionError(
+                            f'MOVE instruction {inst.qubits}: state of {qubit} is '
+                            f'in another resonator: {resonator_occupations}.'
+                        )
+                    resonator_occupations[resonator] = qubit
+                    moved_qubits.add(qubit)
+                else:
+                    # Ending MOVE: check that the qubit matches to the qubit that was moved to the resonator
+                    if resonator_qubit != qubit:
+                        raise CircuitExecutionError(
+                            f'MOVE instruction {inst.qubits} to an already occupied resonator: {resonator_occupations}.'
+                        )
+                    del resonator_occupations[resonator]
+                    moved_qubits.remove(qubit)
+            elif moved_qubits:
+                # Validate that moved qubits are not used during MOVE operations
+                if inst.name not in allowed_gates:
+                    if overlap := set(inst.qubits) & moved_qubits:
+                        raise CircuitExecutionError(
+                            f'Instruction {inst.name} acts on {inst.qubits} while the state(s) of {overlap} '
+                            f'are in a resonator. Current resonator occupation: {resonator_occupations}.'
+                        )
+
+        # Finally validate that all moves have been ended before the circuit ends
+        if resonator_occupations:
+            raise CircuitExecutionError(
+                f'Circuit ends while qubit state(s) are still in a resonator: {resonator_occupations}.'
+            )
 
     def get_run(self, job_id: UUID, *, timeout_secs: float = REQUESTS_TIMEOUT) -> RunResult:
         """Query the status and results of a submitted job.

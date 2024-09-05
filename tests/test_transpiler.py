@@ -492,6 +492,7 @@ class TestResonatorStateTracker:
         status = ResonatorStateTracker.from_quantum_architecture_specification(arch)
         assert status.available_resonators_to_move(qubits) == {
             'COMP_R': [],
+            'COMP_R2': [],
             'QB1': [],
             'QB2': [],
             'QB3': ['COMP_R'],
@@ -522,4 +523,4 @@ class TestResonatorStateTracker:
         arch: QuantumArchitectureSpecification = QuantumArchitecture(**sample_move_architecture).quantum_architecture
         status = ResonatorStateTracker.from_quantum_architecture_specification(arch)
         status.apply_move('QB3', 'COMP_R')
-        assert status.update_qubits_in_resonator(qubits) == ['QB3', 'QB1', 'QB2', 'QB3']
+        assert status.update_qubits_in_resonator(qubits) == ['QB3', 'QB1', 'QB2', 'QB3', 'COMP_R2']

@@ -22,11 +22,13 @@ import requests
 from requests import HTTPError
 
 from iqm.iqm_client import (
+    Circuit,
     CircuitCompilationOptions,
     CircuitExecutionError,
     CircuitValidationError,
     ClientConfigurationError,
     HeraldingMode,
+    Instruction,
     IQMClient,
     JobAbortionError,
     QuantumArchitectureSpecification,
@@ -36,6 +38,65 @@ from iqm.iqm_client import (
     validate_circuit,
 )
 from tests.conftest import MockJsonResponse, get_jobs_args, post_jobs_args, submit_circuits_args
+
+
+@pytest.fixture
+def move_circuit():
+    instructions = (
+        Instruction(
+            name='prx',
+            qubits=('QB1',),
+            args={'phase_t': 0.3, 'angle_t': -0.2},
+        ),
+        Instruction(
+            name='move',
+            qubits=('QB3', 'COMP_R'),
+            args={},
+        ),
+        Instruction(
+            name='cz',
+            qubits=('QB1', 'COMP_R'),
+            args={},
+        ),
+        Instruction(
+            name='cz',
+            qubits=('QB2', 'COMP_R'),
+            args={},
+        ),
+        Instruction(
+            name='move',
+            qubits=('QB3', 'COMP_R'),
+            args={},
+        ),
+    )
+    return Circuit(name='COMP_R circuit', instructions=instructions)
+
+
+@pytest.fixture
+def move_circuit_with_prx_in_the_sandwich():
+    instructions = (
+        Instruction(
+            name='prx',
+            qubits=('QB1',),
+            args={'phase_t': 0.3, 'angle_t': -0.2},
+        ),
+        Instruction(
+            name='move',
+            qubits=('QB3', 'COMP_R'),
+            args={},
+        ),
+        Instruction(
+            name='prx',
+            qubits=('QB3',),
+            args={'phase_t': 0.3, 'angle_t': -0.2},
+        ),
+        Instruction(
+            name='move',
+            qubits=('QB3', 'COMP_R'),
+            args={},
+        ),
+    )
+    return Circuit(name='COMP_R circuit with PRX in the sandwich', instructions=instructions)
 
 
 def test_serialize_qubit_mapping():
@@ -772,7 +833,7 @@ def test_create_and_submit_run_request(
         ]
         for success_result, sample_circuit in zip(
             ['quantum_architecture_success', 'move_architecture_success', 'move_architecture_success'],
-            ['sample_circuit', 'sample_resonator_circuit', 'move_circuit_with_prx_in_the_sandwich'],
+            ['sample_circuit', 'move_circuit', 'move_circuit_with_prx_in_the_sandwich'],
         )
     ],
 )
