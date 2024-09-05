@@ -132,8 +132,8 @@ class Instruction(BaseModel):
 
     Measurement in the computational (Z) basis. The measurement results are the output of the circuit.
     Takes one string argument, ``key``, denoting the measurement key the results are labeled with.
-    All the measurement keys in a circuit must be unique. Each qubit may only be measured once.
-    The measurement must be the last operation on each qubit, i.e. it cannot be followed by gates.
+    All the measurement keys in a circuit must be unique. Each qubit may be measured multiple times,
+    i.e. mid-circuit measurements are allowed.
 
     .. code-block:: python
         :caption: Example

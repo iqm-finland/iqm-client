@@ -2,25 +2,29 @@
 Changelog
 =========
 
-Version 18.1  
+Version 18.1
 ============
 
-* Added `isort` formating to the tox configuration, so it is automatically run when running `tox -e format`. `#130 <https://github.com/iqm-finland/iqm-client/pull/130>`_
-* Bugfix: Fix the issue where the `CircuitCompilationOptions` was not used in local circuit validation when using the `submit_circuit` method (COMP-1491).  `#130 <https://github.com/iqm-finland/iqm-client/pull/130>`_
+* Added `isort` formating to the tox configuration, so it is automatically run when running
+  ``tox -e format``. `#130 <https://github.com/iqm-finland/iqm-client/pull/130>`_
+* Bugfix: Fix the issue where the :class:`CircuitCompilationOptions` was not used in local circuit
+  validation when using the :meth:`submit_circuit` method (COMP-1491).
+  `#130 <https://github.com/iqm-finland/iqm-client/pull/130>`_
 * Improved testing to catch the bug above.
+* Docs updated: mid-circuit measurements are allowed on stations with ``cocos >= 30.2``.
 
-Version 18.0  
+Version 18.0
 ============
 
 * Added the naive MOVE transpilation method for unified transpilation behavior for different external APIs. `#124 <https://github.com/iqm-finland/iqm-client/pull/124>`_
 * Added class for compilation options :class:`CircuitCompilationOptions` to allow for more fine-grained control over the compilation process. (breaking change)
-    * :meth:`IQMClient.submit_circuit` now takes a :class:`CircuitCompilationOptions` parameter instead of ``max_circuit_duration_over_t2`` and ``heralding_mode``.
-    * Moved the existing ``max_circuit_duration_over_t2`` parameter to :class:`CircuitCompilationOptions`.
-    * Moved the existing ``heralding_mode`` parameter to :class:`CircuitCompilationOptions`.
-    * Introduced new option ``move_gate_validation`` to turn off MOVE gate validation during compilation (ADVANCED).
-    * Introduced new option ``move_gate_frame_tracking`` to turn off frame tracking for the MOVE gate (ADVANCED).
-    * New options can only be used on stations with `CoCoS` version 29.9 or later that support the MOVE gate instruction. Otherwise, the options will be ignored. 
 
+  * :meth:`IQMClient.submit_circuit` now takes a :class:`CircuitCompilationOptions` parameter instead of ``max_circuit_duration_over_t2`` and ``heralding_mode``.
+  * Moved the existing ``max_circuit_duration_over_t2`` parameter to :class:`CircuitCompilationOptions`.
+  * Moved the existing ``heralding_mode`` parameter to :class:`CircuitCompilationOptions`.
+  * Introduced new option ``move_gate_validation`` to turn off MOVE gate validation during compilation (ADVANCED).
+  * Introduced new option ``move_gate_frame_tracking`` to turn off frame tracking for the MOVE gate (ADVANCED).
+  * New options can only be used on stations with ``CoCoS`` version 29.9 or later that support the MOVE gate instruction. Otherwise, the options will be ignored. 
 
 Version 17.8
 ============
