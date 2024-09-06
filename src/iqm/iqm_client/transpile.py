@@ -325,8 +325,9 @@ def _transpile_insert_moves(
     arch: QuantumArchitectureSpecification,
     qubit_mapping: dict[str, str],
 ) -> list[Instruction]:
-    """Helper function for :func:`transpile_insert_moves` that inserts MOVE gates into a list of instructions and changes the
-    existing instructions as needed.
+    """Inserts MOVE gates into a list of instructions and changes the existing instructions as needed.
+
+    Helper function for :func:`transpile_insert_moves`.
 
     Args:
         instructions: The instructions in the circuit.

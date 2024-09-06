@@ -5,7 +5,6 @@ import pytest
 from iqm.iqm_client import (
     Circuit,
     CircuitTranspilationError,
-    CircuitValidationError,
     ExistingMoveHandlingOptions,
     Instruction,
     IQMClient,
