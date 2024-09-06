@@ -149,15 +149,15 @@ class IQMClient:
         """Submits a batch of quantum circuits for execution on a quantum computer.
 
         Args:
-            circuits: list of circuits to be executed
+            circuits: Circuits to be executed.
             qubit_mapping: Mapping of logical qubit names to physical qubit names.
                 Can be set to ``None`` if all ``circuits`` already use physical qubit names.
                 Note that the ``qubit_mapping`` is used for all ``circuits``.
             custom_settings: Custom settings to override default settings and calibration data.
                 Note: This field should always be ``None`` in normal use.
             calibration_set_id: ID of the calibration set to use, or ``None`` to use the latest one
-            shots: number of times ``circuits`` are executed, value must be greater than zero
-            options: Various discrete options for compiling quantum circuits to pulse schedules.
+            shots: Number of times ``circuits`` are executed. Must be greater than zero
+            options: Various discrete options for compiling quantum circuits to instruction schedules.
         Returns:
             ID for the created job. This ID is needed to query the job status and the execution results.
         """
@@ -190,19 +190,15 @@ class IQMClient:
         submitting it for execution.
 
         Args:
-            circuits: list of circuits to be executed
+            circuits: Circuits to be executed.
             qubit_mapping: Mapping of logical qubit names to physical qubit names.
                 Can be set to ``None`` if all ``circuits`` already use physical qubit names.
                 Note that the ``qubit_mapping`` is used for all ``circuits``.
             custom_settings: Custom settings to override default settings and calibration data.
                 Note: This field should always be ``None`` in normal use.
             calibration_set_id: ID of the calibration set to use, or ``None`` to use the latest one
-            shots: number of times ``circuits`` are executed, value must be greater than zero
-            max_circuit_duration_over_t2: Circuits are disqualified on the server if they are longer than this ratio
-                of the T2 time of the qubits. Setting this value to ``0.0`` turns off circuit duration checking.
-                The default value ``None`` instructs server to use server's default value in the checking.
-            heralding_mode: Heralding mode to use during the execution.
-
+            shots: Number of times ``circuits`` are executed. Must be greater than zero.
+            options: Various discrete options for compiling quantum circuits to instruction schedules.
         Returns:
             RunRequest that would be submitted by equivalent call to :meth:`submit_circuits`.
         """
@@ -240,14 +236,13 @@ class IQMClient:
             move_gate_frame_tracking_mode=options.move_gate_frame_tracking,
         )
 
-    def submit_run_request(self, run_request: RunRequest):
+    def submit_run_request(self, run_request: RunRequest) -> UUID:
         """Submits a run request for execution on a quantum computer.
 
         This is called inside :meth:`submit_circuits` and does not need to be called separately in normal usage.
 
         Args:
             run_request: the run request to be submitted for execution.
-
         Returns:
             ID for the created job. This ID is needed to query the job status and the execution results.
         """
@@ -294,18 +289,18 @@ class IQMClient:
         architecture: QuantumArchitectureSpecification,
         circuits: CircuitBatch,
         qubit_mapping: Optional[dict[str, str]] = None,
-    ):
+    ) -> None:
         """Validates the given qubit mapping, if defined.
 
         Args:
-          architecture: the quantum architecture to check against
-          circuits: list of circuits to be checked
+          architecture: Quantum architecture to check against.
+          circuits: Circuits to be checked.
           qubit_mapping: Mapping of logical qubit names to physical qubit names.
               Can be set to ``None`` if all ``circuits`` already use physical qubit names.
               Note that the ``qubit_mapping`` is used for all ``circuits``.
 
         Raises:
-            CircuitExecutionError: IQM server specific exceptions
+            CircuitExecutionError: IQM server specific exceptions.
         """
         if qubit_mapping is None:
             return
@@ -335,19 +330,18 @@ class IQMClient:
         circuits: CircuitBatch,
         qubit_mapping: Optional[dict[str, str]] = None,
         validate_moves: MoveGateValidationMode = MoveGateValidationMode.STRICT,
-    ):
-        """Validates that the instructions target correct qubits in the given circuits.
+    ) -> None:
+        """Raises an error if the given circuits are not valid in the given architecture.
 
         Args:
-            architecture: the quantum architecture to check against
-            circuits: list of circuits to be checked
+            architecture: Quantum architecture to check against.
+            circuits: Circuits to be checked.
             qubit_mapping: Mapping of logical qubit names to physical qubit names.
                 Can be set to ``None`` if all ``circuits`` already use physical qubit names.
                 Note that the ``qubit_mapping`` is used for all ``circuits``.
-            validate_moves: Option for bypassing full or partial MOVE gate validation as described in
-                :class:`MoveGateValidationMode`.
+            validate_moves: Option for bypassing full or partial MOVE gate validation.
         Raises:
-            CircuitExecutionError: IQM server specific exceptions
+            CircuitExecutionError: IQM server specific exceptions.
         """
         for circuit in circuits:
             for instr in circuit.instructions:
@@ -359,18 +353,17 @@ class IQMClient:
         architecture: QuantumArchitectureSpecification,
         instruction: Instruction,
         qubit_mapping: Optional[dict[str, str]] = None,
-    ):
-        """Validates that the instruction targets correct qubits in the given architecture.
+    ) -> None:
+        """Raises an error if the given instruction is not valid in the given architecture.
 
         Args:
-          architecture: the quantum architecture to check against
-          instruction: the instruction to check
+          architecture: Quantum architecture to check against.
+          instruction: Instruction to check.
           qubit_mapping: Mapping of logical qubit names to physical qubit names.
               Can be set to ``None`` if all ``circuits`` already use physical qubit names.
               Note that the ``qubit_mapping`` is used for all ``circuits``.
-
         Raises:
-            CircuitExecutionError: IQM server specific exceptions
+            CircuitExecutionError: IQM server specific exceptions.
         """
         if instruction.name not in architecture.operations:
             raise ValueError(f"Instruction '{instruction.name}' is not supported by the quantum architecture.")
@@ -411,7 +404,7 @@ class IQMClient:
         qubit_mapping: Optional[dict[str, str]] = None,
         validate_moves: MoveGateValidationMode = MoveGateValidationMode.STRICT,
     ) -> None:
-        """Validates that the MOVE gates in the circuit are not exciting the resonator.
+        """Raises an error if the MOVE gates in the circuit are not valid in the given architecture.
 
         Args:
             architecture: Quantum architecture to check against.
@@ -420,7 +413,7 @@ class IQMClient:
                 Can be set to ``None`` if the ``circuit`` already uses physical qubit names.
             validate_moves: Option for bypassing full or partial MOVE gate validation.
         Raises:
-            CircuitExecutionError: ``circuit`` fails the validation
+            CircuitExecutionError: ``circuit`` fails the validation.
         """
         # pylint: disable=too-many-branches
         if validate_moves == MoveGateValidationMode.NONE:
