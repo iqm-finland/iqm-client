@@ -28,6 +28,10 @@ class CircuitValidationError(RuntimeError):
     """Circuit validation failed."""
 
 
+class CircuitTranspilationError(RuntimeError):
+    """Circuit transpilation failed."""
+
+
 class CircuitExecutionError(RuntimeError):
     """Something went wrong on the server."""
 

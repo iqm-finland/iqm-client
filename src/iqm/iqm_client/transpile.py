@@ -18,7 +18,14 @@ from enum import Enum
 from typing import Any, Iterable, Optional
 import warnings
 
-from iqm.iqm_client import Circuit, CircuitExecutionError, Instruction, IQMClient, QuantumArchitectureSpecification
+from iqm.iqm_client import (
+    Circuit,
+    CircuitTranspilationError,
+    CircuitValidationError,
+    Instruction,
+    IQMClient,
+    QuantumArchitectureSpecification,
+)
 
 
 class ExistingMoveHandlingOptions(str, Enum):
@@ -106,7 +113,7 @@ class ResonatorStateTracker:
             resonator: The moved resonator.
 
         Raises:
-            CircuitExecutionError: When the move is not allowed, either because the resonator does not exist, the move
+            CircuitTranspilationError: When the move is not allowed, either because the resonator does not exist, the move
             gate is not valid between this qubit-resonator pair, or the resonator state is currently in a different
             qubit register.
         """
@@ -117,7 +124,7 @@ class ResonatorStateTracker:
         ):
             self.res_qb_map[resonator] = qubit if self.res_qb_map[resonator] == resonator else resonator
         else:
-            raise CircuitExecutionError('Attempted move is not allowed.')
+            raise CircuitTranspilationError('Attempted move is not allowed.')
 
     def create_move_instructions(
         self,
@@ -207,7 +214,7 @@ class ResonatorStateTracker:
             remaining_instructions: The instructions to use for the look-ahead.
 
         Raises:
-            CircuitExecutionError: When no move pair is available, most likely because the circuit was not routed.
+            CircuitTranspilationError: When no move pair is available, most likely because the circuit was not routed.
 
         Returns:
             A sorted preference list of resonator and qubit chosen to apply the move on.
@@ -216,7 +223,7 @@ class ResonatorStateTracker:
             (r, q, remaining_instructions) for q, rs in self.available_resonators_to_move(qubits).items() for r in rs
         ]
         if len(r_candidates) == 0:
-            raise CircuitExecutionError(
+            raise CircuitTranspilationError(
                 f'Unable to insert MOVE gates because none of the qubits {qubits} share a resonator. '
                 + 'This can be resolved by routing the circuit first without resonators.'
             )
@@ -299,8 +306,10 @@ def transpile_insert_moves(
     elif existing_moves == ExistingMoveHandlingOptions.KEEP:
         try:
             IQMClient._validate_circuit_moves(arch, circuit, qubit_mapping=qubit_mapping)
-        except CircuitExecutionError as e:
-            raise CircuitExecutionError(f'Unable to transpile the circuit after validation error: {e.args[0]}') from e
+        except CircuitValidationError as e:
+            raise CircuitTranspilationError(
+                f'Unable to transpile the circuit after validation error: {e.args[0]}'
+            ) from e
 
     rev_qubit_mapping = {v: k for k, v in qubit_mapping.items()}
     new_instructions = _transpile_insert_moves(list(circuit.instructions), res_status, arch, qubit_mapping)
@@ -326,7 +335,7 @@ def _transpile_insert_moves(
         qubit_mapping: Mapping from logical qubit names to physical qubit names.
 
     Raises:
-        CircuitExecutionError: Raised when the circuit contains invalid gates that cannot be transpiled using this
+        CircuitTranspilationError: Raised when the circuit contains invalid gates that cannot be transpiled using this
         method.
 
     Returns:
@@ -348,9 +357,9 @@ def _transpile_insert_moves(
                 new_instructions.append(i)  # No adjustment needed
                 if i.name == res_status.move_gate:  # update the tracker if needed
                     res_status.apply_move(*[qubit_mapping[q] for q in i.qubits])
-            except CircuitExecutionError as e:
+            except CircuitValidationError as e:
                 if i.name != 'cz':  # We can only fix cz gates at this point
-                    raise CircuitExecutionError(
+                    raise CircuitTranspilationError(
                         f'Unable to transpile the circuit after validation error: {e.args[0]}'
                     ) from e
                 # Pick which qubit-resonator pair to apply this cz to
@@ -372,11 +381,11 @@ def _transpile_insert_moves(
                         )
                         resonator_candidates = None
                         break
-                    except CircuitExecutionError:
+                    except CircuitValidationError:
                         pass
 
                 if resonator_candidates is not None:
-                    raise CircuitExecutionError(
+                    raise CircuitTranspilationError(
                         'Unable to find a valid resonator-qubit pair for a MOVE gate to enable this CZ gate.'
                     ) from e
 

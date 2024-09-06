@@ -17,7 +17,7 @@ import pytest
 
 from iqm.iqm_client import (
     Circuit,
-    CircuitExecutionError,
+    CircuitValidationError,
     Instruction,
     IQMClient,
     MoveGateValidationMode,
@@ -51,7 +51,7 @@ def test_disallowed_cz_qubits(sample_move_architecture, qubits, qubit_mapping):
     arch = QuantumArchitecture(**sample_move_architecture).quantum_architecture
     if qubit_mapping:
         qubits = [reverse_qb_mapping[q] for q in qubits]
-    with pytest.raises(CircuitExecutionError, match='not allowed as locus for cz'):
+    with pytest.raises(CircuitValidationError, match='not allowed as locus for cz'):
         IQMClient._validate_instruction(arch, Instruction(name='cz', qubits=qubits, args={}), qubit_mapping)
 
 
@@ -81,7 +81,7 @@ def test_disallowed_move_qubits(sample_move_architecture, qubits, qubit_mapping)
     if qubit_mapping:
         qubits = [reverse_qb_mapping[q] for q in qubits]
 
-    with pytest.raises(CircuitExecutionError, match='not allowed as locus for move'):
+    with pytest.raises(CircuitValidationError, match='not allowed as locus for move'):
         IQMClient._validate_instruction(arch, Instruction(name='move', qubits=qubits, args={}), qubit_mapping)
 
 
@@ -100,7 +100,7 @@ def test_disallowed_measure_qubits(sample_move_architecture, qubits):
     Tests that instruction validation fails for loci containing any qubits that are not valid measure qubits
     """
     arch = QuantumArchitecture(**sample_move_architecture).quantum_architecture
-    with pytest.raises(CircuitExecutionError, match='Qubit (.+) is not allowed as locus for measure'):
+    with pytest.raises(CircuitValidationError, match='Qubit (.+) is not allowed as locus for measure'):
         IQMClient._validate_instruction(
             arch, Instruction(name='measure', qubits=qubits, args={'key': 'measure_1'}), None
         )
@@ -150,7 +150,7 @@ class TestMoveValidation:
         """Non-sandwich MOVEs are not allowed."""
         arch = QuantumArchitecture(**sample_move_architecture)
         if validate_moves != MoveGateValidationMode.NONE:
-            with pytest.raises(CircuitExecutionError, match=r'qubit state\(s\) are still in a resonator'):
+            with pytest.raises(CircuitValidationError, match=r'qubit state\(s\) are still in a resonator'):
                 TestMoveValidation.make_circuit_and_check(instructions, arch, validate_moves)
         else:
             TestMoveValidation.make_circuit_and_check(instructions, arch, validate_moves)
@@ -175,7 +175,7 @@ class TestMoveValidation:
             ),  # this MOVE locus is not in the architecture, but only checking MOVE validation
         )
         if validate_moves != MoveGateValidationMode.NONE:
-            with pytest.raises(CircuitExecutionError, match='already occupied resonator'):
+            with pytest.raises(CircuitValidationError, match='already occupied resonator'):
                 IQMClient._validate_circuit_moves(
                     arch.quantum_architecture, invalid_sandwich_circuit, validate_moves=validate_moves
                 )
@@ -197,7 +197,7 @@ class TestMoveValidation:
             ),  # this MOVE locus is not in the architecture, but only checking MOVE validation
         )
         if validate_moves != MoveGateValidationMode.NONE:
-            with pytest.raises(CircuitExecutionError, match='is in another resonator'):
+            with pytest.raises(CircuitValidationError, match='is in another resonator'):
                 IQMClient._validate_circuit_moves(
                     arch.quantum_architecture, invalid_sandwich_circuit, validate_moves=validate_moves
                 )
@@ -231,7 +231,7 @@ class TestMoveValidation:
         move = Instruction(name='move', qubits=['QB3', 'COMP_R'], args={})
         instructions = (move, gate, move)
         if validation_mode in disallowed_modes:
-            with pytest.raises(CircuitExecutionError, match=r'while the state\(s\) of (.+) are in a resonator'):
+            with pytest.raises(CircuitValidationError, match=r'while the state\(s\) of (.+) are in a resonator'):
                 TestMoveValidation.make_circuit_and_check(
                     instructions,
                     arch,
@@ -251,7 +251,7 @@ class TestMoveValidation:
         """MOVEs cannot be used on a device that does not support them."""
         arch = QuantumArchitecture(**sample_quantum_architecture)
         move = Instruction(name='move', qubits=['QB3', 'COMP_R'], args={})
-        with pytest.raises(ValueError, match="'move' is not supported"):
+        with pytest.raises(CircuitValidationError, match="'move' is not supported"):
             TestMoveValidation.make_circuit_and_check((move,), arch, validation_mode)
         # But validation passes if there are no MOVE gates
         TestMoveValidation.make_circuit_and_check(sample_circuit.instructions, arch, validation_mode)

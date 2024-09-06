@@ -149,17 +149,23 @@ def test_submit_circuits_adds_user_agent_with_client_signature(
 
 
 @pytest.mark.parametrize(
-    'run_request_name, valid_request, error_message',
+    'run_request_name, valid_request, error',
     [
         ('minimal_run_request', True, None),
         ('run_request_with_heralding', True, None),
         ('run_request_with_custom_settings', True, None),
-        ('run_request_with_invalid_qubit_mapping', False, 'Multiple logical qubits map to the same physical qubit.'),
+        (
+            'run_request_with_invalid_qubit_mapping',
+            False,
+            CircuitValidationError('Multiple logical qubits map to the same physical qubit.'),
+        ),
         (
             'run_request_with_incomplete_qubit_mapping',
             False,
-            "The qubits {'Qubit B'} in circuit 'The circuit' "
-            + 'at index 0 are not found in the provided qubit mapping.',
+            CircuitValidationError(
+                "The qubits {'Qubit B'} in circuit 'The circuit' "
+                'at index 0 are not found in the provided qubit mapping.'
+            ),
         ),
         ('run_request_without_qubit_mapping', True, None),
         ('run_request_with_calibration_set_id', True, None),
@@ -167,7 +173,10 @@ def test_submit_circuits_adds_user_agent_with_client_signature(
         (
             'run_request_with_incompatible_options',
             False,
-            'Unable to perform full MOVE gate frame tracking if MOVE gate validation is not "strict" or "allow_prx".',
+            ValueError(
+                'Unable to perform full MOVE gate frame tracking if MOVE gate validation '
+                'is not "strict" or "allow_prx".'
+            ),
         ),
     ],
 )
@@ -176,7 +185,7 @@ def test_submit_circuits_returns_id(
     jobs_url,
     run_request_name,
     valid_request,
-    error_message,
+    error,
     request,
     submit_success,
     existing_run_id,
@@ -191,10 +200,10 @@ def test_submit_circuits_returns_id(
 
     if valid_request:
         expect(requests, times=1).post(jobs_url, **post_jobs_args(run_request)).thenReturn(submit_success)
-    if error_message is None:
+    if error is None:
         assert sample_client.submit_circuits(**submit_circuits_args(run_request)) == existing_run_id
     else:
-        with pytest.raises(ValueError, match=error_message):
+        with pytest.raises(type(error), match=str(error)):
             sample_client.submit_circuits(**submit_circuits_args(run_request))
 
     verifyNoUnwantedInteractions()
@@ -862,7 +871,7 @@ def test_compiler_options_are_used_and_sent(
         expect(requests, times=1).post(jobs_url, **post_jobs_args(run_request)).thenReturn(submit_success)
         sample_client.submit_circuits(**submit_circuits_args(run_request))
     else:  # Invalid circuit and validation is turned on.
-        with pytest.raises(CircuitExecutionError):
+        with pytest.raises(CircuitValidationError):
             sample_client.submit_circuits(**submit_circuits_args(run_request))
 
     verifyNoUnwantedInteractions()

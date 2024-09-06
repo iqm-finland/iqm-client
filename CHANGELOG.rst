@@ -12,6 +12,7 @@ Version 18.1
   `#130 <https://github.com/iqm-finland/iqm-client/pull/130>`_
 * Improved testing to catch the bug above.
 * Bugfix: MOVE gate validation now also works with more than one resonator. `#130 <https://github.com/iqm-finland/iqm-client/pull/130>`_
+* More specific validation and transpilation errors. `#130 <https://github.com/iqm-finland/iqm-client/pull/130>`_
 * Docs updated: mid-circuit measurements are allowed on stations with ``cocos >= 30.2``. `#130 <https://github.com/iqm-finland/iqm-client/pull/130>`_
 
 Version 18.0
