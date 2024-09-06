@@ -40,8 +40,8 @@ class ExistingMoveHandlingOptions(str, Enum):
 
 
 class ResonatorStateTracker:
-    """Class for tracking the location of the |0> state of the resonators on the quantum computer as they are moved
-    with the MOVE gates because the MOVE gate is not defined when acting on a |11> state. This is equivalent to tracking
+    r"""Class for tracking the location of the :math:`|0\rangle` state of the resonators on the quantum computer as they are moved
+    with the MOVE gates because the MOVE gate is not defined when acting on a :math:`|11\rangle` state. This is equivalent to tracking
     the which qubit state has been moved into which resonator.
 
     Args:
