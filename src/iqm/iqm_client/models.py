@@ -563,9 +563,11 @@ class CircuitCompilationOptions:
     """Various discrete options for quantum circuit compilation to pulse schedule."""
 
     max_circuit_duration_over_t2: Optional[float] = None
-    """Circuits are disqualified on the server if they are longer than this ratio
-        of the T2 time of the qubits. Setting this value to ``0.0`` turns off circuit duration checking.
-        The default value ``None`` instructs server to use server's default value in the checking."""
+    """Server-side circuit disqualification threshold.
+    The job is rejected on the server if any circuit in it is estimated to take longer than
+    the shortest T2 time of any qubit used in the circuit, multiplied by this value.
+    Setting this value to ``0.0`` turns off circuit duration checking.
+    ``None`` tells the server to use its default value in the check."""
     heralding_mode: HeraldingMode = HeraldingMode.NONE
     """Heralding mode to use during the execution."""
     move_gate_validation: MoveGateValidationMode = MoveGateValidationMode.STRICT

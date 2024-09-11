@@ -80,8 +80,8 @@ class IQMClient:
         password: Password to log in to authentication server.
 
     Alternatively, the user authentication related keyword arguments can also be given in
-    environment variables ``IQM_TOKEN``, ``IQM_TOKENS_FILE``, ``IQM_AUTH_SERVER``,
-    ``IQM_AUTH_USERNAME`` and ``IQM_AUTH_PASSWORD``. All parameters must be given either
+    environment variables :envvar:`IQM_TOKEN`, :envvar:`IQM_TOKENS_FILE`, :envvar:`IQM_AUTH_SERVER`,
+    :envvar:`IQM_AUTH_USERNAME` and :envvar:`IQM_AUTH_PASSWORD`. All parameters must be given either
     as keyword arguments or as environment variables. Same combination restrictions apply
     for values given as environment variables as for keyword arguments.
     """
