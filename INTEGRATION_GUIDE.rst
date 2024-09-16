@@ -194,15 +194,15 @@ transpile the circuits against that representation, then use qubit mapping along
 circuits to map from the local representation to the IQM representation of qubit names.  We
 discourage exposing this feature to end users of the quantum computing framework.
 
-Note on circuit duration
-------------------------
+Note on circuit duration check
+------------------------------
 
 Before performing circuit execution, IQM server checks how long it would take to run each circuit.
 If any circuit in a job would take too long to execute compared to the T2 time of the qubits,
 the server will disqualify the job, not execute any circuits, and return a detailed error message.
-In some special cases, it makes sense to disable this check by changing the default value of parameter
-``max_circuit_duration_over_t2`` of :meth:`.IQMClient.submit_circuits` to ``0.0`` or by making it large
-enough for the job to pass the check. If the value is not set at all, the server default value will be used.
+In some special cases, it makes sense to adjust or disable this check using
+the :attr:`max_circuit_duration_over_t2` attribute of :class:`.CircuitCompilationOptions`,
+and then passing the options to :meth:`.IQMClient.submit_circuits`.
 
 Note on environment variables
 -----------------------------
