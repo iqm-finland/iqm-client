@@ -516,6 +516,43 @@ class QuantumArchitecture(BaseModel):
     """Details about the quantum architecture."""
 
 
+class GateImplementationInfo(BaseModel):
+    """Information about an implementation of a quantum gate/operation."""
+
+    loci: list[list[str]] = Field(...)
+    """loci for which this gate implementation has been calibrated"""
+
+
+class GateInfo(BaseModel):
+    """Information about a quantum gate/operation."""
+
+    implementations: dict[str, GateImplementationInfo] = Field(...)
+    """mapping of available implementation names to information about the implementations"""
+    default_implementation: str = Field(...)
+    """default implementation used for the gate"""
+    override_default_implementation: dict[tuple[str, ...], str] = Field(...)
+    """mapping of loci to implementation names that override ``default_implementation`` for those loci"""
+
+
+class DynamicQuantumArchitecture(BaseModel):
+    """Dynamic quantum architecture as returned by server.
+
+    The dynamic quantum architecture (DQA) describes gates/operations for which calibration data
+    exists in the calibration set.
+    """
+
+    station_name: str = Field(...)
+    """name of the station for which this DQA was generated"""
+    calibration_set_id: UUID = Field(...)
+    """id of the calibration set from which this DQA was generated"""
+    qubits: list[str] = Field(...)
+    """qubits used in at least one gate of the calibration set"""
+    computational_resonators: list[str] = Field(...)
+    """computational resonators used in at least one gate of the calibration set"""
+    gates: dict[str, GateInfo] = Field(...)
+    """mapping of gate names to information about the gates"""
+
+
 class HeraldingMode(str, Enum):
     """Heralding mode for circuit execution.
 

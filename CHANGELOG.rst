@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 19.0
+============
+
+* Add :meth:`IQMClient.get_dynamic_quantum_architecture`. `#131 <https://github.com/iqm-finland/iqm-client/pull/131>`_
+
 Version 18.0  
 ============
 
