@@ -343,9 +343,16 @@ class IQMClient:
         Raises:
             CircuitValidationError: There was something wrong with ``circuits``.
         """
-        for circuit in circuits:
+        for index, circuit in enumerate(circuits):
+            measurement_keys: set[str] = set()
             for instr in circuit.instructions:
                 IQMClient._validate_instruction(architecture, instr, qubit_mapping)
+                # check measurement key uniqueness
+                if instr.name in {'measure', 'measurement'}:
+                    key = instr.args['key']
+                    if key in measurement_keys:
+                        raise CircuitValidationError(f'Circuit {index}: {instr!r} has a non-unique measurement key.')
+                    measurement_keys.add(key)
             IQMClient._validate_circuit_moves(architecture, circuit, qubit_mapping, validate_moves=validate_moves)
 
     @staticmethod

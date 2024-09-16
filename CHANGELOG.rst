@@ -14,6 +14,7 @@ Version 18.1
 * More specific validation and transpilation errors. `#130 <https://github.com/iqm-finland/iqm-client/pull/130>`_
 * Docs updated: mid-circuit measurements are allowed on stations with ``cocos >= 30.2``. `#130 <https://github.com/iqm-finland/iqm-client/pull/130>`_
 * Integration guide updated. `#130 <https://github.com/iqm-finland/iqm-client/pull/130>`_
+* Circuit validation: All measurement keys must be unique. `#130 <https://github.com/iqm-finland/iqm-client/pull/130>`_
 
 Version 18.0
 ============

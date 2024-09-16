@@ -106,6 +106,50 @@ def test_disallowed_measure_qubits(sample_move_architecture, qubits):
         )
 
 
+def test_measurement_keys_must_be_unique(sample_move_architecture):
+    """
+    Tests that all measure instructions in a circuit must have unique keys.
+    """
+    arch = QuantumArchitecture(**sample_move_architecture)
+    circuit = Circuit(
+        name='Test circuit',
+        instructions=[
+            Instruction(name='measure', qubits=['QB1'], args={'key': 'a'}),
+            Instruction(name='measure', qubits=['QB2'], args={'key': 'a'}),
+        ],
+    )
+    with pytest.raises(CircuitValidationError, match='has a non-unique measurement key'):
+        IQMClient._validate_circuit_instructions(
+            arch.quantum_architecture,
+            [circuit],
+        )
+
+
+def test_same_measurement_key_in_different_circuits(sample_move_architecture):
+    """
+    Tests that the same measurement key can be used in different circuits.
+    """
+    arch = QuantumArchitecture(**sample_move_architecture)
+    circuits = [
+        Circuit(
+            name='Test circuit 1',
+            instructions=[
+                Instruction(name='measure', qubits=['QB1'], args={'key': 'a'}),
+            ],
+        ),
+        Circuit(
+            name='Test circuit 2',
+            instructions=[
+                Instruction(name='measure', qubits=['QB1'], args={'key': 'a'}),
+            ],
+        ),
+    ]
+    IQMClient._validate_circuit_instructions(
+        arch.quantum_architecture,
+        circuits,
+    )
+
+
 @pytest.mark.parametrize(
     'qubits',
     [
