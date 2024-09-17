@@ -533,7 +533,7 @@ class GateInfo(BaseModel):
     implementations: dict[str, GateImplementationInfo] = Field(...)
     """mapping of available implementation names to information about the implementations"""
     default_implementation: str = Field(...)
-    """default implementation used for the gate"""
+    """default implementation for the gate, used unless overridden by :attr:`override_default_implementation` or unless the user requests a specific implementation for a particular gate in the circuit using :attr:`.Instruction.implementation`"""
     override_default_implementation: dict[Locus, str] = Field(...)
     """mapping of loci to implementation names that override ``default_implementation`` for those loci"""
 
@@ -550,9 +550,9 @@ class DynamicQuantumArchitecture(BaseModel):
     calibration_set_id: UUID = Field(...)
     """id of the calibration set from which this DQA was generated"""
     qubits: list[str] = Field(...)
-    """qubits used in at least one gate of the calibration set"""
+    """qubits that appear in at least one gate locus in the calibration set"""
     computational_resonators: list[str] = Field(...)
-    """computational resonators used in at least one gate of the calibration set"""
+    """computational resonators that appear in at least one gate locus in the calibration set"""
     gates: dict[str, GateInfo] = Field(...)
     """mapping of gate names to information about the gates"""
 

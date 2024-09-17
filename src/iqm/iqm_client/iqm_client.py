@@ -642,11 +642,11 @@ class IQMClient:
 
         Args:
             calibration_set_id: ID of the calibration set for which the DQA is returned.
-                If ``None``, use default calibration set.
+                If ``None``, use current default calibration set on the server.
             timeout_secs: network request timeout
 
         Returns:
-            dynamic quantum architecture
+            dynamic quantum architecture corresponding to the given calibration set
 
         Raises:
             ArchitectureRetrievalError: IQM server specific exceptions
