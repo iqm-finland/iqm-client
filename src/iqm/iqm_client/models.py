@@ -533,7 +533,9 @@ class GateInfo(BaseModel):
     implementations: dict[str, GateImplementationInfo] = Field(...)
     """mapping of available implementation names to information about the implementations"""
     default_implementation: str = Field(...)
-    """default implementation for the gate, used unless overridden by :attr:`override_default_implementation` or unless the user requests a specific implementation for a particular gate in the circuit using :attr:`.Instruction.implementation`"""
+    """default implementation for the gate, used unless overridden by :attr:`override_default_implementation`
+    or unless the user requests a specific implementation for a particular gate in the circuit using 
+    :attr:`.Instruction.implementation`"""
     override_default_implementation: dict[Locus, str] = Field(...)
     """mapping of loci to implementation names that override ``default_implementation`` for those loci"""
 
