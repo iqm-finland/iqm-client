@@ -94,6 +94,10 @@ SUPPORTED_INSTRUCTIONS: dict[str, dict[str, Any]] = {
 }
 
 
+Locus = tuple[StrictStr, ...]
+"""Names of the QPU components (typically qubits) a quantum operation instance is acting on, e.g. `("QB1", "QB2")`."""
+
+
 class Instruction(BaseModel):
     r"""
 
@@ -223,7 +227,7 @@ class Instruction(BaseModel):
     """name of the quantum operation"""
     implementation: Optional[StrictStr] = Field(None)
     """name of the implementation, for experimental use only"""
-    qubits: tuple[StrictStr, ...] = Field(..., examples=[('alice',)])
+    qubits: Locus = Field(..., examples=[('alice',)])
     """names of the logical qubits the operation acts on"""
     args: dict[str, Any] = Field(..., examples=[{'key': 'm'}])
     """arguments for the operation"""
@@ -519,7 +523,7 @@ class QuantumArchitecture(BaseModel):
 class GateImplementationInfo(BaseModel):
     """Information about an implementation of a quantum gate/operation."""
 
-    loci: list[list[str]] = Field(...)
+    loci: tuple[Locus, ...] = Field(...)
     """loci for which this gate implementation has been calibrated"""
 
 
@@ -530,7 +534,7 @@ class GateInfo(BaseModel):
     """mapping of available implementation names to information about the implementations"""
     default_implementation: str = Field(...)
     """default implementation used for the gate"""
-    override_default_implementation: dict[tuple[str, ...], str] = Field(...)
+    override_default_implementation: dict[Locus, str] = Field(...)
     """mapping of loci to implementation names that override ``default_implementation`` for those loci"""
 
 
