@@ -48,21 +48,24 @@ class TokenManager:
     """
 
     @staticmethod
-    def time_left_seconds(token: str) -> int:
+    def time_left_seconds(token: Optional[str]) -> int:
         """Check how much time is left until the token expires.
 
         Returns:
             Time left on token in seconds.
         """
-        if not token:
+        if not token or not isinstance(token, str):
             return 0
         parts = token.split('.', 2)
         if len(parts) != 3:
             return 0
         # Add padding to adjust body length to a multiple of 4 chars as required by base64 decoding
-        body = parts[1] + ('=' * (-len(parts[1]) % 4))
-        exp_time = int(json.loads(b64decode(body)).get('exp', '0'))
-        return max(0, exp_time - int(time.time()))
+        try:
+            body = parts[1] + ('=' * (-len(parts[1]) % 4))
+            exp_time = int(json.loads(b64decode(body)).get('exp', '0'))
+            return max(0, exp_time - int(time.time()))
+        except (UnicodeDecodeError, json.decoder.JSONDecodeError, ValueError, TypeError):
+            return 0
 
     def __init__(
         self,
@@ -240,6 +243,9 @@ class TokensFileReader(TokenProviderInterface):
 class TokenClient(TokenProviderInterface):
     """Requests new token from an authentication server"""
 
+    PASSWORD_GRANT_TYPE = 'password'
+    REFRESH_TOKEN_GRANT_TYPE = 'refresh_token'
+
     def __init__(self, auth_server_url: str, realm: str, username: str, password: str):
         """Initialize the client"""
         self._token_url = f'{auth_server_url}/realms/{realm}/protocol/openid-connect/token'
@@ -248,38 +254,50 @@ class TokenClient(TokenProviderInterface):
         self._password = password
         self._refresh_token: Optional[str] = None
 
+    def _get_access_token_from_server(self, grant_type: str) -> Optional[str]:
+        """Get new access token from the server and update refresh token."""
+
+        if grant_type == TokenClient.REFRESH_TOKEN_GRANT_TYPE:
+            # Update tokens using existing refresh_token
+            data = {
+                'client_id': AUTH_CLIENT_ID,
+                'grant_type': TokenClient.REFRESH_TOKEN_GRANT_TYPE,
+                'refresh_token': str(self._refresh_token),
+            }
+        else:
+            # There is no valid refresh token or refresh token has expired, start a new session
+            data = {
+                'client_id': AUTH_CLIENT_ID,
+                'grant_type': TokenClient.PASSWORD_GRANT_TYPE,
+                'username': self._username,
+                'password': self._password,
+            }
+
+        # Request new tokens from the server
+        access_token: Optional[str] = None
+        result = requests.post(self._token_url, data=data, timeout=AUTH_REQUESTS_TIMEOUT)
+        if result.status_code == 200:
+            tokens = result.json()
+            self._refresh_token = tokens.get('refresh_token')
+            access_token = tokens.get('access_token')
+        return access_token
+
     def get_token(self) -> str:
         """Get new access token and refresh token from the server"""
         if not self._token_url:
             raise ClientConfigurationError('No auth server configured')
 
-        if self._refresh_token and TokenManager.time_left_seconds(self._refresh_token) > REFRESH_MARGIN_SECONDS:
-            # Update tokens using existing refresh_token
-            data = {
-                'client_id': AUTH_CLIENT_ID,
-                'grant_type': 'refresh_token',
-                'refresh_token': str(self._refresh_token),
-            }
-
-        else:
-            # Start a new session and get new tokens
-            data = {
-                'client_id': AUTH_CLIENT_ID,
-                'grant_type': 'password',
-                'username': self._username,
-                'password': self._password,
-            }
-
-        result = requests.post(self._token_url, data=data, timeout=AUTH_REQUESTS_TIMEOUT)
-        if result.status_code != 200:
-            raise ClientAuthenticationError(f'Getting access token from auth server failed: {result.text}')
-
-        tokens = result.json()
-        self._refresh_token = tokens.get('refresh_token')
-
-        if 'access_token' not in tokens:
-            raise ClientAuthenticationError('Server did not provide access token')
-        return tokens['access_token']
+        access_token: Optional[str] = None
+        if TokenManager.time_left_seconds(self._refresh_token) > REFRESH_MARGIN_SECONDS:
+            # There is a valid refresh token, try to update tokens using it
+            access_token = self._get_access_token_from_server(TokenClient.REFRESH_TOKEN_GRANT_TYPE)
+        if TokenManager.time_left_seconds(access_token) <= 0:
+            # Failed to get valid access token using refresh token, start a new session
+            access_token = self._get_access_token_from_server(TokenClient.PASSWORD_GRANT_TYPE)
+        if TokenManager.time_left_seconds(access_token) <= 0:
+            # Failed to get valid access token using username and password, raise an error
+            raise ClientAuthenticationError('Getting access token from auth server failed')
+        return str(access_token)  # acces token can not be None here
 
     def close(self) -> None:
         """Close authentication session"""

@@ -210,7 +210,19 @@ def test_token_client_provides_token(auth_server_url, auth_realm, auth_username,
     unstub()
 
 
-def test_token_client_login_fails(auth_server_url, auth_realm, auth_username, auth_password):
+def test_token_client_login_fails_with_no_auth_server():
+    """Tests that TokenClient raises ClientAuthenticationError if auth server has not been set"""
+
+    provider = TokenClient('', '', '', '')
+    provider._token_url = ''
+    with pytest.raises(ClientConfigurationError, match='No auth server configured'):
+        provider.get_token()
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_token_client_login_fails_with_wrong_password(auth_server_url, auth_realm, auth_username, auth_password):
     """Tests that TokenClient raises ClientAuthenticationError if server login fails"""
 
     token_url = f'{auth_server_url}/realms/{auth_realm}/protocol/openid-connect/token'
@@ -230,6 +242,48 @@ def test_token_client_login_fails(auth_server_url, auth_realm, auth_username, au
     provider = TokenClient(auth_server_url, auth_realm, auth_username, auth_password)
     with pytest.raises(ClientAuthenticationError, match='Getting access token from auth server failed'):
         provider.get_token()
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_token_client_recovers_from_revoked_session(auth_server_url, auth_realm, auth_username, auth_password):
+    """Tests that TokenClient starts a new session when getting new tokens using the refresh token fails."""
+
+    refresh_token = make_token('Refresh', 3000)
+    token_url = f'{auth_server_url}/realms/{auth_realm}/protocol/openid-connect/token'
+    refresh_data = {
+        'client_id': AUTH_CLIENT_ID,
+        'grant_type': 'refresh_token',
+        'refresh_token': refresh_token,
+    }
+    refresh_response_body = {'detail': 'session has been revoked'}
+
+    # Prepare refresh request
+    expect(requests, times=1).post(token_url, data=refresh_data, timeout=AUTH_REQUESTS_TIMEOUT).thenReturn(
+        MockJsonResponse(200, refresh_response_body)
+    )
+
+    login_data = {
+        'client_id': AUTH_CLIENT_ID,
+        'grant_type': 'password',
+        'username': auth_username,
+        'password': auth_password,
+    }
+    login_response_body = {
+        'access_token': make_token('Bearer', 300),
+        'refresh_token': make_token('Refresh', 3000),
+    }
+
+    # Prepare login request
+    expect(requests, times=1).post(token_url, data=login_data, timeout=AUTH_REQUESTS_TIMEOUT).thenReturn(
+        MockJsonResponse(200, login_response_body)
+    )
+
+    provider = TokenClient(auth_server_url, auth_realm, auth_username, auth_password)
+    provider._refresh_token = refresh_token
+
+    assert provider.get_token() == login_response_body['access_token']
 
     verifyNoUnwantedInteractions()
     unstub()
