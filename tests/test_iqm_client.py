@@ -862,7 +862,6 @@ def test_get_dynamic_quantum_architecture_without_calset_id_does_not_cache(
     changes between two invocations of get_dynamic_quantum_architecture().
     """
     dynamic_quantum_architecture_2 = {
-        'station_name': 'test_station',
         'calibration_set_id': '3902d525-d8f4-42c0-9fa9-6bbd535b6c80',
         'qubits': ['QB1', 'QB2'],
         'computational_resonators': [],

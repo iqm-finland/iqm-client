@@ -547,8 +547,6 @@ class DynamicQuantumArchitecture(BaseModel):
     exists in the calibration set.
     """
 
-    station_name: str = Field(...)
-    """name of the station for which this DQA was generated"""
     calibration_set_id: UUID = Field(...)
     """id of the calibration set from which this DQA was generated"""
     qubits: list[str] = Field(...)

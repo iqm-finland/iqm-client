@@ -485,7 +485,6 @@ def sample_move_architecture():
 @pytest.fixture
 def sample_dynamic_quantum_architecture():
     return {
-        'station_name': 'hercules',
         'calibration_set_id': 'cd4dd889-b88b-4370-ba01-eb8262ad9c53',
         'qubits': ['QB1', 'QB2', 'QB3'],
         'computational_resonators': ['COMP_R'],
