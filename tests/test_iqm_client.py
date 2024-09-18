@@ -806,7 +806,7 @@ def test_get_dynamic_quantum_architecture_with_calset_id(
     sample_client, base_url, dynamic_quantum_architecture_success, sample_dynamic_quantum_architecture
 ):
     """Tests that the correct dynamic quantum architecture for the given ``calibration_set_id`` is returned."""
-    calset_id = uuid.uuid4()
+    calset_id = uuid.UUID(sample_dynamic_quantum_architecture['calibration_set_id'])
     expect(requests, times=1).get(f'{base_url}/api/v1/calibration/{calset_id}/gates', ...).thenReturn(
         dynamic_quantum_architecture_success
     )
@@ -824,7 +824,7 @@ def test_get_dynamic_quantum_architecture_with_calset_id_caches(
     Tests that cached dynamic quantum architecture is returned when requesting it for the second time for
     a given calibration set id.
     """
-    calset_id = uuid.uuid4()
+    calset_id = uuid.UUID(sample_dynamic_quantum_architecture['calibration_set_id'])
     expect(requests, times=1).get(f'{base_url}/api/v1/calibration/{calset_id}/gates', ...).thenReturn(
         dynamic_quantum_architecture_success
     )

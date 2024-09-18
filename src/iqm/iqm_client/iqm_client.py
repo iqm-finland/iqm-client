@@ -673,9 +673,8 @@ class IQMClient:
         except (json.decoder.JSONDecodeError, KeyError) as e:
             raise ArchitectureRetrievalError(f'Invalid response: {result.text}, {e}') from e
 
-        if calibration_set_id is not None:
-            # Cache architecture so that later invocations do not need to query it again
-            self._dynamic_architectures[calibration_set_id] = dqa
+        # Cache architecture so that later invocations do not need to query it again
+        self._dynamic_architectures[dqa.calibration_set_id] = dqa
 
         return dqa
 
