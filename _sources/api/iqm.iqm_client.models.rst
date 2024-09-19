@@ -10,6 +10,7 @@ iqm.iqm\_client.models
    .. autosummary::
       :toctree:
    
+      Locus
       CircuitBatch
       QubitMapping
       CircuitMeasurementResults
@@ -42,6 +43,9 @@ iqm.iqm\_client.models
    
       Circuit
       CircuitCompilationOptions
+      DynamicQuantumArchitecture
+      GateImplementationInfo
+      GateInfo
       HeraldingMode
       Instruction
       Metadata

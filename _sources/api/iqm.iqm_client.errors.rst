@@ -23,6 +23,7 @@ iqm.iqm\_client.errors
       :toctree:
    
       APITimeoutError
+      ArchitectureRetrievalError
       CircuitExecutionError
       CircuitValidationError
       ClientAuthenticationError

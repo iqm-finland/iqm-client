@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>iqm.iqm_client.models &#8212; IQM client 18.0 documentation</title>
+    <title>iqm.iqm_client.models &#8212; IQM client 18.1 documentation</title>
   
   
   
@@ -37,7 +37,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=3485d705"></script>
+    <script src="../_static/documentation_options.js?v=8f795518"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
@@ -45,11 +45,11 @@
     <link rel="icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="iqm.iqm_client.models.CircuitBatch" href="iqm.iqm_client.models.CircuitBatch.html" />
+    <link rel="next" title="iqm.iqm_client.models.Locus" href="iqm.iqm_client.models.Locus.html" />
     <link rel="prev" title="iqm.iqm_client.iqm_client.IQMClient" href="iqm.iqm_client.iqm_client.IQMClient.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="2024-08-27"/>
+    <meta name="docbuild:last-update" content="2024-09-19"/>
   </head>
   
   
@@ -139,8 +139,8 @@
       
     
     
-    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 18.0 documentation - Home"/>
-    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="IQM client 18.0 documentation - Home"/>`);</script>
+    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 18.1 documentation - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="IQM client 18.1 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -171,6 +171,7 @@
 </details></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="iqm.iqm_client.errors.html">iqm.iqm_client.errors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.APITimeoutError.html">iqm.iqm_client.errors.APITimeoutError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.ArchitectureRetrievalError.html">iqm.iqm_client.errors.ArchitectureRetrievalError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.CircuitExecutionError.html">iqm.iqm_client.errors.CircuitExecutionError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.CircuitValidationError.html">iqm.iqm_client.errors.CircuitValidationError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.ClientAuthenticationError.html">iqm.iqm_client.errors.ClientAuthenticationError</a></li>
@@ -183,6 +184,7 @@
 </ul>
 </details></li>
 <li class="toctree-l3 current active has-children"><a class="current reference internal" href="#">iqm.iqm_client.models</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.Locus.html">iqm.iqm_client.models.Locus</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.CircuitBatch.html">iqm.iqm_client.models.CircuitBatch</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.QubitMapping.html">iqm.iqm_client.models.QubitMapping</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.CircuitMeasurementResults.html">iqm.iqm_client.models.CircuitMeasurementResults</a></li>
@@ -194,6 +196,9 @@
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.validate_circuit.html">iqm.iqm_client.models.validate_circuit</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.Circuit.html">iqm.iqm_client.models.Circuit</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.CircuitCompilationOptions.html">iqm.iqm_client.models.CircuitCompilationOptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.DynamicQuantumArchitecture.html">iqm.iqm_client.models.DynamicQuantumArchitecture</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.GateImplementationInfo.html">iqm.iqm_client.models.GateImplementationInfo</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.GateInfo.html">iqm.iqm_client.models.GateInfo</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.HeraldingMode.html">iqm.iqm_client.models.HeraldingMode</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.Instruction.html">iqm.iqm_client.models.Instruction</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.Metadata.html">iqm.iqm_client.models.Metadata</a></li>
@@ -386,16 +391,19 @@ document.write(`
 <p class="rubric">Module Attributes</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="iqm.iqm_client.models.CircuitBatch.html#iqm.iqm_client.models.CircuitBatch" title="iqm.iqm_client.models.CircuitBatch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CircuitBatch</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="iqm.iqm_client.models.Locus.html#iqm.iqm_client.models.Locus" title="iqm.iqm_client.models.Locus"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Locus</span></code></a></p></td>
+<td><p>Names of the QPU components (typically qubits) a quantum operation instance is acting on, e.g. <cite>(&quot;QB1&quot;, &quot;QB2&quot;)</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="iqm.iqm_client.models.CircuitBatch.html#iqm.iqm_client.models.CircuitBatch" title="iqm.iqm_client.models.CircuitBatch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CircuitBatch</span></code></a></p></td>
 <td><p>Type that represents a list of quantum circuits to be executed together in a single batch.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="iqm.iqm_client.models.QubitMapping.html#iqm.iqm_client.models.QubitMapping" title="iqm.iqm_client.models.QubitMapping"><code class="xref py py-obj docutils literal notranslate"><span class="pre">QubitMapping</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="iqm.iqm_client.models.QubitMapping.html#iqm.iqm_client.models.QubitMapping" title="iqm.iqm_client.models.QubitMapping"><code class="xref py py-obj docutils literal notranslate"><span class="pre">QubitMapping</span></code></a></p></td>
 <td><p>Type that represents a qubit mapping for a circuit, i.e. a list of single qubit mappings for all qubits in the circuit.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="iqm.iqm_client.models.CircuitMeasurementResults.html#iqm.iqm_client.models.CircuitMeasurementResults" title="iqm.iqm_client.models.CircuitMeasurementResults"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CircuitMeasurementResults</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="iqm.iqm_client.models.CircuitMeasurementResults.html#iqm.iqm_client.models.CircuitMeasurementResults" title="iqm.iqm_client.models.CircuitMeasurementResults"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CircuitMeasurementResults</span></code></a></p></td>
 <td><p>Measurement results from a single circuit.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="iqm.iqm_client.models.CircuitMeasurementResultsBatch.html#iqm.iqm_client.models.CircuitMeasurementResultsBatch" title="iqm.iqm_client.models.CircuitMeasurementResultsBatch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CircuitMeasurementResultsBatch</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="iqm.iqm_client.models.CircuitMeasurementResultsBatch.html#iqm.iqm_client.models.CircuitMeasurementResultsBatch" title="iqm.iqm_client.models.CircuitMeasurementResultsBatch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CircuitMeasurementResultsBatch</span></code></a></p></td>
 <td><p>Type that represents measurement results for a batch of circuits.</p></td>
 </tr>
 </tbody>
@@ -431,63 +439,75 @@ document.write(`
 <tr class="row-even"><td><p><a class="reference internal" href="iqm.iqm_client.models.CircuitCompilationOptions.html#iqm.iqm_client.models.CircuitCompilationOptions" title="iqm.iqm_client.models.CircuitCompilationOptions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CircuitCompilationOptions</span></code></a>([...])</p></td>
 <td><p>Various discrete options for quantum circuit compilation to pulse schedule.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="iqm.iqm_client.models.HeraldingMode.html#iqm.iqm_client.models.HeraldingMode" title="iqm.iqm_client.models.HeraldingMode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HeraldingMode</span></code></a>(value)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="iqm.iqm_client.models.DynamicQuantumArchitecture.html#iqm.iqm_client.models.DynamicQuantumArchitecture" title="iqm.iqm_client.models.DynamicQuantumArchitecture"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DynamicQuantumArchitecture</span></code></a>(*, ...)</p></td>
+<td><p>Dynamic quantum architecture as returned by server.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="iqm.iqm_client.models.GateImplementationInfo.html#iqm.iqm_client.models.GateImplementationInfo" title="iqm.iqm_client.models.GateImplementationInfo"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GateImplementationInfo</span></code></a>(*, loci)</p></td>
+<td><p>Information about an implementation of a quantum gate/operation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="iqm.iqm_client.models.GateInfo.html#iqm.iqm_client.models.GateInfo" title="iqm.iqm_client.models.GateInfo"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GateInfo</span></code></a>(*, implementations, ...)</p></td>
+<td><p>Information about a quantum gate/operation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="iqm.iqm_client.models.HeraldingMode.html#iqm.iqm_client.models.HeraldingMode" title="iqm.iqm_client.models.HeraldingMode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HeraldingMode</span></code></a>(value)</p></td>
 <td><p>Heralding mode for circuit execution.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="iqm.iqm_client.models.Instruction.html#iqm.iqm_client.models.Instruction" title="iqm.iqm_client.models.Instruction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Instruction</span></code></a>(*, name[, implementation])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="iqm.iqm_client.models.Instruction.html#iqm.iqm_client.models.Instruction" title="iqm.iqm_client.models.Instruction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Instruction</span></code></a>(*, name[, implementation])</p></td>
 <td><p>The <a class="reference internal" href="iqm.iqm_client.models.Instruction.html#iqm.iqm_client.models.Instruction" title="iqm.iqm_client.models.Instruction"><code class="xref py py-class docutils literal notranslate"><span class="pre">Instruction</span></code></a> class represents a native quantum operation.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="iqm.iqm_client.models.Metadata.html#iqm.iqm_client.models.Metadata" title="iqm.iqm_client.models.Metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Metadata</span></code></a>(*[, calibration_set_id, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="iqm.iqm_client.models.Metadata.html#iqm.iqm_client.models.Metadata" title="iqm.iqm_client.models.Metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Metadata</span></code></a>(*[, calibration_set_id, ...])</p></td>
 <td><p>Metadata describing a circuit execution job.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="iqm.iqm_client.models.MoveGateFrameTrackingMode.html#iqm.iqm_client.models.MoveGateFrameTrackingMode" title="iqm.iqm_client.models.MoveGateFrameTrackingMode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MoveGateFrameTrackingMode</span></code></a>(value)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="iqm.iqm_client.models.MoveGateFrameTrackingMode.html#iqm.iqm_client.models.MoveGateFrameTrackingMode" title="iqm.iqm_client.models.MoveGateFrameTrackingMode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MoveGateFrameTrackingMode</span></code></a>(value)</p></td>
 <td><p>MOVE gate frame tracking mode for circuit compilation.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="iqm.iqm_client.models.MoveGateValidationMode.html#iqm.iqm_client.models.MoveGateValidationMode" title="iqm.iqm_client.models.MoveGateValidationMode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MoveGateValidationMode</span></code></a>(value)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="iqm.iqm_client.models.MoveGateValidationMode.html#iqm.iqm_client.models.MoveGateValidationMode" title="iqm.iqm_client.models.MoveGateValidationMode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MoveGateValidationMode</span></code></a>(value)</p></td>
 <td><p>MOVE gate validation mode for circuit compilation.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="iqm.iqm_client.models.QuantumArchitecture.html#iqm.iqm_client.models.QuantumArchitecture" title="iqm.iqm_client.models.QuantumArchitecture"><code class="xref py py-obj docutils literal notranslate"><span class="pre">QuantumArchitecture</span></code></a>(*, quantum_architecture)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="iqm.iqm_client.models.QuantumArchitecture.html#iqm.iqm_client.models.QuantumArchitecture" title="iqm.iqm_client.models.QuantumArchitecture"><code class="xref py py-obj docutils literal notranslate"><span class="pre">QuantumArchitecture</span></code></a>(*, quantum_architecture)</p></td>
 <td><p>Quantum architecture as returned by server.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="iqm.iqm_client.models.QuantumArchitectureSpecification.html#iqm.iqm_client.models.QuantumArchitectureSpecification" title="iqm.iqm_client.models.QuantumArchitectureSpecification"><code class="xref py py-obj docutils literal notranslate"><span class="pre">QuantumArchitectureSpecification</span></code></a>(*, name, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="iqm.iqm_client.models.QuantumArchitectureSpecification.html#iqm.iqm_client.models.QuantumArchitectureSpecification" title="iqm.iqm_client.models.QuantumArchitectureSpecification"><code class="xref py py-obj docutils literal notranslate"><span class="pre">QuantumArchitectureSpecification</span></code></a>(*, name, ...)</p></td>
 <td><p>Quantum architecture specification.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="iqm.iqm_client.models.RunRequest.html#iqm.iqm_client.models.RunRequest" title="iqm.iqm_client.models.RunRequest"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RunRequest</span></code></a>(*, circuits[, custom_settings, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="iqm.iqm_client.models.RunRequest.html#iqm.iqm_client.models.RunRequest" title="iqm.iqm_client.models.RunRequest"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RunRequest</span></code></a>(*, circuits[, custom_settings, ...])</p></td>
 <td><p>Request for an IQM quantum computer to run a job that executes a batch of quantum circuits.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="iqm.iqm_client.models.RunResult.html#iqm.iqm_client.models.RunResult" title="iqm.iqm_client.models.RunResult"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RunResult</span></code></a>(*, status[, measurements, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="iqm.iqm_client.models.RunResult.html#iqm.iqm_client.models.RunResult" title="iqm.iqm_client.models.RunResult"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RunResult</span></code></a>(*, status[, measurements, ...])</p></td>
 <td><p>Results of the quantum circuit execution job.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="iqm.iqm_client.models.RunStatus.html#iqm.iqm_client.models.RunStatus" title="iqm.iqm_client.models.RunStatus"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RunStatus</span></code></a>(*, status[, message, warnings])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="iqm.iqm_client.models.RunStatus.html#iqm.iqm_client.models.RunStatus" title="iqm.iqm_client.models.RunStatus"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RunStatus</span></code></a>(*, status[, message, warnings])</p></td>
 <td><p>Status of a circuit execution job.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="iqm.iqm_client.models.SingleQubitMapping.html#iqm.iqm_client.models.SingleQubitMapping" title="iqm.iqm_client.models.SingleQubitMapping"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SingleQubitMapping</span></code></a>(*, logical_name, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="iqm.iqm_client.models.SingleQubitMapping.html#iqm.iqm_client.models.SingleQubitMapping" title="iqm.iqm_client.models.SingleQubitMapping"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SingleQubitMapping</span></code></a>(*, logical_name, ...)</p></td>
 <td><p>Mapping of a logical qubit name to a physical qubit name.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="iqm.iqm_client.models.Status.html#iqm.iqm_client.models.Status" title="iqm.iqm_client.models.Status"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Status</span></code></a>(value)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="iqm.iqm_client.models.Status.html#iqm.iqm_client.models.Status" title="iqm.iqm_client.models.Status"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Status</span></code></a>(value)</p></td>
 <td><p>Status of a job.</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 <p class="rubric">Inheritance</p>
-<div class="graphviz"><img src="../_images/inheritance-b1181df8963a8ddddb79e38b206a3ff4cc0afd05.png" alt="Inheritance diagram of iqm.iqm_client.models" usemap="#inheritance587d2887de" class="inheritance graphviz" /></div>
+<div class="graphviz"><img src="../_images/inheritance-8b350e3fa9e215ec9c6179e7ff8943a9157536b2.png" alt="Inheritance diagram of iqm.iqm_client.models" usemap="#inheritance587d2887de" class="inheritance graphviz" /></div>
 <map id="inheritance587d2887de" name="inheritance587d2887de">
 <area shape="rect" id="node2" href="iqm.iqm_client.models.Circuit.html#iqm.iqm_client.models.Circuit" target="_top" title="Quantum circuit to be executed." alt="" coords="333,203,405,228"/>
-<area shape="rect" id="node6" href="iqm.iqm_client.models.Instruction.html#iqm.iqm_client.models.Instruction" target="_top" title="The :class:`Instruction` class represents a native quantum operation." alt="" coords="323,252,414,277"/>
-<area shape="rect" id="node7" href="iqm.iqm_client.models.Metadata.html#iqm.iqm_client.models.Metadata" target="_top" title="Metadata describing a circuit execution job." alt="" coords="327,301,411,327"/>
-<area shape="rect" id="node10" href="iqm.iqm_client.models.QuantumArchitecture.html#iqm.iqm_client.models.QuantumArchitecture" target="_top" title="Quantum architecture as returned by server." alt="" coords="288,351,449,376"/>
-<area shape="rect" id="node11" href="iqm.iqm_client.models.QuantumArchitectureSpecification.html#iqm.iqm_client.models.QuantumArchitectureSpecification" target="_top" title="Quantum architecture specification." alt="" coords="247,400,491,425"/>
-<area shape="rect" id="node12" href="iqm.iqm_client.models.RunRequest.html#iqm.iqm_client.models.RunRequest" target="_top" title="Request for an IQM quantum computer to run a job that executes a batch of quantum circuits." alt="" coords="319,449,419,475"/>
-<area shape="rect" id="node13" href="iqm.iqm_client.models.RunResult.html#iqm.iqm_client.models.RunResult" target="_top" title="Results of the quantum circuit execution job." alt="" coords="325,499,413,524"/>
-<area shape="rect" id="node14" href="iqm.iqm_client.models.RunStatus.html#iqm.iqm_client.models.RunStatus" target="_top" title="Status of a circuit execution job." alt="" coords="325,548,413,573"/>
-<area shape="rect" id="node15" href="iqm.iqm_client.models.SingleQubitMapping.html#iqm.iqm_client.models.SingleQubitMapping" target="_top" title="Mapping of a logical qubit name to a physical qubit name." alt="" coords="292,597,445,623"/>
-<area shape="rect" id="node3" href="iqm.iqm_client.models.CircuitCompilationOptions.html#iqm.iqm_client.models.CircuitCompilationOptions" target="_top" title="Various discrete options for quantum circuit compilation to pulse schedule." alt="" coords="5,252,199,277"/>
-<area shape="rect" id="node4" href="https://docs.python.org/3.9/library/enum.html#enum.Enum" target="_top" title="Generic enumeration." alt="" coords="66,80,138,105"/>
-<area shape="rect" id="node5" href="iqm.iqm_client.models.HeraldingMode.html#iqm.iqm_client.models.HeraldingMode" target="_top" title="Heralding mode for circuit execution." alt="" coords="308,5,429,31"/>
-<area shape="rect" id="node8" href="iqm.iqm_client.models.MoveGateFrameTrackingMode.html#iqm.iqm_client.models.MoveGateFrameTrackingMode" target="_top" title="MOVE gate frame tracking mode for circuit compilation. This option is meant for advanced users." alt="" coords="259,55,479,80"/>
-<area shape="rect" id="node9" href="iqm.iqm_client.models.MoveGateValidationMode.html#iqm.iqm_client.models.MoveGateValidationMode" target="_top" title="MOVE gate validation mode for circuit compilation. This options is meant for advanced users." alt="" coords="273,104,464,129"/>
-<area shape="rect" id="node16" href="iqm.iqm_client.models.Status.html#iqm.iqm_client.models.Status" target="_top" title="Status of a job." alt="" coords="333,153,405,179"/>
+<area shape="rect" id="node4" href="iqm.iqm_client.models.DynamicQuantumArchitecture.html#iqm.iqm_client.models.DynamicQuantumArchitecture" target="_top" title="Dynamic quantum architecture as returned by server." alt="" coords="259,252,478,277"/>
+<area shape="rect" id="node6" href="iqm.iqm_client.models.GateImplementationInfo.html#iqm.iqm_client.models.GateImplementationInfo" target="_top" title="Information about an implementation of a quantum gate/operation." alt="" coords="277,301,460,327"/>
+<area shape="rect" id="node7" href="iqm.iqm_client.models.GateInfo.html#iqm.iqm_client.models.GateInfo" target="_top" title="Information about a quantum gate/operation." alt="" coords="329,351,408,376"/>
+<area shape="rect" id="node9" href="iqm.iqm_client.models.Instruction.html#iqm.iqm_client.models.Instruction" target="_top" title="The :class:`Instruction` class represents a native quantum operation." alt="" coords="323,400,414,425"/>
+<area shape="rect" id="node10" href="iqm.iqm_client.models.Metadata.html#iqm.iqm_client.models.Metadata" target="_top" title="Metadata describing a circuit execution job." alt="" coords="327,449,411,475"/>
+<area shape="rect" id="node13" href="iqm.iqm_client.models.QuantumArchitecture.html#iqm.iqm_client.models.QuantumArchitecture" target="_top" title="Quantum architecture as returned by server." alt="" coords="288,499,449,524"/>
+<area shape="rect" id="node14" href="iqm.iqm_client.models.QuantumArchitectureSpecification.html#iqm.iqm_client.models.QuantumArchitectureSpecification" target="_top" title="Quantum architecture specification." alt="" coords="247,548,491,573"/>
+<area shape="rect" id="node15" href="iqm.iqm_client.models.RunRequest.html#iqm.iqm_client.models.RunRequest" target="_top" title="Request for an IQM quantum computer to run a job that executes a batch of quantum circuits." alt="" coords="319,597,419,623"/>
+<area shape="rect" id="node16" href="iqm.iqm_client.models.RunResult.html#iqm.iqm_client.models.RunResult" target="_top" title="Results of the quantum circuit execution job." alt="" coords="325,647,413,672"/>
+<area shape="rect" id="node17" href="iqm.iqm_client.models.RunStatus.html#iqm.iqm_client.models.RunStatus" target="_top" title="Status of a circuit execution job." alt="" coords="325,696,413,721"/>
+<area shape="rect" id="node18" href="iqm.iqm_client.models.SingleQubitMapping.html#iqm.iqm_client.models.SingleQubitMapping" target="_top" title="Mapping of a logical qubit name to a physical qubit name." alt="" coords="292,745,445,771"/>
+<area shape="rect" id="node3" href="iqm.iqm_client.models.CircuitCompilationOptions.html#iqm.iqm_client.models.CircuitCompilationOptions" target="_top" title="Various discrete options for quantum circuit compilation to pulse schedule." alt="" coords="5,277,199,303"/>
+<area shape="rect" id="node5" href="https://docs.python.org/3.9/library/enum.html#enum.Enum" target="_top" title="Generic enumeration." alt="" coords="66,80,138,105"/>
+<area shape="rect" id="node8" href="iqm.iqm_client.models.HeraldingMode.html#iqm.iqm_client.models.HeraldingMode" target="_top" title="Heralding mode for circuit execution." alt="" coords="308,5,429,31"/>
+<area shape="rect" id="node11" href="iqm.iqm_client.models.MoveGateFrameTrackingMode.html#iqm.iqm_client.models.MoveGateFrameTrackingMode" target="_top" title="MOVE gate frame tracking mode for circuit compilation. This option is meant for advanced users." alt="" coords="259,55,479,80"/>
+<area shape="rect" id="node12" href="iqm.iqm_client.models.MoveGateValidationMode.html#iqm.iqm_client.models.MoveGateValidationMode" target="_top" title="MOVE gate validation mode for circuit compilation. This options is meant for advanced users." alt="" coords="273,104,464,129"/>
+<area shape="rect" id="node19" href="iqm.iqm_client.models.Status.html#iqm.iqm_client.models.Status" target="_top" title="Status of a job." alt="" coords="333,153,405,179"/>
 </map></section>
 
 
@@ -511,11 +531,11 @@ document.write(`
       </div>
     </a>
     <a class="right-next"
-       href="iqm.iqm_client.models.CircuitBatch.html"
+       href="iqm.iqm_client.models.Locus.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">iqm.iqm_client.models.CircuitBatch</p>
+        <p class="prev-next-title">iqm.iqm_client.models.Locus</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -554,7 +574,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2024-08-27.
+  Last updated on 2024-09-19.
   <br/>
 </p>
   </div>
