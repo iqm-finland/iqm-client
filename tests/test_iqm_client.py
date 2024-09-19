@@ -22,10 +22,12 @@ import requests
 from requests import HTTPError
 
 from iqm.iqm_client import (
+    ArchitectureRetrievalError,
     CircuitCompilationOptions,
     CircuitExecutionError,
     CircuitValidationError,
     ClientConfigurationError,
+    DynamicQuantumArchitecture,
     HeraldingMode,
     IQMClient,
     JobAbortionError,
@@ -551,7 +553,7 @@ def test_quantum_architecture_throws_json_decode_error_if_received_not_json(
     """Test that an exception is raised when the response is not a valid JSON"""
     expect(requests, times=1).get(quantum_architecture_url, ...).thenReturn(not_valid_json_response)
 
-    with pytest.raises(CircuitExecutionError):
+    with pytest.raises(ArchitectureRetrievalError):
         sample_client.get_quantum_architecture()
 
     verifyNoUnwantedInteractions()
@@ -795,6 +797,112 @@ def test_useless_compiler_options(
 
     # This used to warn, but no longer does
     sample_client.submit_circuits(**submit_circuits_args(run_request))
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_get_dynamic_quantum_architecture_with_calset_id(
+    sample_client, base_url, dynamic_quantum_architecture_success, sample_dynamic_quantum_architecture
+):
+    """Tests that the correct dynamic quantum architecture for the given ``calibration_set_id`` is returned."""
+    calset_id = uuid.UUID(sample_dynamic_quantum_architecture['calibration_set_id'])
+    expect(requests, times=1).get(f'{base_url}/api/v1/calibration/{calset_id}/gates', ...).thenReturn(
+        dynamic_quantum_architecture_success
+    )
+    assert sample_client.get_dynamic_quantum_architecture(calset_id) == DynamicQuantumArchitecture(
+        **sample_dynamic_quantum_architecture
+    )
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_get_dynamic_quantum_architecture_with_calset_id_caches(
+    sample_client, base_url, dynamic_quantum_architecture_success, sample_dynamic_quantum_architecture
+):
+    """
+    Tests that cached dynamic quantum architecture is returned when requesting it for the second time for
+    a given calibration set id.
+    """
+    calset_id = uuid.UUID(sample_dynamic_quantum_architecture['calibration_set_id'])
+    expect(requests, times=1).get(f'{base_url}/api/v1/calibration/{calset_id}/gates', ...).thenReturn(
+        dynamic_quantum_architecture_success
+    )
+
+    assert sample_client.get_dynamic_quantum_architecture(calset_id) == DynamicQuantumArchitecture(
+        **sample_dynamic_quantum_architecture
+    )
+    assert sample_client.get_dynamic_quantum_architecture(calset_id) == DynamicQuantumArchitecture(
+        **sample_dynamic_quantum_architecture
+    )
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_get_dynamic_quantum_architecture_without_calset_id(
+    sample_client, base_url, dynamic_quantum_architecture_success, sample_dynamic_quantum_architecture
+):
+    """Tests that the correct dynamic quantum architecture for the default calibration set is returned."""
+    expect(requests, times=1).get(f'{base_url}/api/v1/calibration/default/gates', ...).thenReturn(
+        dynamic_quantum_architecture_success
+    )
+    assert sample_client.get_dynamic_quantum_architecture() == DynamicQuantumArchitecture(
+        **sample_dynamic_quantum_architecture
+    )
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_get_dynamic_quantum_architecture_without_calset_id_does_not_cache(
+    sample_client, base_url, dynamic_quantum_architecture_success, sample_dynamic_quantum_architecture
+):
+    """
+    Tests that the correct dynamic quantum architecture is returned in the case where default calset
+    changes between two invocations of get_dynamic_quantum_architecture().
+    """
+    dynamic_quantum_architecture_2 = {
+        'calibration_set_id': '3902d525-d8f4-42c0-9fa9-6bbd535b6c80',
+        'qubits': ['QB1', 'QB2'],
+        'computational_resonators': [],
+        'gates': {
+            'phased_rx': {
+                'implementations': {
+                    'drag_gaussian': {
+                        'loci': [['QB1'], ['QB2']],
+                    }
+                },
+                'default_implementation': 'drag_gaussian',
+                'override_default_implementation': {},
+            },
+        },
+    }
+    dynamic_quantum_architecture_success_2 = MockJsonResponse(200, dynamic_quantum_architecture_2)
+    expect(requests, times=2).get(f'{base_url}/api/v1/calibration/default/gates', ...).thenReturn(
+        dynamic_quantum_architecture_success
+    ).thenReturn(dynamic_quantum_architecture_success_2)
+
+    assert sample_client.get_dynamic_quantum_architecture() == DynamicQuantumArchitecture(
+        **sample_dynamic_quantum_architecture
+    )
+    assert sample_client.get_dynamic_quantum_architecture() == DynamicQuantumArchitecture(
+        **dynamic_quantum_architecture_2
+    )
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_get_dynamic_quantum_architecture_throws_json_decode_error_if_received_not_json(
+    sample_client, base_url, not_valid_json_response
+):
+    """Test that an exception is raised when the response is not a valid JSON"""
+    expect(requests, times=1).get(f'{base_url}/api/v1/calibration/default/gates', ...).thenReturn(
+        not_valid_json_response
+    )
+
+    with pytest.raises(ArchitectureRetrievalError):
+        sample_client.get_dynamic_quantum_architecture()
 
     verifyNoUnwantedInteractions()
     unstub()
