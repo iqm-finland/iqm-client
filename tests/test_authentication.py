@@ -261,7 +261,7 @@ def test_token_client_recovers_from_revoked_session(auth_server_url, auth_realm,
 
     # Prepare refresh request
     expect(requests, times=1).post(token_url, data=refresh_data, timeout=AUTH_REQUESTS_TIMEOUT).thenReturn(
-        MockJsonResponse(200, refresh_response_body)
+        MockJsonResponse(401, refresh_response_body)
     )
 
     login_data = {
