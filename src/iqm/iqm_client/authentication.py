@@ -19,7 +19,7 @@ from base64 import b64decode
 import json
 import os
 import time
-from typing import Optional
+from typing import Any, Optional
 
 import requests
 
@@ -48,7 +48,7 @@ class TokenManager:
     """
 
     @staticmethod
-    def time_left_seconds(token: Optional[str]) -> int:
+    def time_left_seconds(token: Any) -> int:
         """Check how much time is left until the token expires.
 
         Returns:
@@ -145,7 +145,7 @@ class TokenManager:
             return None  # Authentication is not used
 
         # Use the existing access token if it is still valid
-        if self._access_token and TokenManager.time_left_seconds(self._access_token) > REFRESH_MARGIN_SECONDS:
+        if TokenManager.time_left_seconds(self._access_token) > REFRESH_MARGIN_SECONDS:
             return f'Bearer {self._access_token}'
 
         # Otherwise, get a new access token from token provider
@@ -204,8 +204,8 @@ class ExternalToken(TokenProviderInterface):
         self._token: Optional[str] = token
 
     def get_token(self) -> str:
-        if self._token is None:
-            raise ClientAuthenticationError('No external token available')
+        if self._token is None or TokenManager.time_left_seconds(self._token) <= 0:
+            raise ClientAuthenticationError('External token has expired or is not valid')
         return self._token
 
     def close(self) -> None:
@@ -225,14 +225,12 @@ class TokensFileReader(TokenProviderInterface):
                 raise ClientAuthenticationError('No tokens file available')
             with open(self._path, 'r', encoding='utf-8') as file:
                 raw_data = file.read()
-                json_data = json.loads(raw_data)
-                token = json_data.get('access_token', '')
-            error = '' if token else 'no access token found in file'
-        except (FileNotFoundError, json.decoder.JSONDecodeError) as e:
-            token = ''
-            error = str(e)
-        if not token:
-            raise ClientAuthenticationError(rf"Failed to read access token from file '{self._path}': {error}")
+            json_data = json.loads(raw_data)
+            token = json_data.get('access_token')
+            if TokenManager.time_left_seconds(token) <= 0:
+                raise ClientAuthenticationError('Access token in file has expired or is not valid')
+        except (FileNotFoundError, IsADirectoryError, json.decoder.JSONDecodeError) as e:
+            raise ClientAuthenticationError(rf"Failed to read access token from file '{self._path}': {e}") from e
         return token
 
     def close(self) -> None:
@@ -279,7 +277,11 @@ class TokenClient(TokenProviderInterface):
         if result.status_code == 200:
             tokens = result.json()
             self._refresh_token = tokens.get('refresh_token')
+            if TokenManager.time_left_seconds(self._refresh_token) <= 0:
+                self._refresh_token = None
             access_token = tokens.get('access_token')
+            if TokenManager.time_left_seconds(access_token) <= 0:
+                access_token = None
         return access_token
 
     def get_token(self) -> str:
@@ -291,10 +293,10 @@ class TokenClient(TokenProviderInterface):
         if TokenManager.time_left_seconds(self._refresh_token) > REFRESH_MARGIN_SECONDS:
             # There is a valid refresh token, try to update tokens using it
             access_token = self._get_access_token_from_server(TokenClient.REFRESH_TOKEN_GRANT_TYPE)
-        if TokenManager.time_left_seconds(access_token) <= 0:
+        if access_token is None:
             # Failed to get valid access token using refresh token, start a new session
             access_token = self._get_access_token_from_server(TokenClient.PASSWORD_GRANT_TYPE)
-        if TokenManager.time_left_seconds(access_token) <= 0:
+        if access_token is None:
             # Failed to get valid access token using username and password, raise an error
             raise ClientAuthenticationError('Getting access token from auth server failed')
         return str(access_token)  # acces token can not be None here
