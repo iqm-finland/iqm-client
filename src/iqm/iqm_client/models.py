@@ -534,7 +534,7 @@ class GateInfo(BaseModel):
     """mapping of available implementation names to information about the implementations"""
     default_implementation: str = Field(...)
     """default implementation for the gate, used unless overridden by :attr:`override_default_implementation`
-    or unless the user requests a specific implementation for a particular gate in the circuit using 
+    or unless the user requests a specific implementation for a particular gate in the circuit using
     :attr:`.Instruction.implementation`"""
     override_default_implementation: dict[Locus, str] = Field(...)
     """mapping of loci to implementation names that override ``default_implementation`` for those loci"""
@@ -607,10 +607,10 @@ class CircuitCompilationOptions:
     heralding_mode: HeraldingMode = HeraldingMode.NONE
     """Heralding mode to use during the execution."""
     move_gate_validation: MoveGateValidationMode = MoveGateValidationMode.STRICT
-    """MOVE gate validation mode for circuit compilation. This options is ignored on devices that do not support MOVE 
+    """MOVE gate validation mode for circuit compilation. This options is ignored on devices that do not support MOVE
         and for circuits that do not contain MOVE gates."""
     move_gate_frame_tracking: MoveGateFrameTrackingMode = MoveGateFrameTrackingMode.FULL
-    """MOVE gate frame tracking mode for circuit compilation. This options is ignored on devices that do not support 
+    """MOVE gate frame tracking mode for circuit compilation. This options is ignored on devices that do not support
         MOVE and for circuits that do not contain MOVE gates."""
 
     def __post_init__(self):
@@ -665,24 +665,68 @@ and the inner list elements to the qubits measured in the measurement operation.
 CircuitMeasurementResultsBatch = list[CircuitMeasurementResults]
 """Type that represents measurement results for a batch of circuits."""
 
+class JobParameters(BaseModel):
+    # FIXME: do we need to include this?
+    # calibration_set_id: Optional[UUID]
+    # qubit_mapping: Optional[QubitMapping]
+
+    shots: int = Field(...)
+    max_circuit_duration_over_t2: Optional[float] = Field(None)
+    heralding_mode: HeraldingMode = Field(...)
+    move_validation_mode: MoveGateValidationMode = Field(...)
+    move_gate_frame_tracking_mode: MoveGateFrameTrackingMode = Field(...)
 
 class Metadata(BaseModel):
     """Metadata describing a circuit execution job."""
 
     calibration_set_id: Optional[UUID] = Field(None)
     """ID of the calibration set used"""
-    request: RunRequest = Field(...)
-    """copy of the original RunRequest sent to the server"""
+    request: Optional[RunRequest] = Field(None)
+    """optional copy of the original RunRequest sent to the server"""
+    parameters: Optional[JobParameters] = Field(None)
+    """job-specific parameters extracted from the original request"""
+    circuits_batch: Optional[CircuitBatch] = Field(None)
+    """circuits batch submitted for execution"""
     cocos_version: Optional[str] = Field(None)
     """CoCoS version used to execute the job"""
     timestamps: Optional[dict[str, str]] = Field(None)
     """Timestamps of execution progress"""
+
+    @property
+    def shots(self) -> int:
+        """Return the number of shots in the job."""
+        if self.parameters is not None:
+            return self.parameters.shots
+        if self.request is not None:
+            return self.request.shots
+        raise ValueError('No shots information available in the metadata')
+
+    @property
+    def circuits(self) -> CircuitBatch:
+        """Return the circuits in the job."""
+        if self.circuits_batch is not None:
+            return self.circuits_batch
+        if self.request is not None:
+            return self.request.circuits
+        raise ValueError('No circuits information available in the metadata')
+
+    @property
+    def heralding_mode(self) -> int:
+        """Return the heralding mode requested with the job."""
+        if self.parameters is not None:
+            return self.parameters.heralding_mode
+        if self.request is not None:
+            return self.request.heralding_mode
+        raise ValueError('No heralding mode information available in the metadata')
 
 
 class Status(str, Enum):
     """
     Status of a job.
     """
+    RECEIVED = 'received'
+    PROCESSING = 'processing'
+    ACCEPTED = 'accepted'
 
     PENDING_COMPILATION = 'pending compilation'
     PENDING_EXECUTION = 'pending execution'
@@ -692,6 +736,7 @@ class Status(str, Enum):
     PENDING_DELETION = 'pending deletion'
     DELETION_FAILED = 'deletion failed'
     DELETED = 'deleted'
+
 
 
 class RunResult(BaseModel):

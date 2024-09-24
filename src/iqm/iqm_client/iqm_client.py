@@ -30,6 +30,11 @@ import warnings
 
 import requests
 
+from iqm.iqm_client.api import (
+    APIEndpoint,
+    APIVariant,
+    APIConfig,
+)
 from iqm.iqm_client.authentication import TokenManager
 from iqm.iqm_client.errors import (
     APITimeoutError,
@@ -47,6 +52,7 @@ from iqm.iqm_client.models import (
     CircuitCompilationOptions,
     DynamicQuantumArchitecture,
     Instruction,
+    Metadata,
     QuantumArchitecture,
     QuantumArchitectureSpecification,
     RunRequest,
@@ -79,6 +85,8 @@ class IQMClient:
             If ``auth_server_url`` is given also ``username`` and ``password`` must be given.
         username: Username to log in to authentication server.
         password: Password to log in to authentication server.
+        api_variant: API variant to use. Default is ``APIVariant.COCOS``.
+            Conviguable also by environment variable ``IQM_CLIENT_API_VARIANT``.
 
     Alternatively, the user authentication related keyword arguments can also be given in
     environment variables ``IQM_TOKEN``, ``IQM_TOKENS_FILE``, ``IQM_AUTH_SERVER``,
@@ -97,6 +105,7 @@ class IQMClient:
         auth_server_url: Optional[str] = None,
         username: Optional[str] = None,
         password: Optional[str] = None,
+        api_variant: APIVariant | None = None,
     ):
         if not url.startswith(('http:', 'https:')):
             raise ClientConfigurationError(f'The URL schema has to be http or https. Incorrect schema in URL: {url}')
@@ -107,7 +116,6 @@ class IQMClient:
             username,
             password,
         )
-        self._base_url = url
         self._signature = f'{platform.platform(terse=True)}'
         self._signature += f', python {platform.python_version()}'
         self._signature += f', iqm-client {version("iqm-client")}'
@@ -115,6 +123,11 @@ class IQMClient:
             self._signature += f', {client_signature}'
         self._architecture: QuantumArchitectureSpecification | None = None
         self._dynamic_architectures: dict[UUID, DynamicQuantumArchitecture] = {}
+
+        if api_variant is None:
+            env_var = os.environ.get('IQM_CLIENT_API_VARIANT')
+            api_variant = APIVariant(env_var) if env_var else APIVariant.V1
+        self._api = APIConfig(api_variant, url)
 
     def __del__(self):
         try:
@@ -268,7 +281,7 @@ class IQMClient:
 
         result = self._retry_request_on_error(
             lambda: requests.post(
-                join(self._base_url, 'jobs'),
+                self._api.url(APIEndpoint.SUBMIT_JOB),
                 json=json.loads(run_request.model_dump_json(exclude_none=True)),
                 headers=headers,
                 timeout=REQUESTS_TIMEOUT,
@@ -465,6 +478,103 @@ class IQMClient:
         if any(res != qb for res, qb in resonator_state_loc.items()):
             raise CircuitExecutionError('Circuit ends while qubit state still in the resonator.')
 
+    def _get_run_v1(self, job_id: UUID, timeout_secs: float = REQUESTS_TIMEOUT) -> RunResult:
+        """
+        V1 API (Cocos circuits execution and Resonance) has an inefficient `GET /jobs/<id>` endpoint
+        that returns the full job status, including the result and the original request, in a single call.
+        """
+        result = self._retry_request_on_error(
+            lambda: requests.get(
+                self._api.url(APIEndpoint.GET_JOB_RESULT, str(job_id)),
+                headers=self._default_headers(),
+                timeout=timeout_secs,
+            )
+        )
+        result.raise_for_status()
+        return RunResult.from_dict(result.json())
+
+
+    def _get_run_v2(self, job_id: UUID, timeout_secs: float = REQUESTS_TIMEOUT) -> RunResult:
+        """
+        V2 API (Station-based circuits execution) has granular endpoints for job status and result.
+        """
+        status_response = requests.get(
+            self._api.url(APIEndpoint.GET_JOB_STATUS, str(job_id)),
+            headers=self._default_headers(),
+            timeout=timeout_secs,
+        )
+        status_response.raise_for_status()
+        status = status_response.json()
+        if Status(status['status']) not in [Status.READY, Status.ABORTED, Status.DELETED, Status.FAILED]:
+            return RunResult.from_dict({
+                'measurements': [],
+                'status': status['status'],
+                'message': '',
+                'metadata': {
+                    "calibration_set_id": None,
+                    "circuits_batch": [],
+                    "parameters": None,
+                    "timestamps": {
+                    }
+                }
+            })
+
+        result = self._retry_request_on_error(
+            lambda: requests.get(
+                self._api.url(APIEndpoint.GET_JOB_RESULT, str(job_id)),
+                headers=self._default_headers(),
+                timeout=timeout_secs,
+            )
+        )
+        if result.status_code != 404:
+            result.raise_for_status()
+        measurements = None if result.status_code == 404 else result.json()
+        request_parameters = {} if result.status_code == 404 else requests.get(
+            self._api.url(APIEndpoint.GET_JOB_REQUEST_PARAMETERS, str(job_id)),
+            headers=self._default_headers(),
+            timeout=timeout_secs,
+        ).json()
+        calibration_set_id = None if result.status_code == 404 else requests.get(
+            self._api.url(APIEndpoint.GET_JOB_CALIBRATION_SET_ID, str(job_id)),
+            headers=self._default_headers(),
+            timeout=timeout_secs,
+        ).json()
+        circuits_batch = [] if result.status_code == 404 else requests.get(
+            self._api.url(APIEndpoint.GET_JOB_CIRCUITS_BATCH, str(job_id)),
+            headers=self._default_headers(),
+            timeout=timeout_secs,
+        ).json()
+        timeline = [] if result.status_code == 404 else requests.get(
+            self._api.url(APIEndpoint.GET_JOB_TIMELINE, str(job_id)),
+            headers=self._default_headers(),
+            timeout=timeout_secs,
+        ).json()
+        error_message_response = requests.get(
+            self._api.url(APIEndpoint.GET_JOB_ERROR_LOG, str(job_id)),
+            headers=self._default_headers(),
+            timeout=timeout_secs,
+        )
+        error_message = error_message_response.text if error_message_response.status_code == 200 else None
+        return RunResult.from_dict({
+            'measurements': measurements,
+            'status': status['status'],
+            'message': error_message,
+            'metadata': {
+                "calibration_set_id": calibration_set_id,
+                "circuits_batch": circuits_batch,
+                "parameters": None if result.status_code == 404 else {
+                    "shots": request_parameters['shots'],
+                    "max_circuit_duration_over_t2": request_parameters['max_circuit_duration_over_t2'],
+                    "heralding_mode": request_parameters['heralding_mode'],
+                    "move_validation_mode": request_parameters['move_validation_mode'],
+                    "move_gate_frame_tracking_mode": request_parameters['move_gate_frame_tracking_mode'],
+                },
+                "timestamps": {
+                    datapoint['stage']: datapoint['timestamp'] for datapoint in timeline
+                }
+            }
+        })
+
     def get_run(self, job_id: UUID, *, timeout_secs: float = REQUESTS_TIMEOUT) -> RunResult:
         """Query the status and results of a submitted job.
 
@@ -479,19 +589,13 @@ class IQMClient:
             CircuitExecutionError: IQM server specific exceptions
             HTTPException: HTTP exceptions
         """
-        result = self._retry_request_on_error(
-            lambda: requests.get(
-                join(self._base_url, 'jobs', str(job_id)),
-                headers=self._default_headers(),
-                timeout=timeout_secs,
-            )
-        )
-
-        result.raise_for_status()
         try:
-            run_result = RunResult.from_dict(result.json())
+            if self._api.variant == APIVariant.V2:
+                run_result = self._get_run_v2(job_id, timeout_secs)
+            else:
+                run_result = self._get_run_v1(job_id, timeout_secs)
         except (json.decoder.JSONDecodeError, KeyError) as e:
-            raise CircuitExecutionError(f'Invalid response: {result.text}, {e}') from e
+            raise CircuitExecutionError(f'Invalid response: {e}') from e
 
         if run_result.warnings:
             for warning in run_result.warnings:
@@ -516,7 +620,7 @@ class IQMClient:
         """
         result = self._retry_request_on_error(
             lambda: requests.get(
-                join(self._base_url, 'jobs', str(job_id), 'status'),
+                self._api.url(APIEndpoint.GET_JOB_STATUS, str(job_id)),
                 headers=self._default_headers(),
                 timeout=timeout_secs,
             )
@@ -549,7 +653,7 @@ class IQMClient:
         start_time = datetime.now()
         while (datetime.now() - start_time).total_seconds() < timeout_secs:
             status = self.get_run_status(job_id).status
-            if status != Status.PENDING_COMPILATION:
+            if status not in (Status.PENDING_COMPILATION, Status.ACCEPTED, Status.PROCESSING, Status.RECEIVED):
                 return self.get_run(job_id)
             time.sleep(SECONDS_BETWEEN_CALLS)
         raise APITimeoutError(f"The job compilation didn't finish in {timeout_secs} seconds.")
@@ -573,7 +677,7 @@ class IQMClient:
         start_time = datetime.now()
         while (datetime.now() - start_time).total_seconds() < timeout_secs:
             status = self.get_run_status(job_id).status
-            if status not in (Status.PENDING_COMPILATION, Status.PENDING_EXECUTION):
+            if status not in (Status.PENDING_COMPILATION, Status.PENDING_EXECUTION, Status.ACCEPTED, Status.PROCESSING, Status.RECEIVED):
                 return self.get_run(job_id)
             time.sleep(SECONDS_BETWEEN_CALLS)
         raise APITimeoutError(f"The job didn't finish in {timeout_secs} seconds.")
@@ -590,7 +694,7 @@ class IQMClient:
             JobAbortionError: if aborting the job failed
         """
         result = requests.post(
-            join(self._base_url, 'jobs', str(job_id), 'abort'),
+            self._api.url(APIEndpoint.ABORT_JOB, str(job_id)),
             headers=self._default_headers(),
             timeout=timeout_secs,
         )
@@ -616,7 +720,7 @@ class IQMClient:
             return self._architecture
 
         result = requests.get(
-            join(self._base_url, 'quantum-architecture'),
+            self._api.url(APIEndpoint.QUANTUM_ARCHITECTURE),
             headers=self._default_headers(),
             timeout=timeout_secs,
         )
@@ -661,7 +765,7 @@ class IQMClient:
             calibration_set_id_str = str(calibration_set_id)
 
         result = requests.get(
-            join(self._base_url, f'api/v1/calibration/{calibration_set_id_str}/gates'),
+            self._api.url(APIEndpoint.CALIBRATED_GATES, calibration_set_id_str),
             headers=self._default_headers(),
             timeout=timeout_secs,
         )
