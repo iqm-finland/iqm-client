@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 18.3
+============
+
+* Remove unnecessary build files when publishing documentation. `#133 <https://github.com/iqm-finland/iqm-client/pull/133>`_
+
 Version 18.2
 ============
 
@@ -22,7 +27,6 @@ Version 18.0
     * Moved the existing ``heralding_mode`` parameter to :class:`CircuitCompilationOptions`.
     * Introduced new option ``move_gate_validation`` to turn off MOVE gate validation during compilation (ADVANCED).
     * Introduced new option ``move_gate_frame_tracking`` to turn off frame tracking for the MOVE gate (ADVANCED).
-
 
 Version 17.8
 ============

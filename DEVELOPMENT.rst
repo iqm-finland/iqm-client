@@ -15,6 +15,10 @@ and install it in editable mode with all the extras:
    $ cd iqm-client
    $ pip install -e ".[dev,docs,testing]"
 
+(Unless you need the full commit history, consider using the ``--depth`` option for ``git clone``,
+for example ``--depth 1`` to only clone the latest commit. This will be much faster than cloning
+the full repository, because some large files have been stored in the commit history.)
+
 
 Build and view the docs:
 
@@ -22,10 +26,7 @@ Build and view the docs:
 
    $ tox -e docs
 
-To view the documentation, open the file ``build/sphinx/html/index.html``
-in a browser. Note that a separate version of documentation is built for each git tag.
-File ``build/sphinx/html/index.html`` simply redirects to the latest version of the
-documentation.
+To view the documentation, open the file ``build/sphinx/html/index.html`` in a browser.
 
 
 Run the tests:

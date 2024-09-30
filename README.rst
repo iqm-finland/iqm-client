@@ -36,7 +36,12 @@ corresponding tag, and running the docs builder. For example, to build the docum
     $ git checkout 15.4
     $ tox run -e docs
 
-``tox run -e docs`` will build the documentation at ``./build/sphinx/html``. This command requires the ``tox,``, ``sphinx`` and 
+(Unless you need to build documentation for multiple versions, consider passing ``git clone`` options to
+only clone the commit for the specific version tag, e.g. ``--branch 15.4 --depth 1`` for version ``15.4``.
+This will be much faster than cloning the full repository, because some large files have been stored
+in the commit history.)
+
+``tox run -e docs`` will build the documentation at ``./build/sphinx/html``. This command requires the ``tox,``, ``sphinx`` and
 ``sphinx-book-theme`` Python packages (see the ``docs`` optional dependency in ``pyproject.toml``); 
 you can install the necessary packages with ``pip install -e ".[dev,docs]"``
 
