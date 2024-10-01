@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>iqm.iqm_client.authentication.TokenClient &#8212; IQM client 18.1 documentation</title>
+    <title>iqm.iqm_client.authentication.TokenClient &#8212; IQM client 18.2 documentation</title>
   
   
   
@@ -37,7 +37,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=8f795518"></script>
+    <script src="../_static/documentation_options.js?v=980dd57e"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
@@ -49,7 +49,7 @@
     <link rel="prev" title="iqm.iqm_client.authentication.ExternalToken" href="iqm.iqm_client.authentication.ExternalToken.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="2024-09-19"/>
+    <meta name="docbuild:last-update" content="2024-10-01"/>
   </head>
   
   
@@ -139,8 +139,8 @@
       
     
     
-    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 18.1 documentation - Home"/>
-    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="IQM client 18.1 documentation - Home"/>`);</script>
+    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 18.2 documentation - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="IQM client 18.2 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -406,13 +406,28 @@ document.write(`
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">iqm.iqm_client.authentication.</span></span><span class="sig-name descname"><span class="pre">TokenClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">auth_server_url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">realm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm.iqm_client.authentication.TokenClient" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="iqm.iqm_client.authentication.TokenProviderInterface.html#iqm.iqm_client.authentication.TokenProviderInterface" title="iqm.iqm_client.authentication.TokenProviderInterface"><code class="xref py py-class docutils literal notranslate"><span class="pre">TokenProviderInterface</span></code></a></p>
 <p>Requests new token from an authentication server</p>
+<p class="rubric">Attributes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">PASSWORD_GRANT_TYPE</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">REFRESH_TOKEN_GRANT_TYPE</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <p class="rubric">Methods</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.authentication.TokenClient.close" title="iqm.iqm_client.authentication.TokenClient.close"><code class="xref py py-obj docutils literal notranslate"><span class="pre">close</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_get_access_token_from_server</span></code>(grant_type)</p></td>
+<td><p>Get new access token from the server and update refresh token.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.authentication.TokenClient.close" title="iqm.iqm_client.authentication.TokenClient.close"><code class="xref py py-obj docutils literal notranslate"><span class="pre">close</span></code></a>()</p></td>
 <td><p>Close authentication session</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.authentication.TokenClient.get_token" title="iqm.iqm_client.authentication.TokenClient.get_token"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_token</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.authentication.TokenClient.get_token" title="iqm.iqm_client.authentication.TokenClient.get_token"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_token</span></code></a>()</p></td>
 <td><p>Get new access token and refresh token from the server</p></td>
 </tr>
 </tbody>
@@ -537,7 +552,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2024-09-19.
+  Last updated on 2024-10-01.
   <br/>
 </p>
   </div>

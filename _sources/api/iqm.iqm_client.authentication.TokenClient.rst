@@ -9,6 +9,13 @@ iqm.iqm\_client.authentication.TokenClient
 
    
    
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~TokenClient.PASSWORD_GRANT_TYPE
+      ~TokenClient.REFRESH_TOKEN_GRANT_TYPE
+   
    
 
 
@@ -18,6 +25,7 @@ iqm.iqm\_client.authentication.TokenClient
 
    .. autosummary::
    
+      ~TokenClient._get_access_token_from_server
       ~TokenClient.close
       ~TokenClient.get_token
    
