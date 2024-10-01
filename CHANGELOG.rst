@@ -2,12 +2,17 @@
 Changelog
 =========
 
+Version 18.2
+============
+
+* Add mitigation for failed authentication sessions. `#132 <https://github.com/iqm-finland/iqm-client/pull/132>`_
+
 Version 18.1
 ============
 
 * Add :meth:`IQMClient.get_dynamic_quantum_architecture`. `#131 <https://github.com/iqm-finland/iqm-client/pull/131>`_
 
-Version 18.0  
+Version 18.0
 ============
 
 * Added the naive MOVE transpilation method for unified transpilation behavior for different external APIs. `#124 <https://github.com/iqm-finland/iqm-client/pull/124>`_
