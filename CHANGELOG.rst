@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 18.4
+============
+
+* Do not verify external auth token expiration. This fixes IQM Resonance authentication. `#134 <https://github.com/iqm-finland/iqm-client/pull/134>`_
+
 Version 18.3
 ============
 
