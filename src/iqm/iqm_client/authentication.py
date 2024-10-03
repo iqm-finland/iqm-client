@@ -118,6 +118,7 @@ class TokenManager:
         if not auth_parameters:
             self._token_provider = None
         elif set(auth_parameters) == {'token'}:
+            # This is not necessary a JWT token
             self._token_provider = ExternalToken(auth_parameters['token'])
         elif set(auth_parameters) == {'tokens_file'}:
             self._token_provider = TokensFileReader(auth_parameters['tokens_file'])
@@ -204,8 +205,8 @@ class ExternalToken(TokenProviderInterface):
         self._token: Optional[str] = token
 
     def get_token(self) -> str:
-        if self._token is None or TokenManager.time_left_seconds(self._token) <= 0:
-            raise ClientAuthenticationError('External token has expired or is not valid')
+        if self._token is None:
+            raise ClientAuthenticationError('No external token available')
         return self._token
 
     def close(self) -> None:
