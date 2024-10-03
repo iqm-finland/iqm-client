@@ -30,6 +30,7 @@ def test_iqm_client_initializes_with_project_id(base_url):
     del os.environ['PROJECT_ID']
     assert sample_client._project_id == 'ABC123'
 
+
 def test_iqm_client_initializes_with_project_id_and_job_id(base_url):
     """Test that IQMClient initializes successfully when project/job ID is available as environment variable."""
     os.environ['PROJECT_ID'] = 'ABC123'
@@ -40,6 +41,7 @@ def test_iqm_client_initializes_with_project_id_and_job_id(base_url):
     assert sample_client._project_id == 'ABC123'
     assert sample_client._slurm_job_id == 'DEF456'
 
+
 def test_update_batch_circuit_metadata(sample_circuit):
     """Test updating batch circuit metadata."""
     metadata = {'project_id': 'ABC123'}
@@ -48,7 +50,13 @@ def test_update_batch_circuit_metadata(sample_circuit):
 
 
 def test_submit_circuits_attaches_slurm_job_id(
-    sample_client, jobs_url, minimal_run_request, submit_success, quantum_architecture_url, quantum_architecture_success, base_url
+    sample_client,
+    jobs_url,
+    minimal_run_request,
+    submit_success,
+    quantum_architecture_url,
+    quantum_architecture_success,
+    base_url,
 ):
     """
     Test submitting run request without heralding
@@ -57,18 +65,19 @@ def test_submit_circuits_attaches_slurm_job_id(
     os.environ['SLURM_JOB_ID'] = 'ABC123'
     sample_client = IQMClient(base_url)
     del os.environ['SLURM_JOB_ID']
-    
+
     # Add job_id to the metadata of the first circuit
     minimal_run_request_serialized = post_jobs_args(minimal_run_request)
-    minimal_run_request_serialized['json']['circuits'][0]['metadata']['job_id'] = 'ABC123'
-    
+
+    minimal_run_request_serialized['json']['circuits'][0]['metadata']['slurm_job_id'] = 'ABC123'
+
     # Set up mock responses
     expect(requests, times=1).post(jobs_url, **minimal_run_request_serialized).thenReturn(submit_success)
     when(requests).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
-    
+
     # Test .submit_circuits()
     sample_client.submit_circuits(circuits=minimal_run_request.circuits, shots=minimal_run_request.shots)
-        
+
     # Verify no unwanted interactions
     verifyNoUnwantedInteractions()
     unstub()

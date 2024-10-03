@@ -502,8 +502,11 @@ def update_batch_circuit_metadata(circuit_metadata, circuits):
         new list of circuits with updated metadata
     """
 
-    for k, v in circuit_metadata.items():
-        for circuit in circuits:
+    for circuit in circuits:
+        if not hasattr(circuit, 'metadata') or circuit.metadata is None:
+            circuit.metadata = {}
+
+        for k, v in circuit_metadata.items():
             circuit.metadata[k] = v
 
     return circuits
@@ -737,15 +740,12 @@ class IQMClient:
         self._validate_circuit_instructions(architecture, circuits, qubit_mapping)
 
         # Metadata to attach to circuits
-        additional_metadata = {
-            'project_id': self._project_id,
-            'slurm_job_id': self._slurm_job_id
-        }
+        additional_metadata = {'project_id': self._project_id, 'slurm_job_id': self._slurm_job_id}
         # Filter the metadata
-        additional_metadata = {k: v for k,v in additional_metadata.items()  if v is not None}
+        additional_metadata = {k: v for k, v in additional_metadata.items() if v is not None}
         # Attach metadata to circuits metadata
         circuits = update_batch_circuit_metadata(additional_metadata, circuits)
-        
+
         # ``bearer_token`` can be ``None`` if cocos we're connecting does not use authentication
         bearer_token = self._get_bearer_token()
 
