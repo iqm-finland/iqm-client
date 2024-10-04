@@ -76,7 +76,7 @@ def test_external_token_provides_token():
     assert provider.get_token() == token
     with pytest.raises(ClientAuthenticationError, match='Can not close externally managed auth session'):
         provider.close()
-    with pytest.raises(ClientAuthenticationError, match='External token has expired or is not valid'):
+    with pytest.raises(ClientAuthenticationError, match='No external token available'):
         provider.get_token()
 
     verifyNoUnwantedInteractions()
