@@ -118,7 +118,7 @@ class TokenManager:
         if not auth_parameters:
             self._token_provider = None
         elif set(auth_parameters) == {'token'}:
-            # This is not necessary a JWT token
+            # This is not necessarily a JWT token
             self._token_provider = ExternalToken(auth_parameters['token'])
         elif set(auth_parameters) == {'tokens_file'}:
             self._token_provider = TokensFileReader(auth_parameters['tokens_file'])
