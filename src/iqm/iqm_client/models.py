@@ -53,6 +53,7 @@ SUPPORTED_INSTRUCTIONS: dict[str, dict[str, Any]] = {
         'arity': -1,
         'args': {
             'key': (str,),
+            'feedback_label': (str,),
         },
         'check_locus': 'any_combination',
     },
@@ -75,6 +76,20 @@ SUPPORTED_INSTRUCTIONS: dict[str, dict[str, Any]] = {
                 float,
                 int,
             ),
+        },
+    },
+    'cc_prx': {
+        'arity': 1,
+        'args': {
+            'angle': (
+                float,
+                int,
+            ),
+            'phase': (
+                float,
+                int,
+            ),
+            'feedback_label': (str,),
         },
     },
     'phased_rx': {  # deprecated
@@ -112,8 +127,9 @@ class Instruction(BaseModel):
     ================ =========== ====================================== ===========
     name             # of qubits args                                   description
     ================ =========== ====================================== ===========
-    measure          >= 1        ``key: str``                           Measurement in the Z basis.
+    measure          >= 1        ``key: str``, ``feedback_label: str``  Measurement in the Z basis.
     prx              1           ``angle_t: float``, ``phase_t: float`` Phased x-rotation gate.
+    cc_prx           1           ``angle_t: float``, ``phase_t: float``, ``feedback_label: str`` Classically controlled prx gate.
     cz               2                                                  Controlled-Z gate.
     barrier          >= 1                                               Execution barrier.
     move             2                                                  Moves 1 state between resonator and qubit.
@@ -135,9 +151,11 @@ class Instruction(BaseModel):
     -------
 
     Measurement in the computational (Z) basis. The measurement results are the output of the circuit.
-    Takes one string argument, ``key``, denoting the measurement key the results are labeled with.
-    All the measurement keys in a circuit must be unique. Each qubit may only be measured once.
-    The measurement must be the last operation on each qubit, i.e. it cannot be followed by gates.
+    Takes two string arguments: ``key``, denoting the measurement key the returned results are labeled with,
+    and ``feedback_label``, which is only needed if the measurement result is used for classical control
+    within the circuit.
+    All the measurement keys and feedback labels in a circuit must be unique.
+    Each qubit may be measured multiple times, i.e. mid-circuit measurements are allowed.
 
     .. code-block:: python
         :caption: Example
@@ -163,6 +181,14 @@ class Instruction(BaseModel):
         :caption: Example
 
         Instruction(name='prx', qubits=('bob',), args={'angle_t': 0.7, 'phase_t': 0.25})
+
+    CC_PRX
+    ------
+
+    Classically controlled PRX gate. Takes three arguments. ``angle_t`` and ``phase_t`` are exactly as in PRX.
+    `feedback_label`` is a string that identifies the measurement and the qubit within it whose measurement
+    result controls the gate. It is of the form ``f"{physical_qubit_name}__{measure_feedback_label}"``.
+    If the measurement result is 1, the PRX gate is applied. If it is 0, an identity gate is applied instead.
 
     CZ
     --
@@ -636,7 +662,7 @@ class RunRequest(BaseModel):
     """batch of quantum circuit(s) to execute"""
     custom_settings: Optional[dict[str, Any]] = Field(None)
     """Custom settings to override default IQM hardware settings and calibration data.
-Note: This field should be always None in normal use."""
+    Note: This field should be always None in normal use."""
     calibration_set_id: Optional[UUID] = Field(None)
     """ID of the calibration set to use, or None to use the latest calibration set"""
     qubit_mapping: Optional[list[SingleQubitMapping]] = Field(None)
