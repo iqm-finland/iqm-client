@@ -23,12 +23,14 @@ from requests import HTTPError
 
 from iqm.iqm_client import (
     ArchitectureRetrievalError,
+    Circuit,
     CircuitCompilationOptions,
     CircuitExecutionError,
     CircuitValidationError,
     ClientConfigurationError,
     DynamicQuantumArchitecture,
     HeraldingMode,
+    Instruction,
     IQMClient,
     JobAbortionError,
     QuantumArchitectureSpecification,
@@ -485,6 +487,7 @@ def test_wait_for_results_adds_user_agent_with_signature(
     unstub()
 
 
+@pytest.mark.skip('Re-enable when cc_prx is no longer added to architecture in client.')
 def test_get_quantum_architecture(
     sample_client, quantum_architecture_url, sample_quantum_architecture, quantum_architecture_success
 ):
@@ -668,15 +671,33 @@ def test_validate_circuit_checks_instruction_qubit_count(sample_circuit):
         validate_circuit(circuit)
 
 
-def test_validate_circuit_checks_instruction_argument_names(sample_circuit):
+def test_validate_circuit_extra_arguments(sample_circuit):
     """
     Tests that custom Pydantic validator (triggered via <validate_circuit>)
     catches when submitted argument names of the instruction are not supported
     """
     circuit = sample_circuit.model_copy()
     circuit.instructions[1].args['arg_x'] = 'This argument name is not supported by the instruction'
-    with pytest.raises(ValueError, match='The instruction "prx" requires'):
+    with pytest.raises(ValueError, match='The instruction "prx" allows'):
         validate_circuit(circuit)
+
+
+def test_validate_circuit_missing_arguments():
+    """
+    Tests that custom Pydantic validator (triggered via <validate_circuit>)
+    catches when submitted argument names of the instruction are not supported
+    """
+    with pytest.raises(ValueError, match='The instruction "prx" requires'):
+        Circuit(
+            name='The circuit',
+            instructions=[
+                Instruction(
+                    name='prx',
+                    qubits=('QB1',),
+                    args={'phase_t': 0.3},
+                ),
+            ],
+        )
 
 
 def test_validate_circuit_checks_instruction_argument_types(sample_circuit):

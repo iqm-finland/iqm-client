@@ -15,7 +15,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Final, Optional, Union
 from uuid import UUID
@@ -23,89 +23,71 @@ from uuid import UUID
 from pydantic import BaseModel, Field, StrictStr, field_validator
 from pydantic_core.core_schema import ValidationInfo
 
-# Supported instruction configuration values:
-# - 'arity': the arity of the locus; use -1 to allow any arity.
-# - 'args': allowed arguments for the operation.
-# - 'directed': if True, the loci defined in the architecture description are considered directed.
-# - 'renamed_to': if set, indicates that this instruction name is deprecated, and IQM client will
-#    auto-rename it to the new name.
-# - 'check_locus': if False, skips the locus checking entirely. If set to the string
-#   value 'any_combination', will check that the qubits in the instruction locus are found
-#   in the architecture definition, but will allow any combination of them in.
 
-SUPPORTED_INSTRUCTIONS: dict[str, dict[str, Any]] = {
-    'barrier': {
-        'arity': -1,
-        'args': {},
-        'check_locus': False,
-    },
-    'cz': {
-        'arity': 2,
-        'args': {},
-        'directed': False,
-    },
-    'move': {
-        'arity': 2,
-        'args': {},
-        'directed': True,
-    },
-    'measure': {
-        'arity': -1,
-        'args': {
-            'key': (str,),
-            'feedback_label': (str,),
-        },
-        'check_locus': 'any_combination',
-    },
-    'measurement': {  # deprecated
-        'arity': -1,
-        'args': {
-            'key': (str,),
-        },
-        'renamed_to': 'measure',
-        'check_locus': 'any_combination',
-    },
-    'prx': {
-        'arity': 1,
-        'args': {
-            'angle_t': (
-                float,
-                int,
-            ),
-            'phase_t': (
-                float,
-                int,
-            ),
-        },
-    },
-    'cc_prx': {
-        'arity': 1,
-        'args': {
-            'angle': (
-                float,
-                int,
-            ),
-            'phase': (
-                float,
-                int,
-            ),
-            'feedback_label': (str,),
-        },
-    },
-    'phased_rx': {  # deprecated
-        'arity': 1,
-        'args': {
-            'angle_t': (
-                float,
-                int,
-            ),
-            'phase_t': (
-                float,
-                int,
-            ),
-        },
-        'renamed_to': 'prx',
-    },
+@dataclass(frozen=True)
+class SupportedOperation:
+    """Describes a supported native operation on the quantum computer."""
+
+    # pylint: disable=too-many-instance-attributes
+
+    name: str
+    """Name of the operation."""
+    arity: int
+    """Number of locus components (usually qubits) the operation acts on.
+    Zero means the operation can be applied on any number of locus components."""
+    args_required: dict[str, tuple[type, ...]] = field(default_factory=dict)
+    """Maps names of required operation parameters to their allowed types."""
+    args_not_required: dict[str, tuple[type, ...]] = field(default_factory=dict)
+    """Maps names of optional operation parameters to their allowed types."""
+    symmetric: bool = False
+    """True iff the effect of operation is symmetric in the locus components it acts on.
+    Only meaningful if :attr:`arity` != 1."""
+    renamed_to: str = ''
+    """If nonempty, indicates that this operation name is deprecated, and IQM client will
+    auto-rename it to the new name."""
+    factorizable: bool = False
+    """Iff True, any multi-component instance of this operation can be broken down to
+    single-component instances, and calibration data is specific to single-component loci."""
+    allow_all_loci: bool = False
+    """Iff true, the operation is always allowed on all QPU loci regardless of calibration state.
+    Typically a metaoperation like barrier."""
+
+
+SUPPORTED_OPERATIONS: dict[str, SupportedOperation] = {
+    op.name: op
+    for op in [
+        SupportedOperation('barrier', 0, symmetric=True, allow_all_loci=True),
+        SupportedOperation('measure', 0, {'key': (str,)}, {'feedback_label': (str,)}, factorizable=True),
+        SupportedOperation('measurement', 0, {'key': (str,)}, factorizable=True, renamed_to='measure'),
+        SupportedOperation(
+            'prx',
+            1,
+            {
+                'angle_t': (float, int),
+                'phase_t': (float, int),
+            },
+        ),
+        SupportedOperation(
+            'phased_rx',
+            1,
+            {
+                'angle_t': (float, int),
+                'phase_t': (float, int),
+            },
+            renamed_to='prx',
+        ),
+        SupportedOperation(
+            'cc_prx',
+            1,
+            {
+                'angle': (float, int),
+                'phase': (float, int),
+                'feedback_label': (str,),
+            },
+        ),
+        SupportedOperation('cz', 2, symmetric=True),
+        SupportedOperation('move', 2),
+    ]
 }
 
 
@@ -129,10 +111,13 @@ class Instruction(BaseModel):
     ================ =========== ====================================== ===========
     measure          >= 1        ``key: str``, ``feedback_label: str``  Measurement in the Z basis.
     prx              1           ``angle_t: float``, ``phase_t: float`` Phased x-rotation gate.
-    cc_prx           1           ``angle_t: float``, ``phase_t: float``, ``feedback_label: str`` Classically controlled prx gate.
+    cc_prx           1           ``angle_t: float``, ``phase_t: float``,
+                                 ``feedback_label: str``                Classically controlled prx gate.
     cz               2                                                  Controlled-Z gate.
     barrier          >= 1                                               Execution barrier.
-    move             2                                                  Moves 1 state between resonator and qubit.
+    move             2                                                  Moves a qubit state between resonator and qubit,
+                                                                        as long as the other component is in the |0>
+                                                                        state.
     ================ =========== ====================================== ===========
 
     For each Instruction you may also optionally specify :attr:`~Instruction.implementation`,
@@ -268,9 +253,9 @@ class Instruction(BaseModel):
     def name_validator(cls, value):
         """Check if the name of instruction is set to one of the supported quantum operations"""
         name = value
-        if name not in SUPPORTED_INSTRUCTIONS:
+        if name not in SUPPORTED_OPERATIONS:
             raise ValueError(
-                f'Unknown instruction "{name}". ' f'Supported instructions are \"{", ".join(SUPPORTED_INSTRUCTIONS)}\"'
+                f'Unknown instruction "{name}". ' f'Supported instructions are \"{", ".join(SUPPORTED_OPERATIONS)}\"'
             )
         return name
 
@@ -292,8 +277,8 @@ class Instruction(BaseModel):
         name = info.data.get('name')
         if not name:
             raise ValueError('Could not validate qubits because the name of the instruction did not pass validation')
-        arity = SUPPORTED_INSTRUCTIONS[name]['arity']
-        if (0 <= arity) and (arity != len(qubits)):
+        arity = SUPPORTED_OPERATIONS[name].arity
+        if (0 < arity) and (arity != len(qubits)):
             raise ValueError(
                 f'The "{name}" instruction acts on {arity} qubit(s), but {len(qubits)} were given: {qubits}'
             )
@@ -310,21 +295,29 @@ class Instruction(BaseModel):
 
         # Check argument names
         submitted_arg_names = set(args)
-        supported_arg_names = set(SUPPORTED_INSTRUCTIONS[name]['args'])
-        if submitted_arg_names != supported_arg_names:
+        required_arg_names = set(SUPPORTED_OPERATIONS[name].args_required)
+        allowed_arg_types = SUPPORTED_OPERATIONS[name].args_required | SUPPORTED_OPERATIONS[name].args_not_required
+        allowed_arg_names = set(allowed_arg_types)
+        if not required_arg_names <= submitted_arg_names:
             raise ValueError(
                 f'The instruction "{name}" requires '
-                f'{tuple(supported_arg_names) if supported_arg_names else "no"} argument(s), '
+                f'{tuple(required_arg_names)} argument(s), '
+                f'but {tuple(submitted_arg_names)} were given'
+            )
+        if not submitted_arg_names <= allowed_arg_names:
+            raise ValueError(
+                f'The instruction "{name}" allows '
+                f'{tuple(allowed_arg_names) if allowed_arg_names else "no"} argument(s), '
                 f'but {tuple(submitted_arg_names)} were given'
             )
 
         # Check argument types
         for arg_name, arg_value in args.items():
-            supported_arg_types = SUPPORTED_INSTRUCTIONS[name]['args'][arg_name]
-            if not isinstance(arg_value, supported_arg_types):
+            allowed_types = allowed_arg_types[arg_name]
+            if not isinstance(arg_value, allowed_types):
                 raise TypeError(
                     f'The argument "{arg_name}" should be of one of the following supported types'
-                    f' {supported_arg_types}, but ({type(arg_value)}) was given'
+                    f' {allowed_types}, but ({type(arg_value)}) was given'
                 )
 
         return value
@@ -337,30 +330,12 @@ def is_multi_qubit_instruction(name: str) -> bool:
         name: The name of the instruction to check
 
     Returns:
-        True if the instruction expects more than one qubit as its locus.
+        True iff the instruction expects more than one qubit as its locus.
     """
-    return name in SUPPORTED_INSTRUCTIONS and SUPPORTED_INSTRUCTIONS[name]['arity'] > 1
+    return SUPPORTED_OPERATIONS[name].arity > 1
 
 
-def is_directed_instruction(name: str) -> bool:
-    """Checks if the instruction with the given name is directed, i.e. if the instruction
-    is allowed only in the direction defined by the operation loci in the quantum architecture.
-
-    Args:
-        name: The name of the instruction to check
-
-    Returns:
-        True if the instruction is valid only in the direction defined by the architecture specification; or
-        False if the instruction is valid also with the qubits in the locus in reversed order.
-    """
-    return (
-        name in SUPPORTED_INSTRUCTIONS
-        and 'directed' in SUPPORTED_INSTRUCTIONS[name]
-        and SUPPORTED_INSTRUCTIONS[name]['directed']
-    )
-
-
-def get_current_instruction_name(name: str):
+def get_current_instruction_name(name: str) -> str:
     """Checks if the instruction name has been deprecated and returns the new name if it is;
     otherwise, just returns the name as-is.
 
@@ -370,11 +345,7 @@ def get_current_instruction_name(name: str):
     Returns:
         the current name of the instruction.
     """
-    return (
-        SUPPORTED_INSTRUCTIONS[name]['renamed_to']
-        if name in SUPPORTED_INSTRUCTIONS and 'renamed_to' in SUPPORTED_INSTRUCTIONS[name]
-        else name
-    )
+    return SUPPORTED_OPERATIONS[name].renamed_to or name
 
 
 class Circuit(BaseModel):
@@ -505,7 +476,7 @@ class QuantumArchitectureSpecification(BaseModel):
         super().__init__(**data)
         self.operations = {get_current_instruction_name(k): v for k, v in self.operations.items()}
 
-    def has_equivalent_operations(self, other: QuantumArchitectureSpecification):
+    def has_equivalent_operations(self, other: QuantumArchitectureSpecification) -> bool:
         """Compares the given operation sets defined by the quantum architecture against
         another architecture specification.
 
@@ -523,19 +494,18 @@ class QuantumArchitectureSpecification(BaseModel):
         """
         if set(ops1) != set(ops2):
             return False
-        for [op, c1] in ops1.items():
-            c2 = ops2[op]
-            if is_multi_qubit_instruction(op):
-                if not is_directed_instruction(op):
-                    c1 = [sorted(qbs) for qbs in c1]
-                    c2 = [sorted(qbs) for qbs in c2]
-                if sorted(c1) != sorted(c2):
-                    return False
+        for op, loci1 in ops1.items():
+            loci2 = ops2[op]
+            if SUPPORTED_OPERATIONS[op].symmetric:
+                # for comparing symmetric instruction loci, sorting order does not matter
+                l1 = [tuple(sorted(locus)) for locus in loci1]
+                l2 = [tuple(sorted(locus)) for locus in loci2]
             else:
-                qs1 = {q for [q] in c1}
-                qs2 = {q for [q] in c2}
-                if qs1 != qs2:
-                    return False
+                l1 = [tuple(locus) for locus in loci1]
+                l2 = [tuple(locus) for locus in loci2]
+
+            if set(l1) != set(l2):
+                return False
         return True
 
 
@@ -753,7 +723,7 @@ class RunResult(BaseModel):
     """list of warning messages"""
 
     @staticmethod
-    def from_dict(inp: dict[str, Union[str, dict]]) -> 'RunResult':
+    def from_dict(inp: dict[str, Union[str, dict]]) -> RunResult:
         """Parses the result from a dict.
 
         Args:
@@ -778,7 +748,7 @@ class RunStatus(BaseModel):
     """list of warning messages"""
 
     @staticmethod
-    def from_dict(inp: dict[str, Union[str, dict]]) -> 'RunStatus':
+    def from_dict(inp: dict[str, Union[str, dict]]) -> RunStatus:
         """Parses the result from a dict.
 
         Args:

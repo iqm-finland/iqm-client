@@ -2,7 +2,7 @@
 Changelog
 =========
 
-Version 18.5
+Version 19.0
 ============
 
 * Allow mid-circuit measurements and classically controlled PRX gates.

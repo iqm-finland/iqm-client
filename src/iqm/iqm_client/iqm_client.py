@@ -41,7 +41,7 @@ from iqm.iqm_client.errors import (
     JobAbortionError,
 )
 from iqm.iqm_client.models import (
-    SUPPORTED_INSTRUCTIONS,
+    SUPPORTED_OPERATIONS,
     Circuit,
     CircuitBatch,
     CircuitCompilationOptions,
@@ -240,7 +240,7 @@ class IQMClient:
             move_gate_frame_tracking_mode=options.move_gate_frame_tracking,
         )
 
-    def submit_run_request(self, run_request: RunRequest):
+    def submit_run_request(self, run_request: RunRequest) -> UUID:
         """Submits a run request for execution on a quantum computer.
 
         This is called inside :meth:`submit_circuits` and does not need to be called separately in normal usage.
@@ -294,7 +294,7 @@ class IQMClient:
         architecture: QuantumArchitectureSpecification,
         circuits: CircuitBatch,
         qubit_mapping: Optional[dict[str, str]] = None,
-    ):
+    ) -> None:
         """Validates the given qubit mapping, if defined.
 
         Args:
@@ -357,15 +357,14 @@ class IQMClient:
         architecture: QuantumArchitectureSpecification,
         instruction: Instruction,
         qubit_mapping: Optional[dict[str, str]] = None,
-    ):
+    ) -> None:
         """Validates that the instruction targets correct qubits in the given architecture.
 
         Args:
           architecture: the quantum architecture to check against
           instruction: the instruction to check
           qubit_mapping: Mapping of logical qubit names to physical qubit names.
-              Can be set to ``None`` if all ``circuits`` already use physical qubit names.
-              Note that the ``qubit_mapping`` is used for all ``circuits``.
+              Can be set to ``None`` if ``instruction`` already uses physical qubit names.
 
         Raises:
             CircuitExecutionError: IQM server specific exceptions
@@ -373,13 +372,12 @@ class IQMClient:
         if instruction.name not in architecture.operations:
             raise ValueError(f"Instruction '{instruction.name}' is not supported by the quantum architecture.")
         allowed_loci = architecture.operations[instruction.name]
-        qubits = [qubit_mapping[q] for q in instruction.qubits] if qubit_mapping else list(instruction.qubits)
-        info = SUPPORTED_INSTRUCTIONS[instruction.name]
-        check_locus = info['check_locus'] if 'check_locus' in info else None
-        if check_locus is False:
-            # Should skip locus check (e.g. for barrier)
+        op_info = SUPPORTED_OPERATIONS[instruction.name]
+        if op_info.allow_all_loci:
             return
-        if check_locus == 'any_combination':
+
+        qubits = [qubit_mapping[q] for q in instruction.qubits] if qubit_mapping else list(instruction.qubits)
+        if op_info.factorizable:
             # Check that all qubits in the locus are allowed by the architecture
             allowed_qubits = set(q for locus in allowed_loci for q in locus)
             for q in instruction.qubits:
@@ -393,8 +391,7 @@ class IQMClient:
             return
 
         # Check that locus matches one of the loci defined in architecture
-        is_directed = 'directed' in info and info['directed'] is True
-        all_loci = allowed_loci if is_directed else [qs for pair in allowed_loci for qs in [pair, pair[::-1]]]
+        all_loci = [x for locus in allowed_loci for x in [locus, locus[::-1]]] if op_info.symmetric else allowed_loci
         if qubits not in all_loci:
             raise CircuitExecutionError(
                 f'{instruction.qubits} = {tuple(qubits)} not allowed as locus for {instruction.name}'
@@ -629,9 +626,9 @@ class IQMClient:
             raise ArchitectureRetrievalError(f'Invalid response: {result.text}, {e}') from e
 
         # HACK add cc_prx
-        prx_loci = qa.operations.get("prx")
+        prx_loci = qa.operations.get('prx')
         if prx_loci is not None:
-            qa.operations["cc_prx"] = prx_loci
+            qa.operations['cc_prx'] = prx_loci
         # Cache architecture so that later invocations do not need to query it again
         self._architecture = qa
         return qa
@@ -706,7 +703,7 @@ class IQMClient:
         return headers
 
     @staticmethod
-    def _check_authentication_errors(result: requests.Response):
+    def _check_authentication_errors(result: requests.Response) -> None:
         # for not strictly authenticated endpoints,
         # we need to handle 302 redirects to the auth server login page
         if result.history and any(
