@@ -96,15 +96,14 @@ Locus = tuple[StrictStr, ...]
 
 
 class Instruction(BaseModel):
-    r"""
+    r"""Native quantum operation instance with particular arguments and locus.
 
-    The :class:`Instruction` class represents a native quantum operation.
+    The :class:`Instruction` class represents a native quantum operation
+    acting on :attr:`~Instruction.qubits`,
+    with the arguments :attr:`~Instruction.args`.
+    The operation is determined by :attr:`~Instruction.name`.
 
-    Different Instruction types are distinguished by their :attr:`~Instruction.name`.
-    Each Instruction type acts on a number of :attr:`~Instruction.qubits`, and expects certain
-    :attr:`~Instruction.args`.
-
-    We currently support the following native instruction types:
+    We currently support the following native operations:
 
     ================ =========== ====================================== ===========
     name             # of qubits args                                   description
@@ -239,7 +238,7 @@ class Instruction(BaseModel):
     implementation: Optional[StrictStr] = Field(None)
     """name of the implementation, for experimental use only"""
     qubits: Locus = Field(..., examples=[('alice',)])
-    """names of the logical qubits the operation acts on"""
+    """names of the locus components (typically qubits) the operation acts on"""
     args: dict[str, Any] = Field(..., examples=[{'key': 'm'}])
     """arguments for the operation"""
 
@@ -323,16 +322,33 @@ class Instruction(BaseModel):
         return value
 
 
-def is_multi_qubit_instruction(name: str) -> bool:
-    """Checks if the instruction with the given name is a multi-qubit instruction.
+def op_is_symmetric(name: str) -> bool:
+    """Returns True iff the given native operation is symmetric, i.e. the order of the
+    locus components does not matter.
 
     Args:
-        name: The name of the instruction to check
-
+        name: name of the operation
     Returns:
-        True iff the instruction expects more than one qubit as its locus.
+        True iff the locus order does not matter
+    Raises:
+        KeyError: ``name`` is unknown
     """
-    return SUPPORTED_OPERATIONS[name].arity > 1
+    return SUPPORTED_OPERATIONS[name].symmetric
+
+
+def op_arity(name: str) -> int:
+    """Returns the arity of the given native operation, i.e. the number of locus components it acts on.
+
+    Zero means any number of locus components is OK.
+
+    Args:
+        name: name of the operation
+    Returns:
+        arity of the operation
+    Raises:
+        KeyError: ``name`` is unknown
+    """
+    return SUPPORTED_OPERATIONS[name].arity
 
 
 def get_current_instruction_name(name: str) -> str:
@@ -340,10 +356,12 @@ def get_current_instruction_name(name: str) -> str:
     otherwise, just returns the name as-is.
 
     Args:
-        name: the name of the instruction
+        name: name of the instruction
 
     Returns:
-        the current name of the instruction.
+        current name of the instruction
+    Raises:
+        KeyError: ``name`` is unknown
     """
     return SUPPORTED_OPERATIONS[name].renamed_to or name
 
@@ -459,18 +477,17 @@ class QuantumArchitectureSpecification(BaseModel):
     """Qubit connectivity of this quantum architecture."""
 
     def __init__(self, **data):
-        # Convert a simplified quantum architecture to full quantum architecture
-        raw_operations = data.get('operations')
-        raw_qubits = data.get('qubits')
-        raw_qubit_connectivity = data.get('qubit_connectivity')
-        if isinstance(raw_operations, list):
+        operations = data.get('operations')
+        if isinstance(operations, list):
+            # backwards compatibility for the old quantum architecture format
+            qubits = data.get('qubits')
+            qubit_connectivity = data.get('qubit_connectivity')
+            # add all possible loci for the ops
             data['operations'] = {
                 get_current_instruction_name(op): (
-                    raw_qubit_connectivity
-                    if is_multi_qubit_instruction(get_current_instruction_name(op))
-                    else [[qb] for qb in raw_qubits]
+                    qubit_connectivity if op_arity(get_current_instruction_name(op)) == 2 else [[qb] for qb in qubits]
                 )
-                for op in raw_operations
+                for op in operations
             }
 
         super().__init__(**data)
@@ -497,7 +514,7 @@ class QuantumArchitectureSpecification(BaseModel):
         for op, loci1 in ops1.items():
             loci2 = ops2[op]
             if SUPPORTED_OPERATIONS[op].symmetric:
-                # for comparing symmetric instruction loci, sorting order does not matter
+                # for comparing symmetric instruction loci, sorting order does not matter as long as it's consistent
                 l1 = [tuple(sorted(locus)) for locus in loci1]
                 l2 = [tuple(sorted(locus)) for locus in loci2]
             else:
