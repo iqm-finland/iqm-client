@@ -311,3 +311,7 @@ class TestMoveValidation:
         cz = Instruction(name='cz', qubits=[reverse_qb_mapping[qb] for qb in ['QB2', 'COMP_R']], args={})
         TestMoveValidation.make_circuit_and_check((move, move), arch, validation_mode, sample_qb_mapping)
         TestMoveValidation.make_circuit_and_check((prx, move, cz, move), arch, validation_mode, sample_qb_mapping)
+        # qubit mapping without all qubits/resonators in the architecture
+        partial_qb_mapping = {k: v for k, v in sample_qb_mapping.items() if v in ['QB2', 'QB3', 'COMP_R']}
+        TestMoveValidation.make_circuit_and_check((move, move), arch, validation_mode, partial_qb_mapping)
+        TestMoveValidation.make_circuit_and_check((prx, move, cz, move), arch, validation_mode, partial_qb_mapping)

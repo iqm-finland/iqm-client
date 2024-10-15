@@ -454,8 +454,8 @@ class IQMClient:
         all_qubits = set(architecture.qubits) - all_resonators
         if qubit_mapping:
             reverse_mapping = {phys: log for log, phys in qubit_mapping.items()}
-            all_resonators = {reverse_mapping[q] for q in all_resonators}
-            all_qubits = {reverse_mapping[q] for q in all_qubits}
+            all_resonators = {reverse_mapping[q] if q in reverse_mapping else q for q in all_resonators}
+            all_qubits = {reverse_mapping[q] if q in reverse_mapping else q for q in all_qubits}
 
         # Mapping from resonator to the qubit whose state it holds. Resonators not in the map hold no qubit state.
         resonator_occupations: dict[str, str] = {}

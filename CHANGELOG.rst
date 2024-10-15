@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 18.7
+============
+
+* Fix MOVE gate validation for qubit mappings containing only some of the architecture qubits `#137 <https://github.com/iqm-finland/iqm-client/pull/137>`_
+
 Version 18.6
 ============
 
