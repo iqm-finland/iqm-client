@@ -23,12 +23,14 @@ from requests import HTTPError
 
 from iqm.iqm_client import (
     ArchitectureRetrievalError,
+    Circuit,
     CircuitCompilationOptions,
     CircuitExecutionError,
     CircuitValidationError,
     ClientConfigurationError,
     DynamicQuantumArchitecture,
     HeraldingMode,
+    Instruction,
     IQMClient,
     JobAbortionError,
     QuantumArchitectureSpecification,
@@ -38,6 +40,65 @@ from iqm.iqm_client import (
     validate_circuit,
 )
 from tests.conftest import MockJsonResponse, get_jobs_args, post_jobs_args, submit_circuits_args
+
+
+@pytest.fixture
+def move_circuit():
+    instructions = (
+        Instruction(
+            name='prx',
+            qubits=('QB1',),
+            args={'phase_t': 0.3, 'angle_t': -0.2},
+        ),
+        Instruction(
+            name='move',
+            qubits=('QB3', 'COMP_R'),
+            args={},
+        ),
+        Instruction(
+            name='cz',
+            qubits=('QB1', 'COMP_R'),
+            args={},
+        ),
+        Instruction(
+            name='cz',
+            qubits=('QB2', 'COMP_R'),
+            args={},
+        ),
+        Instruction(
+            name='move',
+            qubits=('QB3', 'COMP_R'),
+            args={},
+        ),
+    )
+    return Circuit(name='COMP_R circuit', instructions=instructions)
+
+
+@pytest.fixture
+def move_circuit_with_prx_in_the_sandwich():
+    instructions = (
+        Instruction(
+            name='prx',
+            qubits=('QB1',),
+            args={'phase_t': 0.3, 'angle_t': -0.2},
+        ),
+        Instruction(
+            name='move',
+            qubits=('QB3', 'COMP_R'),
+            args={},
+        ),
+        Instruction(
+            name='prx',
+            qubits=('QB3',),
+            args={'phase_t': 0.3, 'angle_t': -0.2},
+        ),
+        Instruction(
+            name='move',
+            qubits=('QB3', 'COMP_R'),
+            args={},
+        ),
+    )
+    return Circuit(name='COMP_R circuit with PRX in the sandwich', instructions=instructions)
 
 
 def test_serialize_qubit_mapping():
@@ -90,17 +151,23 @@ def test_submit_circuits_adds_user_agent_with_client_signature(
 
 
 @pytest.mark.parametrize(
-    'run_request_name, valid_request, error_message',
+    'run_request_name, valid_request, error',
     [
         ('minimal_run_request', True, None),
         ('run_request_with_heralding', True, None),
         ('run_request_with_custom_settings', True, None),
-        ('run_request_with_invalid_qubit_mapping', False, 'Multiple logical qubits map to the same physical qubit.'),
+        (
+            'run_request_with_invalid_qubit_mapping',
+            False,
+            CircuitValidationError('Multiple logical qubits map to the same physical qubit.'),
+        ),
         (
             'run_request_with_incomplete_qubit_mapping',
             False,
-            "The qubits {'Qubit B'} in circuit 'The circuit' "
-            + 'at index 0 are not found in the provided qubit mapping.',
+            CircuitValidationError(
+                "The qubits {'Qubit B'} in circuit 'The circuit' "
+                'at index 0 are not found in the provided qubit mapping.'
+            ),
         ),
         ('run_request_without_qubit_mapping', True, None),
         ('run_request_with_calibration_set_id', True, None),
@@ -108,7 +175,10 @@ def test_submit_circuits_adds_user_agent_with_client_signature(
         (
             'run_request_with_incompatible_options',
             False,
-            'Unable to perform full MOVE gate frame tracking if MOVE gate validation is not "strict" or "allow_prx".',
+            ValueError(
+                'Unable to perform full MOVE gate frame tracking if MOVE gate validation '
+                'is not "strict" or "allow_prx".'
+            ),
         ),
     ],
 )
@@ -117,7 +187,7 @@ def test_submit_circuits_returns_id(
     jobs_url,
     run_request_name,
     valid_request,
-    error_message,
+    error,
     request,
     submit_success,
     existing_run_id,
@@ -132,10 +202,10 @@ def test_submit_circuits_returns_id(
 
     if valid_request:
         expect(requests, times=1).post(jobs_url, **post_jobs_args(run_request)).thenReturn(submit_success)
-    if error_message is None:
+    if error is None:
         assert sample_client.submit_circuits(**submit_circuits_args(run_request)) == existing_run_id
     else:
-        with pytest.raises(ValueError, match=error_message):
+        with pytest.raises(type(error), match=str(error)):
             sample_client.submit_circuits(**submit_circuits_args(run_request))
 
     verifyNoUnwantedInteractions()
@@ -764,19 +834,23 @@ def test_create_and_submit_run_request(
 
 
 @pytest.mark.parametrize(
-    'run_request_name, quantum_architecture_name',
+    'run_request_name, quantum_architecture_name, sample_circuit_name',
     [
-        ('run_request_with_move_validation', 'quantum_architecture_success'),
-        ('run_request_without_prx_move_validation', 'quantum_architecture_success'),
-        ('run_request_with_move_gate_frame_tracking', 'quantum_architecture_success'),
-        ('run_request_with_move_validation', 'move_architecture_success'),
-        ('run_request_without_prx_move_validation', 'move_architecture_success'),
-        ('run_request_with_move_gate_frame_tracking', 'move_architecture_success'),
+        (run_request, success_result, sample_circuit)
+        for run_request in [
+            'run_request_with_move_validation',
+            'run_request_without_prx_move_validation',
+            'run_request_with_move_gate_frame_tracking',
+        ]
+        for success_result, sample_circuit in zip(
+            ['quantum_architecture_success', 'move_architecture_success', 'move_architecture_success'],
+            ['sample_circuit', 'move_circuit', 'move_circuit_with_prx_in_the_sandwich'],
+        )
     ],
 )
-def test_useless_compiler_options(
+def test_compiler_options_are_used_and_sent(
     sample_client,
-    sample_resonator_circuit,
+    sample_circuit_name,
     jobs_url,
     run_request_name,
     request,
@@ -789,14 +863,18 @@ def test_useless_compiler_options(
     """
     run_request = request.getfixturevalue(run_request_name)
     quantum_architecture_success = request.getfixturevalue(quantum_architecture_name)
-    if quantum_architecture_name == 'move_architecture_success':
-        run_request.circuits = [sample_resonator_circuit]
-    print(run_request)
-    when(requests).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
-    expect(requests, times=1).post(jobs_url, **post_jobs_args(run_request)).thenReturn(submit_success)
+    run_request.circuits = [request.getfixturevalue(sample_circuit_name)]
 
-    # This used to warn, but no longer does
-    sample_client.submit_circuits(**submit_circuits_args(run_request))
+    when(requests).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
+    if (
+        sample_circuit_name != 'move_circuit_with_prx_in_the_sandwich'  # Valid circuit
+        or run_request_name == 'run_request_without_prx_move_validation'  # Validation is turned off
+    ):
+        expect(requests, times=1).post(jobs_url, **post_jobs_args(run_request)).thenReturn(submit_success)
+        sample_client.submit_circuits(**submit_circuits_args(run_request))
+    else:  # Invalid circuit and validation is turned on.
+        with pytest.raises(CircuitValidationError):
+            sample_client.submit_circuits(**submit_circuits_args(run_request))
 
     verifyNoUnwantedInteractions()
     unstub()

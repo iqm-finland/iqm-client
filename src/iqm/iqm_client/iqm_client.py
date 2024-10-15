@@ -47,6 +47,7 @@ from iqm.iqm_client.models import (
     CircuitCompilationOptions,
     DynamicQuantumArchitecture,
     Instruction,
+    MoveGateValidationMode,
     QuantumArchitecture,
     QuantumArchitectureSpecification,
     RunRequest,
@@ -81,8 +82,8 @@ class IQMClient:
         password: Password to log in to authentication server.
 
     Alternatively, the user authentication related keyword arguments can also be given in
-    environment variables ``IQM_TOKEN``, ``IQM_TOKENS_FILE``, ``IQM_AUTH_SERVER``,
-    ``IQM_AUTH_USERNAME`` and ``IQM_AUTH_PASSWORD``. All parameters must be given either
+    environment variables :envvar:`IQM_TOKEN`, :envvar:`IQM_TOKENS_FILE`, :envvar:`IQM_AUTH_SERVER`,
+    :envvar:`IQM_AUTH_USERNAME` and :envvar:`IQM_AUTH_PASSWORD`. All parameters must be given either
     as keyword arguments or as environment variables. Same combination restrictions apply
     for values given as environment variables as for keyword arguments.
     """
@@ -151,15 +152,15 @@ class IQMClient:
         """Submits a batch of quantum circuits for execution on a quantum computer.
 
         Args:
-            circuits: list of circuits to be executed
+            circuits: Circuits to be executed.
             qubit_mapping: Mapping of logical qubit names to physical qubit names.
                 Can be set to ``None`` if all ``circuits`` already use physical qubit names.
                 Note that the ``qubit_mapping`` is used for all ``circuits``.
             custom_settings: Custom settings to override default settings and calibration data.
                 Note: This field should always be ``None`` in normal use.
             calibration_set_id: ID of the calibration set to use, or ``None`` to use the latest one
-            shots: number of times ``circuits`` are executed, value must be greater than zero
-            options: Various discrete options for compiling quantum circuits to pulse schedules.
+            shots: Number of times ``circuits`` are executed. Must be greater than zero
+            options: Various discrete options for compiling quantum circuits to instruction schedules.
         Returns:
             ID for the created job. This ID is needed to query the job status and the execution results.
         """
@@ -192,19 +193,15 @@ class IQMClient:
         submitting it for execution.
 
         Args:
-            circuits: list of circuits to be executed
+            circuits: Circuits to be executed.
             qubit_mapping: Mapping of logical qubit names to physical qubit names.
                 Can be set to ``None`` if all ``circuits`` already use physical qubit names.
                 Note that the ``qubit_mapping`` is used for all ``circuits``.
             custom_settings: Custom settings to override default settings and calibration data.
                 Note: This field should always be ``None`` in normal use.
             calibration_set_id: ID of the calibration set to use, or ``None`` to use the latest one
-            shots: number of times ``circuits`` are executed, value must be greater than zero
-            max_circuit_duration_over_t2: Circuits are disqualified on the server if they are longer than this ratio
-                of the T2 time of the qubits. Setting this value to ``0.0`` turns off circuit duration checking.
-                The default value ``None`` instructs server to use server's default value in the checking.
-            heralding_mode: Heralding mode to use during the execution.
-
+            shots: Number of times ``circuits`` are executed. Must be greater than zero.
+            options: Various discrete options for compiling quantum circuits to instruction schedules.
         Returns:
             RunRequest that would be submitted by equivalent call to :meth:`submit_circuits`.
         """
@@ -226,7 +223,9 @@ class IQMClient:
         self._validate_qubit_mapping(architecture, circuits, qubit_mapping)
         serialized_qubit_mapping = serialize_qubit_mapping(qubit_mapping) if qubit_mapping else None
 
-        self._validate_circuit_instructions(architecture, circuits, qubit_mapping)
+        self._validate_circuit_instructions(
+            architecture, circuits, qubit_mapping, validate_moves=options.move_gate_validation
+        )
 
         return RunRequest(
             qubit_mapping=serialized_qubit_mapping,
@@ -240,14 +239,13 @@ class IQMClient:
             move_gate_frame_tracking_mode=options.move_gate_frame_tracking,
         )
 
-    def submit_run_request(self, run_request: RunRequest):
+    def submit_run_request(self, run_request: RunRequest) -> UUID:
         """Submits a run request for execution on a quantum computer.
 
         This is called inside :meth:`submit_circuits` and does not need to be called separately in normal usage.
 
         Args:
             run_request: the run request to be submitted for execution.
-
         Returns:
             ID for the created job. This ID is needed to query the job status and the execution results.
         """
@@ -294,18 +292,18 @@ class IQMClient:
         architecture: QuantumArchitectureSpecification,
         circuits: CircuitBatch,
         qubit_mapping: Optional[dict[str, str]] = None,
-    ):
+    ) -> None:
         """Validates the given qubit mapping, if defined.
 
         Args:
-          architecture: the quantum architecture to check against
-          circuits: list of circuits to be checked
+          architecture: Quantum architecture to check against.
+          circuits: Circuits to be checked.
           qubit_mapping: Mapping of logical qubit names to physical qubit names.
               Can be set to ``None`` if all ``circuits`` already use physical qubit names.
               Note that the ``qubit_mapping`` is used for all ``circuits``.
 
         Raises:
-            CircuitExecutionError: IQM server specific exceptions
+            CircuitValidationError: There was something wrong with ``circuits``.
         """
         if qubit_mapping is None:
             return
@@ -313,13 +311,13 @@ class IQMClient:
         # check if qubit mapping is injective
         target_qubits = set(qubit_mapping.values())
         if not len(target_qubits) == len(qubit_mapping):
-            raise ValueError('Multiple logical qubits map to the same physical qubit.')
+            raise CircuitValidationError('Multiple logical qubits map to the same physical qubit.')
 
         # check if qubit mapping covers all qubits in the circuits
         for i, circuit in enumerate(circuits):
             diff = circuit.all_qubits() - set(qubit_mapping)
             if diff:
-                raise ValueError(
+                raise CircuitValidationError(
                     f"The qubits {diff} in circuit '{circuit.name}' at index {i} "
                     f'are not found in the provided qubit mapping.'
                 )
@@ -327,51 +325,60 @@ class IQMClient:
         # check that each mapped qubit is defined in the quantum architecture
         for _logical, physical in qubit_mapping.items():
             if physical not in architecture.qubits:
-                raise CircuitExecutionError(f'Qubit {physical} not present in quantum architecture')
+                raise CircuitValidationError(f'Qubit {physical} not present in quantum architecture')
 
     @staticmethod
     def _validate_circuit_instructions(
         architecture: QuantumArchitectureSpecification,
         circuits: CircuitBatch,
         qubit_mapping: Optional[dict[str, str]] = None,
-    ):
-        """Validates that the instructions target correct qubits in the given circuits.
+        validate_moves: MoveGateValidationMode = MoveGateValidationMode.STRICT,
+    ) -> None:
+        """Raises an error if the given circuits are not valid in the given architecture.
 
         Args:
-          architecture: the quantum architecture to check against
-          circuits: list of circuits to be checked
-          qubit_mapping: Mapping of logical qubit names to physical qubit names.
-              Can be set to ``None`` if all ``circuits`` already use physical qubit names.
-              Note that the ``qubit_mapping`` is used for all ``circuits``.
-
+            architecture: Quantum architecture to check against.
+            circuits: Circuits to be checked.
+            qubit_mapping: Mapping of logical qubit names to physical qubit names.
+                Can be set to ``None`` if all ``circuits`` already use physical qubit names.
+                Note that the ``qubit_mapping`` is used for all ``circuits``.
+            validate_moves: Option for bypassing full or partial MOVE gate validation.
         Raises:
-            CircuitExecutionError: IQM server specific exceptions
+            CircuitValidationError: There was something wrong with ``circuits``.
         """
-        for circuit in circuits:
-            IQMClient._validate_circuit_moves(architecture, circuit, qubit_mapping)
+        for index, circuit in enumerate(circuits):
+            measurement_keys: set[str] = set()
             for instr in circuit.instructions:
                 IQMClient._validate_instruction(architecture, instr, qubit_mapping)
+                # check measurement key uniqueness
+                if instr.name in {'measure', 'measurement'}:
+                    key = instr.args['key']
+                    if key in measurement_keys:
+                        raise CircuitValidationError(f'Circuit {index}: {instr!r} has a non-unique measurement key.')
+                    measurement_keys.add(key)
+            IQMClient._validate_circuit_moves(architecture, circuit, qubit_mapping, validate_moves=validate_moves)
 
     @staticmethod
     def _validate_instruction(
         architecture: QuantumArchitectureSpecification,
         instruction: Instruction,
         qubit_mapping: Optional[dict[str, str]] = None,
-    ):
-        """Validates that the instruction targets correct qubits in the given architecture.
+    ) -> None:
+        """Raises an error if the given instruction is not valid in the given architecture.
 
         Args:
-          architecture: the quantum architecture to check against
-          instruction: the instruction to check
+          architecture: Quantum architecture to check against.
+          instruction: Instruction to check.
           qubit_mapping: Mapping of logical qubit names to physical qubit names.
               Can be set to ``None`` if all ``circuits`` already use physical qubit names.
               Note that the ``qubit_mapping`` is used for all ``circuits``.
-
         Raises:
-            CircuitExecutionError: IQM server specific exceptions
+            CircuitValidationError: There was something wrong with ``instruction``.
         """
         if instruction.name not in architecture.operations:
-            raise ValueError(f"Instruction '{instruction.name}' is not supported by the quantum architecture.")
+            raise CircuitValidationError(
+                f"Instruction '{instruction.name}' is not supported by the quantum architecture."
+            )
         allowed_loci = architecture.operations[instruction.name]
         qubits = [qubit_mapping[q] for q in instruction.qubits] if qubit_mapping else list(instruction.qubits)
         info = SUPPORTED_INSTRUCTIONS[instruction.name]
@@ -385,7 +392,7 @@ class IQMClient:
             for q in instruction.qubits:
                 mapped_q = qubit_mapping[q] if qubit_mapping else q
                 if mapped_q not in allowed_qubits:
-                    raise CircuitExecutionError(
+                    raise CircuitValidationError(
                         f'Qubit {q} = {mapped_q} is not allowed as locus for {instruction.name}'
                         if qubit_mapping
                         else f'Qubit {q} is not allowed as locus for {instruction.name}'
@@ -396,7 +403,7 @@ class IQMClient:
         is_directed = 'directed' in info and info['directed'] is True
         all_loci = allowed_loci if is_directed else [qs for pair in allowed_loci for qs in [pair, pair[::-1]]]
         if qubits not in all_loci:
-            raise CircuitExecutionError(
+            raise CircuitValidationError(
                 f'{instruction.qubits} = {tuple(qubits)} not allowed as locus for {instruction.name}'
                 if qubit_mapping
                 else f'{instruction.qubits} not allowed as locus for {instruction.name}'
@@ -404,66 +411,89 @@ class IQMClient:
 
     @staticmethod
     def _validate_circuit_moves(
-        architecture: QuantumArchitectureSpecification, circuit: Circuit, qubit_mapping: Optional[dict[str, str]] = None
+        architecture: QuantumArchitectureSpecification,
+        circuit: Circuit,
+        qubit_mapping: Optional[dict[str, str]] = None,
+        validate_moves: MoveGateValidationMode = MoveGateValidationMode.STRICT,
     ) -> None:
-        """Validates that the MOVE gates in the circuit are not exciting the resonator.
+        """Raises an error if the MOVE gates in the circuit are not valid in the given architecture.
 
         Args:
             architecture: Quantum architecture to check against.
             circuit: Quantum circuit to validate.
             qubit_mapping: Mapping of logical qubit names to physical qubit names.
                 Can be set to ``None`` if the ``circuit`` already uses physical qubit names.
+            validate_moves: Option for bypassing full or partial MOVE gate validation.
         Raises:
-            CircuitExecutionError: ``circuit`` fails the validation
+            CircuitValidationError: There was something wrong with ``circuit``.
         """
+        # pylint: disable=too-many-branches
+        if validate_moves == MoveGateValidationMode.NONE:
+            return
         move_gate = 'move'
         # Check if MOVE gates are allowed on this architecture
         if move_gate not in architecture.operations:
             if any(i.name == move_gate for i in circuit.instructions):
-                raise CircuitExecutionError('MOVE instruction is not supported by the given device architecture.')
+                raise CircuitValidationError('MOVE instruction is not supported by the given device architecture.')
             return
-        # Track the location of the resonator state
-        # TODO use architecture.computational_resonators when available instead of using COMP_R.
+
+        # some gates are allowed in MOVE sandwiches
+        allowed_gates = {'barrier'}
+        if validate_moves == MoveGateValidationMode.ALLOW_PRX:
+            allowed_gates.add('prx')
+
+        # TODO use architecture.computational_resonators when available instead of relying on COMP_R prefix.
+        all_resonators = {q for q in architecture.qubits if q.startswith('COMP_R')}
+        all_qubits = set(architecture.qubits) - all_resonators
         if qubit_mapping:
             reverse_mapping = {phys: log for log, phys in qubit_mapping.items()}
-            resonator_state_loc = {  # Resonator: Location
-                reverse_mapping[q]: reverse_mapping[q] for q in architecture.qubits if q.startswith('COMP_R')
-            }
-        else:
-            resonator_state_loc = {q: q for q in architecture.qubits if q.startswith('COMP_R')}  # Resonator: Location
-        for instr in circuit.instructions:
-            # If any of the gate arguments are holding the |0> state of the resonator, we need to check the instruction
-            if any(qb in resonator_state_loc.values() for qb in instr.qubits):
-                # We are using a qubit or resonator state that is currently in the resonator.
-                if instr.name == move_gate:
-                    qb, res = instr.qubits
-                    # Check if qb is a qubit and res a resonator.
-                    if res not in resonator_state_loc or qb in resonator_state_loc:
-                        raise CircuitExecutionError(
-                            f'MOVE instruction only allowed between qubit and resonator, not {instr.qubits}.'
-                        )
-                    if resonator_state_loc[res] not in [qb, res]:
-                        raise CircuitExecutionError(
-                            f'MOVE instruction between {instr.qubits} while qubit state is in another resonator.'
-                        )
-                    # Update the resonator state location
-                    resonator_state_loc[res] = qb if resonator_state_loc[res] == res else res
-                elif instr.name not in ['barrier'] and any(
-                    qb in resonator_state_loc.values() and (qb, qb) not in resonator_state_loc.items()
-                    for qb in instr.qubits
-                ):
-                    # The instruction is using a qubit that is holding a resonator state but it is not the resonator
-                    raise CircuitExecutionError(
-                        f'Instruction {instr.name} on {instr.qubits} while they hold a resonator state. \
-                            Qubit states currently moved to resonator(s): {resonator_state_loc}.'
+            all_resonators = {reverse_mapping[q] for q in all_resonators}
+            all_qubits = {reverse_mapping[q] for q in all_qubits}
+
+        # Mapping from resonator to the qubit whose state it holds. Resonators not in the map hold no qubit state.
+        resonator_occupations: dict[str, str] = {}
+        # Qubits whose states are currently moved to a resonator
+        moved_qubits: set[str] = set()
+
+        for inst in circuit.instructions:
+            if inst.name == 'move':
+                qubit, resonator = inst.qubits
+                if not (qubit in all_qubits and resonator in all_resonators):
+                    raise CircuitValidationError(
+                        f'MOVE instructions are only allowed between qubit and resonator, not {inst.qubits}.'
                     )
-            elif instr.name == move_gate:
-                raise CircuitExecutionError(
-                    f'MOVE instruction between {instr.qubits} while neither holds a resonator state, and neither \
-                    qubits are in a resonator.'
-                )
-        if any(res != qb for res, qb in resonator_state_loc.items()):
-            raise CircuitExecutionError('Circuit ends while qubit state still in the resonator.')
+
+                if (resonator_qubit := resonator_occupations.get(resonator)) is None:
+                    # Beginning MOVE: check that the qubit hasn't been moved to another resonator
+                    if qubit in moved_qubits:
+                        raise CircuitValidationError(
+                            f'MOVE instruction {inst.qubits}: state of {qubit} is '
+                            f'in another resonator: {resonator_occupations}.'
+                        )
+                    resonator_occupations[resonator] = qubit
+                    moved_qubits.add(qubit)
+                else:
+                    # Ending MOVE: check that the qubit matches to the qubit that was moved to the resonator
+                    if resonator_qubit != qubit:
+                        raise CircuitValidationError(
+                            f'MOVE instruction {inst.qubits} to an already occupied resonator: {resonator_occupations}.'
+                        )
+                    del resonator_occupations[resonator]
+                    moved_qubits.remove(qubit)
+            elif moved_qubits:
+                # Validate that moved qubits are not used during MOVE operations
+                if inst.name not in allowed_gates:
+                    if overlap := set(inst.qubits) & moved_qubits:
+                        raise CircuitValidationError(
+                            f'Instruction {inst.name} acts on {inst.qubits} while the state(s) of {overlap} '
+                            f'are in a resonator. Current resonator occupation: {resonator_occupations}.'
+                        )
+
+        # Finally validate that all moves have been ended before the circuit ends
+        if resonator_occupations:
+            raise CircuitValidationError(
+                f'Circuit ends while qubit state(s) are still in a resonator: {resonator_occupations}.'
+            )
 
     def get_run(self, job_id: UUID, *, timeout_secs: float = REQUESTS_TIMEOUT) -> RunResult:
         """Query the status and results of a submitted job.

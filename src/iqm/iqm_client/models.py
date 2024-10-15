@@ -115,8 +115,9 @@ class Instruction(BaseModel):
     measure          >= 1        ``key: str``                           Measurement in the Z basis.
     prx              1           ``angle_t: float``, ``phase_t: float`` Phased x-rotation gate.
     cz               2                                                  Controlled-Z gate.
+    move             2                                                  Moves a qubit state between a qubit and a
+                                                                        computational resonator.
     barrier          >= 1                                               Execution barrier.
-    move             2                                                  Moves 1 state between resonator and qubit.
     ================ =========== ====================================== ===========
 
     For each Instruction you may also optionally specify :attr:`~Instruction.implementation`,
@@ -128,16 +129,16 @@ class Instruction(BaseModel):
 
         The following instruction names are deprecated, but supported for backwards compatibility for now:
 
-    * ``phased_rx`` ↦ ``prx``
-    * ``measurement`` ↦ ``measure``
+        * ``phased_rx`` ↦ ``prx``
+        * ``measurement`` ↦ ``measure``
 
     Measure
     -------
 
     Measurement in the computational (Z) basis. The measurement results are the output of the circuit.
     Takes one string argument, ``key``, denoting the measurement key the results are labeled with.
-    All the measurement keys in a circuit must be unique. Each qubit may only be measured once.
-    The measurement must be the last operation on each qubit, i.e. it cannot be followed by gates.
+    All the measurement keys in a circuit must be unique. Each qubit may be measured multiple times,
+    i.e. mid-circuit measurements are allowed.
 
     .. code-block:: python
         :caption: Example
@@ -201,6 +202,8 @@ class Instruction(BaseModel):
 
         Instruction(name='move', qubits=('alice', 'resonator'), args={})
 
+    .. note:: MOVE is only available in quantum computers with the IQM Star architecture.
+
     Barrier
     -------
 
@@ -216,11 +219,11 @@ class Instruction(BaseModel):
 
         Instruction(name='barrier', qubits=('alice', 'bob'), args={})
 
-    *Note*
-    1-qubit barriers will not have any effect on circuit's compilation and execution. Higher layers
-    that sit on top of IQM Client can make actual use of 1-qubit barriers (e.g. during circuit optimization),
-    therefore having them is allowed.
+    .. note::
 
+       One-qubit barriers will not have any effect on circuit's compilation and execution. Higher layers
+       that sit on top of IQM Client can make actual use of one-qubit barriers (e.g. during circuit optimization),
+       therefore having them is allowed.
     """
 
     name: str = Field(..., examples=['measure'])
@@ -601,9 +604,11 @@ class CircuitCompilationOptions:
     """Various discrete options for quantum circuit compilation to pulse schedule."""
 
     max_circuit_duration_over_t2: Optional[float] = None
-    """Circuits are disqualified on the server if they are longer than this ratio
-        of the T2 time of the qubits. Setting this value to ``0.0`` turns off circuit duration checking.
-        The default value ``None`` instructs server to use server's default value in the checking."""
+    """Server-side circuit disqualification threshold.
+    The job is rejected on the server if any circuit in it is estimated to take longer than
+    the shortest T2 time of any qubit used in the circuit, multiplied by this value.
+    Setting this value to ``0.0`` turns off circuit duration checking.
+    ``None`` tells the server to use its default value in the check."""
     heralding_mode: HeraldingMode = HeraldingMode.NONE
     """Heralding mode to use during the execution."""
     move_gate_validation: MoveGateValidationMode = MoveGateValidationMode.STRICT

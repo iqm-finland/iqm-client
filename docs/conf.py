@@ -79,7 +79,7 @@ show_authors = True
 autodoc_member_order = 'bysource'
 
 # where should signature annotations appear in the docs, function signature or parameter description?
-autodoc_typehints = 'description'
+autodoc_typehints = 'both'
 # autodoc_typehints = 'description' puts the __init__ annotations into its docstring,
 # which we thus have to include in the class documentation.
 autoclass_content = 'class'
