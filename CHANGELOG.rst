@@ -6,7 +6,7 @@ Version 19.0
 ============
 
 * Allow mid-circuit measurements and classically controlled PRX gates.
- `#135 <https://github.com/iqm-finland/iqm-client/pull/135>`_
+ `#136 <https://github.com/iqm-finland/iqm-client/pull/136>`_
 
 Version 18.4
 ============

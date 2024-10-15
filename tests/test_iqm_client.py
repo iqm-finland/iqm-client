@@ -644,7 +644,7 @@ def test_validate_circuit_checks_instruction_name_is_supported(sample_circuit):
     """
     circuit = sample_circuit.model_copy()
     circuit.instructions[0].name = 'kaboom'
-    with pytest.raises(ValueError, match='Unknown instruction "kaboom"'):
+    with pytest.raises(ValueError, match='Unknown operation "kaboom"'):
         validate_circuit(circuit)
 
 
@@ -667,7 +667,7 @@ def test_validate_circuit_checks_instruction_qubit_count(sample_circuit):
     """
     circuit = sample_circuit.model_copy()
     circuit.instructions[0].qubits += ('Qubit C',)
-    with pytest.raises(ValueError, match=r'The "cz" instruction acts on 2 qubit\(s\), but 3 were given'):
+    with pytest.raises(ValueError, match=r'The "cz" operation acts on 2 qubit\(s\), but 3 were given'):
         validate_circuit(circuit)
 
 
@@ -677,8 +677,8 @@ def test_validate_circuit_extra_arguments(sample_circuit):
     catches when submitted argument names of the instruction are not supported
     """
     circuit = sample_circuit.model_copy()
-    circuit.instructions[1].args['arg_x'] = 'This argument name is not supported by the instruction'
-    with pytest.raises(ValueError, match='The instruction "prx" allows'):
+    circuit.instructions[1].args['arg_x'] = 'This argument name is not supported by the operation'
+    with pytest.raises(ValueError, match='The operation "prx" allows'):
         validate_circuit(circuit)
 
 
@@ -687,7 +687,7 @@ def test_validate_circuit_missing_arguments():
     Tests that custom Pydantic validator (triggered via <validate_circuit>)
     catches when submitted argument names of the instruction are not supported
     """
-    with pytest.raises(ValueError, match='The instruction "prx" requires'):
+    with pytest.raises(ValueError, match='The operation "prx" requires'):
         Circuit(
             name='The circuit',
             instructions=[

@@ -25,8 +25,8 @@ from pydantic_core.core_schema import ValidationInfo
 
 
 @dataclass(frozen=True)
-class SupportedOperation:
-    """Describes a supported native operation on the quantum computer."""
+class NativeOperation:
+    """Describes a native operation on the quantum computer."""
 
     # pylint: disable=too-many-instance-attributes
 
@@ -53,13 +53,13 @@ class SupportedOperation:
     Typically a metaoperation like barrier."""
 
 
-SUPPORTED_OPERATIONS: dict[str, SupportedOperation] = {
+_SUPPORTED_OPERATIONS: dict[str, NativeOperation] = {
     op.name: op
     for op in [
-        SupportedOperation('barrier', 0, symmetric=True, allow_all_loci=True),
-        SupportedOperation('measure', 0, {'key': (str,)}, {'feedback_label': (str,)}, factorizable=True),
-        SupportedOperation('measurement', 0, {'key': (str,)}, factorizable=True, renamed_to='measure'),
-        SupportedOperation(
+        NativeOperation('barrier', 0, symmetric=True, allow_all_loci=True),
+        NativeOperation('measure', 0, {'key': (str,)}, {'feedback_key': (str,)}, factorizable=True),
+        NativeOperation('measurement', 0, {'key': (str,)}, factorizable=True, renamed_to='measure'),
+        NativeOperation(
             'prx',
             1,
             {
@@ -67,7 +67,7 @@ SUPPORTED_OPERATIONS: dict[str, SupportedOperation] = {
                 'phase_t': (float, int),
             },
         ),
-        SupportedOperation(
+        NativeOperation(
             'phased_rx',
             1,
             {
@@ -76,7 +76,7 @@ SUPPORTED_OPERATIONS: dict[str, SupportedOperation] = {
             },
             renamed_to='prx',
         ),
-        SupportedOperation(
+        NativeOperation(
             'cc_prx',
             1,
             {
@@ -85,8 +85,8 @@ SUPPORTED_OPERATIONS: dict[str, SupportedOperation] = {
                 'feedback_label': (str,),
             },
         ),
-        SupportedOperation('cz', 2, symmetric=True),
-        SupportedOperation('move', 2),
+        NativeOperation('cz', 2, symmetric=True),
+        NativeOperation('move', 2),
     ]
 }
 
@@ -105,28 +105,28 @@ class Instruction(BaseModel):
 
     We currently support the following native operations:
 
-    ================ =========== ====================================== ===========
-    name             # of qubits args                                   description
-    ================ =========== ====================================== ===========
-    measure          >= 1        ``key: str``, ``feedback_label: str``  Measurement in the Z basis.
-    prx              1           ``angle_t: float``, ``phase_t: float`` Phased x-rotation gate.
+    ================ =========== ======================================= ===========
+    name             # of qubits args                                    description
+    ================ =========== ======================================= ===========
+    measure          >= 1        ``key: str``, ``feedback_key: str``     Measurement in the Z basis.
+    prx              1           ``angle_t: float``, ``phase_t: float``  Phased x-rotation gate.
     cc_prx           1           ``angle_t: float``, ``phase_t: float``,
-                                 ``feedback_label: str``                Classically controlled prx gate.
-    cz               2                                                  Controlled-Z gate.
-    barrier          >= 1                                               Execution barrier.
-    move             2                                                  Moves a qubit state between resonator and qubit,
-                                                                        as long as the other component is in the |0>
-                                                                        state.
-    ================ =========== ====================================== ===========
+                                 ``feedback_label: str``                 Classically controlled prx gate.
+    cz               2                                                   Controlled-Z gate.
+    barrier          >= 1                                                Execution barrier.
+    move             2                                                   Moves a qubit state between resonator and
+                                                                         qubit, as long as the other component is
+                                                                         in the |0> state.
+    ================ =========== ======================================= ===========
 
     For each Instruction you may also optionally specify :attr:`~Instruction.implementation`,
-    which contains the name of an implementation of the instruction to use.
+    which contains the name of an implementation of the operation to use.
     Support for multiple implementations is currently experimental and in normal use the
-    field should be omitted, this selects the default implementation for the instruction.
+    field should be omitted, this selects the default implementation for the operation.
 
     .. note::
 
-        The following instruction names are deprecated, but supported for backwards compatibility for now:
+        The following operation names are deprecated, but supported for backwards compatibility for now:
 
     * ``phased_rx`` ↦ ``prx``
     * ``measurement`` ↦ ``measure``
@@ -136,9 +136,9 @@ class Instruction(BaseModel):
 
     Measurement in the computational (Z) basis. The measurement results are the output of the circuit.
     Takes two string arguments: ``key``, denoting the measurement key the returned results are labeled with,
-    and ``feedback_label``, which is only needed if the measurement result is used for classical control
+    and ``feedback_key``, which is only needed if the measurement result is used for classical control
     within the circuit.
-    All the measurement keys and feedback labels in a circuit must be unique.
+    All the measurement keys and feedback keys in a circuit must be unique.
     Each qubit may be measured multiple times, i.e. mid-circuit measurements are allowed.
 
     .. code-block:: python
@@ -170,9 +170,11 @@ class Instruction(BaseModel):
     ------
 
     Classically controlled PRX gate. Takes three arguments. ``angle_t`` and ``phase_t`` are exactly as in PRX.
-    `feedback_label`` is a string that identifies the measurement and the qubit within it whose measurement
-    result controls the gate. It is of the form ``f"{physical_qubit_name}__{measure_feedback_label}"``.
-    If the measurement result is 1, the PRX gate is applied. If it is 0, an identity gate is applied instead.
+    ``feedback_label == f"{physical_qubit_name}__{feedback_key}`` is a string that identifies the measurement
+    and the qubit within it whose measurement result controls the gate.
+    If the measurement result is 1, the PRX gate is applied. If it is 0, an identity gate of similar time
+    duration gate is applied instead.
+    The measurement instruction must precede the classically controlled gate instruction in the quantum circuit.
 
     CZ
     --
@@ -245,23 +247,23 @@ class Instruction(BaseModel):
     def __init__(self, **data):
         super().__init__(**data)
         # Auto-convert name if a deprecated name is used
-        self.name = get_current_instruction_name(self.name)
+        self.name = op_current_name(self.name)
 
     @field_validator('name')
     @classmethod
     def name_validator(cls, value):
-        """Check if the name of instruction is set to one of the supported quantum operations"""
+        """Check if the name of instruction is set to one of the supported quantum operations."""
         name = value
-        if name not in SUPPORTED_OPERATIONS:
+        if name not in _SUPPORTED_OPERATIONS:
             raise ValueError(
-                f'Unknown instruction "{name}". ' f'Supported instructions are \"{", ".join(SUPPORTED_OPERATIONS)}\"'
+                f'Unknown operation "{name}". ' f'Supported operations are \"{", ".join(_SUPPORTED_OPERATIONS)}\"'
             )
         return name
 
     @field_validator('implementation')
     @classmethod
     def implementation_validator(cls, value):
-        """Check if the implementation of the instruction is set to a non-empty string"""
+        """Check if the implementation of the instruction is set to a non-empty string."""
         implementation = value
         if isinstance(implementation, str):
             if not implementation:
@@ -271,16 +273,14 @@ class Instruction(BaseModel):
     @field_validator('qubits')
     @classmethod
     def qubits_validator(cls, value, info: ValidationInfo):
-        """Check if the instruction has the correct number of qubits according to the instruction's type"""
+        """Check if the instruction has the correct number of qubits for its operation."""
         qubits = value
         name = info.data.get('name')
         if not name:
             raise ValueError('Could not validate qubits because the name of the instruction did not pass validation')
-        arity = SUPPORTED_OPERATIONS[name].arity
+        arity = _SUPPORTED_OPERATIONS[name].arity
         if (0 < arity) and (arity != len(qubits)):
-            raise ValueError(
-                f'The "{name}" instruction acts on {arity} qubit(s), but {len(qubits)} were given: {qubits}'
-            )
+            raise ValueError(f'The "{name}" operation acts on {arity} qubit(s), but {len(qubits)} were given: {qubits}')
         return qubits
 
     @field_validator('args')
@@ -294,18 +294,18 @@ class Instruction(BaseModel):
 
         # Check argument names
         submitted_arg_names = set(args)
-        required_arg_names = set(SUPPORTED_OPERATIONS[name].args_required)
-        allowed_arg_types = SUPPORTED_OPERATIONS[name].args_required | SUPPORTED_OPERATIONS[name].args_not_required
+        required_arg_names = set(_SUPPORTED_OPERATIONS[name].args_required)
+        allowed_arg_types = _SUPPORTED_OPERATIONS[name].args_required | _SUPPORTED_OPERATIONS[name].args_not_required
         allowed_arg_names = set(allowed_arg_types)
         if not required_arg_names <= submitted_arg_names:
             raise ValueError(
-                f'The instruction "{name}" requires '
+                f'The operation "{name}" requires '
                 f'{tuple(required_arg_names)} argument(s), '
                 f'but {tuple(submitted_arg_names)} were given'
             )
         if not submitted_arg_names <= allowed_arg_names:
             raise ValueError(
-                f'The instruction "{name}" allows '
+                f'The operation "{name}" allows '
                 f'{tuple(allowed_arg_names) if allowed_arg_names else "no"} argument(s), '
                 f'but {tuple(submitted_arg_names)} were given'
             )
@@ -333,7 +333,7 @@ def op_is_symmetric(name: str) -> bool:
     Raises:
         KeyError: ``name`` is unknown
     """
-    return SUPPORTED_OPERATIONS[name].symmetric
+    return _SUPPORTED_OPERATIONS[name].symmetric
 
 
 def op_arity(name: str) -> int:
@@ -348,22 +348,22 @@ def op_arity(name: str) -> int:
     Raises:
         KeyError: ``name`` is unknown
     """
-    return SUPPORTED_OPERATIONS[name].arity
+    return _SUPPORTED_OPERATIONS[name].arity
 
 
-def get_current_instruction_name(name: str) -> str:
-    """Checks if the instruction name has been deprecated and returns the new name if it is;
+def op_current_name(name: str) -> str:
+    """Checks if the operation name has been deprecated and returns the new name if it is;
     otherwise, just returns the name as-is.
 
     Args:
-        name: name of the instruction
+        name: name of the operation
 
     Returns:
-        current name of the instruction
+        current name of the operation
     Raises:
         KeyError: ``name`` is unknown
     """
-    return SUPPORTED_OPERATIONS[name].renamed_to or name
+    return _SUPPORTED_OPERATIONS[name].renamed_to or name
 
 
 class Circuit(BaseModel):
@@ -484,14 +484,14 @@ class QuantumArchitectureSpecification(BaseModel):
             qubit_connectivity = data.get('qubit_connectivity')
             # add all possible loci for the ops
             data['operations'] = {
-                get_current_instruction_name(op): (
-                    qubit_connectivity if op_arity(get_current_instruction_name(op)) == 2 else [[qb] for qb in qubits]
+                op_current_name(op): (
+                    qubit_connectivity if op_arity(op_current_name(op)) == 2 else [[qb] for qb in qubits]
                 )
                 for op in operations
             }
 
         super().__init__(**data)
-        self.operations = {get_current_instruction_name(k): v for k, v in self.operations.items()}
+        self.operations = {op_current_name(k): v for k, v in self.operations.items()}
 
     def has_equivalent_operations(self, other: QuantumArchitectureSpecification) -> bool:
         """Compares the given operation sets defined by the quantum architecture against
@@ -513,7 +513,7 @@ class QuantumArchitectureSpecification(BaseModel):
             return False
         for op, loci1 in ops1.items():
             loci2 = ops2[op]
-            if SUPPORTED_OPERATIONS[op].symmetric:
+            if _SUPPORTED_OPERATIONS[op].symmetric:
                 # for comparing symmetric instruction loci, sorting order does not matter as long as it's consistent
                 l1 = [tuple(sorted(locus)) for locus in loci1]
                 l2 = [tuple(sorted(locus)) for locus in loci2]

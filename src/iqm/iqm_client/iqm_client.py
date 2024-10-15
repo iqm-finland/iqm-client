@@ -19,6 +19,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from importlib.metadata import version
+import itertools
 import json
 import os
 import platform
@@ -41,7 +42,7 @@ from iqm.iqm_client.errors import (
     JobAbortionError,
 )
 from iqm.iqm_client.models import (
-    SUPPORTED_OPERATIONS,
+    _SUPPORTED_OPERATIONS,
     Circuit,
     CircuitBatch,
     CircuitCompilationOptions,
@@ -372,11 +373,9 @@ class IQMClient:
         if instruction.name not in architecture.operations:
             raise ValueError(f"Instruction '{instruction.name}' is not supported by the quantum architecture.")
         allowed_loci = architecture.operations[instruction.name]
-        op_info = SUPPORTED_OPERATIONS[instruction.name]
+        op_info = _SUPPORTED_OPERATIONS[instruction.name]
         if op_info.allow_all_loci:
             return
-
-        qubits = [qubit_mapping[q] for q in instruction.qubits] if qubit_mapping else list(instruction.qubits)
         if op_info.factorizable:
             # Check that all qubits in the locus are allowed by the architecture
             allowed_qubits = set(q for locus in allowed_loci for q in locus)
@@ -391,7 +390,12 @@ class IQMClient:
             return
 
         # Check that locus matches one of the loci defined in architecture
-        all_loci = [x for locus in allowed_loci for x in [locus, locus[::-1]]] if op_info.symmetric else allowed_loci
+        qubits = [qubit_mapping[q] for q in instruction.qubits] if qubit_mapping else list(instruction.qubits)
+        all_loci = (
+            [list(x) for locus in allowed_loci for x in itertools.permutations(locus)]
+            if op_info.symmetric
+            else allowed_loci
+        )
         if qubits not in all_loci:
             raise CircuitExecutionError(
                 f'{instruction.qubits} = {tuple(qubits)} not allowed as locus for {instruction.name}'
@@ -625,7 +629,7 @@ class IQMClient:
         except (json.decoder.JSONDecodeError, KeyError) as e:
             raise ArchitectureRetrievalError(f'Invalid response: {result.text}, {e}') from e
 
-        # HACK add cc_prx
+        # HACK add cc_prx, remove when DQA works
         prx_loci = qa.operations.get('prx')
         if prx_loci is not None:
             qa.operations['cc_prx'] = prx_loci
