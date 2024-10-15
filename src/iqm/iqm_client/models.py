@@ -94,6 +94,10 @@ SUPPORTED_INSTRUCTIONS: dict[str, dict[str, Any]] = {
 }
 
 
+Locus = tuple[StrictStr, ...]
+"""Names of the QPU components (typically qubits) a quantum operation instance is acting on, e.g. `("QB1", "QB2")`."""
+
+
 class Instruction(BaseModel):
     r"""
 
@@ -226,7 +230,7 @@ class Instruction(BaseModel):
     """name of the quantum operation"""
     implementation: Optional[StrictStr] = Field(None)
     """name of the implementation, for experimental use only"""
-    qubits: tuple[StrictStr, ...] = Field(..., examples=[('alice',)])
+    qubits: Locus = Field(..., examples=[('alice',)])
     """names of the logical qubits the operation acts on"""
     args: dict[str, Any] = Field(..., examples=[{'key': 'm'}])
     """arguments for the operation"""
@@ -517,6 +521,43 @@ class QuantumArchitecture(BaseModel):
 
     quantum_architecture: QuantumArchitectureSpecification = Field(...)
     """Details about the quantum architecture."""
+
+
+class GateImplementationInfo(BaseModel):
+    """Information about an implementation of a quantum gate/operation."""
+
+    loci: tuple[Locus, ...] = Field(...)
+    """loci for which this gate implementation has been calibrated"""
+
+
+class GateInfo(BaseModel):
+    """Information about a quantum gate/operation."""
+
+    implementations: dict[str, GateImplementationInfo] = Field(...)
+    """mapping of available implementation names to information about the implementations"""
+    default_implementation: str = Field(...)
+    """default implementation for the gate, used unless overridden by :attr:`override_default_implementation`
+    or unless the user requests a specific implementation for a particular gate in the circuit using 
+    :attr:`.Instruction.implementation`"""
+    override_default_implementation: dict[Locus, str] = Field(...)
+    """mapping of loci to implementation names that override ``default_implementation`` for those loci"""
+
+
+class DynamicQuantumArchitecture(BaseModel):
+    """Dynamic quantum architecture as returned by server.
+
+    The dynamic quantum architecture (DQA) describes gates/operations for which calibration data
+    exists in the calibration set.
+    """
+
+    calibration_set_id: UUID = Field(...)
+    """id of the calibration set from which this DQA was generated"""
+    qubits: list[str] = Field(...)
+    """qubits that appear in at least one gate locus in the calibration set"""
+    computational_resonators: list[str] = Field(...)
+    """computational resonators that appear in at least one gate locus in the calibration set"""
+    gates: dict[str, GateInfo] = Field(...)
+    """mapping of gate names to information about the gates"""
 
 
 class HeraldingMode(str, Enum):

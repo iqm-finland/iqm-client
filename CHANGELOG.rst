@@ -2,7 +2,7 @@
 Changelog
 =========
 
-Version 18.1
+Version 18.5
 ============
 
 * Added ``isort`` formatting to the tox configuration, so it is automatically run when running
@@ -15,6 +15,26 @@ Version 18.1
 * Docs updated: mid-circuit measurements are allowed on stations with ``cocos >= 30.2``. `#130 <https://github.com/iqm-finland/iqm-client/pull/130>`_
 * Integration guide updated. `#130 <https://github.com/iqm-finland/iqm-client/pull/130>`_
 * Circuit validation: All measurement keys must be unique. `#130 <https://github.com/iqm-finland/iqm-client/pull/130>`_
+
+Version 18.4
+============
+
+* Do not verify external auth token expiration. This fixes IQM Resonance authentication. `#134 <https://github.com/iqm-finland/iqm-client/pull/134>`_
+
+Version 18.3
+============
+
+* Remove unnecessary build files when publishing documentation. `#133 <https://github.com/iqm-finland/iqm-client/pull/133>`_
+
+Version 18.2
+============
+
+* Add mitigation for failed authentication sessions. `#132 <https://github.com/iqm-finland/iqm-client/pull/132>`_
+
+Version 18.1
+============
+
+* Add :meth:`IQMClient.get_dynamic_quantum_architecture`. `#131 <https://github.com/iqm-finland/iqm-client/pull/131>`_
 
 Version 18.0
 ============

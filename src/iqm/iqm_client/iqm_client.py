@@ -33,6 +33,7 @@ import requests
 from iqm.iqm_client.authentication import TokenManager
 from iqm.iqm_client.errors import (
     APITimeoutError,
+    ArchitectureRetrievalError,
     CircuitExecutionError,
     CircuitValidationError,
     ClientAuthenticationError,
@@ -44,6 +45,7 @@ from iqm.iqm_client.models import (
     Circuit,
     CircuitBatch,
     CircuitCompilationOptions,
+    DynamicQuantumArchitecture,
     Instruction,
     MoveGateValidationMode,
     QuantumArchitecture,
@@ -113,6 +115,7 @@ class IQMClient:
         if client_signature:
             self._signature += f', {client_signature}'
         self._architecture: QuantumArchitectureSpecification | None = None
+        self._dynamic_architectures: dict[UUID, DynamicQuantumArchitecture] = {}
 
     def __del__(self):
         try:
@@ -638,8 +641,8 @@ class IQMClient:
             quantum architecture
 
         Raises:
-            APITimeoutError: time exceeded the set timeout
-            ClientConfigurationError: if no valid authentication is provided
+            ArchitectureRetrievalError: IQM server specific exceptions
+            ClientAuthenticationError: if no valid authentication is provided
             HTTPException: HTTP exceptions
         """
         if self._architecture:
@@ -651,23 +654,62 @@ class IQMClient:
             timeout=timeout_secs,
         )
 
-        # /quantum_architecture is not a strictly authenticated endpoint,
-        # so we need to handle 302 redirects to the auth server login page
-        if result.history and any(
-            response.status_code == 302 for response in result.history
-        ):  # pragma: no cover (generators are broken in coverage)
-            raise ClientConfigurationError('Authentication is required.')
-        if result.status_code == 401:
-            raise ClientAuthenticationError(f'Authentication failed: {result.text}')
-
+        self._check_authentication_errors(result)
         result.raise_for_status()
         try:
             qa = QuantumArchitecture(**result.json()).quantum_architecture
         except (json.decoder.JSONDecodeError, KeyError) as e:
-            raise CircuitExecutionError(f'Invalid response: {result.text}, {e}') from e
+            raise ArchitectureRetrievalError(f'Invalid response: {result.text}, {e}') from e
         # Cache architecture so that later invocations do not need to query it again
         self._architecture = qa
         return qa
+
+    def get_dynamic_quantum_architecture(
+        self, calibration_set_id: Optional[UUID] = None, *, timeout_secs: float = REQUESTS_TIMEOUT
+    ) -> DynamicQuantumArchitecture:
+        """Retrieve dynamic quantum architecture (DQA) for the given calibration set from server.
+
+        Caches the result and returns the same result on later invocations, unless ``calibration_set_id`` is ``None``.
+        If ``calibration_set_id`` is ``None``, always retrieves the result from the server because the "default"
+        calibration set may have changed.
+
+        Args:
+            calibration_set_id: ID of the calibration set for which the DQA is returned.
+                If ``None``, use current default calibration set on the server.
+            timeout_secs: network request timeout
+
+        Returns:
+            dynamic quantum architecture corresponding to the given calibration set
+
+        Raises:
+            ArchitectureRetrievalError: IQM server specific exceptions
+            ClientAuthenticationError: if no valid authentication is provided
+            HTTPException: HTTP exceptions
+        """
+        if calibration_set_id is None:
+            calibration_set_id_str = 'default'
+        elif calibration_set_id in self._dynamic_architectures:
+            return self._dynamic_architectures[calibration_set_id]
+        else:
+            calibration_set_id_str = str(calibration_set_id)
+
+        result = requests.get(
+            join(self._base_url, f'api/v1/calibration/{calibration_set_id_str}/gates'),
+            headers=self._default_headers(),
+            timeout=timeout_secs,
+        )
+
+        self._check_authentication_errors(result)
+        result.raise_for_status()
+        try:
+            dqa = DynamicQuantumArchitecture(**result.json())
+        except (json.decoder.JSONDecodeError, KeyError) as e:
+            raise ArchitectureRetrievalError(f'Invalid response: {result.text}, {e}') from e
+
+        # Cache architecture so that later invocations do not need to query it again
+        self._dynamic_architectures[dqa.calibration_set_id] = dqa
+
+        return dqa
 
     def close_auth_session(self) -> bool:
         """Terminate session with authentication server if there was one created.
@@ -690,3 +732,14 @@ class IQMClient:
             if bearer_token:
                 headers['Authorization'] = bearer_token
         return headers
+
+    @staticmethod
+    def _check_authentication_errors(result: requests.Response):
+        # for not strictly authenticated endpoints,
+        # we need to handle 302 redirects to the auth server login page
+        if result.history and any(
+            response.status_code == 302 for response in result.history
+        ):  # pragma: no cover (generators are broken in coverage)
+            raise ClientAuthenticationError('Authentication is required.')
+        if result.status_code == 401:
+            raise ClientAuthenticationError(f'Authentication failed: {result.text}')

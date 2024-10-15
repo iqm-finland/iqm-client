@@ -42,3 +42,7 @@ class APITimeoutError(CircuitExecutionError):
 
 class JobAbortionError(RuntimeError):
     """Job abortion failed."""
+
+
+class ArchitectureRetrievalError(RuntimeError):
+    """Retrieving quantum architecture failed."""

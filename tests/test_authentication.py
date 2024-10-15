@@ -210,7 +210,19 @@ def test_token_client_provides_token(auth_server_url, auth_realm, auth_username,
     unstub()
 
 
-def test_token_client_login_fails(auth_server_url, auth_realm, auth_username, auth_password):
+def test_token_client_login_fails_with_no_auth_server():
+    """Tests that TokenClient raises ClientAuthenticationError if auth server has not been set"""
+
+    provider = TokenClient('', '', '', '')
+    provider._token_url = ''
+    with pytest.raises(ClientConfigurationError, match='No auth server configured'):
+        provider.get_token()
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_token_client_login_fails_with_wrong_password(auth_server_url, auth_realm, auth_username, auth_password):
     """Tests that TokenClient raises ClientAuthenticationError if server login fails"""
 
     token_url = f'{auth_server_url}/realms/{auth_realm}/protocol/openid-connect/token'
@@ -230,6 +242,48 @@ def test_token_client_login_fails(auth_server_url, auth_realm, auth_username, au
     provider = TokenClient(auth_server_url, auth_realm, auth_username, auth_password)
     with pytest.raises(ClientAuthenticationError, match='Getting access token from auth server failed'):
         provider.get_token()
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_token_client_recovers_from_revoked_session(auth_server_url, auth_realm, auth_username, auth_password):
+    """Tests that TokenClient starts a new session when getting new tokens using the refresh token fails."""
+
+    refresh_token = make_token('Refresh', 3000)
+    token_url = f'{auth_server_url}/realms/{auth_realm}/protocol/openid-connect/token'
+    refresh_data = {
+        'client_id': AUTH_CLIENT_ID,
+        'grant_type': 'refresh_token',
+        'refresh_token': refresh_token,
+    }
+    refresh_response_body = {'detail': 'session has been revoked'}
+
+    # Prepare refresh request
+    expect(requests, times=1).post(token_url, data=refresh_data, timeout=AUTH_REQUESTS_TIMEOUT).thenReturn(
+        MockJsonResponse(401, refresh_response_body)
+    )
+
+    login_data = {
+        'client_id': AUTH_CLIENT_ID,
+        'grant_type': 'password',
+        'username': auth_username,
+        'password': auth_password,
+    }
+    login_response_body = {
+        'access_token': make_token('Bearer', 300),
+        'refresh_token': make_token('Refresh', 3000),
+    }
+
+    # Prepare login request
+    expect(requests, times=1).post(token_url, data=login_data, timeout=AUTH_REQUESTS_TIMEOUT).thenReturn(
+        MockJsonResponse(200, login_response_body)
+    )
+
+    provider = TokenClient(auth_server_url, auth_realm, auth_username, auth_password)
+    provider._refresh_token = refresh_token
+
+    assert provider.get_token() == login_response_body['access_token']
 
     verifyNoUnwantedInteractions()
     unstub()
@@ -289,7 +343,7 @@ def test_token_manager_initialization_with_keyword_args(
     token_manager = TokenManager()
     assert token_manager._token_provider is None
 
-    token = 'some-token'
+    token = make_token('Bearer', 300)
     token_manager = TokenManager(token=token)
     assert isinstance(token_manager._token_provider, ExternalToken)
     assert token_manager._token_provider._token == token
@@ -323,7 +377,7 @@ def test_token_manager_initialization_with_environment_vars(monkeypatch, auth_se
     token_manager = TokenManager()
     assert token_manager._token_provider is None
 
-    token = 'some-token'
+    token = make_token('Bearer', 300)
     _patch_env(monkeypatch.setenv, **{'IQM_TOKEN': token})
     token_manager = TokenManager()
     assert isinstance(token_manager._token_provider, ExternalToken)
@@ -407,7 +461,7 @@ def test_token_manager_provides_bearer_token(monkeypatch):
     """Test that TokenManager provides bearer token"""
 
     _patch_env(monkeypatch.setenv)
-    expected_token = 'some-token'
+    expected_token = make_token('Bearer', 300)
     mock_provider = mock(TokenProviderInterface)
     when(mock_provider).get_token().thenReturn(expected_token)
 
@@ -457,7 +511,7 @@ def test_submit_circuits_gets_token(
     """Test that submit_circuits gets bearer token from TokenManager"""
     _patch_env(monkeypatch.setenv)
 
-    token = 'some-token'
+    token = token = make_token('Bearer', 300)
     client = IQMClient(base_url, token=token)
 
     when(requests).get(
@@ -483,7 +537,7 @@ def test_get_run_gets_token(monkeypatch, base_url, jobs_url, ready_job_result):
     """Test that get_run gets bearer token from TokenManager"""
     _patch_env(monkeypatch.setenv)
 
-    token = 'some-token'
+    token = make_token('Bearer', 300)
     client = IQMClient(base_url, token=token)
     job_id = uuid4()
 
@@ -503,7 +557,7 @@ def test_get_run_status_gets_token(monkeypatch, base_url, jobs_url, pending_comp
     """Test that get_run gets bearer token from TokenManager"""
     _patch_env(monkeypatch.setenv)
 
-    token = 'some-token'
+    token = make_token('Bearer', 300)
     client = IQMClient(base_url, token=token)
     job_id = uuid4()
 
@@ -523,7 +577,7 @@ def test_abort_job_gets_token(monkeypatch, base_url, jobs_url):
     """Test that abort_job gets bearer token from TokenManager"""
     _patch_env(monkeypatch.setenv)
 
-    token = 'some-token'
+    token = make_token('Bearer', 300)
     client = IQMClient(base_url, token=token)
     job_id = uuid4()
 
@@ -543,7 +597,7 @@ def test_close_auth_session(monkeypatch, base_url):
     """Test that closing auth session closes TokenManager"""
     _patch_env(monkeypatch.setenv)
 
-    token = 'some-token'
+    token = make_token('Bearer', 300)
     client = IQMClient(base_url, token=token)
     client._token_manager = mock(TokenManager)
     expect(client._token_manager, times=1).close().thenReturn(True)
@@ -558,7 +612,7 @@ def test_close_auth_session_when_client_destroyed(monkeypatch, base_url):
     """Test that deleting client closes TokenManager"""
     _patch_env(monkeypatch.setenv)
 
-    token = 'some-token'
+    token = make_token('Bearer', 300)
     client = IQMClient(base_url, token=token)
     client._token_manager = mock(TokenManager)
     expect(client._token_manager, times=1).close().thenReturn(True)
