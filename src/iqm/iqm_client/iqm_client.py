@@ -455,9 +455,6 @@ class IQMClient:
         # Qubits whose states are currently moved to a resonator
         moved_qubits: set[str] = set()
 
-        if qubit_mapping:
-            reverse_mapping = {phys: log for log, phys in qubit_mapping.items()}
-
         for inst in circuit.instructions:
             if inst.name == 'move':
                 qubit, resonator = inst.qubits
