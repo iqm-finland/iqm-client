@@ -247,7 +247,7 @@ class Instruction(BaseModel):
     def __init__(self, **data):
         super().__init__(**data)
         # Auto-convert name if a deprecated name is used
-        self.name = op_current_name(self.name)
+        self.name = _op_current_name(self.name)
 
     @field_validator('name')
     @classmethod
@@ -322,7 +322,7 @@ class Instruction(BaseModel):
         return value
 
 
-def op_is_symmetric(name: str) -> bool:
+def _op_is_symmetric(name: str) -> bool:
     """Returns True iff the given native operation is symmetric, i.e. the order of the
     locus components does not matter.
 
@@ -336,7 +336,7 @@ def op_is_symmetric(name: str) -> bool:
     return _SUPPORTED_OPERATIONS[name].symmetric
 
 
-def op_arity(name: str) -> int:
+def _op_arity(name: str) -> int:
     """Returns the arity of the given native operation, i.e. the number of locus components it acts on.
 
     Zero means any number of locus components is OK.
@@ -351,7 +351,7 @@ def op_arity(name: str) -> int:
     return _SUPPORTED_OPERATIONS[name].arity
 
 
-def op_current_name(name: str) -> str:
+def _op_current_name(name: str) -> str:
     """Checks if the operation name has been deprecated and returns the new name if it is;
     otherwise, just returns the name as-is.
 
@@ -484,14 +484,14 @@ class QuantumArchitectureSpecification(BaseModel):
             qubit_connectivity = data.get('qubit_connectivity')
             # add all possible loci for the ops
             data['operations'] = {
-                op_current_name(op): (
-                    qubit_connectivity if op_arity(op_current_name(op)) == 2 else [[qb] for qb in qubits]
+                _op_current_name(op): (
+                    qubit_connectivity if _op_arity(_op_current_name(op)) == 2 else [[qb] for qb in qubits]
                 )
                 for op in operations
             }
 
         super().__init__(**data)
-        self.operations = {op_current_name(k): v for k, v in self.operations.items()}
+        self.operations = {_op_current_name(k): v for k, v in self.operations.items()}
 
     def has_equivalent_operations(self, other: QuantumArchitectureSpecification) -> bool:
         """Compares the given operation sets defined by the quantum architecture against
@@ -513,7 +513,7 @@ class QuantumArchitectureSpecification(BaseModel):
             return False
         for op, loci1 in ops1.items():
             loci2 = ops2[op]
-            if _SUPPORTED_OPERATIONS[op].symmetric:
+            if _op_is_symmetric(op):
                 # for comparing symmetric instruction loci, sorting order does not matter as long as it's consistent
                 l1 = [tuple(sorted(locus)) for locus in loci1]
                 l2 = [tuple(sorted(locus)) for locus in loci2]
