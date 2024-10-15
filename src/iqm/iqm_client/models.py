@@ -58,7 +58,6 @@ _SUPPORTED_OPERATIONS: dict[str, NativeOperation] = {
     for op in [
         NativeOperation('barrier', 0, symmetric=True, allow_all_loci=True),
         NativeOperation('measure', 0, {'key': (str,)}, {'feedback_key': (str,)}, factorizable=True),
-        NativeOperation('measurement', 0, {'key': (str,)}, factorizable=True, renamed_to='measure'),
         NativeOperation(
             'prx',
             1,
@@ -66,15 +65,6 @@ _SUPPORTED_OPERATIONS: dict[str, NativeOperation] = {
                 'angle_t': (float, int),
                 'phase_t': (float, int),
             },
-        ),
-        NativeOperation(
-            'phased_rx',
-            1,
-            {
-                'angle_t': (float, int),
-                'phase_t': (float, int),
-            },
-            renamed_to='prx',
         ),
         NativeOperation(
             'cc_prx',
@@ -170,8 +160,8 @@ class Instruction(BaseModel):
     ------
 
     Classically controlled PRX gate. Takes three arguments. ``angle_t`` and ``phase_t`` are exactly as in PRX.
-    ``feedback_label == f"{physical_qubit_name}__{feedback_key}`` is a string that identifies the measurement
-    and the qubit within it whose measurement result controls the gate.
+    ``feedback_label == f"{physical_qubit_name}__{feedback_key}`` is a string that identifies the
+    ``measure`` operation and the qubit within it whose measurement result controls the gate.
     If the measurement result is 1, the PRX gate is applied. If it is 0, an identity gate of similar time
     duration gate is applied instead.
     The measurement instruction must precede the classically controlled gate instruction in the quantum circuit.
