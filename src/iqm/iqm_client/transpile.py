@@ -43,7 +43,7 @@ class ResonatorStateTracker:
     r"""Class for tracking the location of the :math:`|0\rangle` state of the resonators on the
     quantum computer as they are moved with the MOVE gates because the MOVE gate is not defined
     when acting on a :math:`|11\rangle` state. This is equivalent to tracking
-    the which qubit state has been moved into which resonator.
+    which qubit state has been moved into which resonator.
 
     Args:
         available_moves: A dictionary describing between which qubits a MOVE gate is
