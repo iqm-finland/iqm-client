@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>iqm.iqm_client.models.Instruction &#8212; IQM client 18.4 documentation</title>
+    <title>iqm.iqm_client.models.Instruction &#8212; IQM client 18.5 documentation</title>
   
   
   
@@ -37,7 +37,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=b6e4d5b2"></script>
+    <script src="../_static/documentation_options.js?v=0d1857af"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
@@ -51,7 +51,7 @@
     <link rel="prev" title="iqm.iqm_client.models.HeraldingMode" href="iqm.iqm_client.models.HeraldingMode.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="2024-10-04"/>
+    <meta name="docbuild:last-update" content="2024-10-15"/>
   </head>
   
   
@@ -141,8 +141,8 @@
       
     
     
-    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 18.4 documentation - Home"/>
-    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="IQM client 18.4 documentation - Home"/>`);</script>
+    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 18.5 documentation - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="IQM client 18.5 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -175,6 +175,7 @@
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.APITimeoutError.html">iqm.iqm_client.errors.APITimeoutError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.ArchitectureRetrievalError.html">iqm.iqm_client.errors.ArchitectureRetrievalError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.CircuitExecutionError.html">iqm.iqm_client.errors.CircuitExecutionError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.CircuitTranspilationError.html">iqm.iqm_client.errors.CircuitTranspilationError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.CircuitValidationError.html">iqm.iqm_client.errors.CircuitValidationError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.ClientAuthenticationError.html">iqm.iqm_client.errors.ClientAuthenticationError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.ClientConfigurationError.html">iqm.iqm_client.errors.ClientConfigurationError</a></li>
@@ -414,7 +415,7 @@ document.write(`
 <h1>iqm.iqm_client.models.Instruction<a class="headerlink" href="#iqm-iqm-client-models-instruction" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="iqm.iqm_client.models.Instruction">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">iqm.iqm_client.models.</span></span><span class="sig-name descname"><span class="pre">Instruction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">implementation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm.iqm_client.models.Instruction" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">iqm.iqm_client.models.</span></span><span class="sig-name descname"><span class="pre">Instruction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">implementation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#tuple" title="(in Python v3.9)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/typing.html#typing.Any" title="(in Python v3.9)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm.iqm_client.models.Instruction" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
 <p>The <a class="reference internal" href="#iqm.iqm_client.models.Instruction" title="iqm.iqm_client.models.Instruction"><code class="xref py py-class docutils literal notranslate"><span class="pre">Instruction</span></code></a> class represents a native quantum operation.</p>
 <p>Different Instruction types are distinguished by their <a class="reference internal" href="#iqm.iqm_client.models.Instruction.name" title="iqm.iqm_client.models.Instruction.name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">name</span></code></a>.
@@ -445,15 +446,16 @@ Each Instruction type acts on a number of <a class="reference internal" href="#i
 <td></td>
 <td><p>Controlled-Z gate.</p></td>
 </tr>
-<tr class="row-odd"><td><p>barrier</p></td>
+<tr class="row-odd"><td><p>move</p></td>
+<td><p>2</p></td>
+<td></td>
+<td><p>Moves a qubit state between a qubit and a
+computational resonator.</p></td>
+</tr>
+<tr class="row-even"><td><p>barrier</p></td>
 <td><p>&gt;= 1</p></td>
 <td></td>
 <td><p>Execution barrier.</p></td>
-</tr>
-<tr class="row-even"><td><p>move</p></td>
-<td><p>2</p></td>
-<td></td>
-<td><p>Moves 1 state between resonator and qubit.</p></td>
 </tr>
 </tbody>
 </table>
@@ -465,17 +467,17 @@ field should be omitted, this selects the default implementation for the instruc
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The following instruction names are deprecated, but supported for backwards compatibility for now:</p>
-</div>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">phased_rx</span></code> ↦ <code class="docutils literal notranslate"><span class="pre">prx</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">measurement</span></code> ↦ <code class="docutils literal notranslate"><span class="pre">measure</span></code></p></li>
 </ul>
+</div>
 <section id="measure">
 <h2>Measure<a class="headerlink" href="#measure" title="Link to this heading">#</a></h2>
 <p>Measurement in the computational (Z) basis. The measurement results are the output of the circuit.
 Takes one string argument, <code class="docutils literal notranslate"><span class="pre">key</span></code>, denoting the measurement key the results are labeled with.
-All the measurement keys in a circuit must be unique. Each qubit may only be measured once.
-The measurement must be the last operation on each qubit, i.e. it cannot be followed by gates.</p>
+All the measurement keys in a circuit must be unique. Each qubit may be measured multiple times,
+i.e. mid-circuit measurements are allowed.</p>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text">Example</span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Instruction</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;measure&#39;</span><span class="p">,</span> <span class="n">qubits</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;alice&#39;</span><span class="p">,</span> <span class="s1">&#39;bob&#39;</span><span class="p">,</span> <span class="s1">&#39;charlie&#39;</span><span class="p">),</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="s1">&#39;m1&#39;</span><span class="p">})</span>
@@ -533,6 +535,10 @@ pair of MOVE operations.</p>
 </pre></div>
 </div>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>MOVE is only available in quantum computers with the IQM Star architecture.</p>
+</div>
 </section>
 <section id="barrier">
 <h2>Barrier<a class="headerlink" href="#barrier" title="Link to this heading">#</a></h2>
@@ -548,10 +554,12 @@ It takes no arguments, and has no other effect.</p>
 </pre></div>
 </div>
 </div>
-<p><em>Note</em>
-1-qubit barriers will not have any effect on circuit’s compilation and execution. Higher layers
-that sit on top of IQM Client can make actual use of 1-qubit barriers (e.g. during circuit optimization),
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>One-qubit barriers will not have any effect on circuit’s compilation and execution. Higher layers
+that sit on top of IQM Client can make actual use of one-qubit barriers (e.g. during circuit optimization),
 therefore having them is allowed.</p>
+</div>
 <p class="rubric">Attributes</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
@@ -635,7 +643,7 @@ therefore having them is allowed.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="iqm.iqm_client.models.Instruction.qubits_validator">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">qubits_validator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm.iqm_client.models.Instruction.qubits_validator" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">qubits_validator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ValidationInfo</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm.iqm_client.models.Instruction.qubits_validator" title="Link to this definition">#</a></dt>
 <dd><p>Check if the instruction has the correct number of qubits according to the instruction’s type</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -646,7 +654,7 @@ therefore having them is allowed.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="iqm.iqm_client.models.Instruction.args_validator">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">args_validator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm.iqm_client.models.Instruction.args_validator" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">args_validator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ValidationInfo</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm.iqm_client.models.Instruction.args_validator" title="Link to this definition">#</a></dt>
 <dd><p>Check argument names and types for a given instruction</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -782,7 +790,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2024-10-04.
+  Last updated on 2024-10-15.
   <br/>
 </p>
   </div>

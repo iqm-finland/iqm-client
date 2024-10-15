@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Integration Guide &#8212; IQM client 18.4 documentation</title>
+    <title>Integration Guide &#8212; IQM client 18.5 documentation</title>
   
   
   
@@ -37,7 +37,7 @@
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="_static/documentation_options.js?v=b6e4d5b2"></script>
+    <script src="_static/documentation_options.js?v=0d1857af"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
@@ -49,7 +49,7 @@
     <link rel="prev" title="iqm.iqm_client.util.IQMJSONEncoder" href="api/iqm.iqm_client.util.IQMJSONEncoder.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="2024-10-04"/>
+    <meta name="docbuild:last-update" content="2024-10-15"/>
   </head>
   
   
@@ -139,8 +139,8 @@
       
     
     
-    <img src="_static/logo.png" class="logo__image only-light" alt="IQM client 18.4 documentation - Home"/>
-    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="IQM client 18.4 documentation - Home"/>`);</script>
+    <img src="_static/logo.png" class="logo__image only-light" alt="IQM client 18.5 documentation - Home"/>
+    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="IQM client 18.5 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -173,6 +173,7 @@
 <li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.errors.APITimeoutError.html">iqm.iqm_client.errors.APITimeoutError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.errors.ArchitectureRetrievalError.html">iqm.iqm_client.errors.ArchitectureRetrievalError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.errors.CircuitExecutionError.html">iqm.iqm_client.errors.CircuitExecutionError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.errors.CircuitTranspilationError.html">iqm.iqm_client.errors.CircuitTranspilationError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.errors.CircuitValidationError.html">iqm.iqm_client.errors.CircuitValidationError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.errors.ClientAuthenticationError.html">iqm.iqm_client.errors.ClientAuthenticationError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.errors.ClientConfigurationError.html">iqm.iqm_client.errors.ClientConfigurationError</a></li>
@@ -388,7 +389,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#authentication">Authentication</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#circuit-transpilation">Circuit transpilation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#note-on-qubit-mapping">Note on qubit mapping</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#note-on-circuit-duration">Note on circuit duration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#note-on-circuit-duration-check">Note on circuit duration check</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#note-on-environment-variables">Note on environment variables</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#integration-testing">Integration testing</a></li>
 </ul>
@@ -404,13 +405,18 @@ document.write(`
                   
   <section id="integration-guide">
 <span id="id1"></span><h1>Integration Guide<a class="headerlink" href="#integration-guide" title="Link to this heading">#</a></h1>
-<p>IQM client is designed to be the Python adapter to IQM’s quantum computers for application-level quantum computing frameworks.
-For example integrations maintained by IQM, please refer to the <a class="reference external" href="https://github.com/iqm-finland/qiskit-on-iqm">Qiskit</a> and <a class="reference external" href="https://github.com/iqm-finland/cirq-on-iqm">Cirq</a> packages.</p>
-<p>IQM client offers the functionality to submit circuits to an IQM quantum computer, query a job or a job status, and retrieve the quantum architecture of the quantum computer.</p>
-<p>The following sections illustrate how to integrate IQM quantum computers into your quantum computing framework.</p>
+<p>IQM client is designed to be the Python adapter to IQM’s quantum computers for application-level
+quantum computing frameworks.  For example integrations maintained by IQM, please refer to the
+<a class="reference external" href="https://github.com/iqm-finland/qiskit-on-iqm">Qiskit</a> and
+<a class="reference external" href="https://github.com/iqm-finland/cirq-on-iqm">Cirq</a> packages.</p>
+<p>IQM client offers the functionality to submit quantum circuits to an IQM quantum computer, query a
+job or a job status, and retrieve the quantum architecture of the quantum computer.</p>
+<p>The following sections illustrate how to integrate IQM quantum computers into your quantum computing
+framework.</p>
 <section id="code-example">
 <h2>Code example<a class="headerlink" href="#code-example" title="Link to this heading">#</a></h2>
-<p>Initialising the IQM client is simple, and in case you perform authentication as described below, requires only the URL of the IQM quantum computer.</p>
+<p>Initialising the IQM client is simple, and in case you perform authentication as described below,
+requires only the URL of the IQM quantum computer.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">iqm.iqm_client</span> <span class="kn">import</span> <span class="n">IQMClient</span>
 
 <span class="n">server_url</span> <span class="o">=</span> <span class="s2">&quot;https://IQM_SERVER_URL&quot;</span>
@@ -418,15 +424,16 @@ For example integrations maintained by IQM, please refer to the <a class="refere
 <span class="n">iqm_client</span> <span class="o">=</span> <span class="n">IQMClient</span><span class="p">(</span><span class="n">server_url</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>To submit a circuit, the circuit has to be specified in the IQM transfer format.</p>
+<p>To submit a quantum circuit for execution, it has to be specified using the <a class="reference internal" href="api/iqm.iqm_client.models.Circuit.html#iqm.iqm_client.models.Circuit" title="iqm.iqm_client.models.Circuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Circuit</span></code></a> class.
+The available native instructions are documented in the <a class="reference internal" href="api/iqm.iqm_client.models.Instruction.html#iqm.iqm_client.models.Instruction" title="iqm.iqm_client.models.Instruction"><code class="xref py py-class docutils literal notranslate"><span class="pre">Instruction</span></code></a> class.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">iqm.iqm_client</span> <span class="kn">import</span> <span class="n">Circuit</span><span class="p">,</span> <span class="n">Instruction</span>
 
 <span class="n">instructions</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">Instruction</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;phased_rx&quot;</span><span class="p">,</span> <span class="n">qubits</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;QB1&quot;</span><span class="p">,),</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;phase_t&quot;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span> <span class="s2">&quot;angle_t&quot;</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">}</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;prx&quot;</span><span class="p">,</span> <span class="n">qubits</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;QB1&quot;</span><span class="p">,),</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;phase_t&quot;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span> <span class="s2">&quot;angle_t&quot;</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">}</span>
     <span class="p">),</span>
     <span class="n">Instruction</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;cz&quot;</span><span class="p">,</span> <span class="n">qubits</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;QB1&quot;</span><span class="p">,</span> <span class="s2">&quot;QB2&quot;</span><span class="p">),</span> <span class="n">args</span><span class="o">=</span><span class="p">{}),</span>
-    <span class="n">Instruction</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;measurement&quot;</span><span class="p">,</span> <span class="n">qubits</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;QB2&quot;</span><span class="p">,),</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;Qubit 2&quot;</span><span class="p">}),</span>
+    <span class="n">Instruction</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;measure&quot;</span><span class="p">,</span> <span class="n">qubits</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;QB2&quot;</span><span class="p">,),</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;Qubit 2&quot;</span><span class="p">}),</span>
 <span class="p">)</span>
 
 <span class="n">circuit</span> <span class="o">=</span> <span class="n">Circuit</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;quantum_circuit&quot;</span><span class="p">,</span> <span class="n">instructions</span><span class="o">=</span><span class="n">instructions</span><span class="p">)</span>
@@ -442,11 +449,11 @@ For example integrations maintained by IQM, please refer to the <a class="refere
 </div>
 <p>A dict containing arbitrary metadata can be attached to the circuit before submitting it for
 execution. The attached metadata should consist only of values of JSON serializable datatypes.
-A utility function <code class="docutils literal notranslate"><span class="pre">util.to_json_dict</span></code> can be used to convert supported datatypes,
-e.g. <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, to equivalent JSON serializable types.</p>
-<p>The progress of the job can be followed with <code class="docutils literal notranslate"><span class="pre">iqm_client.get_run_status</span></code>. Once the job is ready,
-the results can be read with <code class="docutils literal notranslate"><span class="pre">iqm_client.get_run</span></code>. Both of these actions are combined in
-<code class="docutils literal notranslate"><span class="pre">iqm_client.wait_for_results</span></code> which waits until the job is ready and then returns the result.</p>
+A utility function <a class="reference internal" href="api/iqm.iqm_client.util.to_json_dict.html#iqm.iqm_client.util.to_json_dict" title="iqm.iqm_client.util.to_json_dict"><code class="xref py py-func docutils literal notranslate"><span class="pre">to_json_dict()</span></code></a> can be used to convert supported datatypes,
+e.g. <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, to equivalent JSON serializable types.</p>
+<p>The progress of the job can be followed with <a class="reference internal" href="api/iqm.iqm_client.iqm_client.IQMClient.html#iqm.iqm_client.iqm_client.IQMClient.get_run_status" title="iqm.iqm_client.iqm_client.IQMClient.get_run_status"><code class="xref py py-meth docutils literal notranslate"><span class="pre">IQMClient.get_run_status()</span></code></a>. Once the job is ready,
+the results can be read with <a class="reference internal" href="api/iqm.iqm_client.iqm_client.IQMClient.html#iqm.iqm_client.iqm_client.IQMClient.get_run" title="iqm.iqm_client.iqm_client.IQMClient.get_run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">IQMClient.get_run()</span></code></a>. Both of these actions are combined in
+<a class="reference internal" href="api/iqm.iqm_client.iqm_client.IQMClient.html#iqm.iqm_client.iqm_client.IQMClient.wait_for_results" title="iqm.iqm_client.iqm_client.IQMClient.wait_for_results"><code class="xref py py-meth docutils literal notranslate"><span class="pre">IQMClient.wait_for_results()</span></code></a> which waits until the job is ready and then returns the result.</p>
 <p>In addition to the actual results, job result contains also metadata of the job execution.
 The metadata includes the original request, ID of the calibration set used in the execution, and
 a collection of timestamps describing the duration of the execution.</p>
@@ -454,7 +461,7 @@ a collection of timestamps describing the duration of the execution.</p>
 <section id="job-phases-and-related-timestamps">
 <h2>Job phases and related timestamps<a class="headerlink" href="#job-phases-and-related-timestamps" title="Link to this heading">#</a></h2>
 <p>The timestamps returned with job results are stored as an optional dict called <code class="docutils literal notranslate"><span class="pre">timestamps</span></code> in the metadata of
-RunResult of the job. Each timestamp is stored in the dict with a key describing the point in job processing where
+<a class="reference internal" href="api/iqm.iqm_client.models.RunResult.html#iqm.iqm_client.models.RunResult" title="iqm.iqm_client.models.RunResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunResult</span></code></a> of the job. Each timestamp is stored in the dict with a key describing the point in job processing where
 the timestamp was stored. For example, the timestamp stored at the start of circuit compilation step is stored with
 key <code class="docutils literal notranslate"><span class="pre">compile_start</span></code>. Other timestamps are stored in the same way, with keys containing the step name,
 <code class="docutils literal notranslate"><span class="pre">compile</span></code>, <code class="docutils literal notranslate"><span class="pre">submit</span></code> or <code class="docutils literal notranslate"><span class="pre">execution</span></code>, and either a <code class="docutils literal notranslate"><span class="pre">_start</span></code> or <code class="docutils literal notranslate"><span class="pre">_end</span></code> suffix. In addition, there are
@@ -480,12 +487,12 @@ to manage the authentication tokens and store them into a file. IQM client can t
 the token from the file and use it for authentication. The file path can be provided to
 IQM client in environment variable <code class="docutils literal notranslate"><span class="pre">IQM_TOKENS_FILE</span></code>.
 Alternatively, the tokens file path can be provided as argument <code class="docutils literal notranslate"><span class="pre">tokens_file</span></code> to
-<code class="docutils literal notranslate"><span class="pre">IQMClient</span></code> constructor.</p>
+<a class="reference internal" href="api/iqm.iqm_client.iqm_client.IQMClient.html#iqm.iqm_client.iqm_client.IQMClient" title="iqm.iqm_client.iqm_client.IQMClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">IQMClient</span></code></a> constructor.</p>
 <p>2. It is also possible to use plaintext token obtained from a server dashboard. These
 tokens may have longer lifespan than access tokens generated by Cortex CLI, and thus
 IQM client won’t attempt to refresh them. The generated token can be provided to IQM
 client in environment variable <code class="docutils literal notranslate"><span class="pre">IQM_TOKEN</span></code>.
-Alternatively, the token can be provided as argument <code class="docutils literal notranslate"><span class="pre">token</span></code> to <code class="docutils literal notranslate"><span class="pre">IQMClient</span></code>
+Alternatively, the token can be provided as argument <code class="docutils literal notranslate"><span class="pre">token</span></code> to <a class="reference internal" href="api/iqm.iqm_client.iqm_client.IQMClient.html#iqm.iqm_client.iqm_client.IQMClient" title="iqm.iqm_client.iqm_client.IQMClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">IQMClient</span></code></a>
 constructor.</p>
 <p>3. The third way is to provide server URL, username and password for obtaining the
 token from an authentication server. IQM client will maintain a login session with
@@ -493,29 +500,41 @@ the authentication server and read and refresh the token as needed. The server U
 username and password can be provided to IQM client in environment variables
 <code class="docutils literal notranslate"><span class="pre">IQM_AUTH_SERVER</span></code>, <code class="docutils literal notranslate"><span class="pre">IQM_AUTH_USERNAME</span></code> and <code class="docutils literal notranslate"><span class="pre">IQM_AUTH_PASSWORD</span></code>.
 Alternatively, the values can be provided as arguments <code class="docutils literal notranslate"><span class="pre">auth_server_url</span></code>,
-<code class="docutils literal notranslate"><span class="pre">username</span></code> and <code class="docutils literal notranslate"><span class="pre">password</span></code> to <code class="docutils literal notranslate"><span class="pre">IQMClient</span></code> constructor.
+<code class="docutils literal notranslate"><span class="pre">username</span></code> and <code class="docutils literal notranslate"><span class="pre">password</span></code> to <a class="reference internal" href="api/iqm.iqm_client.iqm_client.IQMClient.html#iqm.iqm_client.iqm_client.IQMClient" title="iqm.iqm_client.iqm_client.IQMClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">IQMClient</span></code></a> constructor.
 Note, that all the values must be provided as either environment variables or
 as constructor arguments, not mixed.</p>
 </section>
 <section id="circuit-transpilation">
 <h2>Circuit transpilation<a class="headerlink" href="#circuit-transpilation" title="Link to this heading">#</a></h2>
-<p>IQM does not provide an open source circuit transpilation library, so this will have to be supplied by the quantum computing framework or a third party library.
-To obtain the necessary information for circuit transpilation, <code class="xref py py-meth docutils literal notranslate"><span class="pre">IQMClient.get_quantum_architecture()</span></code> returns the names of the qubits, qubit connectivity,
-and native operations. This information should enable circuit transpilation for IQM quantum architectures.</p>
-<p>The notable exception is the transpilation of MOVE gates for IQM quantum computers with computational resonators, for which some specialized transpilation logic is provided.
-The MOVE gate moves the state of a qubit to an empty computational resonator, and vice versa, so that the qubit can interact with other qubits connected to the resonator.
-For this, we provide users with two transpilation functions: <code class="xref py py-func docutils literal notranslate"><span class="pre">transpile_insert_moves()</span></code> and <code class="xref py py-func docutils literal notranslate"><span class="pre">transpile_remove_moves()</span></code>.
-These functions can be used to insert or remove MOVE gates from the circuit, respectively.</p>
-<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">transpile_insert_moves()</span></code> is a transpiler pass for inserting MOVE gates into a circuit for devices with a computational resonator.
-It assumes that the circuit is already transpiled by third party software to an architecture where the computational resonator has been abstracted away.
-To abstract away the computational resonator, the connectivity graph is modified such that all the qubits connected to a common resonator are instead connected directly to each other.
-The function can take a <code class="docutils literal notranslate"><span class="pre">qubit_mapping</span></code> to rename the qubits in the circuit to match the physical qubit names.
-Additionally, the function can take the optional argument <code class="docutils literal notranslate"><span class="pre">existing_moves</span></code> to specify how this transpiler pass should handle the case where some MOVE gates are already present in the circuit. The options are specified by the enum <code class="xref py py-class docutils literal notranslate"><span class="pre">ExistingMoveHandlingOptions</span></code>.
-By default the function warns the user if MOVE gates are already present in the circuit but the <code class="docutils literal notranslate"><span class="pre">existing_moves</span></code> argument is not given, before proceeding to remove the existing MOVE gates and inserting new ones.</p>
-<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">transpile_remove_moves()</span></code> is a helper function for <code class="xref py py-meth docutils literal notranslate"><span class="pre">transpile_insert_moves()</span></code> to remove existing MOVE gates from a quantum circuit.
-It can be also used standalone to remove the MOVE gates from an existing circuit such that it can be used on a device without a computational resonator, or optimized by third party software that does not support the MOVE gate.
-For example, a user might want to run a circuit that was originally transpiled for a device with a computational resonator on a device without a computational resonator.
-This function allows the user to remove the MOVE gates from the circuit before transpiling it to another quantum architecture.</p>
+<p>IQM does not provide an open source circuit transpilation library, so this will have to be supplied
+by the quantum computing framework or a third party library.  To obtain the necessary information
+for circuit transpilation, <a class="reference internal" href="api/iqm.iqm_client.iqm_client.IQMClient.html#iqm.iqm_client.iqm_client.IQMClient.get_quantum_architecture" title="iqm.iqm_client.iqm_client.IQMClient.get_quantum_architecture"><code class="xref py py-meth docutils literal notranslate"><span class="pre">IQMClient.get_quantum_architecture()</span></code></a> returns the names of the
+qubits, qubit connectivity, and native operations. This information should enable circuit
+transpilation for IQM quantum architectures.</p>
+<p>The notable exception is the transpilation of MOVE gates for IQM quantum computers with
+computational resonators, for which some specialized transpilation logic is provided.  The MOVE gate
+moves the state of a qubit to an empty computational resonator, and vice versa, so that the qubit
+can interact with other qubits connected to the resonator.  For this, we provide users with two
+transpilation functions: <a class="reference internal" href="api/iqm.iqm_client.transpile.transpile_insert_moves.html#iqm.iqm_client.transpile.transpile_insert_moves" title="iqm.iqm_client.transpile.transpile_insert_moves"><code class="xref py py-func docutils literal notranslate"><span class="pre">transpile_insert_moves()</span></code></a> and <a class="reference internal" href="api/iqm.iqm_client.transpile.transpile_remove_moves.html#iqm.iqm_client.transpile.transpile_remove_moves" title="iqm.iqm_client.transpile.transpile_remove_moves"><code class="xref py py-func docutils literal notranslate"><span class="pre">transpile_remove_moves()</span></code></a>.  These
+functions can be used to insert or remove MOVE gates from the circuit, respectively.</p>
+<p><a class="reference internal" href="api/iqm.iqm_client.transpile.transpile_insert_moves.html#iqm.iqm_client.transpile.transpile_insert_moves" title="iqm.iqm_client.transpile.transpile_insert_moves"><code class="xref py py-func docutils literal notranslate"><span class="pre">transpile_insert_moves()</span></code></a> is a transpiler pass for inserting MOVE gates into a circuit for
+devices with a computational resonator.  It assumes that the circuit is already transpiled by third
+party software to an architecture where the computational resonator has been abstracted away.  To
+abstract away the computational resonator, the connectivity graph is modified such that all the
+qubits connected to a common resonator are instead connected directly to each other.  The function
+can take a <code class="docutils literal notranslate"><span class="pre">qubit_mapping</span></code> to rename the qubits in the circuit to match the physical qubit names.
+Additionally, the function can take the optional argument <code class="docutils literal notranslate"><span class="pre">existing_moves</span></code> to specify how this
+transpiler pass should handle the case where some MOVE gates are already present in the circuit. The
+options are specified by the enum <a class="reference internal" href="api/iqm.iqm_client.transpile.ExistingMoveHandlingOptions.html#iqm.iqm_client.transpile.ExistingMoveHandlingOptions" title="iqm.iqm_client.transpile.ExistingMoveHandlingOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExistingMoveHandlingOptions</span></code></a>.  By default the function
+warns the user if MOVE gates are already present in the circuit but the <code class="docutils literal notranslate"><span class="pre">existing_moves</span></code> argument
+is not given, before proceeding to remove the existing MOVE gates and inserting new ones.</p>
+<p><a class="reference internal" href="api/iqm.iqm_client.transpile.transpile_remove_moves.html#iqm.iqm_client.transpile.transpile_remove_moves" title="iqm.iqm_client.transpile.transpile_remove_moves"><code class="xref py py-func docutils literal notranslate"><span class="pre">transpile_remove_moves()</span></code></a> is a helper function for <a class="reference internal" href="api/iqm.iqm_client.transpile.transpile_insert_moves.html#iqm.iqm_client.transpile.transpile_insert_moves" title="iqm.iqm_client.transpile.transpile_insert_moves"><code class="xref py py-func docutils literal notranslate"><span class="pre">transpile_insert_moves()</span></code></a> to remove
+existing MOVE gates from a quantum circuit.  It can be also used standalone to remove the MOVE gates
+from an existing circuit such that it can be used on a device without a computational resonator, or
+optimized by third party software that does not support the MOVE gate.  For example, a user might
+want to run a circuit that was originally transpiled for a device with a computational resonator on
+a device without a computational resonator.  This function allows the user to remove the MOVE gates
+from the circuit before transpiling it to another quantum architecture.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">iqm.iqm_client</span> <span class="kn">import</span> <span class="n">Circuit</span><span class="p">,</span> <span class="n">IQMClient</span><span class="p">,</span> <span class="n">transpile_insert_moves</span><span class="p">,</span> <span class="n">transpile_remove_moves</span>
 
 <span class="n">circuit</span> <span class="o">=</span> <span class="n">Circuit</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;quantum_circuit&quot;</span><span class="p">,</span> <span class="n">instructions</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">])</span>
@@ -538,24 +557,29 @@ This function allows the user to remove the MOVE gates from the circuit before t
 </section>
 <section id="note-on-qubit-mapping">
 <h2>Note on qubit mapping<a class="headerlink" href="#note-on-qubit-mapping" title="Link to this heading">#</a></h2>
-<p>We encourage to transpile circuits to use the physical IQM qubit names before submitting them to IQM quantum computers.
-In case the quantum computing framework does not allow for this, providing a qubit mapping can do the translation from the framework qubit names to IQM qubit names.
-Note, that qubit mapping is not supposed to be associated with individual circuits, but rather with the entire job request to IQM server.
-Typically, you would have some local representation of the QPU and transpile the circuits against that representation, then use qubit mapping along with the generated circuits to map from the local representation to the IQM representation of qubit names.
-We discourage exposing this feature to end users of the quantum computing framework.</p>
+<p>We encourage to transpile circuits to use the physical IQM qubit names before submitting them to IQM
+quantum computers.  In case the quantum computing framework does not allow for this, providing a
+qubit mapping can do the translation from the framework qubit names to IQM qubit names.  Note, that
+qubit mapping is not supposed to be associated with individual circuits, but rather with the entire
+job request to IQM server.  Typically, you would have some local representation of the QPU and
+transpile the circuits against that representation, then use qubit mapping along with the generated
+circuits to map from the local representation to the IQM representation of qubit names.  We
+discourage exposing this feature to end users of the quantum computing framework.</p>
 </section>
-<section id="note-on-circuit-duration">
-<h2>Note on circuit duration<a class="headerlink" href="#note-on-circuit-duration" title="Link to this heading">#</a></h2>
+<section id="note-on-circuit-duration-check">
+<h2>Note on circuit duration check<a class="headerlink" href="#note-on-circuit-duration-check" title="Link to this heading">#</a></h2>
 <p>Before performing circuit execution, IQM server checks how long it would take to run each circuit.
 If any circuit in a job would take too long to execute compared to the T2 time of the qubits,
 the server will disqualify the job, not execute any circuits, and return a detailed error message.
-In some special cases, it makes sense to disable this check by changing the default value of parameter
-<code class="docutils literal notranslate"><span class="pre">max_circuit_duration_over_t2</span></code> of <code class="xref py py-meth docutils literal notranslate"><span class="pre">IQMClient.submit_circuits()</span></code> to <code class="docutils literal notranslate"><span class="pre">0.0</span></code> or by making it large
-enough for the job to pass the check. If the value is not set at all, the server default value will be used.</p>
+In some special cases, it makes sense to adjust or disable this check using
+the <code class="xref py py-attr docutils literal notranslate"><span class="pre">max_circuit_duration_over_t2</span></code> attribute of <a class="reference internal" href="api/iqm.iqm_client.models.CircuitCompilationOptions.html#iqm.iqm_client.models.CircuitCompilationOptions" title="iqm.iqm_client.models.CircuitCompilationOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">CircuitCompilationOptions</span></code></a>,
+and then passing the options to <a class="reference internal" href="api/iqm.iqm_client.iqm_client.IQMClient.html#iqm.iqm_client.iqm_client.IQMClient.submit_circuits" title="iqm.iqm_client.iqm_client.IQMClient.submit_circuits"><code class="xref py py-meth docutils literal notranslate"><span class="pre">IQMClient.submit_circuits()</span></code></a>.</p>
 </section>
 <section id="note-on-environment-variables">
 <h2>Note on environment variables<a class="headerlink" href="#note-on-environment-variables" title="Link to this heading">#</a></h2>
-<p>Set <code class="docutils literal notranslate"><span class="pre">IQM_CLIENT_REQUESTS_TIMEOUT</span></code> environment variable to override the network requests default timeout value. The default value is 60 seconds and might not be sufficient when fetching run results of larger circuits via slow network connections.</p>
+<p>Set <span class="target" id="index-0"></span><code class="xref std std-envvar docutils literal notranslate"><span class="pre">IQM_CLIENT_REQUESTS_TIMEOUT</span></code> environment variable to override the network requests default
+timeout value. The default value is 60 seconds and might not be sufficient when fetching run results
+of larger circuits via slow network connections.</p>
 <p>On Linux:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">IQM_CLIENT_REQUESTS_TIMEOUT</span><span class="o">=</span><span class="m">120</span>
 </pre></div>
@@ -564,15 +588,19 @@ enough for the job to pass the check. If the value is not set at all, the server
 <div class="highlight-batch notranslate"><div class="highlight"><pre><span></span><span class="k">set</span> <span class="nv">IQM_CLIENT_REQUESTS_TIMEOUT</span><span class="p">=</span>120
 </pre></div>
 </div>
-<p>Once set, this environment variable will control network request timeouts for IQM Client methods <code class="docutils literal notranslate"><span class="pre">abort_job</span></code>, <code class="docutils literal notranslate"><span class="pre">get_quantum_architecture</span></code>, <code class="docutils literal notranslate"><span class="pre">get_run</span></code>, and <code class="docutils literal notranslate"><span class="pre">get_run_status</span></code>.</p>
-<p>Set <code class="docutils literal notranslate"><span class="pre">IQM_CLIENT_SECONDS_BETWEEN_CALLS</span></code> to control the polling frequency when waiting for compilation and run results with IQM Client methods <code class="docutils literal notranslate"><span class="pre">wait_for_compilation</span></code> and <code class="docutils literal notranslate"><span class="pre">wait_for_results</span></code>. The default value is set to 1 second.</p>
-<p>Set <code class="docutils literal notranslate"><span class="pre">IQM_CLIENT_DEBUG=1</span></code> to print the run request when it is submitted for execution in
+<p>Once set, this environment variable will control network request timeouts for <a class="reference internal" href="api/iqm.iqm_client.iqm_client.IQMClient.html#iqm.iqm_client.iqm_client.IQMClient" title="iqm.iqm_client.iqm_client.IQMClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">IQMClient</span></code></a> methods
+<code class="docutils literal notranslate"><span class="pre">abort_job</span></code>, <code class="docutils literal notranslate"><span class="pre">get_quantum_architecture</span></code>, <code class="docutils literal notranslate"><span class="pre">get_run</span></code>, and <code class="docutils literal notranslate"><span class="pre">get_run_status</span></code>.</p>
+<p>Set <span class="target" id="index-1"></span><code class="xref std std-envvar docutils literal notranslate"><span class="pre">IQM_CLIENT_SECONDS_BETWEEN_CALLS</span></code> to control the polling frequency when waiting for
+compilation and run results with the <a class="reference internal" href="api/iqm.iqm_client.iqm_client.IQMClient.html#iqm.iqm_client.iqm_client.IQMClient.wait_for_compilation" title="iqm.iqm_client.iqm_client.IQMClient.wait_for_compilation"><code class="xref py py-meth docutils literal notranslate"><span class="pre">IQMClient.wait_for_compilation()</span></code></a> and
+<a class="reference internal" href="api/iqm.iqm_client.iqm_client.IQMClient.html#iqm.iqm_client.iqm_client.IQMClient.wait_for_results" title="iqm.iqm_client.iqm_client.IQMClient.wait_for_results"><code class="xref py py-meth docutils literal notranslate"><span class="pre">IQMClient.wait_for_results()</span></code></a> methods. The default value is set to 1 second.</p>
+<p>Set <span class="target" id="index-2"></span><code class="xref std std-envvar docutils literal notranslate"><span class="pre">IQM_CLIENT_DEBUG=1</span></code> to print the run request when it is submitted for execution in
 <a class="reference internal" href="api/iqm.iqm_client.iqm_client.IQMClient.html#iqm.iqm_client.iqm_client.IQMClient.submit_circuits" title="iqm.iqm_client.iqm_client.IQMClient.submit_circuits"><code class="xref py py-meth docutils literal notranslate"><span class="pre">IQMClient.submit_circuits()</span></code></a> or <a class="reference internal" href="api/iqm.iqm_client.iqm_client.IQMClient.html#iqm.iqm_client.iqm_client.IQMClient.submit_run_request" title="iqm.iqm_client.iqm_client.IQMClient.submit_run_request"><code class="xref py py-meth docutils literal notranslate"><span class="pre">IQMClient.submit_run_request()</span></code></a>. To inspect the run request without sending
 it for execution, use <a class="reference internal" href="api/iqm.iqm_client.iqm_client.IQMClient.html#iqm.iqm_client.iqm_client.IQMClient.create_run_request" title="iqm.iqm_client.iqm_client.IQMClient.create_run_request"><code class="xref py py-meth docutils literal notranslate"><span class="pre">IQMClient.create_run_request()</span></code></a>.</p>
 </section>
 <section id="integration-testing">
 <h2>Integration testing<a class="headerlink" href="#integration-testing" title="Link to this heading">#</a></h2>
-<p>IQM provides a demo environment to test the integration against a mock quantum computer. If you’d like to request access to that environment, please contact <a class="reference external" href="mailto:info&#37;&#52;&#48;meetiqm&#46;com">IQM</a>.</p>
+<p>IQM provides a demo environment to test the integration against a mock quantum computer. If you’d
+like to request access to that environment, please contact <a class="reference external" href="mailto:info&#37;&#52;&#48;meetiqm&#46;com">IQM</a>.</p>
 </section>
 </section>
 
@@ -626,7 +654,7 @@ it for execution, use <a class="reference internal" href="api/iqm.iqm_client.iqm
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#authentication">Authentication</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#circuit-transpilation">Circuit transpilation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#note-on-qubit-mapping">Note on qubit mapping</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#note-on-circuit-duration">Note on circuit duration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#note-on-circuit-duration-check">Note on circuit duration check</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#note-on-environment-variables">Note on environment variables</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#integration-testing">Integration testing</a></li>
 </ul>
@@ -662,7 +690,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2024-10-04.
+  Last updated on 2024-10-15.
   <br/>
 </p>
   </div>

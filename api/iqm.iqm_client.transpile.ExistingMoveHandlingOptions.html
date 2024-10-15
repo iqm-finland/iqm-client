@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>iqm.iqm_client.transpile.ExistingMoveHandlingOptions &#8212; IQM client 18.4 documentation</title>
+    <title>iqm.iqm_client.transpile.ExistingMoveHandlingOptions &#8212; IQM client 18.5 documentation</title>
   
   
   
@@ -37,7 +37,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=b6e4d5b2"></script>
+    <script src="../_static/documentation_options.js?v=0d1857af"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
@@ -49,7 +49,7 @@
     <link rel="prev" title="iqm.iqm_client.transpile.transpile_remove_moves" href="iqm.iqm_client.transpile.transpile_remove_moves.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="2024-10-04"/>
+    <meta name="docbuild:last-update" content="2024-10-15"/>
   </head>
   
   
@@ -139,8 +139,8 @@
       
     
     
-    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 18.4 documentation - Home"/>
-    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="IQM client 18.4 documentation - Home"/>`);</script>
+    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 18.5 documentation - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="IQM client 18.5 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -173,6 +173,7 @@
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.APITimeoutError.html">iqm.iqm_client.errors.APITimeoutError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.ArchitectureRetrievalError.html">iqm.iqm_client.errors.ArchitectureRetrievalError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.CircuitExecutionError.html">iqm.iqm_client.errors.CircuitExecutionError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.CircuitTranspilationError.html">iqm.iqm_client.errors.CircuitTranspilationError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.CircuitValidationError.html">iqm.iqm_client.errors.CircuitValidationError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.ClientAuthenticationError.html">iqm.iqm_client.errors.ClientAuthenticationError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.ClientConfigurationError.html">iqm.iqm_client.errors.ClientConfigurationError</a></li>
@@ -411,13 +412,13 @@ document.write(`
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.transpile.ExistingMoveHandlingOptions.KEEP" title="iqm.iqm_client.transpile.ExistingMoveHandlingOptions.KEEP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">KEEP</span></code></a></p></td>
-<td><p>Transpiler will keep the move instructions as specified checking if they are correct, adding more as needed.</p></td>
+<td><p>Transpiler will keep the MOVE instructions as specified checking if they are correct, adding more as needed.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.transpile.ExistingMoveHandlingOptions.REMOVE" title="iqm.iqm_client.transpile.ExistingMoveHandlingOptions.REMOVE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">REMOVE</span></code></a></p></td>
 <td><p>Transpiler will remove the instructions and add new ones.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.transpile.ExistingMoveHandlingOptions.TRUST" title="iqm.iqm_client.transpile.ExistingMoveHandlingOptions.TRUST"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TRUST</span></code></a></p></td>
-<td><p>Transpiler will keep the move instructions without checking if they are correct, and add more as needed.</p></td>
+<td><p>Transpiler will keep the MOVE instructions without checking if they are correct, and add more as needed.</p></td>
 </tr>
 </tbody>
 </table>
@@ -434,7 +435,7 @@ document.write(`
 <dl class="py attribute">
 <dt class="sig sig-object py" id="iqm.iqm_client.transpile.ExistingMoveHandlingOptions.KEEP">
 <span class="sig-name descname"><span class="pre">KEEP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'keep'</span></em><a class="headerlink" href="#iqm.iqm_client.transpile.ExistingMoveHandlingOptions.KEEP" title="Link to this definition">#</a></dt>
-<dd><p>Transpiler will keep the move instructions as specified checking if they are correct, adding more as needed.</p>
+<dd><p>Transpiler will keep the MOVE instructions as specified checking if they are correct, adding more as needed.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -446,7 +447,7 @@ document.write(`
 <dl class="py attribute">
 <dt class="sig sig-object py" id="iqm.iqm_client.transpile.ExistingMoveHandlingOptions.TRUST">
 <span class="sig-name descname"><span class="pre">TRUST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'trust'</span></em><a class="headerlink" href="#iqm.iqm_client.transpile.ExistingMoveHandlingOptions.TRUST" title="Link to this definition">#</a></dt>
-<dd><p>Transpiler will keep the move instructions without checking if they are correct, and add more as needed.</p>
+<dd><p>Transpiler will keep the MOVE instructions without checking if they are correct, and add more as needed.</p>
 </dd></dl>
 
 </dd></dl>
@@ -537,7 +538,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2024-10-04.
+  Last updated on 2024-10-15.
   <br/>
 </p>
   </div>

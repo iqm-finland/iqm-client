@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>iqm.iqm_client.models.CircuitCompilationOptions &#8212; IQM client 18.4 documentation</title>
+    <title>iqm.iqm_client.models.CircuitCompilationOptions &#8212; IQM client 18.5 documentation</title>
   
   
   
@@ -37,7 +37,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=b6e4d5b2"></script>
+    <script src="../_static/documentation_options.js?v=0d1857af"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
@@ -49,7 +49,7 @@
     <link rel="prev" title="iqm.iqm_client.models.Circuit" href="iqm.iqm_client.models.Circuit.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="2024-10-04"/>
+    <meta name="docbuild:last-update" content="2024-10-15"/>
   </head>
   
   
@@ -139,8 +139,8 @@
       
     
     
-    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 18.4 documentation - Home"/>
-    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="IQM client 18.4 documentation - Home"/>`);</script>
+    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 18.5 documentation - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="IQM client 18.5 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -173,6 +173,7 @@
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.APITimeoutError.html">iqm.iqm_client.errors.APITimeoutError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.ArchitectureRetrievalError.html">iqm.iqm_client.errors.ArchitectureRetrievalError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.CircuitExecutionError.html">iqm.iqm_client.errors.CircuitExecutionError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.CircuitTranspilationError.html">iqm.iqm_client.errors.CircuitTranspilationError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.CircuitValidationError.html">iqm.iqm_client.errors.CircuitValidationError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.ClientAuthenticationError.html">iqm.iqm_client.errors.ClientAuthenticationError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.ClientConfigurationError.html">iqm.iqm_client.errors.ClientConfigurationError</a></li>
@@ -405,7 +406,7 @@ document.write(`
 <h1>iqm.iqm_client.models.CircuitCompilationOptions<a class="headerlink" href="#iqm-iqm-client-models-circuitcompilationoptions" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="iqm.iqm_client.models.CircuitCompilationOptions">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">iqm.iqm_client.models.</span></span><span class="sig-name descname"><span class="pre">CircuitCompilationOptions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_circuit_duration_over_t2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heralding_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">HeraldingMode.NONE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">move_gate_validation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">MoveGateValidationMode.STRICT</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">move_gate_frame_tracking</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">MoveGateFrameTrackingMode.FULL</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm.iqm_client.models.CircuitCompilationOptions" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">iqm.iqm_client.models.</span></span><span class="sig-name descname"><span class="pre">CircuitCompilationOptions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_circuit_duration_over_t2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#float" title="(in Python v3.9)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heralding_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="iqm.iqm_client.models.HeraldingMode.html#iqm.iqm_client.models.HeraldingMode" title="iqm.iqm_client.models.HeraldingMode"><span class="pre">HeraldingMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">HeraldingMode.NONE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">move_gate_validation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="iqm.iqm_client.models.MoveGateValidationMode.html#iqm.iqm_client.models.MoveGateValidationMode" title="iqm.iqm_client.models.MoveGateValidationMode"><span class="pre">MoveGateValidationMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">MoveGateValidationMode.STRICT</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">move_gate_frame_tracking</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="iqm.iqm_client.models.MoveGateFrameTrackingMode.html#iqm.iqm_client.models.MoveGateFrameTrackingMode" title="iqm.iqm_client.models.MoveGateFrameTrackingMode"><span class="pre">MoveGateFrameTrackingMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">MoveGateFrameTrackingMode.FULL</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm.iqm_client.models.CircuitCompilationOptions" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.9/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Various discrete options for quantum circuit compilation to pulse schedule.</p>
 <p class="rubric">Attributes</p>
@@ -415,7 +416,7 @@ document.write(`
 <td><p>Heralding mode to use during the execution.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.models.CircuitCompilationOptions.max_circuit_duration_over_t2" title="iqm.iqm_client.models.CircuitCompilationOptions.max_circuit_duration_over_t2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_circuit_duration_over_t2</span></code></a></p></td>
-<td><p>Circuits are disqualified on the server if they are longer than this ratio of the T2 time of the qubits.</p></td>
+<td><p>Server-side circuit disqualification threshold.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.models.CircuitCompilationOptions.move_gate_frame_tracking" title="iqm.iqm_client.models.CircuitCompilationOptions.move_gate_frame_tracking"><code class="xref py py-obj docutils literal notranslate"><span class="pre">move_gate_frame_tracking</span></code></a></p></td>
 <td><p>MOVE gate frame tracking mode for circuit compilation.</p></td>
@@ -463,9 +464,11 @@ document.write(`
 <dl class="py attribute">
 <dt class="sig sig-object py" id="iqm.iqm_client.models.CircuitCompilationOptions.max_circuit_duration_over_t2">
 <span class="sig-name descname"><span class="pre">max_circuit_duration_over_t2</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#float" title="(in Python v3.9)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#iqm.iqm_client.models.CircuitCompilationOptions.max_circuit_duration_over_t2" title="Link to this definition">#</a></dt>
-<dd><p>Circuits are disqualified on the server if they are longer than this ratio
-of the T2 time of the qubits. Setting this value to <code class="docutils literal notranslate"><span class="pre">0.0</span></code> turns off circuit duration checking.
-The default value <code class="docutils literal notranslate"><span class="pre">None</span></code> instructs server to use server’s default value in the checking.</p>
+<dd><p>Server-side circuit disqualification threshold.
+The job is rejected on the server if any circuit in it is estimated to take longer than
+the shortest T2 time of any qubit used in the circuit, multiplied by this value.
+Setting this value to <code class="docutils literal notranslate"><span class="pre">0.0</span></code> turns off circuit duration checking.
+<code class="docutils literal notranslate"><span class="pre">None</span></code> tells the server to use its default value in the check.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -577,7 +580,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2024-10-04.
+  Last updated on 2024-10-15.
   <br/>
 </p>
   </div>

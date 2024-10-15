@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>iqm.iqm_client.transpile &#8212; IQM client 18.4 documentation</title>
+    <title>iqm.iqm_client.transpile &#8212; IQM client 18.5 documentation</title>
   
   
   
@@ -37,10 +37,12 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=b6e4d5b2"></script>
+    <script src="../_static/documentation_options.js?v=0d1857af"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
+    <script>window.MathJax = {"tex": {"macros": {"vr": "\\vec{r}", "ket": ["\\left| #1 \\right\\rangle", 1], "iprod": ["\\left\\langle #1 | #2 \\right\\rangle", 2]}}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/iqm.iqm_client.transpile';</script>
     <link rel="icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -49,7 +51,7 @@
     <link rel="prev" title="iqm.iqm_client.models.Status" href="iqm.iqm_client.models.Status.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="2024-10-04"/>
+    <meta name="docbuild:last-update" content="2024-10-15"/>
   </head>
   
   
@@ -139,8 +141,8 @@
       
     
     
-    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 18.4 documentation - Home"/>
-    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="IQM client 18.4 documentation - Home"/>`);</script>
+    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 18.5 documentation - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="IQM client 18.5 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -173,6 +175,7 @@
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.APITimeoutError.html">iqm.iqm_client.errors.APITimeoutError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.ArchitectureRetrievalError.html">iqm.iqm_client.errors.ArchitectureRetrievalError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.CircuitExecutionError.html">iqm.iqm_client.errors.CircuitExecutionError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.CircuitTranspilationError.html">iqm.iqm_client.errors.CircuitTranspilationError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.CircuitValidationError.html">iqm.iqm_client.errors.CircuitValidationError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.ClientAuthenticationError.html">iqm.iqm_client.errors.ClientAuthenticationError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.errors.ClientConfigurationError.html">iqm.iqm_client.errors.ClientConfigurationError</a></li>
@@ -387,15 +390,15 @@ document.write(`
                   
   <section id="module-iqm.iqm_client.transpile">
 <span id="iqm-iqm-client-transpile"></span><h1>iqm.iqm_client.transpile<a class="headerlink" href="#module-iqm.iqm_client.transpile" title="Link to this heading">#</a></h1>
-<p>Collection of transpile functions needed for transpiling to specific devices</p>
+<p>Collection of transpilation functions needed for transpiling to specific devices.</p>
 <p class="rubric">Functions</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="iqm.iqm_client.transpile.transpile_insert_moves.html#iqm.iqm_client.transpile.transpile_insert_moves" title="iqm.iqm_client.transpile.transpile_insert_moves"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transpile_insert_moves</span></code></a>(circuit, arch[, ...])</p></td>
-<td><p>Transpile method that inserts moves to the circuit according to a given architecture specification.</p></td>
+<td><p>Inserts MOVEs to the circuit according to a given architecture specification.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="iqm.iqm_client.transpile.transpile_remove_moves.html#iqm.iqm_client.transpile.transpile_remove_moves" title="iqm.iqm_client.transpile.transpile_remove_moves"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transpile_remove_moves</span></code></a>(circuit)</p></td>
-<td><p>Transpile method that removes move gates from a circuit.</p></td>
+<td><p>Removes MOVE gates from a circuit.</p></td>
 </tr>
 </tbody>
 </table>
@@ -407,17 +410,17 @@ document.write(`
 <td><p>Transpile options for handling of existing MOVE instructions.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="iqm.iqm_client.transpile.ResonatorStateTracker.html#iqm.iqm_client.transpile.ResonatorStateTracker" title="iqm.iqm_client.transpile.ResonatorStateTracker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ResonatorStateTracker</span></code></a>(available_moves)</p></td>
-<td><p>Class for tracking the location of the <a href="#id1"><span class="problematic" id="id2">|</span></a>0&gt; state of the resonators on the quantum computer as they are moved with the MOVE gates because the MOVE gate is not defined when acting on a <a href="#id3"><span class="problematic" id="id4">|</span></a>11&gt; state. This is equivalent to tracking the which qubit state has been MOVEd into which resonator.</p></td>
+<td><p>Class for tracking the location of the <span class="math notranslate nohighlight">\(|0\rangle\)</span> state of the resonators on the quantum computer as they are moved with the MOVE gates because the MOVE gate is not defined when acting on a <span class="math notranslate nohighlight">\(|11\rangle\)</span> state.</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 <p class="rubric">Inheritance</p>
-<div class="graphviz"><img src="../_images/inheritance-c51b87208e84f4e3ee014c033b467c00e34c5778.png" alt="Inheritance diagram of iqm.iqm_client.transpile" usemap="#inheritance6f2caa572f" class="inheritance graphviz" /></div>
+<div class="graphviz"><img src="../_images/inheritance-5ea1e40714f82440d9e8555b48b227a675383594.png" alt="Inheritance diagram of iqm.iqm_client.transpile" usemap="#inheritance6f2caa572f" class="inheritance graphviz" /></div>
 <map id="inheritance6f2caa572f" name="inheritance6f2caa572f">
 <area shape="rect" id="node1" href="https://docs.python.org/3.9/library/enum.html#enum.Enum" target="_top" title="Generic enumeration." alt="" coords="53,55,125,80"/>
 <area shape="rect" id="node2" href="iqm.iqm_client.transpile.ExistingMoveHandlingOptions.html#iqm.iqm_client.transpile.ExistingMoveHandlingOptions" target="_top" title="Transpile options for handling of existing MOVE instructions." alt="" coords="221,55,440,80"/>
-<area shape="rect" id="node3" href="iqm.iqm_client.transpile.ResonatorStateTracker.html#iqm.iqm_client.transpile.ResonatorStateTracker" target="_top" title="Class for tracking the location of the |0&gt; state of the resonators on the quantum computer as they are moved" alt="" coords="5,5,173,31"/>
+<area shape="rect" id="node3" href="iqm.iqm_client.transpile.ResonatorStateTracker.html#iqm.iqm_client.transpile.ResonatorStateTracker" target="_top" title="Class for tracking the location of the :math:`|0
 </map></section>
 
 
@@ -484,7 +487,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2024-10-04.
+  Last updated on 2024-10-15.
   <br/>
 </p>
   </div>

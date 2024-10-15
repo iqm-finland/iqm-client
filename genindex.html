@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Index &#8212; IQM client 18.4 documentation</title>
+    <title>Index &#8212; IQM client 18.5 documentation</title>
   
   
   
@@ -36,7 +36,7 @@
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="_static/documentation_options.js?v=b6e4d5b2"></script>
+    <script src="_static/documentation_options.js?v=0d1857af"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
@@ -46,7 +46,7 @@
     <link rel="search" title="Search" href="search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="2024-10-04"/>
+    <meta name="docbuild:last-update" content="2024-10-15"/>
   </head>
   
   
@@ -138,8 +138,8 @@
       
     
     
-    <img src="_static/logo.png" class="logo__image only-light" alt="IQM client 18.4 documentation - Home"/>
-    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="IQM client 18.4 documentation - Home"/>`);</script>
+    <img src="_static/logo.png" class="logo__image only-light" alt="IQM client 18.5 documentation - Home"/>
+    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="IQM client 18.5 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -172,6 +172,7 @@
 <li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.errors.APITimeoutError.html">iqm.iqm_client.errors.APITimeoutError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.errors.ArchitectureRetrievalError.html">iqm.iqm_client.errors.ArchitectureRetrievalError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.errors.CircuitExecutionError.html">iqm.iqm_client.errors.CircuitExecutionError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.errors.CircuitTranspilationError.html">iqm.iqm_client.errors.CircuitTranspilationError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.errors.CircuitValidationError.html">iqm.iqm_client.errors.CircuitValidationError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.errors.ClientAuthenticationError.html">iqm.iqm_client.errors.ClientAuthenticationError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.errors.ClientConfigurationError.html">iqm.iqm_client.errors.ClientConfigurationError</a></li>
@@ -418,12 +419,14 @@ document.write(`
 </li>
       <li><a href="api/iqm.iqm_client.models.RunRequest.html#iqm.iqm_client.models.RunRequest.circuits">circuits (iqm.iqm_client.models.RunRequest attribute)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.errors.CircuitValidationError.html#iqm.iqm_client.errors.CircuitValidationError">CircuitValidationError</a>
+      <li><a href="api/iqm.iqm_client.errors.CircuitTranspilationError.html#iqm.iqm_client.errors.CircuitTranspilationError">CircuitTranspilationError</a>
 </li>
-      <li><a href="api/iqm.iqm_client.errors.ClientAuthenticationError.html#iqm.iqm_client.errors.ClientAuthenticationError">ClientAuthenticationError</a>
+      <li><a href="api/iqm.iqm_client.errors.CircuitValidationError.html#iqm.iqm_client.errors.CircuitValidationError">CircuitValidationError</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/iqm.iqm_client.errors.ClientAuthenticationError.html#iqm.iqm_client.errors.ClientAuthenticationError">ClientAuthenticationError</a>
+</li>
       <li><a href="api/iqm.iqm_client.errors.ClientConfigurationError.html#iqm.iqm_client.errors.ClientConfigurationError">ClientConfigurationError</a>
 </li>
       <li><a href="api/iqm.iqm_client.authentication.ExternalToken.html#iqm.iqm_client.authentication.ExternalToken.close">close() (iqm.iqm_client.authentication.ExternalToken method)</a>
@@ -472,10 +475,31 @@ document.write(`
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/iqm.iqm_client.transpile.ExistingMoveHandlingOptions.html#iqm.iqm_client.transpile.ExistingMoveHandlingOptions">ExistingMoveHandlingOptions (class in iqm.iqm_client.transpile)</a>
+      <li>
+    environment variable
+
+      <ul>
+        <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#index-4">IQM_AUTH_PASSWORD</a>
 </li>
+        <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#index-2">IQM_AUTH_SERVER</a>
+</li>
+        <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#index-3">IQM_AUTH_USERNAME</a>
+</li>
+        <li><a href="integration_guide.html#index-2">IQM_CLIENT_DEBUG=1</a>
+</li>
+        <li><a href="integration_guide.html#index-0">IQM_CLIENT_REQUESTS_TIMEOUT</a>
+</li>
+        <li><a href="integration_guide.html#index-1">IQM_CLIENT_SECONDS_BETWEEN_CALLS</a>
+</li>
+        <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#index-0">IQM_TOKEN</a>
+</li>
+        <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#index-1">IQM_TOKENS_FILE</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/iqm.iqm_client.transpile.ExistingMoveHandlingOptions.html#iqm.iqm_client.transpile.ExistingMoveHandlingOptions">ExistingMoveHandlingOptions (class in iqm.iqm_client.transpile)</a>
+</li>
       <li><a href="api/iqm.iqm_client.authentication.ExternalToken.html#iqm.iqm_client.authentication.ExternalToken">ExternalToken (class in iqm.iqm_client.authentication)</a>
 </li>
   </ul></td>
@@ -593,8 +617,6 @@ document.write(`
         <li><a href="api/iqm.iqm_client.errors.html#module-iqm.iqm_client.errors">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     iqm.iqm_client.iqm_client
 
@@ -609,6 +631,8 @@ document.write(`
         <li><a href="api/iqm.iqm_client.models.html#module-iqm.iqm_client.models">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     iqm.iqm_client.transpile
 
@@ -623,6 +647,22 @@ document.write(`
         <li><a href="api/iqm.iqm_client.util.html#module-iqm.iqm_client.util">module</a>
 </li>
       </ul></li>
+      <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#index-4">IQM_AUTH_PASSWORD</a>
+</li>
+      <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#index-2">IQM_AUTH_SERVER</a>
+</li>
+      <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#index-3">IQM_AUTH_USERNAME</a>
+</li>
+      <li><a href="integration_guide.html#index-2">IQM_CLIENT_DEBUG=1</a>
+</li>
+      <li><a href="integration_guide.html#index-0">IQM_CLIENT_REQUESTS_TIMEOUT</a>
+</li>
+      <li><a href="integration_guide.html#index-1">IQM_CLIENT_SECONDS_BETWEEN_CALLS</a>
+</li>
+      <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#index-0">IQM_TOKEN</a>
+</li>
+      <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#index-1">IQM_TOKENS_FILE</a>
+</li>
       <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#iqm.iqm_client.iqm_client.IQMClient">IQMClient (class in iqm.iqm_client.iqm_client)</a>
 </li>
       <li><a href="api/iqm.iqm_client.util.IQMJSONEncoder.html#iqm.iqm_client.util.IQMJSONEncoder">IQMJSONEncoder (class in iqm.iqm_client.util)</a>
@@ -1058,7 +1098,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2024-10-04.
+  Last updated on 2024-10-15.
   <br/>
 </p>
   </div>

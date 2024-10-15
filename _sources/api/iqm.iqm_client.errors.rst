@@ -25,6 +25,7 @@ iqm.iqm\_client.errors
       APITimeoutError
       ArchitectureRetrievalError
       CircuitExecutionError
+      CircuitTranspilationError
       CircuitValidationError
       ClientAuthenticationError
       ClientConfigurationError
