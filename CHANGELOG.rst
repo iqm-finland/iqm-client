@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 18.6
+============
+
+* Add IQM Server API versioning support. `#135 <https://github.com/iqm-finland/iqm-client/pull/135>`_
+
 Version 18.5
 ============
 
