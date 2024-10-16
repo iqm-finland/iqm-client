@@ -13,6 +13,9 @@ iqm.iqm\_client.models.Status
 
    .. autosummary::
    
+      ~Status.RECEIVED
+      ~Status.PROCESSING
+      ~Status.ACCEPTED
       ~Status.PENDING_COMPILATION
       ~Status.PENDING_EXECUTION
       ~Status.READY

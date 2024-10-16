@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>iqm.iqm_client.iqm_client.IQMClient &#8212; IQM client 18.5 documentation</title>
+    <title>iqm.iqm_client.iqm_client.IQMClient &#8212; IQM client 18.6 documentation</title>
   
   
   
@@ -37,7 +37,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=0d1857af"></script>
+    <script src="../_static/documentation_options.js?v=1a6cd7c9"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
@@ -49,7 +49,7 @@
     <link rel="prev" title="iqm.iqm_client.iqm_client" href="iqm.iqm_client.iqm_client.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="2024-10-15"/>
+    <meta name="docbuild:last-update" content="2024-10-16"/>
   </head>
   
   
@@ -139,8 +139,8 @@
       
     
     
-    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 18.5 documentation - Home"/>
-    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="IQM client 18.5 documentation - Home"/>`);</script>
+    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 18.6 documentation - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="IQM client 18.6 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -161,6 +161,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../readme.html">IQM Client</a></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../API.html">API Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="iqm.iqm_client.html">iqm.iqm_client</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3 has-children"><a class="reference internal" href="iqm.iqm_client.api.html">iqm.iqm_client.api</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.api.APIConfig.html">iqm.iqm_client.api.APIConfig</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.api.APIEndpoint.html">iqm.iqm_client.api.APIEndpoint</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.api.APIVariant.html">iqm.iqm_client.api.APIVariant</a></li>
+</ul>
+</details></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="iqm.iqm_client.authentication.html">iqm.iqm_client.authentication</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.authentication.ExternalToken.html">iqm.iqm_client.authentication.ExternalToken</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.authentication.TokenClient.html">iqm.iqm_client.authentication.TokenClient</a></li>
@@ -202,6 +208,7 @@
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.GateInfo.html">iqm.iqm_client.models.GateInfo</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.HeraldingMode.html">iqm.iqm_client.models.HeraldingMode</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.Instruction.html">iqm.iqm_client.models.Instruction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.JobParameters.html">iqm.iqm_client.models.JobParameters</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.Metadata.html">iqm.iqm_client.models.Metadata</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.MoveGateFrameTrackingMode.html">iqm.iqm_client.models.MoveGateFrameTrackingMode</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.MoveGateValidationMode.html">iqm.iqm_client.models.MoveGateValidationMode</a></li>
@@ -413,7 +420,7 @@ document.write(`
 <h1>iqm.iqm_client.iqm_client.IQMClient<a class="headerlink" href="#iqm-iqm-client-iqm-client-iqmclient" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.IQMClient">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">iqm.iqm_client.iqm_client.</span></span><span class="sig-name descname"><span class="pre">IQMClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_signature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tokens_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth_server_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm.iqm_client.iqm_client.IQMClient" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">iqm.iqm_client.iqm_client.</span></span><span class="sig-name descname"><span class="pre">IQMClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_signature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tokens_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth_server_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_variant</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="iqm.iqm_client.api.APIVariant.html#iqm.iqm_client.api.APIVariant" title="iqm.iqm_client.api.APIVariant"><span class="pre">APIVariant</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm.iqm_client.iqm_client.IQMClient" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.9/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Provides access to IQM quantum computers.</p>
 <dl class="field-list simple">
@@ -432,6 +439,8 @@ If <code class="docutils literal notranslate"><span class="pre">tokens_file</spa
 If <code class="docutils literal notranslate"><span class="pre">auth_server_url</span></code> is given also <code class="docutils literal notranslate"><span class="pre">username</span></code> and <code class="docutils literal notranslate"><span class="pre">password</span></code> must be given.</p></li>
 <li><p><strong>username</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – Username to log in to authentication server.</p></li>
 <li><p><strong>password</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – Password to log in to authentication server.</p></li>
+<li><p><strong>api_variant</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="iqm.iqm_client.api.APIVariant.html#iqm.iqm_client.api.APIVariant" title="iqm.iqm_client.api.APIVariant"><em>APIVariant</em></a><em>]</em>) – API variant to use. Default is <code class="docutils literal notranslate"><span class="pre">APIVariant.COCOS</span></code>.
+Conviguable also by environment variable <code class="docutils literal notranslate"><span class="pre">IQM_CLIENT_API_VARIANT</span></code>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -451,6 +460,12 @@ for values given as environment variables as for keyword arguments.</p>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_default_headers</span></code>()</p></td>
 <td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_get_run_v1</span></code>(job_id[, timeout_secs])</p></td>
+<td><p>V1 API (Cocos circuits execution and Resonance) has an inefficient <cite>GET /jobs/&lt;id&gt;</cite> endpoint that returns the full job status, including the result and the original request, in a single call.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_get_run_v2</span></code>(job_id[, timeout_secs])</p></td>
+<td><p>V2 API (Station-based circuits execution) has granular endpoints for job status and result.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_retry_request_on_error</span></code>(request)</p></td>
 <td><p>This is a temporary workaround for 502 errors.</p></td>
@@ -876,7 +891,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2024-10-15.
+  Last updated on 2024-10-16.
   <br/>
 </p>
   </div>

@@ -48,6 +48,7 @@ iqm.iqm\_client.models
       GateInfo
       HeraldingMode
       Instruction
+      JobParameters
       Metadata
       MoveGateFrameTrackingMode
       MoveGateValidationMode

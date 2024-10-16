@@ -21,6 +21,8 @@ iqm.iqm\_client.iqm\_client.IQMClient
       ~IQMClient.__del__
       ~IQMClient._check_authentication_errors
       ~IQMClient._default_headers
+      ~IQMClient._get_run_v1
+      ~IQMClient._get_run_v2
       ~IQMClient._retry_request_on_error
       ~IQMClient._validate_circuit_instructions
       ~IQMClient._validate_circuit_moves
