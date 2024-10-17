@@ -70,8 +70,8 @@ _SUPPORTED_OPERATIONS: dict[str, NativeOperation] = {
             'cc_prx',
             1,
             {
-                'angle': (float, int),
-                'phase': (float, int),
+                'angle_t': (float, int),
+                'phase_t': (float, int),
                 'feedback_label': (str,),
             },
         ),
