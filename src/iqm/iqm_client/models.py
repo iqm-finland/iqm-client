@@ -112,14 +112,7 @@ class Instruction(BaseModel):
     For each Instruction you may also optionally specify :attr:`~Instruction.implementation`,
     which contains the name of an implementation of the operation to use.
     Support for multiple implementations is currently experimental and in normal use the
-    field should be omitted, this selects the default implementation for the operation.
-
-    .. note::
-
-        The following operation names are deprecated, but supported for backwards compatibility for now:
-
-    * ``phased_rx`` ↦ ``prx``
-    * ``measurement`` ↦ ``measure``
+    field should be omitted, this selects the default implementation for the operation for that locus.
 
     Measure
     -------
@@ -222,7 +215,6 @@ class Instruction(BaseModel):
     1-qubit barriers will not have any effect on circuit's compilation and execution. Higher layers
     that sit on top of IQM Client can make actual use of 1-qubit barriers (e.g. during circuit optimization),
     therefore having them is allowed.
-
     """
 
     name: str = Field(..., examples=['measure'])

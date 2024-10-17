@@ -887,7 +887,7 @@ def test_get_dynamic_quantum_architecture_without_calset_id_does_not_cache(
         'qubits': ['QB1', 'QB2'],
         'computational_resonators': [],
         'gates': {
-            'phased_rx': {
+            'prx': {
                 'implementations': {
                     'drag_gaussian': {
                         'loci': [['QB1'], ['QB2']],

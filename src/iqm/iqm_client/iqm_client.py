@@ -629,7 +629,7 @@ class IQMClient:
         except (json.decoder.JSONDecodeError, KeyError) as e:
             raise ArchitectureRetrievalError(f'Invalid response: {result.text}, {e}') from e
 
-        # HACK add cc_prx, remove when DQA works
+        # HACK add cc_prx, TODO remove when DQA works
         prx_loci = qa.operations.get('prx')
         if prx_loci is not None:
             qa.operations['cc_prx'] = prx_loci

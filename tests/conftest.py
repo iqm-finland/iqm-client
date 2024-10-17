@@ -143,7 +143,7 @@ def create_sample_circuit(qubits: list[str], metadata) -> Circuit:
                 args={},
             ),
             Instruction(
-                name='phased_rx',
+                name='prx',
                 implementation='drag_gaussian',
                 qubits=(qubits[0],),
                 args={'phase_t': 0.7, 'angle_t': 0.25},
@@ -153,7 +153,7 @@ def create_sample_circuit(qubits: list[str], metadata) -> Circuit:
                 qubits=(qubits[0],),
                 args={'phase_t': 0.3, 'angle_t': -0.2},
             ),
-            Instruction(name='measurement', qubits=(qubits[0],), args={'key': 'A'}),
+            Instruction(name='measure', qubits=(qubits[0],), args={'key': 'A'}),
             Instruction(name='measure', qubits=(qubits[1],), args={'key': 'B'}),
         ],
         metadata=metadata,
@@ -200,7 +200,7 @@ def sample_circuit_with_raw_instructions(sample_circuit_metadata):
                 'args': {},
             },
             {
-                'name': 'phased_rx',
+                'name': 'prx',
                 'implementation': 'drag_gaussian',
                 'qubits': ('Qubit A',),
                 'args': {'phase_t': 0.7, 'angle_t': 0.25},
@@ -210,7 +210,7 @@ def sample_circuit_with_raw_instructions(sample_circuit_metadata):
                 'qubits': ('Qubit A',),
                 'args': {'phase_t': 0.3, 'angle_t': -0.2},
             },
-            {'name': 'measurement', 'qubits': ('Qubit A',), 'args': {'key': 'A'}},
+            {'name': 'measure', 'qubits': ('Qubit A',), 'args': {'key': 'A'}},
             {'name': 'measure', 'qubits': ('Qubit B',), 'args': {'key': 'B'}},
         ],
         metadata=sample_circuit_metadata,
@@ -452,9 +452,9 @@ def sample_quantum_architecture():
             'qubits': ['QB1', 'QB2'],
             'qubit_connectivity': [['QB1', 'QB2']],
             'operations': {
-                'phased_rx': [['QB1'], ['QB2']],
+                'prx': [['QB1'], ['QB2']],
                 'cz': [['QB1', 'QB2']],
-                'measurement': [['QB1'], ['QB2']],
+                'measure': [['QB1'], ['QB2']],
             },
         }
     }
