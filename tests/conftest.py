@@ -455,6 +455,7 @@ def sample_quantum_architecture():
                 'prx': [['QB1'], ['QB2']],
                 'cz': [['QB1', 'QB2']],
                 'measure': [['QB1'], ['QB2']],
+                'barrier': [],
             },
         }
     }

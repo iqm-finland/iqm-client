@@ -216,6 +216,7 @@ class IQMClient:
 
         for i, circuit in enumerate(circuits):
             try:
+                # validate the circuit against the local information in iqm.iqm_client.models._SUPPORTED_OPERATIONS
                 validate_circuit(circuit)
             except ValueError as e:
                 raise CircuitValidationError(f'The circuit at index {i} failed the validation').with_traceback(
@@ -227,6 +228,7 @@ class IQMClient:
         self._validate_qubit_mapping(architecture, circuits, qubit_mapping)
         serialized_qubit_mapping = serialize_qubit_mapping(qubit_mapping) if qubit_mapping else None
 
+        # validate the circuit against the quantum architecture of the server
         self._validate_circuit_instructions(architecture, circuits, qubit_mapping)
 
         return RunRequest(
@@ -336,17 +338,17 @@ class IQMClient:
         circuits: CircuitBatch,
         qubit_mapping: Optional[dict[str, str]] = None,
     ):
-        """Validates that the instructions target correct qubits in the given circuits.
+        """Validate the given circuits against the given quantum architecture.
 
         Args:
-          architecture: the quantum architecture to check against
-          circuits: list of circuits to be checked
+          architecture: quantum architecture to check against
+          circuits: circuits to be checked
           qubit_mapping: Mapping of logical qubit names to physical qubit names.
               Can be set to ``None`` if all ``circuits`` already use physical qubit names.
               Note that the ``qubit_mapping`` is used for all ``circuits``.
 
         Raises:
-            CircuitExecutionError: IQM server specific exceptions
+            CircuitExecutionError: validation failed
         """
         for circuit in circuits:
             IQMClient._validate_circuit_moves(architecture, circuit, qubit_mapping)
@@ -359,28 +361,38 @@ class IQMClient:
         instruction: Instruction,
         qubit_mapping: Optional[dict[str, str]] = None,
     ) -> None:
-        """Validates that the instruction targets correct qubits in the given architecture.
+        """Validate that the instruction targets a valid qubit locus in the given quantum architecture.
 
         Args:
-          architecture: the quantum architecture to check against
-          instruction: the instruction to check
+          architecture: quantum architecture to check against
+          instruction: instruction to check
           qubit_mapping: Mapping of logical qubit names to physical qubit names.
               Can be set to ``None`` if ``instruction`` already uses physical qubit names.
 
         Raises:
-            CircuitExecutionError: IQM server specific exceptions
+            CircuitExecutionError: validation failed
         """
         if instruction.name not in architecture.operations:
-            raise ValueError(f"Instruction '{instruction.name}' is not supported by the quantum architecture.")
+            raise CircuitExecutionError(f"Instruction '{instruction.name}' is not supported by the quantum architecture.")
         allowed_loci = architecture.operations[instruction.name]
         op_info = _SUPPORTED_OPERATIONS[instruction.name]
+        # apply the qubit mapping if any
+        qubits = [qubit_mapping[q] for q in instruction.qubits] if qubit_mapping else list(instruction.qubits)
+
         if op_info.allow_all_loci:
+            # all QPU loci are allowed
+            for q, mapped_q in zip(instruction.qubits, qubits):
+                if q not in architecture.qubits:
+                    raise CircuitExecutionError(
+                        f'{instruction}: Qubit {q} = {mapped_q} does not exist on the QPU.'
+                        if qubit_mapping
+                        else f'{instruction}: Qubit {q} does not exist on the QPU.'
+                    )
             return
         if op_info.factorizable:
             # Check that all qubits in the locus are allowed by the architecture
             allowed_qubits = set(q for locus in allowed_loci for q in locus)
-            for q in instruction.qubits:
-                mapped_q = qubit_mapping[q] if qubit_mapping else q
+            for q, mapped_q in zip(instruction.qubits, qubits):
                 if mapped_q not in allowed_qubits:
                     raise CircuitExecutionError(
                         f'Qubit {q} = {mapped_q} is not allowed as locus for {instruction.name}'
@@ -390,7 +402,6 @@ class IQMClient:
             return
 
         # Check that locus matches one of the loci defined in architecture
-        qubits = [qubit_mapping[q] for q in instruction.qubits] if qubit_mapping else list(instruction.qubits)
         all_loci = (
             [list(x) for locus in allowed_loci for x in itertools.permutations(locus)]
             if op_info.symmetric
@@ -415,7 +426,7 @@ class IQMClient:
             qubit_mapping: Mapping of logical qubit names to physical qubit names.
                 Can be set to ``None`` if the ``circuit`` already uses physical qubit names.
         Raises:
-            CircuitExecutionError: ``circuit`` fails the validation
+            CircuitExecutionError: validation failed
         """
         move_gate = 'move'
         # Check if MOVE gates are allowed on this architecture

@@ -408,14 +408,13 @@ CircuitBatch = list[Circuit]
 
 
 def validate_circuit(circuit: Circuit) -> None:
-    """Validates a submitted quantum circuit using Pydantic tooling. If the
-    validation of the circuit fails, an exception is raised.
+    """Validates a submitted quantum circuit using Pydantic tooling.
 
     Args:
         circuit: a circuit that needs validation
 
     Raises:
-            pydantic.error_wrappers.ValidationError
+        pydantic.error_wrappers.ValidationError: validation failed
     """
     Circuit.model_validate(circuit.__dict__)
 
