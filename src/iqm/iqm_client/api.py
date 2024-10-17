@@ -88,6 +88,7 @@ class APIConfig:
                 APIEndpoint.SUBMIT_JOB: "jobs",
                 APIEndpoint.GET_JOB_RESULT: "jobs/%s",
                 APIEndpoint.GET_JOB_STATUS: "jobs/%s/status",
+                APIEndpoint.GET_JOB_COUNTS: "jobs/%s/counts",
                 APIEndpoint.ABORT_JOB: "jobs/%s/abort",
                 APIEndpoint.ABORT_CALIBRATION_JOB: "jobs/%s/abort",
                 APIEndpoint.DELETE_JOB: "jobs/%s",

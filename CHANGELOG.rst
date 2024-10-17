@@ -2,10 +2,15 @@
 Changelog
 =========
 
-Version 18.7
+Version 18.8
 ============
 
 * Fix MOVE gate validation for qubit mappings containing only some of the architecture qubits `#137 <https://github.com/iqm-finland/iqm-client/pull/137>`_
+
+Version 18.7
+============
+
+* Fix list of endpoints supported by the V1 API. `#138 <https://github.com/iqm-finland/iqm-client/pull/138>`_
 
 Version 18.6
 ============
@@ -57,7 +62,7 @@ Version 18.0
   * Moved the existing ``heralding_mode`` parameter to :class:`CircuitCompilationOptions`.
   * Introduced new option ``move_gate_validation`` to turn off MOVE gate validation during compilation (ADVANCED).
   * Introduced new option ``move_gate_frame_tracking`` to turn off frame tracking for the MOVE gate (ADVANCED).
-  * New options can only be used on stations with ``CoCoS`` version 29.9 or later that support the MOVE gate instruction. Otherwise, the options will be ignored. 
+  * New options can only be used on stations with ``CoCoS`` version 29.9 or later that support the MOVE gate instruction. Otherwise, the options will be ignored.
 
 Version 17.8
 ============
