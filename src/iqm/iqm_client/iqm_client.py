@@ -382,7 +382,7 @@ class IQMClient:
         if op_info.allow_all_loci:
             # all QPU loci are allowed
             for q, mapped_q in zip(instruction.qubits, qubits):
-                if q not in architecture.qubits:
+                if mapped_q not in architecture.qubits:
                     raise CircuitExecutionError(
                         f'{instruction}: Qubit {q} = {mapped_q} does not exist on the QPU.'
                         if qubit_mapping
