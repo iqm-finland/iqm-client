@@ -487,7 +487,6 @@ def test_wait_for_results_adds_user_agent_with_signature(
     unstub()
 
 
-@pytest.mark.skip('Re-enable when cc_prx is no longer added to architecture in client.')
 def test_get_quantum_architecture(
     sample_client, quantum_architecture_url, sample_quantum_architecture, quantum_architecture_success
 ):
