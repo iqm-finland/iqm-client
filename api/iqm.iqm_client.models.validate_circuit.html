@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>iqm.iqm_client.models.validate_circuit &#8212; IQM client 18.8 documentation</title>
+    <title>iqm.iqm_client.models.validate_circuit &#8212; IQM client 19.0 documentation</title>
   
   
   
@@ -37,7 +37,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=eb36d42a"></script>
+    <script src="../_static/documentation_options.js?v=c85fe2e9"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
@@ -49,7 +49,7 @@
     <link rel="prev" title="iqm.iqm_client.models.serialize_qubit_mapping" href="iqm.iqm_client.models.serialize_qubit_mapping.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="2024-10-17"/>
+    <meta name="docbuild:last-update" content="2024-10-18"/>
   </head>
   
   
@@ -139,8 +139,8 @@
       
     
     
-    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 18.8 documentation - Home"/>
-    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="IQM client 18.8 documentation - Home"/>`);</script>
+    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 19.0 documentation - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="IQM client 19.0 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -196,9 +196,6 @@
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.QubitMapping.html">iqm.iqm_client.models.QubitMapping</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.CircuitMeasurementResults.html">iqm.iqm_client.models.CircuitMeasurementResults</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.CircuitMeasurementResultsBatch.html">iqm.iqm_client.models.CircuitMeasurementResultsBatch</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.get_current_instruction_name.html">iqm.iqm_client.models.get_current_instruction_name</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.is_directed_instruction.html">iqm.iqm_client.models.is_directed_instruction</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.is_multi_qubit_instruction.html">iqm.iqm_client.models.is_multi_qubit_instruction</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.serialize_qubit_mapping.html">iqm.iqm_client.models.serialize_qubit_mapping</a></li>
 <li class="toctree-l4 current active"><a class="current reference internal" href="#">iqm.iqm_client.models.validate_circuit</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.Circuit.html">iqm.iqm_client.models.Circuit</a></li>
@@ -212,6 +209,7 @@
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.Metadata.html">iqm.iqm_client.models.Metadata</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.MoveGateFrameTrackingMode.html">iqm.iqm_client.models.MoveGateFrameTrackingMode</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.MoveGateValidationMode.html">iqm.iqm_client.models.MoveGateValidationMode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.NativeOperation.html">iqm.iqm_client.models.NativeOperation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.QuantumArchitecture.html">iqm.iqm_client.models.QuantumArchitecture</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.QuantumArchitectureSpecification.html">iqm.iqm_client.models.QuantumArchitectureSpecification</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.RunRequest.html">iqm.iqm_client.models.RunRequest</a></li>
@@ -408,14 +406,13 @@ document.write(`
 <dl class="py function">
 <dt class="sig sig-object py" id="iqm.iqm_client.models.validate_circuit">
 <span class="sig-prename descclassname"><span class="pre">iqm.iqm_client.models.</span></span><span class="sig-name descname"><span class="pre">validate_circuit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">circuit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="iqm.iqm_client.models.Circuit.html#iqm.iqm_client.models.Circuit" title="iqm.iqm_client.models.Circuit"><span class="pre">Circuit</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#iqm.iqm_client.models.validate_circuit" title="Link to this definition">#</a></dt>
-<dd><p>Validates a submitted quantum circuit using Pydantic tooling. If the
-validation of the circuit fails, an exception is raised.</p>
+<dd><p>Validates a submitted quantum circuit using Pydantic tooling.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>circuit</strong> (<a class="reference internal" href="iqm.iqm_client.models.Circuit.html#iqm.iqm_client.models.Circuit" title="iqm.iqm_client.models.Circuit"><em>Circuit</em></a>) – a circuit that needs validation</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>pydantic.error_wrappers.ValidationError</strong> – </p>
+<dd class="field-even"><p><strong>pydantic.error_wrappers.ValidationError</strong> – validation failed</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>None</p>
@@ -504,7 +501,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2024-10-17.
+  Last updated on 2024-10-18.
   <br/>
 </p>
   </div>

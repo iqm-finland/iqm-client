@@ -25,9 +25,6 @@ iqm.iqm\_client.models
    .. autosummary::
       :toctree:
    
-      get_current_instruction_name
-      is_directed_instruction
-      is_multi_qubit_instruction
       serialize_qubit_mapping
       validate_circuit
    
@@ -52,6 +49,7 @@ iqm.iqm\_client.models
       Metadata
       MoveGateFrameTrackingMode
       MoveGateValidationMode
+      NativeOperation
       QuantumArchitecture
       QuantumArchitectureSpecification
       RunRequest

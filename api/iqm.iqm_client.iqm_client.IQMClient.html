@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>iqm.iqm_client.iqm_client.IQMClient &#8212; IQM client 18.8 documentation</title>
+    <title>iqm.iqm_client.iqm_client.IQMClient &#8212; IQM client 19.0 documentation</title>
   
   
   
@@ -37,7 +37,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=eb36d42a"></script>
+    <script src="../_static/documentation_options.js?v=c85fe2e9"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
@@ -49,7 +49,7 @@
     <link rel="prev" title="iqm.iqm_client.iqm_client" href="iqm.iqm_client.iqm_client.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-    <meta name="docbuild:last-update" content="2024-10-17"/>
+    <meta name="docbuild:last-update" content="2024-10-18"/>
   </head>
   
   
@@ -139,8 +139,8 @@
       
     
     
-    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 18.8 documentation - Home"/>
-    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="IQM client 18.8 documentation - Home"/>`);</script>
+    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 19.0 documentation - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="IQM client 19.0 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -196,9 +196,6 @@
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.QubitMapping.html">iqm.iqm_client.models.QubitMapping</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.CircuitMeasurementResults.html">iqm.iqm_client.models.CircuitMeasurementResults</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.CircuitMeasurementResultsBatch.html">iqm.iqm_client.models.CircuitMeasurementResultsBatch</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.get_current_instruction_name.html">iqm.iqm_client.models.get_current_instruction_name</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.is_directed_instruction.html">iqm.iqm_client.models.is_directed_instruction</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.is_multi_qubit_instruction.html">iqm.iqm_client.models.is_multi_qubit_instruction</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.serialize_qubit_mapping.html">iqm.iqm_client.models.serialize_qubit_mapping</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.validate_circuit.html">iqm.iqm_client.models.validate_circuit</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.Circuit.html">iqm.iqm_client.models.Circuit</a></li>
@@ -212,6 +209,7 @@
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.Metadata.html">iqm.iqm_client.models.Metadata</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.MoveGateFrameTrackingMode.html">iqm.iqm_client.models.MoveGateFrameTrackingMode</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.MoveGateValidationMode.html">iqm.iqm_client.models.MoveGateValidationMode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.NativeOperation.html">iqm.iqm_client.models.NativeOperation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.QuantumArchitecture.html">iqm.iqm_client.models.QuantumArchitecture</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.QuantumArchitectureSpecification.html">iqm.iqm_client.models.QuantumArchitectureSpecification</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.RunRequest.html">iqm.iqm_client.models.RunRequest</a></li>
@@ -471,13 +469,13 @@ for values given as environment variables as for keyword arguments.</p>
 <td><p>This is a temporary workaround for 502 errors.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_validate_circuit_instructions</span></code>(architecture, ...)</p></td>
-<td><p>Raises an error if the given circuits are not valid in the given architecture.</p></td>
+<td><p>Validate the given circuits against the given quantum architecture.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_validate_circuit_moves</span></code>(architecture, circuit)</p></td>
 <td><p>Raises an error if the MOVE gates in the circuit are not valid in the given architecture.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_validate_instruction</span></code>(architecture, instruction)</p></td>
-<td><p>Raises an error if the given instruction is not valid in the given architecture.</p></td>
+<td><p>Check that the instruction targets a valid qubit locus in the given quantum architecture.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_validate_qubit_mapping</span></code>(architecture, circuits)</p></td>
 <td><p>Validates the given qubit mapping, if defined.</p></td>
@@ -891,7 +889,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2024-10-17.
+  Last updated on 2024-10-18.
   <br/>
 </p>
   </div>

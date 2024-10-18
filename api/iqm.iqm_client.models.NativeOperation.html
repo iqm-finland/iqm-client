@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>iqm.iqm_client.models.SingleQubitMapping &#8212; IQM client 19.0 documentation</title>
+    <title>iqm.iqm_client.models.NativeOperation &#8212; IQM client 19.0 documentation</title>
   
   
   
@@ -41,12 +41,12 @@
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'api/iqm.iqm_client.models.SingleQubitMapping';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/iqm.iqm_client.models.NativeOperation';</script>
     <link rel="icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="iqm.iqm_client.models.Status" href="iqm.iqm_client.models.Status.html" />
-    <link rel="prev" title="iqm.iqm_client.models.RunStatus" href="iqm.iqm_client.models.RunStatus.html" />
+    <link rel="next" title="iqm.iqm_client.models.QuantumArchitecture" href="iqm.iqm_client.models.QuantumArchitecture.html" />
+    <link rel="prev" title="iqm.iqm_client.models.MoveGateValidationMode" href="iqm.iqm_client.models.MoveGateValidationMode.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
     <meta name="docbuild:last-update" content="2024-10-18"/>
@@ -209,13 +209,13 @@
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.Metadata.html">iqm.iqm_client.models.Metadata</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.MoveGateFrameTrackingMode.html">iqm.iqm_client.models.MoveGateFrameTrackingMode</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.MoveGateValidationMode.html">iqm.iqm_client.models.MoveGateValidationMode</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.NativeOperation.html">iqm.iqm_client.models.NativeOperation</a></li>
+<li class="toctree-l4 current active"><a class="current reference internal" href="#">iqm.iqm_client.models.NativeOperation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.QuantumArchitecture.html">iqm.iqm_client.models.QuantumArchitecture</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.QuantumArchitectureSpecification.html">iqm.iqm_client.models.QuantumArchitectureSpecification</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.RunRequest.html">iqm.iqm_client.models.RunRequest</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.RunResult.html">iqm.iqm_client.models.RunResult</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.RunStatus.html">iqm.iqm_client.models.RunStatus</a></li>
-<li class="toctree-l4 current active"><a class="current reference internal" href="#">iqm.iqm_client.models.SingleQubitMapping</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.SingleQubitMapping.html">iqm.iqm_client.models.SingleQubitMapping</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.Status.html">iqm.iqm_client.models.Status</a></li>
 </ul>
 </details></li>
@@ -295,7 +295,7 @@
       
       
       
-      <li><a href="../_sources/api/iqm.iqm_client.models.SingleQubitMapping.rst" target="_blank"
+      <li><a href="../_sources/api/iqm.iqm_client.models.NativeOperation.rst" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -379,7 +379,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>iqm.iqm_client.models.SingleQubitMapping</h1>
+    <h1>iqm.iqm_client.models.NativeOperation</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -389,12 +389,15 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.SingleQubitMapping"><code class="docutils literal notranslate"><span class="pre">SingleQubitMapping</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.SingleQubitMapping.logical_name"><code class="docutils literal notranslate"><span class="pre">SingleQubitMapping.logical_name</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.SingleQubitMapping.physical_name"><code class="docutils literal notranslate"><span class="pre">SingleQubitMapping.physical_name</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.SingleQubitMapping.model_computed_fields"><code class="docutils literal notranslate"><span class="pre">SingleQubitMapping.model_computed_fields</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.SingleQubitMapping.model_config"><code class="docutils literal notranslate"><span class="pre">SingleQubitMapping.model_config</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.SingleQubitMapping.model_fields"><code class="docutils literal notranslate"><span class="pre">SingleQubitMapping.model_fields</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.NativeOperation"><code class="docutils literal notranslate"><span class="pre">NativeOperation</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.NativeOperation.name"><code class="docutils literal notranslate"><span class="pre">NativeOperation.name</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.NativeOperation.arity"><code class="docutils literal notranslate"><span class="pre">NativeOperation.arity</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.NativeOperation.args_required"><code class="docutils literal notranslate"><span class="pre">NativeOperation.args_required</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.NativeOperation.args_not_required"><code class="docutils literal notranslate"><span class="pre">NativeOperation.args_not_required</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.NativeOperation.symmetric"><code class="docutils literal notranslate"><span class="pre">NativeOperation.symmetric</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.NativeOperation.renamed_to"><code class="docutils literal notranslate"><span class="pre">NativeOperation.renamed_to</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.NativeOperation.factorizable"><code class="docutils literal notranslate"><span class="pre">NativeOperation.factorizable</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.NativeOperation.allow_all_loci"><code class="docutils literal notranslate"><span class="pre">NativeOperation.allow_all_loci</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -408,30 +411,39 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="iqm-iqm-client-models-singlequbitmapping">
-<h1>iqm.iqm_client.models.SingleQubitMapping<a class="headerlink" href="#iqm-iqm-client-models-singlequbitmapping" title="Link to this heading">#</a></h1>
+  <section id="iqm-iqm-client-models-nativeoperation">
+<h1>iqm.iqm_client.models.NativeOperation<a class="headerlink" href="#iqm-iqm-client-models-nativeoperation" title="Link to this heading">#</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="iqm.iqm_client.models.SingleQubitMapping">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">iqm.iqm_client.models.</span></span><span class="sig-name descname"><span class="pre">SingleQubitMapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">physical_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm.iqm_client.models.SingleQubitMapping" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
-<p>Mapping of a logical qubit name to a physical qubit name.</p>
+<dt class="sig sig-object py" id="iqm.iqm_client.models.NativeOperation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">iqm.iqm_client.models.</span></span><span class="sig-name descname"><span class="pre">NativeOperation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arity:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args_required:</span> <span class="pre">dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tuple[type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">...]]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args_not_required:</span> <span class="pre">dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tuple[type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">...]]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symmetric:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">renamed_to:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factorizable:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_all_loci:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm.iqm_client.models.NativeOperation" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.9/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Describes a native operation on the quantum computer.</p>
 <p class="rubric">Attributes</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.models.SingleQubitMapping.model_computed_fields" title="iqm.iqm_client.models.SingleQubitMapping.model_computed_fields"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_computed_fields</span></code></a></p></td>
-<td><p>A dictionary of computed field names and their corresponding <cite>ComputedFieldInfo</cite> objects.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.models.NativeOperation.allow_all_loci" title="iqm.iqm_client.models.NativeOperation.allow_all_loci"><code class="xref py py-obj docutils literal notranslate"><span class="pre">allow_all_loci</span></code></a></p></td>
+<td><p>Iff true, the operation is always allowed on all QPU loci regardless of calibration state.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.models.SingleQubitMapping.model_config" title="iqm.iqm_client.models.SingleQubitMapping.model_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_config</span></code></a></p></td>
-<td><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.models.NativeOperation.factorizable" title="iqm.iqm_client.models.NativeOperation.factorizable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">factorizable</span></code></a></p></td>
+<td><p>Iff True, any multi-component instance of this operation can be broken down to single-component instances, and calibration data is specific to single-component loci.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.models.SingleQubitMapping.model_fields" title="iqm.iqm_client.models.SingleQubitMapping.model_fields"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_fields</span></code></a></p></td>
-<td><p>Metadata about the fields defined on the model, mapping of field names to [<cite>FieldInfo</cite>][pydantic.fields.FieldInfo] objects.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.models.NativeOperation.renamed_to" title="iqm.iqm_client.models.NativeOperation.renamed_to"><code class="xref py py-obj docutils literal notranslate"><span class="pre">renamed_to</span></code></a></p></td>
+<td><p>If nonempty, indicates that this operation name is deprecated, and IQM client will auto-rename it to the new name.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.models.SingleQubitMapping.logical_name" title="iqm.iqm_client.models.SingleQubitMapping.logical_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logical_name</span></code></a></p></td>
-<td><p>logical qubit name</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.models.NativeOperation.symmetric" title="iqm.iqm_client.models.NativeOperation.symmetric"><code class="xref py py-obj docutils literal notranslate"><span class="pre">symmetric</span></code></a></p></td>
+<td><p>True iff the effect of operation is symmetric in the locus components it acts on.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.models.SingleQubitMapping.physical_name" title="iqm.iqm_client.models.SingleQubitMapping.physical_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">physical_name</span></code></a></p></td>
-<td><p>physical qubit name</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.models.NativeOperation.name" title="iqm.iqm_client.models.NativeOperation.name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></a></p></td>
+<td><p>Name of the operation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.models.NativeOperation.arity" title="iqm.iqm_client.models.NativeOperation.arity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arity</span></code></a></p></td>
+<td><p>Number of locus components (usually qubits) the operation acts on.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.models.NativeOperation.args_required" title="iqm.iqm_client.models.NativeOperation.args_required"><code class="xref py py-obj docutils literal notranslate"><span class="pre">args_required</span></code></a></p></td>
+<td><p>Maps names of required operation parameters to their allowed types.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.models.NativeOperation.args_not_required" title="iqm.iqm_client.models.NativeOperation.args_not_required"><code class="xref py py-obj docutils literal notranslate"><span class="pre">args_not_required</span></code></a></p></td>
+<td><p>Maps names of optional operation parameters to their allowed types.</p></td>
 </tr>
 </tbody>
 </table>
@@ -439,47 +451,89 @@ document.write(`
 <p class="rubric">Methods</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__delattr__</span></code>(name)</p></td>
+<td><p>Implement delattr(self, name).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__eq__</span></code>(other)</p></td>
+<td><p>Return self==value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__hash__</span></code>()</p></td>
+<td><p>Return hash(self).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__repr__</span></code>()</p></td>
+<td><p>Return repr(self).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__setattr__</span></code>(name, value)</p></td>
+<td><p>Implement setattr(self, name, value).</p></td>
+</tr>
 </tbody>
 </table>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>logical_name</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – </p></li>
-<li><p><strong>physical_name</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – </p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – </p></li>
+<li><p><strong>arity</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – </p></li>
+<li><p><strong>args_required</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#tuple" title="(in Python v3.9)"><em>tuple</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#type" title="(in Python v3.9)"><em>type</em></a><em>, </em><em>...</em><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>args_not_required</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#tuple" title="(in Python v3.9)"><em>tuple</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#type" title="(in Python v3.9)"><em>type</em></a><em>, </em><em>...</em><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>symmetric</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – </p></li>
+<li><p><strong>renamed_to</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – </p></li>
+<li><p><strong>factorizable</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – </p></li>
+<li><p><strong>allow_all_loci</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – </p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="iqm.iqm_client.models.SingleQubitMapping.logical_name">
-<span class="sig-name descname"><span class="pre">logical_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></em><a class="headerlink" href="#iqm.iqm_client.models.SingleQubitMapping.logical_name" title="Link to this definition">#</a></dt>
-<dd><p>logical qubit name</p>
+<dt class="sig sig-object py" id="iqm.iqm_client.models.NativeOperation.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></em><a class="headerlink" href="#iqm.iqm_client.models.NativeOperation.name" title="Link to this definition">#</a></dt>
+<dd><p>Name of the operation.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="iqm.iqm_client.models.SingleQubitMapping.physical_name">
-<span class="sig-name descname"><span class="pre">physical_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></em><a class="headerlink" href="#iqm.iqm_client.models.SingleQubitMapping.physical_name" title="Link to this definition">#</a></dt>
-<dd><p>physical qubit name</p>
+<dt class="sig sig-object py" id="iqm.iqm_client.models.NativeOperation.arity">
+<span class="sig-name descname"><span class="pre">arity</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a></em><a class="headerlink" href="#iqm.iqm_client.models.NativeOperation.arity" title="Link to this definition">#</a></dt>
+<dd><p>Number of locus components (usually qubits) the operation acts on.
+Zero means the operation can be applied on any number of locus components.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="iqm.iqm_client.models.SingleQubitMapping.model_computed_fields">
-<span class="sig-name descname"><span class="pre">model_computed_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ComputedFieldInfo</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#iqm.iqm_client.models.SingleQubitMapping.model_computed_fields" title="Link to this definition">#</a></dt>
-<dd><p>A dictionary of computed field names and their corresponding <cite>ComputedFieldInfo</cite> objects.</p>
+<dt class="sig sig-object py" id="iqm.iqm_client.models.NativeOperation.args_required">
+<span class="sig-name descname"><span class="pre">args_required</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#tuple" title="(in Python v3.9)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#type" title="(in Python v3.9)"><span class="pre">type</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#iqm.iqm_client.models.NativeOperation.args_required" title="Link to this definition">#</a></dt>
+<dd><p>Maps names of required operation parameters to their allowed types.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="iqm.iqm_client.models.SingleQubitMapping.model_config">
-<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#iqm.iqm_client.models.SingleQubitMapping.model_config" title="Link to this definition">#</a></dt>
-<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+<dt class="sig sig-object py" id="iqm.iqm_client.models.NativeOperation.args_not_required">
+<span class="sig-name descname"><span class="pre">args_not_required</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#tuple" title="(in Python v3.9)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#type" title="(in Python v3.9)"><span class="pre">type</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#iqm.iqm_client.models.NativeOperation.args_not_required" title="Link to this definition">#</a></dt>
+<dd><p>Maps names of optional operation parameters to their allowed types.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="iqm.iqm_client.models.SingleQubitMapping.model_fields">
-<span class="sig-name descname"><span class="pre">model_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">FieldInfo</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'logical_name':</span> <span class="pre">FieldInfo(annotation=str,</span> <span class="pre">required=True,</span> <span class="pre">examples=['alice']),</span> <span class="pre">'physical_name':</span> <span class="pre">FieldInfo(annotation=str,</span> <span class="pre">required=True,</span> <span class="pre">examples=['QB1'])}</span></em><a class="headerlink" href="#iqm.iqm_client.models.SingleQubitMapping.model_fields" title="Link to this definition">#</a></dt>
-<dd><p>Metadata about the fields defined on the model,
-mapping of field names to [<cite>FieldInfo</cite>][pydantic.fields.FieldInfo] objects.</p>
-<p>This replaces <cite>Model.__fields__</cite> from Pydantic V1.</p>
+<dt class="sig sig-object py" id="iqm.iqm_client.models.NativeOperation.symmetric">
+<span class="sig-name descname"><span class="pre">symmetric</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#bool" title="(in Python v3.9)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#iqm.iqm_client.models.NativeOperation.symmetric" title="Link to this definition">#</a></dt>
+<dd><p>True iff the effect of operation is symmetric in the locus components it acts on.
+Only meaningful if <a class="reference internal" href="#iqm.iqm_client.models.NativeOperation.arity" title="iqm.iqm_client.models.NativeOperation.arity"><code class="xref py py-attr docutils literal notranslate"><span class="pre">arity</span></code></a> != 1.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="iqm.iqm_client.models.NativeOperation.renamed_to">
+<span class="sig-name descname"><span class="pre">renamed_to</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#iqm.iqm_client.models.NativeOperation.renamed_to" title="Link to this definition">#</a></dt>
+<dd><p>If nonempty, indicates that this operation name is deprecated, and IQM client will
+auto-rename it to the new name.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="iqm.iqm_client.models.NativeOperation.factorizable">
+<span class="sig-name descname"><span class="pre">factorizable</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#bool" title="(in Python v3.9)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#iqm.iqm_client.models.NativeOperation.factorizable" title="Link to this definition">#</a></dt>
+<dd><p>Iff True, any multi-component instance of this operation can be broken down to
+single-component instances, and calibration data is specific to single-component loci.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="iqm.iqm_client.models.NativeOperation.allow_all_loci">
+<span class="sig-name descname"><span class="pre">allow_all_loci</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#bool" title="(in Python v3.9)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#iqm.iqm_client.models.NativeOperation.allow_all_loci" title="Link to this definition">#</a></dt>
+<dd><p>Iff true, the operation is always allowed on all QPU loci regardless of calibration state.
+Typically a metaoperation like barrier.</p>
 </dd></dl>
 
 </dd></dl>
@@ -498,20 +552,20 @@ mapping of field names to [<cite>FieldInfo</cite>][pydantic.fields.FieldInfo] ob
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="iqm.iqm_client.models.RunStatus.html"
+       href="iqm.iqm_client.models.MoveGateValidationMode.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">iqm.iqm_client.models.RunStatus</p>
+        <p class="prev-next-title">iqm.iqm_client.models.MoveGateValidationMode</p>
       </div>
     </a>
     <a class="right-next"
-       href="iqm.iqm_client.models.Status.html"
+       href="iqm.iqm_client.models.QuantumArchitecture.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">iqm.iqm_client.models.Status</p>
+        <p class="prev-next-title">iqm.iqm_client.models.QuantumArchitecture</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -531,12 +585,15 @@ mapping of field names to [<cite>FieldInfo</cite>][pydantic.fields.FieldInfo] ob
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.SingleQubitMapping"><code class="docutils literal notranslate"><span class="pre">SingleQubitMapping</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.SingleQubitMapping.logical_name"><code class="docutils literal notranslate"><span class="pre">SingleQubitMapping.logical_name</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.SingleQubitMapping.physical_name"><code class="docutils literal notranslate"><span class="pre">SingleQubitMapping.physical_name</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.SingleQubitMapping.model_computed_fields"><code class="docutils literal notranslate"><span class="pre">SingleQubitMapping.model_computed_fields</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.SingleQubitMapping.model_config"><code class="docutils literal notranslate"><span class="pre">SingleQubitMapping.model_config</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.SingleQubitMapping.model_fields"><code class="docutils literal notranslate"><span class="pre">SingleQubitMapping.model_fields</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.NativeOperation"><code class="docutils literal notranslate"><span class="pre">NativeOperation</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.NativeOperation.name"><code class="docutils literal notranslate"><span class="pre">NativeOperation.name</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.NativeOperation.arity"><code class="docutils literal notranslate"><span class="pre">NativeOperation.arity</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.NativeOperation.args_required"><code class="docutils literal notranslate"><span class="pre">NativeOperation.args_required</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.NativeOperation.args_not_required"><code class="docutils literal notranslate"><span class="pre">NativeOperation.args_not_required</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.NativeOperation.symmetric"><code class="docutils literal notranslate"><span class="pre">NativeOperation.symmetric</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.NativeOperation.renamed_to"><code class="docutils literal notranslate"><span class="pre">NativeOperation.renamed_to</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.NativeOperation.factorizable"><code class="docutils literal notranslate"><span class="pre">NativeOperation.factorizable</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.NativeOperation.allow_all_loci"><code class="docutils literal notranslate"><span class="pre">NativeOperation.allow_all_loci</span></code></a></li>
 </ul>
 </li>
 </ul>
