@@ -23,34 +23,38 @@ sample_qb_mapping = {'0': 'COMP_R', '1': 'QB1', '2': 'QB2', '3': 'QB3'}
 reverse_qb_mapping = {value: key for key, value in sample_qb_mapping.items()}
 
 
-@pytest.mark.parametrize('instruction', [
-    Instruction(name='barrier', qubits=['QB1'], args={}),
-    Instruction(name='barrier', qubits=['QB1', 'QB2'], args={}),
-    Instruction(name='barrier', qubits=['QB2', 'QB1'], args={}),  # barrier can use any loci
-    Instruction(name='prx', qubits=['QB1'], args={'phase_t': 0.3, 'angle_t': -0.2}),
-    Instruction(name='cz', qubits=['QB1', 'QB2'], args={}),
-    Instruction(name='cz', qubits=['QB2', 'QB1'], args={}),  # CZ is symmetric
-    Instruction(name='measure', qubits=['QB1'], args={'key': 'm'}),
-    Instruction(name='measure', qubits=['QB1', 'QB2'], args={'key': 'm'}),  # measure is factorizable
-    Instruction(name='measure', qubits=['QB2', 'QB1'], args={'key': 'm'}),  # measure is factorizable
-])
+@pytest.mark.parametrize(
+    'instruction',
+    [
+        Instruction(name='barrier', qubits=['QB1'], args={}),
+        Instruction(name='barrier', qubits=['QB1', 'QB2'], args={}),
+        Instruction(name='barrier', qubits=['QB2', 'QB1'], args={}),  # barrier can use any loci
+        Instruction(name='prx', qubits=['QB1'], args={'phase_t': 0.3, 'angle_t': -0.2}),
+        Instruction(name='cz', qubits=['QB1', 'QB2'], args={}),
+        Instruction(name='cz', qubits=['QB2', 'QB1'], args={}),  # CZ is symmetric
+        Instruction(name='measure', qubits=['QB1'], args={'key': 'm'}),
+        Instruction(name='measure', qubits=['QB1', 'QB2'], args={'key': 'm'}),  # measure is factorizable
+        Instruction(name='measure', qubits=['QB2', 'QB1'], args={'key': 'm'}),  # measure is factorizable
+    ],
+)
 def test_valid_instruction(sample_quantum_architecture, instruction):
-    """Valid instructions must pass validation.
-    """
+    """Valid instructions must pass validation."""
     arch = QuantumArchitecture(**sample_quantum_architecture).quantum_architecture
     IQMClient._validate_instruction(arch, instruction, None)
 
 
-@pytest.mark.parametrize('instruction,match', [
-    [Instruction(name='barrier', qubits=['QB1', 'QB2', 'XXX'], args={}), 'does not exist'],
-    [Instruction(name='prx', qubits=['QB3'], args={'phase_t': 0.3, 'angle_t': -0.2}), 'not allowed as locus'],
-    [Instruction(name='cz', qubits=['QB2', 'QB3'], args={}), 'not allowed as locus'],
-    [Instruction(name='measure', qubits=['QB1', 'QB3'], args={'key': 'm'}), 'is not allowed as locus'],
-    [Instruction(name='measure', qubits=['QB3'], args={'key': 'm'}), 'is not allowed as locus'],
-])
+@pytest.mark.parametrize(
+    'instruction,match',
+    [
+        [Instruction(name='barrier', qubits=['QB1', 'QB2', 'XXX'], args={}), 'does not exist'],
+        [Instruction(name='prx', qubits=['QB3'], args={'phase_t': 0.3, 'angle_t': -0.2}), 'not allowed as locus'],
+        [Instruction(name='cz', qubits=['QB2', 'QB3'], args={}), 'not allowed as locus'],
+        [Instruction(name='measure', qubits=['QB1', 'QB3'], args={'key': 'm'}), 'is not allowed as locus'],
+        [Instruction(name='measure', qubits=['QB3'], args={'key': 'm'}), 'is not allowed as locus'],
+    ],
+)
 def test_invalid_instruction(sample_quantum_architecture, instruction, match):
-    """Invalid instructions must not pass validation.
-    """
+    """Invalid instructions must not pass validation."""
     arch = QuantumArchitecture(**sample_quantum_architecture).quantum_architecture
     with pytest.raises(CircuitExecutionError, match=match):
         IQMClient._validate_instruction(arch, instruction, None)
