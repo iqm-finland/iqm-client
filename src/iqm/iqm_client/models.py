@@ -80,7 +80,6 @@ _SUPPORTED_OPERATIONS: dict[str, NativeOperation] = {
     ]
 }
 
-
 Locus = tuple[StrictStr, ...]
 """Names of the QPU components (typically qubits) a quantum operation instance is acting on, e.g. `("QB1", "QB2")`."""
 
@@ -103,10 +102,11 @@ class Instruction(BaseModel):
     cc_prx           1           ``angle_t: float``, ``phase_t: float``,
                                  ``feedback_label: str``                 Classically controlled prx gate.
     cz               2                                                   Controlled-Z gate.
-    barrier          >= 1                                                Execution barrier.
-    move             2                                                   Moves a qubit state between resonator and
-                                                                         qubit, as long as the other component is
+    move             2                                                   Moves a qubit state between a qubit and a
+                                                                         computational resonator,
+                                                                         as long as the other component is
                                                                          in the |0> state.
+    barrier          >= 1                                                Execution barrier.
     ================ =========== ======================================= ===========
 
     For each Instruction you may also optionally specify :attr:`~Instruction.implementation`,
@@ -121,7 +121,8 @@ class Instruction(BaseModel):
     Takes two string arguments: ``key``, denoting the measurement key the returned results are labeled with,
     and ``feedback_key``, which is only needed if the measurement result is used for classical control
     within the circuit.
-    All the measurement keys and feedback keys in a circuit must be unique.
+    All the measurement keys and feedback keys used in a circuit must be unique (but the two groups of
+    keys are independent namespaces).                                                                             
     Each qubit may be measured multiple times, i.e. mid-circuit measurements are allowed.
 
     .. code-block:: python
@@ -196,6 +197,8 @@ class Instruction(BaseModel):
 
         Instruction(name='move', qubits=('alice', 'resonator'), args={})
 
+    .. note:: MOVE is only available in quantum computers with the IQM Star architecture.
+
     Barrier
     -------
 
@@ -211,10 +214,11 @@ class Instruction(BaseModel):
 
         Instruction(name='barrier', qubits=('alice', 'bob'), args={})
 
-    *Note*
-    1-qubit barriers will not have any effect on circuit's compilation and execution. Higher layers
-    that sit on top of IQM Client can make actual use of 1-qubit barriers (e.g. during circuit optimization),
-    therefore having them is allowed.
+    .. note::
+
+       One-qubit barriers will not have any effect on circuit's compilation and execution. Higher layers
+       that sit on top of IQM Client can make actual use of one-qubit barriers (e.g. during circuit optimization),
+       therefore having them is allowed.
     """
 
     name: str = Field(..., examples=['measure'])
@@ -528,7 +532,7 @@ class GateInfo(BaseModel):
     """mapping of available implementation names to information about the implementations"""
     default_implementation: str = Field(...)
     """default implementation for the gate, used unless overridden by :attr:`override_default_implementation`
-    or unless the user requests a specific implementation for a particular gate in the circuit using 
+    or unless the user requests a specific implementation for a particular gate in the circuit using
     :attr:`.Instruction.implementation`"""
     override_default_implementation: dict[Locus, str] = Field(...)
     """mapping of loci to implementation names that override ``default_implementation`` for those loci"""
@@ -595,16 +599,18 @@ class CircuitCompilationOptions:
     """Various discrete options for quantum circuit compilation to pulse schedule."""
 
     max_circuit_duration_over_t2: Optional[float] = None
-    """Circuits are disqualified on the server if they are longer than this ratio
-        of the T2 time of the qubits. Setting this value to ``0.0`` turns off circuit duration checking.
-        The default value ``None`` instructs server to use server's default value in the checking."""
+    """Server-side circuit disqualification threshold.
+    The job is rejected on the server if any circuit in it is estimated to take longer than
+    the shortest T2 time of any qubit used in the circuit, multiplied by this value.
+    Setting this value to ``0.0`` turns off circuit duration checking.
+    ``None`` tells the server to use its default value in the check."""
     heralding_mode: HeraldingMode = HeraldingMode.NONE
     """Heralding mode to use during the execution."""
     move_gate_validation: MoveGateValidationMode = MoveGateValidationMode.STRICT
-    """MOVE gate validation mode for circuit compilation. This options is ignored on devices that do not support MOVE 
+    """MOVE gate validation mode for circuit compilation. This options is ignored on devices that do not support MOVE
         and for circuits that do not contain MOVE gates."""
     move_gate_frame_tracking: MoveGateFrameTrackingMode = MoveGateFrameTrackingMode.FULL
-    """MOVE gate frame tracking mode for circuit compilation. This options is ignored on devices that do not support 
+    """MOVE gate frame tracking mode for circuit compilation. This options is ignored on devices that do not support
         MOVE and for circuits that do not contain MOVE gates."""
 
     def __post_init__(self):
@@ -655,9 +661,18 @@ CircuitMeasurementResults = dict[str, list[list[int]]]
 maps the measurement key to the corresponding results. The outer list elements correspond to shots,
 and the inner list elements to the qubits measured in the measurement operation."""
 
-
 CircuitMeasurementResultsBatch = list[CircuitMeasurementResults]
 """Type that represents measurement results for a batch of circuits."""
+
+
+class JobParameters(BaseModel):
+    """Job-specific parameters extracted from the original RunRequest."""
+
+    shots: int = Field(...)
+    max_circuit_duration_over_t2: Optional[float] = Field(None)
+    heralding_mode: HeraldingMode = Field(HeraldingMode.NONE)
+    move_validation_mode: MoveGateValidationMode = Field(MoveGateValidationMode.STRICT)
+    move_gate_frame_tracking_mode: MoveGateFrameTrackingMode = Field(MoveGateFrameTrackingMode.FULL)
 
 
 class Metadata(BaseModel):
@@ -665,18 +680,53 @@ class Metadata(BaseModel):
 
     calibration_set_id: Optional[UUID] = Field(None)
     """ID of the calibration set used"""
-    request: RunRequest = Field(...)
-    """copy of the original RunRequest sent to the server"""
+    request: Optional[RunRequest] = Field(None)
+    """optional copy of the original RunRequest sent to the server"""
+    parameters: Optional[JobParameters] = Field(None)
+    """job-specific parameters extracted from the original request"""
+    circuits_batch: Optional[CircuitBatch] = Field(None)
+    """circuits batch submitted for execution"""
     cocos_version: Optional[str] = Field(None)
     """CoCoS version used to execute the job"""
     timestamps: Optional[dict[str, str]] = Field(None)
     """Timestamps of execution progress"""
+
+    @property
+    def shots(self) -> int:
+        """Return the number of shots in the job."""
+        if self.parameters is not None:
+            return self.parameters.shots
+        if self.request is not None:
+            return self.request.shots
+        raise ValueError('No shots information available in the metadata')
+
+    @property
+    def circuits(self) -> CircuitBatch:
+        """Return the circuits in the job."""
+        if self.circuits_batch is not None:
+            return self.circuits_batch
+        if self.request is not None:
+            return self.request.circuits
+        raise ValueError('No circuits information available in the metadata')
+
+    @property
+    def heralding_mode(self) -> HeraldingMode:
+        """Return the heralding mode requested with the job."""
+        if self.parameters is not None:
+            return self.parameters.heralding_mode
+        if self.request is not None:
+            return self.request.heralding_mode
+        raise ValueError('No heralding mode information available in the metadata')
 
 
 class Status(str, Enum):
     """
     Status of a job.
     """
+
+    RECEIVED = 'received'
+    PROCESSING = 'processing'
+    ACCEPTED = 'accepted'
 
     PENDING_COMPILATION = 'pending compilation'
     PENDING_EXECUTION = 'pending execution'
@@ -721,7 +771,7 @@ class RunResult(BaseModel):
     """list of warning messages"""
 
     @staticmethod
-    def from_dict(inp: dict[str, Union[str, dict]]) -> RunResult:
+    def from_dict(inp: dict[str, Union[str, dict, list, None]]) -> RunResult:
         """Parses the result from a dict.
 
         Args:
@@ -746,7 +796,7 @@ class RunStatus(BaseModel):
     """list of warning messages"""
 
     @staticmethod
-    def from_dict(inp: dict[str, Union[str, dict]]) -> RunStatus:
+    def from_dict(inp: dict[str, Union[str, dict, list, None]]) -> RunStatus:
         """Parses the result from a dict.
 
         Args:
