@@ -2,6 +2,15 @@
 Changelog
 =========
 
+Version 19.0
+============
+
+* Allow mid-circuit measurements and classically controlled PRX gates.
+  `#136 <https://github.com/iqm-finland/iqm-client/pull/136>`_
+* Deprecated native operations names ``phased_rx`` and ``measurement`` removed,
+   use ``prx`` and ``measure`` instead.
+  `#136 <https://github.com/iqm-finland/iqm-client/pull/136>`_
+
 Version 18.8
 ============
 

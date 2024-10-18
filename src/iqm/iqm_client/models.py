@@ -15,7 +15,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Final, Optional, Union
 from uuid import UUID
@@ -23,74 +23,61 @@ from uuid import UUID
 from pydantic import BaseModel, Field, StrictStr, field_validator
 from pydantic_core.core_schema import ValidationInfo
 
-# Supported instruction configuration values:
-# - 'arity': the arity of the locus; use -1 to allow any arity.
-# - 'args': allowed arguments for the operation.
-# - 'directed': if True, the loci defined in the architecture description are considered directed.
-# - 'renamed_to': if set, indicates that this instruction name is deprecated, and IQM client will
-#    auto-rename it to the new name.
-# - 'check_locus': if False, skips the locus checking entirely. If set to the string
-#   value 'any_combination', will check that the qubits in the instruction locus are found
-#   in the architecture definition, but will allow any combination of them in.
 
-SUPPORTED_INSTRUCTIONS: dict[str, dict[str, Any]] = {
-    'barrier': {
-        'arity': -1,
-        'args': {},
-        'check_locus': False,
-    },
-    'cz': {
-        'arity': 2,
-        'args': {},
-        'directed': False,
-    },
-    'move': {
-        'arity': 2,
-        'args': {},
-        'directed': True,
-    },
-    'measure': {
-        'arity': -1,
-        'args': {
-            'key': (str,),
-        },
-        'check_locus': 'any_combination',
-    },
-    'measurement': {  # deprecated
-        'arity': -1,
-        'args': {
-            'key': (str,),
-        },
-        'renamed_to': 'measure',
-        'check_locus': 'any_combination',
-    },
-    'prx': {
-        'arity': 1,
-        'args': {
-            'angle_t': (
-                float,
-                int,
-            ),
-            'phase_t': (
-                float,
-                int,
-            ),
-        },
-    },
-    'phased_rx': {  # deprecated
-        'arity': 1,
-        'args': {
-            'angle_t': (
-                float,
-                int,
-            ),
-            'phase_t': (
-                float,
-                int,
-            ),
-        },
-        'renamed_to': 'prx',
-    },
+@dataclass(frozen=True)
+class NativeOperation:
+    """Describes a native operation on the quantum computer."""
+
+    # pylint: disable=too-many-instance-attributes
+
+    name: str
+    """Name of the operation."""
+    arity: int
+    """Number of locus components (usually qubits) the operation acts on.
+    Zero means the operation can be applied on any number of locus components."""
+    args_required: dict[str, tuple[type, ...]] = field(default_factory=dict)
+    """Maps names of required operation parameters to their allowed types."""
+    args_not_required: dict[str, tuple[type, ...]] = field(default_factory=dict)
+    """Maps names of optional operation parameters to their allowed types."""
+    symmetric: bool = False
+    """True iff the effect of operation is symmetric in the locus components it acts on.
+    Only meaningful if :attr:`arity` != 1."""
+    renamed_to: str = ''
+    """If nonempty, indicates that this operation name is deprecated, and IQM client will
+    auto-rename it to the new name."""
+    factorizable: bool = False
+    """Iff True, any multi-component instance of this operation can be broken down to
+    single-component instances, and calibration data is specific to single-component loci."""
+    allow_all_loci: bool = False
+    """Iff true, the operation is always allowed on all QPU loci regardless of calibration state.
+    Typically a metaoperation like barrier."""
+
+
+_SUPPORTED_OPERATIONS: dict[str, NativeOperation] = {
+    op.name: op
+    for op in [
+        NativeOperation('barrier', 0, symmetric=True, allow_all_loci=True),
+        NativeOperation('measure', 0, {'key': (str,)}, {'feedback_key': (str,)}, factorizable=True),
+        NativeOperation(
+            'prx',
+            1,
+            {
+                'angle_t': (float, int),
+                'phase_t': (float, int),
+            },
+        ),
+        NativeOperation(
+            'cc_prx',
+            1,
+            {
+                'angle_t': (float, int),
+                'phase_t': (float, int),
+                'feedback_label': (str,),
+            },
+        ),
+        NativeOperation('cz', 2, symmetric=True),
+        NativeOperation('move', 2),
+    ]
 }
 
 Locus = tuple[StrictStr, ...]
@@ -98,46 +85,44 @@ Locus = tuple[StrictStr, ...]
 
 
 class Instruction(BaseModel):
-    r"""
+    r"""Native quantum operation instance with particular arguments and locus.
 
-    The :class:`Instruction` class represents a native quantum operation.
+    This class represents a native quantum operation
+    acting on :attr:`qubits`, with the arguments :attr:`args`.
+    The operation is determined by :attr:`name`.
 
-    Different Instruction types are distinguished by their :attr:`~Instruction.name`.
-    Each Instruction type acts on a number of :attr:`~Instruction.qubits`, and expects certain
-    :attr:`~Instruction.args`.
+    We currently support the following native operations:
 
-    We currently support the following native instruction types:
-
-    ================ =========== ====================================== ===========
-    name             # of qubits args                                   description
-    ================ =========== ====================================== ===========
-    measure          >= 1        ``key: str``                           Measurement in the Z basis.
-    prx              1           ``angle_t: float``, ``phase_t: float`` Phased x-rotation gate.
-    cz               2                                                  Controlled-Z gate.
-    move             2                                                  Moves a qubit state between a qubit and a
-                                                                        computational resonator.
-    barrier          >= 1                                               Execution barrier.
-    ================ =========== ====================================== ===========
+    ================ =========== ======================================= ===========
+    name             # of qubits args                                    description
+    ================ =========== ======================================= ===========
+    measure          >= 1        ``key: str``, ``feedback_key: str``     Measurement in the Z basis.
+    prx              1           ``angle_t: float``, ``phase_t: float``  Phased x-rotation gate.
+    cc_prx           1           ``angle_t: float``, ``phase_t: float``,
+                                 ``feedback_label: str``                 Classically controlled PRX gate.
+    cz               2                                                   Controlled-Z gate.
+    move             2                                                   Moves a qubit state between a qubit and a
+                                                                         computational resonator, as long as
+                                                                         at least one of the components is
+                                                                         in the :math:`|0\rangle` state.
+    barrier          >= 1                                                Execution barrier.
+    ================ =========== ======================================= ===========
 
     For each Instruction you may also optionally specify :attr:`~Instruction.implementation`,
-    which contains the name of an implementation of the instruction to use.
+    which contains the name of an implementation of the operation to use.
     Support for multiple implementations is currently experimental and in normal use the
-    field should be omitted, this selects the default implementation for the instruction.
-
-    .. note::
-
-        The following instruction names are deprecated, but supported for backwards compatibility for now:
-
-        * ``phased_rx`` ↦ ``prx``
-        * ``measurement`` ↦ ``measure``
+    field should be omitted, this selects the default implementation for the operation for that locus.
 
     Measure
     -------
 
     Measurement in the computational (Z) basis. The measurement results are the output of the circuit.
-    Takes one string argument, ``key``, denoting the measurement key the results are labeled with.
-    All the measurement keys in a circuit must be unique. Each qubit may be measured multiple times,
-    i.e. mid-circuit measurements are allowed.
+    Takes two string arguments: ``key``, denoting the measurement key the returned results are labeled with,
+    and ``feedback_key``, which is only needed if the measurement result is used for classical control
+    within the circuit.
+    All the measurement keys and feedback keys used in a circuit must be unique (but the two groups of
+    keys are independent namespaces).
+    Each qubit may be measured multiple times, i.e. mid-circuit measurements are allowed.
 
     .. code-block:: python
         :caption: Example
@@ -163,6 +148,16 @@ class Instruction(BaseModel):
         :caption: Example
 
         Instruction(name='prx', qubits=('bob',), args={'angle_t': 0.7, 'phase_t': 0.25})
+
+    CC_PRX
+    ------
+
+    Classically controlled PRX gate. Takes three arguments. ``angle_t`` and ``phase_t`` are exactly as in PRX.
+    ``feedback_label == f"{physical_qubit_name}__{feedback_key}`` is a string that identifies the
+    ``measure`` operation and the qubit within it whose measurement result controls the gate.
+    If the measurement result is 1, the PRX gate is applied. If it is 0, an identity gate of similar time
+    duration gate is applied instead.
+    The measurement instruction must precede the classically controlled gate instruction in the quantum circuit.
 
     CZ
     --
@@ -230,30 +225,30 @@ class Instruction(BaseModel):
     implementation: Optional[StrictStr] = Field(None)
     """name of the implementation, for experimental use only"""
     qubits: Locus = Field(..., examples=[('alice',)])
-    """names of the logical qubits the operation acts on"""
+    """names of the locus components (typically qubits) the operation acts on"""
     args: dict[str, Any] = Field(..., examples=[{'key': 'm'}])
     """arguments for the operation"""
 
     def __init__(self, **data):
         super().__init__(**data)
         # Auto-convert name if a deprecated name is used
-        self.name = get_current_instruction_name(self.name)
+        self.name = _op_current_name(self.name)
 
     @field_validator('name')
     @classmethod
     def name_validator(cls, value):
-        """Check if the name of instruction is set to one of the supported quantum operations"""
+        """Check if the name of instruction is set to one of the supported quantum operations."""
         name = value
-        if name not in SUPPORTED_INSTRUCTIONS:
+        if name not in _SUPPORTED_OPERATIONS:
             raise ValueError(
-                f'Unknown instruction "{name}". ' f'Supported instructions are \"{", ".join(SUPPORTED_INSTRUCTIONS)}\"'
+                f'Unknown operation "{name}". ' f'Supported operations are \"{", ".join(_SUPPORTED_OPERATIONS)}\"'
             )
         return name
 
     @field_validator('implementation')
     @classmethod
     def implementation_validator(cls, value):
-        """Check if the implementation of the instruction is set to a non-empty string"""
+        """Check if the implementation of the instruction is set to a non-empty string."""
         implementation = value
         if isinstance(implementation, str):
             if not implementation:
@@ -263,16 +258,14 @@ class Instruction(BaseModel):
     @field_validator('qubits')
     @classmethod
     def qubits_validator(cls, value, info: ValidationInfo):
-        """Check if the instruction has the correct number of qubits according to the instruction's type"""
+        """Check if the instruction has the correct number of qubits for its operation."""
         qubits = value
         name = info.data.get('name')
         if not name:
             raise ValueError('Could not validate qubits because the name of the instruction did not pass validation')
-        arity = SUPPORTED_INSTRUCTIONS[name]['arity']
-        if (0 <= arity) and (arity != len(qubits)):
-            raise ValueError(
-                f'The "{name}" instruction acts on {arity} qubit(s), but {len(qubits)} were given: {qubits}'
-            )
+        arity = _SUPPORTED_OPERATIONS[name].arity
+        if (0 < arity) and (arity != len(qubits)):
+            raise ValueError(f'The "{name}" operation acts on {arity} qubit(s), but {len(qubits)} were given: {qubits}')
         return qubits
 
     @field_validator('args')
@@ -286,71 +279,76 @@ class Instruction(BaseModel):
 
         # Check argument names
         submitted_arg_names = set(args)
-        supported_arg_names = set(SUPPORTED_INSTRUCTIONS[name]['args'])
-        if submitted_arg_names != supported_arg_names:
+        required_arg_names = set(_SUPPORTED_OPERATIONS[name].args_required)
+        allowed_arg_types = _SUPPORTED_OPERATIONS[name].args_required | _SUPPORTED_OPERATIONS[name].args_not_required
+        allowed_arg_names = set(allowed_arg_types)
+        if not required_arg_names <= submitted_arg_names:
             raise ValueError(
-                f'The instruction "{name}" requires '
-                f'{tuple(supported_arg_names) if supported_arg_names else "no"} argument(s), '
+                f'The operation "{name}" requires '
+                f'{tuple(required_arg_names)} argument(s), '
+                f'but {tuple(submitted_arg_names)} were given'
+            )
+        if not submitted_arg_names <= allowed_arg_names:
+            raise ValueError(
+                f'The operation "{name}" allows '
+                f'{tuple(allowed_arg_names) if allowed_arg_names else "no"} argument(s), '
                 f'but {tuple(submitted_arg_names)} were given'
             )
 
         # Check argument types
         for arg_name, arg_value in args.items():
-            supported_arg_types = SUPPORTED_INSTRUCTIONS[name]['args'][arg_name]
-            if not isinstance(arg_value, supported_arg_types):
+            allowed_types = allowed_arg_types[arg_name]
+            if not isinstance(arg_value, allowed_types):
                 raise TypeError(
                     f'The argument "{arg_name}" should be of one of the following supported types'
-                    f' {supported_arg_types}, but ({type(arg_value)}) was given'
+                    f' {allowed_types}, but ({type(arg_value)}) was given'
                 )
 
         return value
 
 
-def is_multi_qubit_instruction(name: str) -> bool:
-    """Checks if the instruction with the given name is a multi-qubit instruction.
+def _op_is_symmetric(name: str) -> bool:
+    """Returns True iff the given native operation is symmetric, i.e. the order of the
+    locus components does not matter.
 
     Args:
-        name: The name of the instruction to check
-
+        name: name of the operation
     Returns:
-        True if the instruction expects more than one qubit as its locus.
+        True iff the locus order does not matter
+    Raises:
+        KeyError: ``name`` is unknown
     """
-    return name in SUPPORTED_INSTRUCTIONS and SUPPORTED_INSTRUCTIONS[name]['arity'] > 1
+    return _SUPPORTED_OPERATIONS[name].symmetric
 
 
-def is_directed_instruction(name: str) -> bool:
-    """Checks if the instruction with the given name is directed, i.e. if the instruction
-    is allowed only in the direction defined by the operation loci in the quantum architecture.
+def _op_arity(name: str) -> int:
+    """Returns the arity of the given native operation, i.e. the number of locus components it acts on.
+
+    Zero means any number of locus components is OK.
 
     Args:
-        name: The name of the instruction to check
-
+        name: name of the operation
     Returns:
-        True if the instruction is valid only in the direction defined by the architecture specification; or
-        False if the instruction is valid also with the qubits in the locus in reversed order.
+        arity of the operation
+    Raises:
+        KeyError: ``name`` is unknown
     """
-    return (
-        name in SUPPORTED_INSTRUCTIONS
-        and 'directed' in SUPPORTED_INSTRUCTIONS[name]
-        and SUPPORTED_INSTRUCTIONS[name]['directed']
-    )
+    return _SUPPORTED_OPERATIONS[name].arity
 
 
-def get_current_instruction_name(name: str):
-    """Checks if the instruction name has been deprecated and returns the new name if it is;
+def _op_current_name(name: str) -> str:
+    """Checks if the operation name has been deprecated and returns the new name if it is;
     otherwise, just returns the name as-is.
 
     Args:
-        name: the name of the instruction
+        name: name of the operation
 
     Returns:
-        the current name of the instruction.
+        current name of the operation
+    Raises:
+        KeyError: ``name`` is unknown
     """
-    return (
-        SUPPORTED_INSTRUCTIONS[name]['renamed_to']
-        if name in SUPPORTED_INSTRUCTIONS and 'renamed_to' in SUPPORTED_INSTRUCTIONS[name]
-        else name
-    )
+    return _SUPPORTED_OPERATIONS[name].renamed_to or name
 
 
 class Circuit(BaseModel):
@@ -413,14 +411,13 @@ CircuitBatch = list[Circuit]
 
 
 def validate_circuit(circuit: Circuit) -> None:
-    """Validates a submitted quantum circuit using Pydantic tooling. If the
-    validation of the circuit fails, an exception is raised.
+    """Validates a submitted quantum circuit using Pydantic tooling.
 
     Args:
         circuit: a circuit that needs validation
 
     Raises:
-            pydantic.error_wrappers.ValidationError
+        pydantic.error_wrappers.ValidationError: validation failed
     """
     Circuit.model_validate(circuit.__dict__)
 
@@ -464,24 +461,23 @@ class QuantumArchitectureSpecification(BaseModel):
     """Qubit connectivity of this quantum architecture."""
 
     def __init__(self, **data):
-        # Convert a simplified quantum architecture to full quantum architecture
-        raw_operations = data.get('operations')
-        raw_qubits = data.get('qubits')
-        raw_qubit_connectivity = data.get('qubit_connectivity')
-        if isinstance(raw_operations, list):
+        operations = data.get('operations')
+        if isinstance(operations, list):
+            # backwards compatibility for the old quantum architecture format
+            qubits = data.get('qubits')
+            qubit_connectivity = data.get('qubit_connectivity')
+            # add all possible loci for the ops
             data['operations'] = {
-                get_current_instruction_name(op): (
-                    raw_qubit_connectivity
-                    if is_multi_qubit_instruction(get_current_instruction_name(op))
-                    else [[qb] for qb in raw_qubits]
+                _op_current_name(op): (
+                    qubit_connectivity if _op_arity(_op_current_name(op)) == 2 else [[qb] for qb in qubits]
                 )
-                for op in raw_operations
+                for op in operations
             }
 
         super().__init__(**data)
-        self.operations = {get_current_instruction_name(k): v for k, v in self.operations.items()}
+        self.operations = {_op_current_name(k): v for k, v in self.operations.items()}
 
-    def has_equivalent_operations(self, other: QuantumArchitectureSpecification):
+    def has_equivalent_operations(self, other: QuantumArchitectureSpecification) -> bool:
         """Compares the given operation sets defined by the quantum architecture against
         another architecture specification.
 
@@ -499,19 +495,18 @@ class QuantumArchitectureSpecification(BaseModel):
         """
         if set(ops1) != set(ops2):
             return False
-        for [op, c1] in ops1.items():
-            c2 = ops2[op]
-            if is_multi_qubit_instruction(op):
-                if not is_directed_instruction(op):
-                    c1 = [sorted(qbs) for qbs in c1]
-                    c2 = [sorted(qbs) for qbs in c2]
-                if sorted(c1) != sorted(c2):
-                    return False
+        for op, loci1 in ops1.items():
+            loci2 = ops2[op]
+            if _op_is_symmetric(op):
+                # for comparing symmetric instruction loci, sorting order does not matter as long as it's consistent
+                l1 = [tuple(sorted(locus)) for locus in loci1]
+                l2 = [tuple(sorted(locus)) for locus in loci2]
             else:
-                qs1 = {q for [q] in c1}
-                qs2 = {q for [q] in c2}
-                if qs1 != qs2:
-                    return False
+                l1 = [tuple(locus) for locus in loci1]
+                l2 = [tuple(locus) for locus in loci2]
+
+            if set(l1) != set(l2):
+                return False
         return True
 
 
@@ -640,7 +635,7 @@ class RunRequest(BaseModel):
     """batch of quantum circuit(s) to execute"""
     custom_settings: Optional[dict[str, Any]] = Field(None)
     """Custom settings to override default IQM hardware settings and calibration data.
-Note: This field should be always None in normal use."""
+    Note: This field should be always None in normal use."""
     calibration_set_id: Optional[UUID] = Field(None)
     """ID of the calibration set to use, or None to use the latest calibration set"""
     qubit_mapping: Optional[list[SingleQubitMapping]] = Field(None)
@@ -775,7 +770,7 @@ class RunResult(BaseModel):
     """list of warning messages"""
 
     @staticmethod
-    def from_dict(inp: dict[str, Union[str, dict, list, None]]) -> 'RunResult':
+    def from_dict(inp: dict[str, Union[str, dict, list, None]]) -> RunResult:
         """Parses the result from a dict.
 
         Args:
@@ -800,7 +795,7 @@ class RunStatus(BaseModel):
     """list of warning messages"""
 
     @staticmethod
-    def from_dict(inp: dict[str, Union[str, dict, list, None]]) -> 'RunStatus':
+    def from_dict(inp: dict[str, Union[str, dict, list, None]]) -> RunStatus:
         """Parses the result from a dict.
 
         Args:

@@ -13,7 +13,7 @@
 # limitations under the License.
 """Tests for the IQM client.
 """
-# pylint: disable=too-many-arguments
+# pylint: disable=too-many-arguments,too-many-lines
 import uuid
 
 from mockito import expect, unstub, verifyNoUnwantedInteractions, when
@@ -711,7 +711,7 @@ def test_validate_circuit_checks_instruction_name_is_supported(sample_circuit):
     """
     circuit = sample_circuit.model_copy()
     circuit.instructions[0].name = 'kaboom'
-    with pytest.raises(ValueError, match='Unknown instruction "kaboom"'):
+    with pytest.raises(ValueError, match='Unknown operation "kaboom"'):
         validate_circuit(circuit)
 
 
@@ -734,19 +734,37 @@ def test_validate_circuit_checks_instruction_qubit_count(sample_circuit):
     """
     circuit = sample_circuit.model_copy()
     circuit.instructions[0].qubits += ('Qubit C',)
-    with pytest.raises(ValueError, match=r'The "cz" instruction acts on 2 qubit\(s\), but 3 were given'):
+    with pytest.raises(ValueError, match=r'The "cz" operation acts on 2 qubit\(s\), but 3 were given'):
         validate_circuit(circuit)
 
 
-def test_validate_circuit_checks_instruction_argument_names(sample_circuit):
+def test_validate_circuit_extra_arguments(sample_circuit):
     """
     Tests that custom Pydantic validator (triggered via <validate_circuit>)
     catches when submitted argument names of the instruction are not supported
     """
     circuit = sample_circuit.model_copy()
-    circuit.instructions[1].args['arg_x'] = 'This argument name is not supported by the instruction'
-    with pytest.raises(ValueError, match='The instruction "prx" requires'):
+    circuit.instructions[1].args['arg_x'] = 'This argument name is not supported by the operation'
+    with pytest.raises(ValueError, match='The operation "prx" allows'):
         validate_circuit(circuit)
+
+
+def test_validate_circuit_missing_arguments():
+    """
+    Tests that custom Pydantic validator (triggered via <validate_circuit>)
+    catches when submitted argument names of the instruction are not supported
+    """
+    with pytest.raises(ValueError, match='The operation "prx" requires'):
+        Circuit(
+            name='The circuit',
+            instructions=[
+                Instruction(
+                    name='prx',
+                    qubits=('QB1',),
+                    args={'phase_t': 0.3},
+                ),
+            ],
+        )
 
 
 def test_validate_circuit_checks_instruction_argument_types(sample_circuit):
@@ -944,7 +962,7 @@ def test_get_dynamic_quantum_architecture_without_calset_id_does_not_cache(
         'qubits': ['QB1', 'QB2'],
         'computational_resonators': [],
         'gates': {
-            'phased_rx': {
+            'prx': {
                 'implementations': {
                     'drag_gaussian': {
                         'loci': [['QB1'], ['QB2']],
