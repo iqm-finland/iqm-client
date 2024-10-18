@@ -87,10 +87,9 @@ Locus = tuple[StrictStr, ...]
 class Instruction(BaseModel):
     r"""Native quantum operation instance with particular arguments and locus.
 
-    The :class:`Instruction` class represents a native quantum operation
-    acting on :attr:`~Instruction.qubits`,
-    with the arguments :attr:`~Instruction.args`.
-    The operation is determined by :attr:`~Instruction.name`.
+    This class represents a native quantum operation
+    acting on :attr:`qubits`, with the arguments :attr:`args`.
+    The operation is determined by :attr:`name`.
 
     We currently support the following native operations:
 
@@ -100,12 +99,12 @@ class Instruction(BaseModel):
     measure          >= 1        ``key: str``, ``feedback_key: str``     Measurement in the Z basis.
     prx              1           ``angle_t: float``, ``phase_t: float``  Phased x-rotation gate.
     cc_prx           1           ``angle_t: float``, ``phase_t: float``,
-                                 ``feedback_label: str``                 Classically controlled prx gate.
+                                 ``feedback_label: str``                 Classically controlled PRX gate.
     cz               2                                                   Controlled-Z gate.
     move             2                                                   Moves a qubit state between a qubit and a
-                                                                         computational resonator,
-                                                                         as long as the other component is
-                                                                         in the |0> state.
+                                                                         computational resonator, as long as
+                                                                         at least one of the components is
+                                                                         in the :math:`|0\rangle` state.
     barrier          >= 1                                                Execution barrier.
     ================ =========== ======================================= ===========
 
