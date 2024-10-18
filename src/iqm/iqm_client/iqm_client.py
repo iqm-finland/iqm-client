@@ -373,7 +373,9 @@ class IQMClient:
             CircuitExecutionError: validation failed
         """
         if instruction.name not in architecture.operations:
-            raise CircuitExecutionError(f"Instruction '{instruction.name}' is not supported by the quantum architecture.")
+            raise CircuitExecutionError(
+                f"Instruction '{instruction.name}' is not supported by the quantum architecture."
+            )
         allowed_loci = architecture.operations[instruction.name]
         op_info = _SUPPORTED_OPERATIONS[instruction.name]
         # apply the qubit mapping if any
@@ -638,7 +640,8 @@ class IQMClient:
         try:
             qa = QuantumArchitecture(**result.json()).quantum_architecture
         except (json.decoder.JSONDecodeError, KeyError) as e:
-            raise ArchitectureRetrievalError(f'Invalid response: {result.text}, {e}') from e
+            # show the error class also
+            raise ArchitectureRetrievalError(f'Invalid response: {result.text}, {e!r}') from e
 
         # Cache architecture so that later invocations do not need to query it again
         self._architecture = qa
