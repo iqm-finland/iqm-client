@@ -22,6 +22,7 @@ import requests
 from requests import HTTPError
 
 from iqm.iqm_client import (
+    APIEndpoint,
     ArchitectureRetrievalError,
     Circuit,
     CircuitCompilationOptions,
@@ -114,13 +115,13 @@ def test_serialize_qubit_mapping():
 
 
 def test_submit_circuits_adds_user_agent(
-    sample_client, jobs_url, minimal_run_request, submit_success, quantum_architecture_url, quantum_architecture_success
+    sample_client, jobs_url, minimal_run_request, submit_success, dynamic_architecture_url, dynamic_architecture_success
 ):
     """
     Tests that submit_circuit without client signature adds correct User-Agent header
     """
     expect(requests, times=1).post(jobs_url, **post_jobs_args(minimal_run_request)).thenReturn(submit_success)
-    expect(requests, times=1).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
+    expect(requests, times=1).get(dynamic_architecture_url, ...).thenReturn(dynamic_architecture_success)
 
     sample_client.submit_circuits(**submit_circuits_args(minimal_run_request))
 
@@ -133,8 +134,8 @@ def test_submit_circuits_adds_user_agent_with_client_signature(
     jobs_url,
     minimal_run_request,
     submit_success,
-    quantum_architecture_url,
-    quantum_architecture_success,
+    dynamic_architecture_url,
+    dynamic_architecture_success,
 ):
     """
     Tests that submit_circuit with client signature adds correct User-Agent header
@@ -142,7 +143,7 @@ def test_submit_circuits_adds_user_agent_with_client_signature(
     expect(requests, times=1).post(
         jobs_url, **post_jobs_args(minimal_run_request, user_agent=client_with_signature._signature)
     ).thenReturn(submit_success)
-    expect(requests, times=1).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
+    expect(requests, times=1).get(dynamic_architecture_url, ...).thenReturn(dynamic_architecture_success)
 
     client_with_signature.submit_circuits(**submit_circuits_args(minimal_run_request))
 
@@ -191,14 +192,18 @@ def test_submit_circuits_returns_id(
     request,
     submit_success,
     existing_run_id,
-    quantum_architecture_url,
-    quantum_architecture_success,
+    dynamic_architecture_success,
 ):
     """
     Tests submitting circuits for execution
     """
     run_request = request.getfixturevalue(run_request_name)
-    when(requests).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
+    calibration_set_id = uuid.UUID('ec6f6478-a99b-4e75-8a94-2f9cb0511bce')
+    run_request.calibration_set_id = calibration_set_id
+    dynamic_architecture_success.json_data['calibration_set_id'] = calibration_set_id
+    when(requests).get(sample_client._api.url(APIEndpoint.CALIBRATED_GATES, str(calibration_set_id)), ...).thenReturn(
+        dynamic_architecture_success
+    )
 
     if valid_request:
         expect(requests, times=1).post(jobs_url, **post_jobs_args(run_request)).thenReturn(submit_success)
@@ -213,7 +218,7 @@ def test_submit_circuits_returns_id(
 
 
 def test_submit_circuits_does_not_activate_heralding_by_default(
-    sample_client, jobs_url, minimal_run_request, submit_success, quantum_architecture_url, quantum_architecture_success
+    sample_client, jobs_url, minimal_run_request, submit_success, dynamic_architecture_url, dynamic_architecture_success
 ):
     """
     Test submitting run request without heralding
@@ -221,7 +226,7 @@ def test_submit_circuits_does_not_activate_heralding_by_default(
     # Expect request to have heralding mode NONE by default
     assert post_jobs_args(minimal_run_request)['json']['heralding_mode'] == HeraldingMode.NONE.value
     expect(requests, times=1).post(jobs_url, **post_jobs_args(minimal_run_request)).thenReturn(submit_success)
-    when(requests).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
+    when(requests).get(dynamic_architecture_url, ...).thenReturn(dynamic_architecture_success)
 
     # Specify no heralding mode in submit_circuits
     sample_client.submit_circuits(circuits=minimal_run_request.circuits, shots=minimal_run_request.shots)
@@ -245,8 +250,8 @@ def test_submit_circuits_sets_heralding_mode_in_run_request(
     jobs_url,
     run_request_with_heralding,
     submit_success,
-    quantum_architecture_url,
-    quantum_architecture_success,
+    dynamic_architecture_url,
+    dynamic_architecture_success,
 ):
     """
     Test submitting run request with heralding
@@ -255,7 +260,7 @@ def test_submit_circuits_sets_heralding_mode_in_run_request(
     expected_heralding_mode = run_request_with_heralding.heralding_mode.value
     assert post_jobs_args(run_request_with_heralding)['json']['heralding_mode'] == expected_heralding_mode
     expect(requests, times=1).post(jobs_url, **post_jobs_args(run_request_with_heralding)).thenReturn(submit_success)
-    expect(requests, times=1).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
+    expect(requests, times=1).get(dynamic_architecture_url, ...).thenReturn(dynamic_architecture_success)
 
     assert submit_circuits_args(run_request_with_heralding)['options'].heralding_mode == expected_heralding_mode
     sample_client.submit_circuits(**submit_circuits_args(run_request_with_heralding))
@@ -269,16 +274,20 @@ def test_submit_circuits_gets_architecture_once(
     jobs_url,
     minimal_run_request,
     submit_success,
-    quantum_architecture_url,
-    quantum_architecture_success,
+    dynamic_architecture_success,
 ):
     """
-    Test that quantum architecture specification is only requested once from the QC
+    Test that dynamic quantum architecture is only requested once from the QC when calset id is specified
     """
-    expect(requests, times=1).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
+    calibration_set_id = uuid.UUID('ec6f6478-a99b-4e75-8a94-2f9cb0511bce')
+    minimal_run_request.calibration_set_id = calibration_set_id
+    dynamic_architecture_success.json_data['calibration_set_id'] = calibration_set_id
+    expect(requests, times=1).get(
+        sample_client._api.url(APIEndpoint.CALIBRATED_GATES, str(calibration_set_id)), ...
+    ).thenReturn(dynamic_architecture_success)
     expect(requests, times=1).post(jobs_url, **post_jobs_args(minimal_run_request)).thenReturn(submit_success)
     # Get architecture explicitly and then submit job
-    sample_client.get_quantum_architecture()
+    sample_client.get_dynamic_quantum_architecture(calibration_set_id)
     sample_client.submit_circuits(**submit_circuits_args(minimal_run_request))
     verifyNoUnwantedInteractions()
     unstub()
@@ -286,13 +295,13 @@ def test_submit_circuits_gets_architecture_once(
 
 def test_submit_circuits_raises_with_invalid_heralding_mode(
     sample_client,
-    quantum_architecture_url,
-    quantum_architecture_success,
+    dynamic_architecture_url,
+    dynamic_architecture_success,
 ):
     """
     Test that submitting run request with invalid heralding mode raises an error
     """
-    when(requests).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
+    when(requests).get(dynamic_architecture_url, ...).thenReturn(dynamic_architecture_success)
     with pytest.raises(ValueError, match="Input should be 'none' or 'zeros'"):
         sample_client.submit_circuits(
             circuits=[], shots=10, options=CircuitCompilationOptions(heralding_mode='invalid')
@@ -304,14 +313,14 @@ def test_get_run_adds_user_agent(
     existing_job_url,
     existing_run_id,
     pending_compilation_job_result,
-    quantum_architecture_url,
-    quantum_architecture_success,
+    dynamic_architecture_url,
+    dynamic_architecture_success,
 ):
     """
     Tests that get_run without client signature adds the correct User-Agent header
     """
     expect(requests, times=1).get(existing_job_url, **get_jobs_args()).thenReturn(pending_compilation_job_result)
-    when(requests).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
+    when(requests).get(dynamic_architecture_url, ...).thenReturn(dynamic_architecture_success)
 
     sample_client.get_run(existing_run_id)
 
@@ -556,13 +565,13 @@ def test_wait_for_results_adds_user_agent_with_signature(
 
 
 def test_get_quantum_architecture(
-    sample_client, quantum_architecture_url, sample_quantum_architecture, quantum_architecture_success
+    sample_client, quantum_architecture_url, sample_static_architecture, static_architecture_success
 ):
     """Test retrieving the quantum architecture"""
-    expect(requests, times=1).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
+    expect(requests, times=1).get(quantum_architecture_url, ...).thenReturn(static_architecture_success)
 
     assert sample_client.get_quantum_architecture() == QuantumArchitectureSpecification(
-        **sample_quantum_architecture['quantum_architecture']
+        **sample_static_architecture['quantum_architecture']
     )
 
     verifyNoUnwantedInteractions()
@@ -631,11 +640,11 @@ def test_quantum_architecture_throws_json_decode_error_if_received_not_json(
 
 
 def test_submit_circuits_throws_json_decode_error_if_received_not_json(
-    sample_client, jobs_url, not_valid_json_response, quantum_architecture_url, quantum_architecture_success
+    sample_client, jobs_url, not_valid_json_response, dynamic_architecture_url, dynamic_architecture_success
 ):
     """Test that an exception is raised when the response is not a valid JSON"""
     expect(requests, times=1).post(jobs_url, ...).thenReturn(not_valid_json_response)
-    expect(requests, times=1).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
+    expect(requests, times=1).get(dynamic_architecture_url, ...).thenReturn(dynamic_architecture_success)
 
     with pytest.raises(CircuitExecutionError):
         sample_client.submit_circuits([])
@@ -648,12 +657,12 @@ def test_submit_circuits_throws_client_configuration_error_on_400(
     sample_client,
     jobs_url,
     not_valid_client_configuration_response,
-    quantum_architecture_url,
-    quantum_architecture_success,
+    dynamic_architecture_url,
+    dynamic_architecture_success,
 ):
     """Test that an exception is raised when the response is 400"""
     expect(requests, times=1).post(jobs_url, ...).thenReturn(not_valid_client_configuration_response)
-    expect(requests, times=1).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
+    expect(requests, times=1).get(dynamic_architecture_url, ...).thenReturn(dynamic_architecture_success)
 
     with pytest.raises(ClientConfigurationError):
         sample_client.submit_circuits([])
@@ -832,14 +841,19 @@ def test_create_and_submit_run_request(
     jobs_url,
     submit_success,
     existing_run_id,
-    quantum_architecture_url,
-    quantum_architecture_success,
+    dynamic_architecture_url,
+    dynamic_architecture_success,
     params,
 ):
     """
     Tests that calling create_run_request and then submit_run_request is equivalent to calling submit_circuits.
     """
-    when(requests).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
+    if 'calibration_set_id' in params:
+        when(requests).get(
+            sample_client._api.url(APIEndpoint.CALIBRATED_GATES, params['calibration_set_id']), ...
+        ).thenReturn(dynamic_architecture_success)
+    else:
+        when(requests).get(dynamic_architecture_url, ...).thenReturn(dynamic_architecture_success)
 
     run_request = sample_client.create_run_request([sample_circuit], **params)
 
@@ -861,7 +875,7 @@ def test_create_and_submit_run_request(
             'run_request_with_move_gate_frame_tracking',
         ]
         for success_result, sample_circuit in zip(
-            ['quantum_architecture_success', 'move_architecture_success', 'move_architecture_success'],
+            ['dynamic_architecture_success', 'move_architecture_success', 'move_architecture_success'],
             ['sample_circuit', 'move_circuit', 'move_circuit_with_prx_in_the_sandwich'],
         )
     ],
@@ -873,7 +887,7 @@ def test_compiler_options_are_used_and_sent(
     run_request_name,
     request,
     submit_success,
-    quantum_architecture_url,
+    dynamic_architecture_url,
     quantum_architecture_name,
 ):
     """
@@ -883,7 +897,7 @@ def test_compiler_options_are_used_and_sent(
     quantum_architecture_success = request.getfixturevalue(quantum_architecture_name)
     run_request.circuits = [request.getfixturevalue(sample_circuit_name)]
 
-    when(requests).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
+    when(requests).get(dynamic_architecture_url, ...).thenReturn(quantum_architecture_success)
     if (
         sample_circuit_name != 'move_circuit_with_prx_in_the_sandwich'  # Valid circuit
         or run_request_name == 'run_request_without_prx_move_validation'  # Validation is turned off
@@ -899,59 +913,51 @@ def test_compiler_options_are_used_and_sent(
 
 
 def test_get_dynamic_quantum_architecture_with_calset_id(
-    sample_client, base_url, dynamic_quantum_architecture_success, sample_dynamic_quantum_architecture
+    sample_client, base_url, dynamic_architecture_success, sample_dynamic_architecture
 ):
     """Tests that the correct dynamic quantum architecture for the given ``calibration_set_id`` is returned."""
-    calset_id = uuid.UUID(sample_dynamic_quantum_architecture['calibration_set_id'])
+    calset_id = sample_dynamic_architecture.calibration_set_id
     expect(requests, times=1).get(f'{base_url}/api/v1/calibration/{calset_id}/gates', ...).thenReturn(
-        dynamic_quantum_architecture_success
+        dynamic_architecture_success
     )
-    assert sample_client.get_dynamic_quantum_architecture(calset_id) == DynamicQuantumArchitecture(
-        **sample_dynamic_quantum_architecture
-    )
+    assert sample_client.get_dynamic_quantum_architecture(calset_id) == sample_dynamic_architecture
     verifyNoUnwantedInteractions()
     unstub()
 
 
 def test_get_dynamic_quantum_architecture_with_calset_id_caches(
-    sample_client, base_url, dynamic_quantum_architecture_success, sample_dynamic_quantum_architecture
+    sample_client, base_url, dynamic_architecture_success, sample_dynamic_architecture
 ):
     """
     Tests that cached dynamic quantum architecture is returned when requesting it for the second time for
     a given calibration set id.
     """
-    calset_id = uuid.UUID(sample_dynamic_quantum_architecture['calibration_set_id'])
+    calset_id = sample_dynamic_architecture.calibration_set_id
     expect(requests, times=1).get(f'{base_url}/api/v1/calibration/{calset_id}/gates', ...).thenReturn(
-        dynamic_quantum_architecture_success
+        dynamic_architecture_success
     )
 
-    assert sample_client.get_dynamic_quantum_architecture(calset_id) == DynamicQuantumArchitecture(
-        **sample_dynamic_quantum_architecture
-    )
-    assert sample_client.get_dynamic_quantum_architecture(calset_id) == DynamicQuantumArchitecture(
-        **sample_dynamic_quantum_architecture
-    )
+    assert sample_client.get_dynamic_quantum_architecture(calset_id) == sample_dynamic_architecture
+    assert sample_client.get_dynamic_quantum_architecture(calset_id) == sample_dynamic_architecture
 
     verifyNoUnwantedInteractions()
     unstub()
 
 
 def test_get_dynamic_quantum_architecture_without_calset_id(
-    sample_client, base_url, dynamic_quantum_architecture_success, sample_dynamic_quantum_architecture
+    sample_client, base_url, dynamic_architecture_success, sample_dynamic_architecture
 ):
     """Tests that the correct dynamic quantum architecture for the default calibration set is returned."""
     expect(requests, times=1).get(f'{base_url}/api/v1/calibration/default/gates', ...).thenReturn(
-        dynamic_quantum_architecture_success
+        dynamic_architecture_success
     )
-    assert sample_client.get_dynamic_quantum_architecture() == DynamicQuantumArchitecture(
-        **sample_dynamic_quantum_architecture
-    )
+    assert sample_client.get_dynamic_quantum_architecture() == sample_dynamic_architecture
     verifyNoUnwantedInteractions()
     unstub()
 
 
 def test_get_dynamic_quantum_architecture_without_calset_id_does_not_cache(
-    sample_client, base_url, dynamic_quantum_architecture_success, sample_dynamic_quantum_architecture
+    sample_client, base_url, dynamic_architecture_success, sample_dynamic_architecture
 ):
     """
     Tests that the correct dynamic quantum architecture is returned in the case where default calset
@@ -973,14 +979,12 @@ def test_get_dynamic_quantum_architecture_without_calset_id_does_not_cache(
             },
         },
     }
-    dynamic_quantum_architecture_success_2 = MockJsonResponse(200, dynamic_quantum_architecture_2)
+    dynamic_architecture_success_2 = MockJsonResponse(200, dynamic_quantum_architecture_2)
     expect(requests, times=2).get(f'{base_url}/api/v1/calibration/default/gates', ...).thenReturn(
-        dynamic_quantum_architecture_success
-    ).thenReturn(dynamic_quantum_architecture_success_2)
+        dynamic_architecture_success
+    ).thenReturn(dynamic_architecture_success_2)
 
-    assert sample_client.get_dynamic_quantum_architecture() == DynamicQuantumArchitecture(
-        **sample_dynamic_quantum_architecture
-    )
+    assert sample_client.get_dynamic_quantum_architecture() == sample_dynamic_architecture
     assert sample_client.get_dynamic_quantum_architecture() == DynamicQuantumArchitecture(
         **dynamic_quantum_architecture_2
     )

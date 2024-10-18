@@ -32,6 +32,9 @@ from iqm.iqm_client import (
     REQUESTS_TIMEOUT,
     Circuit,
     CircuitCompilationOptions,
+    DynamicQuantumArchitecture,
+    GateImplementationInfo,
+    GateInfo,
     HeraldingMode,
     Instruction,
     IQMClient,
@@ -100,6 +103,11 @@ def existing_job_status_url(existing_job_url) -> str:
 @pytest.fixture()
 def quantum_architecture_url(base_url) -> str:
     return f'{base_url}/quantum-architecture'
+
+
+@pytest.fixture()
+def dynamic_architecture_url(base_url) -> str:
+    return f'{base_url}/api/v1/calibration/default/gates'
 
 
 @pytest.fixture
@@ -423,7 +431,7 @@ def deleted_status():
 
 
 @pytest.fixture
-def sample_quantum_architecture():
+def sample_static_architecture():
     return {
         'quantum_architecture': {
             'name': 'hercules',
@@ -440,79 +448,60 @@ def sample_quantum_architecture():
 
 
 @pytest.fixture
-def sample_move_architecture():
-    return {
-        'quantum_architecture': {
-            'name': 'hercules',
-            'qubits': ['COMP_R', 'QB1', 'QB2', 'QB3', 'COMP_R2'],
-            'qubit_connectivity': [
-                ['QB1', 'COMP_R'],
-                ['QB2', 'COMP_R'],
-                ['QB3', 'COMP_R'],
-                ['QB1', 'COMP_R2'],
-                ['QB2', 'COMP_R2'],
-                ['QB3', 'COMP_R2'],
-            ],
-            'operations': {
-                'prx': [['QB1'], ['QB2'], ['QB3']],
-                'cz': [['QB1', 'COMP_R'], ['QB2', 'COMP_R']],
-                'move': [['QB3', 'COMP_R']],
-                'measure': [['QB1'], ['QB2'], ['QB3']],
-                'barrier': [],
-            },
-        }
-    }
+def sample_dynamic_architecture():
+    return DynamicQuantumArchitecture(
+        calibration_set_id=UUID('26c5e70f-bea0-43af-bd37-6212ec7d04cb'),
+        qubits=['QB1', 'QB2'],
+        computational_resonators=[],
+        gates={
+            'prx': GateInfo(
+                implementations={'drag_gaussian': GateImplementationInfo(loci=(('QB1',), ('QB2',)))},
+                default_implementation='drag_gaussian',
+                override_default_implementation={},
+            ),
+            'cz': GateInfo(
+                implementations={'tgss': GateImplementationInfo(loci=(('QB1', 'QB2'),))},
+                default_implementation='tgss',
+                override_default_implementation={},
+            ),
+            'measure': GateInfo(
+                implementations={'constant': GateImplementationInfo(loci=(('QB1', 'QB2'),))},
+                default_implementation='constant',
+                override_default_implementation={},
+            ),
+        },
+    )
 
 
 @pytest.fixture
-def sample_dynamic_quantum_architecture():
-    return {
-        'calibration_set_id': 'cd4dd889-b88b-4370-ba01-eb8262ad9c53',
-        'qubits': ['QB1', 'QB2', 'QB3'],
-        'computational_resonators': ['COMP_R'],
-        'gates': {
-            'prx': {
-                'implementations': {
-                    'drag_gaussian': {
-                        'loci': [['QB1'], ['QB2'], ['QB3']],
-                    },
-                    'drag_crf': {
-                        'loci': [['QB1'], ['QB2'], ['QB3']],
-                    },
-                },
-                'default_implementation': 'drag_gaussian',
-                'override_default_implementation': {('QB3',): 'drag_crf'},
-            },
-            'cz': {
-                'implementations': {
-                    'tgss': {
-                        'loci': [['QB1', 'COMP_R'], ['QB3', 'COMP_R']],
-                    },
-                    'crf': {
-                        'loci': [['QB1', 'COMP_R']],
-                    },
-                },
-                'default_implementation': 'tgss',
-                'override_default_implementation': {},
-            },
-            'move': {
-                'implementations': {
-                    'tgss_crf': {
-                        'loci': [['QB2', 'COMP_R']],
-                    },
-                },
-                'default_implementation': 'tgss_crf',
-                'override_default_implementation': {},
-            },
-            'measure': {
-                'implementations': {
-                    'constant': {'loci': [['QB1'], ['QB2'], ['QB3']]},
-                },
-                'default_implementation': 'constant',
-                'override_default_implementation': {},
-            },
+def sample_move_architecture():
+    return DynamicQuantumArchitecture(
+        calibration_set_id=UUID('26c5e70f-bea0-43af-bd37-6212ec7d04cb'),
+        qubits=['QB1', 'QB2', 'QB3'],
+        computational_resonators=['COMP_R', 'COMP_R2'],
+        gates={
+            'prx': GateInfo(
+                implementations={'drag_gaussian': GateImplementationInfo(loci=(('QB1',), ('QB2',), ('QB3',)))},
+                default_implementation='drag_gaussian',
+                override_default_implementation={},
+            ),
+            'cz': GateInfo(
+                implementations={'tgss': GateImplementationInfo(loci=(('QB1', 'COMP_R'), ('QB2', 'COMP_R')))},
+                default_implementation='tgss',
+                override_default_implementation={},
+            ),
+            'move': GateInfo(
+                implementations={'tgss_crf': GateImplementationInfo(loci=(('QB3', 'COMP_R'),))},
+                default_implementation='tgss_crf',
+                override_default_implementation={},
+            ),
+            'measure': GateInfo(
+                implementations={'constant': GateImplementationInfo(loci=(('QB1',), ('QB2',), ('QB3',)))},
+                default_implementation='constant',
+                override_default_implementation={},
+            ),
         },
-    }
+    )
 
 
 class MockTextResponse:
@@ -568,18 +557,18 @@ def submit_failed_auth() -> MockJsonResponse:
 
 
 @pytest.fixture()
-def quantum_architecture_success(sample_quantum_architecture) -> MockJsonResponse:
-    return MockJsonResponse(200, sample_quantum_architecture)
+def static_architecture_success(sample_static_architecture) -> MockJsonResponse:
+    return MockJsonResponse(200, sample_static_architecture)
+
+
+@pytest.fixture()
+def dynamic_architecture_success(sample_dynamic_architecture) -> MockJsonResponse:
+    return MockJsonResponse(200, sample_dynamic_architecture.model_dump())
 
 
 @pytest.fixture()
 def move_architecture_success(sample_move_architecture) -> MockJsonResponse:
-    return MockJsonResponse(200, sample_move_architecture)
-
-
-@pytest.fixture()
-def dynamic_quantum_architecture_success(sample_dynamic_quantum_architecture) -> MockJsonResponse:
-    return MockJsonResponse(200, sample_dynamic_quantum_architecture)
+    return MockJsonResponse(200, sample_move_architecture.model_dump())
 
 
 @pytest.fixture()
