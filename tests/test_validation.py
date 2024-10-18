@@ -61,7 +61,7 @@ def test_valid_instruction(sample_quantum_architecture, instruction):
 def test_invalid_instruction(sample_quantum_architecture, instruction, match):
     """Invalid instructions must not pass validation."""
     arch = QuantumArchitecture(**sample_quantum_architecture).quantum_architecture
-    with pytest.raises(CircuitExecutionError, match=match):
+    with pytest.raises(CircuitValidationError, match=match):
         IQMClient._validate_instruction(arch, instruction, None)
 
 

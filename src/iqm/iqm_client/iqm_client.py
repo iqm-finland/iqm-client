@@ -355,7 +355,7 @@ class IQMClient:
           validate_moves: determines how MOVE gate validation works
 
         Raises:
-            CircuitExecutionError: validation failed
+            CircuitValidationError: validation failed
         """
         for index, circuit in enumerate(circuits):
             measurement_keys: set[str] = set()
@@ -384,7 +384,7 @@ class IQMClient:
               Can be set to ``None`` if ``instruction`` already uses physical qubit names.
 
         Raises:
-            CircuitExecutionError: validation failed
+            CircuitValidationError: validation failed
         """
         if instruction.name not in architecture.operations:
             raise CircuitValidationError(
@@ -399,7 +399,7 @@ class IQMClient:
             # all QPU loci are allowed
             for q, mapped_q in zip(instruction.qubits, qubits):
                 if mapped_q not in architecture.qubits:
-                    raise CircuitExecutionError(
+                    raise CircuitValidationError(
                         f'{instruction}: Qubit {q} = {mapped_q} does not exist on the QPU.'
                         if qubit_mapping
                         else f'{instruction}: Qubit {q} does not exist on the QPU.'
@@ -446,7 +446,7 @@ class IQMClient:
                 Can be set to ``None`` if the ``circuit`` already uses physical qubit names.
             validate_moves: Option for bypassing full or partial MOVE gate validation.
         Raises:
-            CircuitExecutionError: validation failed
+            CircuitValidationError: validation failed
         """
         # pylint: disable=too-many-branches
         if validate_moves == MoveGateValidationMode.NONE:

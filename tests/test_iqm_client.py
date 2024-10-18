@@ -13,7 +13,7 @@
 # limitations under the License.
 """Tests for the IQM client.
 """
-# pylint: disable=too-many-arguments
+# pylint: disable=too-many-arguments,too-many-lines
 import uuid
 
 from mockito import expect, unstub, verifyNoUnwantedInteractions, when

@@ -122,7 +122,7 @@ class Instruction(BaseModel):
     and ``feedback_key``, which is only needed if the measurement result is used for classical control
     within the circuit.
     All the measurement keys and feedback keys used in a circuit must be unique (but the two groups of
-    keys are independent namespaces).                                                                             
+    keys are independent namespaces).
     Each qubit may be measured multiple times, i.e. mid-circuit measurements are allowed.
 
     .. code-block:: python
