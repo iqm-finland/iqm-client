@@ -17,6 +17,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
+from functools import cached_property
+import re
 from typing import Any, Final, Optional, Union
 from uuid import UUID
 
@@ -517,6 +519,14 @@ class QuantumArchitecture(BaseModel):
     """Details about the quantum architecture."""
 
 
+def _component_sort_key(component_name: str) -> tuple[str, int, str]:
+    def get_numeric_id(name: str) -> int:
+        match = re.search(r'(\d+)', name)
+        return int(match.group(1)) if match else 0
+
+    return re.sub(r'[^a-zA-Z]', '', component_name), get_numeric_id(component_name), component_name
+
+
 class GateImplementationInfo(BaseModel):
     """Information about an implementation of a quantum gate/operation."""
 
@@ -536,6 +546,28 @@ class GateInfo(BaseModel):
     override_default_implementation: dict[Locus, str] = Field(...)
     """mapping of loci to implementation names that override ``default_implementation`` for those loci"""
 
+    @cached_property
+    def loci(self) -> tuple[Locus, ...]:
+        """Returns all loci which are available for at least one of the implementations.
+
+        The loci are sorted first based on the first locus component, then the second, etc.
+        The sorting of individual locus components is first done alphabetically based on their
+        non-numeric part, and then components with the same non-numeric part are sorted numerically.
+        An example of loci sorted this way would be:
+        (
+            ('QB1', 'QB2'),
+            ('QB2', 'COMPR1'),
+            ('QB2', 'QB3'),
+            ('QB3', 'COMPR1'),
+            ('QB3', 'COMPR2'),
+            ('QB3', 'QB1'),
+            ('QB10', 'QB2'),
+        )
+        """
+        loci_set = set(locus for impl in self.implementations.values() for locus in impl.loci)
+        loci_sorted = sorted(loci_set, key=lambda loc: (tuple(_component_sort_key(loc[i]) for i in range(len(loc)))))
+        return tuple(loci_sorted)
+
 
 class DynamicQuantumArchitecture(BaseModel):
     """Dynamic quantum architecture as returned by server.
@@ -552,6 +584,16 @@ class DynamicQuantumArchitecture(BaseModel):
     """computational resonators that appear in at least one gate locus in the calibration set"""
     gates: dict[str, GateInfo] = Field(...)
     """mapping of gate names to information about the gates"""
+
+    @cached_property
+    def components(self) -> list[str]:
+        """Returns all locus components (qubits and computational resonators) sorted.
+
+        The components are first sorted alphabetically based on their non-numeric part, and then
+        components with the same non-numeric part are sorted numerically. An example of components
+        sorted this way would be: ['COMPR1', 'COMPR2', 'QB1', 'QB2', 'QB3', 'QB10', 'QB11', 'QB20'].
+        """
+        return sorted(self.qubits + self.computational_resonators, key=_component_sort_key)
 
 
 class HeraldingMode(str, Enum):

@@ -22,9 +22,9 @@ from iqm.iqm_client import (
     Circuit,
     CircuitTranspilationError,
     CircuitValidationError,
+    DynamicQuantumArchitecture,
     Instruction,
     IQMClient,
-    QuantumArchitectureSpecification,
 )
 
 
@@ -57,16 +57,15 @@ class ResonatorStateTracker:
         self.res_qb_map = {r: r for r in self.resonators}
 
     @staticmethod
-    def from_quantum_architecture_specification(arch: QuantumArchitectureSpecification) -> 'ResonatorStateTracker':
-        """Constructor to make the ResonatorStateTracker from a QuantumArchitectureSpecification.
+    def from_dynamic_architecture(arch: DynamicQuantumArchitecture) -> 'ResonatorStateTracker':
+        """Constructor to make the ResonatorStateTracker from a DynamicQuantumArchitecture.
 
         Args:
             arch: The architecture to track the resonator state on.
         """
-        # TODO use architecture.computational_resonators when available instead of using COMP_R.
-        resonators = tuple(q for q in arch.qubits if q.startswith('COMP_R'))
+        resonators = tuple(q for q in arch.computational_resonators)
         available_moves: dict[str, list[str]] = {
-            r: [q for q, r2 in arch.operations[ResonatorStateTracker.move_gate] if r == r2] for r in resonators
+            r: [q for q, r2 in arch.gates[ResonatorStateTracker.move_gate].loci if r == r2] for r in resonators
         }
         return ResonatorStateTracker(available_moves)
 
@@ -264,7 +263,7 @@ class ResonatorStateTracker:
 
 def transpile_insert_moves(
     circuit: Circuit,
-    arch: QuantumArchitectureSpecification,
+    arch: DynamicQuantumArchitecture,
     existing_moves: Optional[ExistingMoveHandlingOptions] = None,
     qubit_mapping: Optional[dict[str, str]] = None,
 ) -> Circuit:
@@ -284,10 +283,10 @@ def transpile_insert_moves(
         qubit_mapping: Mapping of logical qubit names to physical qubit names.
             Can be set to ``None`` if all ``circuits`` already use physical qubit names.
     """
-    res_status = ResonatorStateTracker.from_quantum_architecture_specification(arch)
+    res_status = ResonatorStateTracker.from_dynamic_architecture(arch)
     if not qubit_mapping:
         qubit_mapping = {}
-    for q in arch.qubits:
+    for q in arch.components:
         if q not in qubit_mapping.values():
             qubit_mapping[q] = q
     existing_moves_in_circuit = [i for i in circuit.instructions if i.name == res_status.move_gate]
@@ -323,7 +322,7 @@ def transpile_insert_moves(
 def _transpile_insert_moves(
     instructions: list[Instruction],
     res_status: ResonatorStateTracker,
-    arch: QuantumArchitectureSpecification,
+    arch: DynamicQuantumArchitecture,
     qubit_mapping: dict[str, str],
 ) -> list[Instruction]:
     """Inserts MOVE gates into a list of instructions and changes the existing instructions as needed.
@@ -356,7 +355,11 @@ def _transpile_insert_moves(
         else:
             # Check if the instruction is valid, which raises an exception if not.
             try:
-                IQMClient._validate_instruction(architecture=arch, instruction=i, qubit_mapping=qubit_mapping)
+                IQMClient._validate_instruction(
+                    architecture=arch,
+                    instruction=i,
+                    qubit_mapping=qubit_mapping,
+                )
                 new_instructions.append(i)  # No adjustment needed
                 if i.name == res_status.move_gate:  # update the tracker if needed
                     res_status.apply_move(*[qubit_mapping[q] for q in i.qubits])

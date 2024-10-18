@@ -227,7 +227,7 @@ class IQMClient:
                     e.__traceback__
                 )
 
-        architecture = self.get_quantum_architecture()
+        architecture = self.get_dynamic_quantum_architecture(calibration_set_id)
 
         self._validate_qubit_mapping(architecture, circuits, qubit_mapping)
         serialized_qubit_mapping = serialize_qubit_mapping(qubit_mapping) if qubit_mapping else None
@@ -299,7 +299,7 @@ class IQMClient:
 
     @staticmethod
     def _validate_qubit_mapping(
-        architecture: QuantumArchitectureSpecification,
+        architecture: DynamicQuantumArchitecture,
         circuits: CircuitBatch,
         qubit_mapping: Optional[dict[str, str]] = None,
     ) -> None:
@@ -334,12 +334,12 @@ class IQMClient:
 
         # check that each mapped qubit is defined in the quantum architecture
         for _logical, physical in qubit_mapping.items():
-            if physical not in architecture.qubits:
-                raise CircuitValidationError(f'Qubit {physical} not present in quantum architecture')
+            if physical not in architecture.components:
+                raise CircuitValidationError(f'Component {physical} not present in quantum architecture')
 
     @staticmethod
     def _validate_circuit_instructions(
-        architecture: QuantumArchitectureSpecification,
+        architecture: DynamicQuantumArchitecture,
         circuits: CircuitBatch,
         qubit_mapping: Optional[dict[str, str]] = None,
         validate_moves: MoveGateValidationMode = MoveGateValidationMode.STRICT,
@@ -371,7 +371,7 @@ class IQMClient:
 
     @staticmethod
     def _validate_instruction(
-        architecture: QuantumArchitectureSpecification,
+        architecture: DynamicQuantumArchitecture,
         instruction: Instruction,
         qubit_mapping: Optional[dict[str, str]] = None,
     ) -> None:
@@ -386,25 +386,26 @@ class IQMClient:
         Raises:
             CircuitValidationError: validation failed
         """
-        if instruction.name not in architecture.operations:
+        if instruction.name not in architecture.gates and instruction.name != 'barrier':
             raise CircuitValidationError(
                 f"Instruction '{instruction.name}' is not supported by the quantum architecture."
             )
-        allowed_loci = architecture.operations[instruction.name]
         op_info = _SUPPORTED_OPERATIONS[instruction.name]
         # apply the qubit mapping if any
-        qubits = [qubit_mapping[q] for q in instruction.qubits] if qubit_mapping else list(instruction.qubits)
+        qubits = tuple(qubit_mapping[q] for q in instruction.qubits) if qubit_mapping else instruction.qubits
 
         if op_info.allow_all_loci:
             # all QPU loci are allowed
             for q, mapped_q in zip(instruction.qubits, qubits):
-                if mapped_q not in architecture.qubits:
+                if mapped_q not in architecture.components:
                     raise CircuitValidationError(
-                        f'{instruction}: Qubit {q} = {mapped_q} does not exist on the QPU.'
+                        f'{instruction}: Component {q} = {mapped_q} does not exist on the QPU.'
                         if qubit_mapping
-                        else f'{instruction}: Qubit {q} does not exist on the QPU.'
+                        else f'{instruction}: Component {q} does not exist on the QPU.'
                     )
             return
+
+        allowed_loci = architecture.gates[instruction.name].loci
         if op_info.factorizable:
             # Check that all qubits in the locus are allowed by the architecture
             allowed_qubits = set(q for locus in allowed_loci for q in locus)
@@ -419,7 +420,7 @@ class IQMClient:
 
         # Check that locus matches one of the loci defined in architecture
         all_loci = (
-            [list(x) for locus in allowed_loci for x in itertools.permutations(locus)]
+            tuple(tuple(x) for locus in allowed_loci for x in itertools.permutations(locus))
             if op_info.symmetric
             else allowed_loci
         )
@@ -432,7 +433,7 @@ class IQMClient:
 
     @staticmethod
     def _validate_circuit_moves(
-        architecture: QuantumArchitectureSpecification,
+        architecture: DynamicQuantumArchitecture,
         circuit: Circuit,
         qubit_mapping: Optional[dict[str, str]] = None,
         validate_moves: MoveGateValidationMode = MoveGateValidationMode.STRICT,
@@ -453,7 +454,7 @@ class IQMClient:
             return
         move_gate = 'move'
         # Check if MOVE gates are allowed on this architecture
-        if move_gate not in architecture.operations:
+        if move_gate not in architecture.gates:
             if any(i.name == move_gate for i in circuit.instructions):
                 raise CircuitValidationError('MOVE instruction is not supported by the given device architecture.')
             return
@@ -463,9 +464,8 @@ class IQMClient:
         if validate_moves == MoveGateValidationMode.ALLOW_PRX:
             allowed_gates.add('prx')
 
-        # TODO use architecture.computational_resonators when available instead of relying on COMP_R prefix.
-        all_resonators = {q for q in architecture.qubits if q.startswith('COMP_R')}
-        all_qubits = set(architecture.qubits) - all_resonators
+        all_resonators = set(architecture.computational_resonators)
+        all_qubits = set(architecture.qubits)
         if qubit_mapping:
             reverse_mapping = {phys: log for log, phys in qubit_mapping.items()}
             all_resonators = {reverse_mapping[q] if q in reverse_mapping else q for q in all_resonators}

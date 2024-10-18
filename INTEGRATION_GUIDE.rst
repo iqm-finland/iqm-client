@@ -129,9 +129,9 @@ Circuit transpilation
 
 IQM does not provide an open source circuit transpilation library, so this will have to be supplied
 by the quantum computing framework or a third party library.  To obtain the necessary information
-for circuit transpilation, :meth:`.IQMClient.get_quantum_architecture` returns the names of the
-qubits, qubit connectivity, and native operations. This information should enable circuit
-transpilation for IQM quantum architectures.
+for circuit transpilation, :meth:`.IQMClient.get_dynamic_quantum_architecture` returns the names of the
+components (qubits or computational resonators), component connectivity, and native operations available
+for the given calibration set. This information should enable circuit transpilation for IQM quantum architectures.
 
 The notable exception is the transpilation of MOVE gates for IQM quantum computers with
 computational resonators, for which some specialized transpilation logic is provided.  The MOVE gate
@@ -170,16 +170,16 @@ from the circuit before transpiling it to another quantum architecture.
     backend_without_resonator = IQMClient("url_to_backend_without_resonator")
 
     # intended use
-    circuit_with_moves = transpile_insert_moves(circuit, backend_with_resonator.get_quantum_architecture())
+    circuit_with_moves = transpile_insert_moves(circuit, backend_with_resonator.get_dynamic_quantum_architecture())
     circuit_without_moves = transpile_remove_moves(circuit_with_moves)
 
     backend_with_resonator.submit_circuits([circuit_with_moves])
     backend_without_resonator.submit_circuits([circuit_without_moves])
 
     # Using the transpile_insert_moves on a device that does not support MOVE gates does nothing.
-    assert circuit == transpile_insert_moves(circuit, backend_without_resonator.get_quantum_architecture())
+    assert circuit == transpile_insert_moves(circuit, backend_without_resonator.get_dynamic_quantum_architecture())
     # Unless the circuit had MOVE gates, then it can remove them with the existing_moves argument.
-    alt_circuit_without_moves = transpile_insert_moves(circuit, backend_without_resonator.get_quantum_architecture(), existing_moves=ExistingMoveHandlingOptions.REMOVE)
+    alt_circuit_without_moves = transpile_insert_moves(circuit, backend_without_resonator.get_dynamic_quantum_architecture(), existing_moves=ExistingMoveHandlingOptions.REMOVE)
 
 
 Note on qubit mapping
@@ -224,7 +224,7 @@ On Windows:
   set IQM_CLIENT_REQUESTS_TIMEOUT=120
 
 Once set, this environment variable will control network request timeouts for :class:`.IQMClient` methods
-``abort_job``, ``get_quantum_architecture``, ``get_run``, and ``get_run_status``.
+``abort_job``, ``get_quantum_architecture``, ``get_dynamic_quantum_architecture``, ``get_run``, and ``get_run_status``.
 
 Set :envvar:`IQM_CLIENT_SECONDS_BETWEEN_CALLS` to control the polling frequency when waiting for
 compilation and run results with the :meth:`.IQMClient.wait_for_compilation` and
