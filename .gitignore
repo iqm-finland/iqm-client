@@ -17,5 +17,5 @@ test_report.xml
 /sdist/
 /docs/api/
 
-# IDE
-.vscode/*
+# IDE files
+.vscode/

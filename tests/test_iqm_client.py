@@ -14,16 +14,23 @@
 """Tests for the IQM client.
 """
 # pylint: disable=too-many-arguments
+import uuid
+
 from mockito import expect, unstub, verifyNoUnwantedInteractions, when
 import pytest
 import requests
 from requests import HTTPError
 
 from iqm.iqm_client import (
+    ArchitectureRetrievalError,
+    Circuit,
+    CircuitCompilationOptions,
     CircuitExecutionError,
     CircuitValidationError,
     ClientConfigurationError,
+    DynamicQuantumArchitecture,
     HeraldingMode,
+    Instruction,
     IQMClient,
     JobAbortionError,
     QuantumArchitectureSpecification,
@@ -33,6 +40,65 @@ from iqm.iqm_client import (
     validate_circuit,
 )
 from tests.conftest import MockJsonResponse, get_jobs_args, post_jobs_args, submit_circuits_args
+
+
+@pytest.fixture
+def move_circuit():
+    instructions = (
+        Instruction(
+            name='prx',
+            qubits=('QB1',),
+            args={'phase_t': 0.3, 'angle_t': -0.2},
+        ),
+        Instruction(
+            name='move',
+            qubits=('QB3', 'COMP_R'),
+            args={},
+        ),
+        Instruction(
+            name='cz',
+            qubits=('QB1', 'COMP_R'),
+            args={},
+        ),
+        Instruction(
+            name='cz',
+            qubits=('QB2', 'COMP_R'),
+            args={},
+        ),
+        Instruction(
+            name='move',
+            qubits=('QB3', 'COMP_R'),
+            args={},
+        ),
+    )
+    return Circuit(name='COMP_R circuit', instructions=instructions)
+
+
+@pytest.fixture
+def move_circuit_with_prx_in_the_sandwich():
+    instructions = (
+        Instruction(
+            name='prx',
+            qubits=('QB1',),
+            args={'phase_t': 0.3, 'angle_t': -0.2},
+        ),
+        Instruction(
+            name='move',
+            qubits=('QB3', 'COMP_R'),
+            args={},
+        ),
+        Instruction(
+            name='prx',
+            qubits=('QB3',),
+            args={'phase_t': 0.3, 'angle_t': -0.2},
+        ),
+        Instruction(
+            name='move',
+            qubits=('QB3', 'COMP_R'),
+            args={},
+        ),
+    )
+    return Circuit(name='COMP_R circuit with PRX in the sandwich', instructions=instructions)
 
 
 def test_serialize_qubit_mapping():
@@ -85,21 +151,35 @@ def test_submit_circuits_adds_user_agent_with_client_signature(
 
 
 @pytest.mark.parametrize(
-    'run_request_name, valid_request, error_message',
+    'run_request_name, valid_request, error',
     [
         ('minimal_run_request', True, None),
         ('run_request_with_heralding', True, None),
         ('run_request_with_custom_settings', True, None),
-        ('run_request_with_invalid_qubit_mapping', False, 'Multiple logical qubits map to the same physical qubit.'),
+        (
+            'run_request_with_invalid_qubit_mapping',
+            False,
+            CircuitValidationError('Multiple logical qubits map to the same physical qubit.'),
+        ),
         (
             'run_request_with_incomplete_qubit_mapping',
             False,
-            "The qubits {'Qubit B'} in circuit 'The circuit' "
-            + 'at index 0 are not found in the provided qubit mapping.',
+            CircuitValidationError(
+                "The qubits {'Qubit B'} in circuit 'The circuit' "
+                'at index 0 are not found in the provided qubit mapping.'
+            ),
         ),
         ('run_request_without_qubit_mapping', True, None),
         ('run_request_with_calibration_set_id', True, None),
         ('run_request_with_duration_check_disabled', True, None),
+        (
+            'run_request_with_incompatible_options',
+            False,
+            ValueError(
+                'Unable to perform full MOVE gate frame tracking if MOVE gate validation '
+                'is not "strict" or "allow_prx".'
+            ),
+        ),
     ],
 )
 def test_submit_circuits_returns_id(
@@ -107,7 +187,7 @@ def test_submit_circuits_returns_id(
     jobs_url,
     run_request_name,
     valid_request,
-    error_message,
+    error,
     request,
     submit_success,
     existing_run_id,
@@ -122,11 +202,10 @@ def test_submit_circuits_returns_id(
 
     if valid_request:
         expect(requests, times=1).post(jobs_url, **post_jobs_args(run_request)).thenReturn(submit_success)
-
-    if error_message is None:
+    if error is None:
         assert sample_client.submit_circuits(**submit_circuits_args(run_request)) == existing_run_id
     else:
-        with pytest.raises(ValueError, match=error_message):
+        with pytest.raises(type(error), match=str(error)):
             sample_client.submit_circuits(**submit_circuits_args(run_request))
 
     verifyNoUnwantedInteractions()
@@ -178,7 +257,7 @@ def test_submit_circuits_sets_heralding_mode_in_run_request(
     expect(requests, times=1).post(jobs_url, **post_jobs_args(run_request_with_heralding)).thenReturn(submit_success)
     expect(requests, times=1).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
 
-    assert submit_circuits_args(run_request_with_heralding)['heralding_mode'] == expected_heralding_mode
+    assert submit_circuits_args(run_request_with_heralding)['options'].heralding_mode == expected_heralding_mode
     sample_client.submit_circuits(**submit_circuits_args(run_request_with_heralding))
 
     verifyNoUnwantedInteractions()
@@ -215,7 +294,9 @@ def test_submit_circuits_raises_with_invalid_heralding_mode(
     """
     when(requests).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
     with pytest.raises(ValueError, match="Input should be 'none' or 'zeros'"):
-        sample_client.submit_circuits(circuits=[], shots=10, heralding_mode='invalid')
+        sample_client.submit_circuits(
+            circuits=[], shots=10, options=CircuitCompilationOptions(heralding_mode='invalid')
+        )
 
 
 def test_get_run_adds_user_agent(
@@ -510,23 +591,6 @@ def test_base_url_is_invalid():
     assert f'The URL schema has to be http or https. Incorrect schema in URL: {invalid_base_url}' == str(exc.value)
 
 
-def test_tokens_file_not_found(base_url):
-    """Test that an exception is raised when the tokens file is not found"""
-    tokens_file = '/home/iqm/tokens.json'
-    with pytest.raises(ClientConfigurationError) as exc:
-        IQMClient(base_url, tokens_file=tokens_file)
-    assert f'File not found: {tokens_file}' == str(exc.value)
-
-
-def test_tokens_and_credentials_combo_invalid(credentials):
-    """Test that an exception is raised when both tokens and credentials are provided"""
-    tokens_file = '/home/iqm/tokens.json'
-    base_url = 'https://example.com'
-    with pytest.raises(ClientConfigurationError) as exc:
-        IQMClient(base_url, tokens_file=tokens_file, **credentials)
-    assert 'Either external token or credentials must be provided. Both were provided.' == str(exc.value)
-
-
 def test_run_result_throws_json_decode_error_if_received_not_json(
     sample_client, existing_job_url, existing_run_id, not_valid_json_response
 ):
@@ -559,7 +623,7 @@ def test_quantum_architecture_throws_json_decode_error_if_received_not_json(
     """Test that an exception is raised when the response is not a valid JSON"""
     expect(requests, times=1).get(quantum_architecture_url, ...).thenReturn(not_valid_json_response)
 
-    with pytest.raises(CircuitExecutionError):
+    with pytest.raises(ArchitectureRetrievalError):
         sample_client.get_quantum_architecture()
 
     verifyNoUnwantedInteractions()
@@ -728,6 +792,195 @@ def test_abort_job_failed(status_code, sample_client, existing_job_url, existing
 
     with pytest.raises(JobAbortionError):
         sample_client.abort_job(existing_run_id)
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+@pytest.mark.parametrize(
+    'params',
+    [
+        {},
+        {'options': CircuitCompilationOptions(heralding_mode=HeraldingMode.ZEROS)},
+        {'custom_settings': {'some_setting': 1}},
+        {'calibration_set_id': uuid.uuid4()},
+        {'options': CircuitCompilationOptions(max_circuit_duration_over_t2=0.0)},
+        {'qubit_mapping': {'QB1': 'QB2', 'QB2': 'QB1'}},
+    ],
+)
+def test_create_and_submit_run_request(
+    sample_client,
+    sample_circuit,
+    jobs_url,
+    submit_success,
+    existing_run_id,
+    quantum_architecture_url,
+    quantum_architecture_success,
+    params,
+):
+    """
+    Tests that calling create_run_request and then submit_run_request is equivalent to calling submit_circuits.
+    """
+    when(requests).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
+
+    run_request = sample_client.create_run_request([sample_circuit], **params)
+
+    expect(requests, times=2).post(jobs_url, **post_jobs_args(run_request)).thenReturn(submit_success)
+    assert sample_client.submit_run_request(run_request) == existing_run_id
+    assert sample_client.submit_circuits([sample_circuit], **params) == existing_run_id
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+@pytest.mark.parametrize(
+    'run_request_name, quantum_architecture_name, sample_circuit_name',
+    [
+        (run_request, success_result, sample_circuit)
+        for run_request in [
+            'run_request_with_move_validation',
+            'run_request_without_prx_move_validation',
+            'run_request_with_move_gate_frame_tracking',
+        ]
+        for success_result, sample_circuit in zip(
+            ['quantum_architecture_success', 'move_architecture_success', 'move_architecture_success'],
+            ['sample_circuit', 'move_circuit', 'move_circuit_with_prx_in_the_sandwich'],
+        )
+    ],
+)
+def test_compiler_options_are_used_and_sent(
+    sample_client,
+    sample_circuit_name,
+    jobs_url,
+    run_request_name,
+    request,
+    submit_success,
+    quantum_architecture_url,
+    quantum_architecture_name,
+):
+    """
+    Tests submitting circuits for execution
+    """
+    run_request = request.getfixturevalue(run_request_name)
+    quantum_architecture_success = request.getfixturevalue(quantum_architecture_name)
+    run_request.circuits = [request.getfixturevalue(sample_circuit_name)]
+
+    when(requests).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
+    if (
+        sample_circuit_name != 'move_circuit_with_prx_in_the_sandwich'  # Valid circuit
+        or run_request_name == 'run_request_without_prx_move_validation'  # Validation is turned off
+    ):
+        expect(requests, times=1).post(jobs_url, **post_jobs_args(run_request)).thenReturn(submit_success)
+        sample_client.submit_circuits(**submit_circuits_args(run_request))
+    else:  # Invalid circuit and validation is turned on.
+        with pytest.raises(CircuitValidationError):
+            sample_client.submit_circuits(**submit_circuits_args(run_request))
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_get_dynamic_quantum_architecture_with_calset_id(
+    sample_client, base_url, dynamic_quantum_architecture_success, sample_dynamic_quantum_architecture
+):
+    """Tests that the correct dynamic quantum architecture for the given ``calibration_set_id`` is returned."""
+    calset_id = uuid.UUID(sample_dynamic_quantum_architecture['calibration_set_id'])
+    expect(requests, times=1).get(f'{base_url}/api/v1/calibration/{calset_id}/gates', ...).thenReturn(
+        dynamic_quantum_architecture_success
+    )
+    assert sample_client.get_dynamic_quantum_architecture(calset_id) == DynamicQuantumArchitecture(
+        **sample_dynamic_quantum_architecture
+    )
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_get_dynamic_quantum_architecture_with_calset_id_caches(
+    sample_client, base_url, dynamic_quantum_architecture_success, sample_dynamic_quantum_architecture
+):
+    """
+    Tests that cached dynamic quantum architecture is returned when requesting it for the second time for
+    a given calibration set id.
+    """
+    calset_id = uuid.UUID(sample_dynamic_quantum_architecture['calibration_set_id'])
+    expect(requests, times=1).get(f'{base_url}/api/v1/calibration/{calset_id}/gates', ...).thenReturn(
+        dynamic_quantum_architecture_success
+    )
+
+    assert sample_client.get_dynamic_quantum_architecture(calset_id) == DynamicQuantumArchitecture(
+        **sample_dynamic_quantum_architecture
+    )
+    assert sample_client.get_dynamic_quantum_architecture(calset_id) == DynamicQuantumArchitecture(
+        **sample_dynamic_quantum_architecture
+    )
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_get_dynamic_quantum_architecture_without_calset_id(
+    sample_client, base_url, dynamic_quantum_architecture_success, sample_dynamic_quantum_architecture
+):
+    """Tests that the correct dynamic quantum architecture for the default calibration set is returned."""
+    expect(requests, times=1).get(f'{base_url}/api/v1/calibration/default/gates', ...).thenReturn(
+        dynamic_quantum_architecture_success
+    )
+    assert sample_client.get_dynamic_quantum_architecture() == DynamicQuantumArchitecture(
+        **sample_dynamic_quantum_architecture
+    )
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_get_dynamic_quantum_architecture_without_calset_id_does_not_cache(
+    sample_client, base_url, dynamic_quantum_architecture_success, sample_dynamic_quantum_architecture
+):
+    """
+    Tests that the correct dynamic quantum architecture is returned in the case where default calset
+    changes between two invocations of get_dynamic_quantum_architecture().
+    """
+    dynamic_quantum_architecture_2 = {
+        'calibration_set_id': '3902d525-d8f4-42c0-9fa9-6bbd535b6c80',
+        'qubits': ['QB1', 'QB2'],
+        'computational_resonators': [],
+        'gates': {
+            'phased_rx': {
+                'implementations': {
+                    'drag_gaussian': {
+                        'loci': [['QB1'], ['QB2']],
+                    }
+                },
+                'default_implementation': 'drag_gaussian',
+                'override_default_implementation': {},
+            },
+        },
+    }
+    dynamic_quantum_architecture_success_2 = MockJsonResponse(200, dynamic_quantum_architecture_2)
+    expect(requests, times=2).get(f'{base_url}/api/v1/calibration/default/gates', ...).thenReturn(
+        dynamic_quantum_architecture_success
+    ).thenReturn(dynamic_quantum_architecture_success_2)
+
+    assert sample_client.get_dynamic_quantum_architecture() == DynamicQuantumArchitecture(
+        **sample_dynamic_quantum_architecture
+    )
+    assert sample_client.get_dynamic_quantum_architecture() == DynamicQuantumArchitecture(
+        **dynamic_quantum_architecture_2
+    )
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_get_dynamic_quantum_architecture_throws_json_decode_error_if_received_not_json(
+    sample_client, base_url, not_valid_json_response
+):
+    """Test that an exception is raised when the response is not a valid JSON"""
+    expect(requests, times=1).get(f'{base_url}/api/v1/calibration/default/gates', ...).thenReturn(
+        not_valid_json_response
+    )
+
+    with pytest.raises(ArchitectureRetrievalError):
+        sample_client.get_dynamic_quantum_architecture()
 
     verifyNoUnwantedInteractions()
     unstub()

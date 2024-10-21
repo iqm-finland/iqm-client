@@ -14,390 +14,610 @@
 """Tests for user authentication and token management in IQM client.
 """
 # pylint: disable=too-many-arguments
-import builtins
-import io
 import json
-from time import sleep
+from uuid import UUID, uuid4
 
-from mockito import expect, unstub, verifyNoUnwantedInteractions, when
+from freezegun import freeze_time
+from mockito import expect, mock, unstub, verifyNoUnwantedInteractions, when
+from mockito.matchers import ANY
 import pytest
 import requests
 
-from iqm.iqm_client import ClientAuthenticationError, ClientConfigurationError, Credentials, IQMClient
-from iqm.iqm_client.iqm_client import _time_left_seconds
-from tests.conftest import (
-    MockJsonResponse,
-    expect_logout,
-    get_jobs_args,
-    make_token,
-    post_jobs_args,
-    prepare_tokens,
-    submit_circuits_args,
+from iqm.iqm_client import (
+    REQUESTS_TIMEOUT,
+    ClientAuthenticationError,
+    ClientConfigurationError,
+    IQMClient,
+    RunResult,
+    RunStatus,
 )
+from iqm.iqm_client.authentication import (
+    AUTH_CLIENT_ID,
+    AUTH_REALM,
+    AUTH_REQUESTS_TIMEOUT,
+    ExternalToken,
+    TokenClient,
+    TokenManager,
+    TokenProviderInterface,
+    TokensFileReader,
+)
+from tests.conftest import MockJsonResponse, make_token
 
 
-def test_get_initial_tokens_with_credentials_from_arguments(credentials):
-    """
-    Tests that if the client is initialized with credentials, they are used correctly
-    """
-    tokens = prepare_tokens(300, 3600, **credentials)
-    expected_credentials = Credentials(
-        access_token=tokens['access_token'], refresh_token=tokens['refresh_token'], **credentials
-    )
-
-    client = IQMClient('https://example.com', **credentials)
-    assert client._credentials == expected_credentials
-
-    unstub()
+@pytest.fixture()
+def auth_server_url() -> str:
+    """Authentication server base URL"""
+    return 'https://example.com/auth'
 
 
-def test_get_token_from_arguments(monkeypatch):
-    """
-    Tests that plaintext token is read from the arguments
-    """
-    monkeypatch.setenv('IQM_TOKEN', '2345')
-    client = IQMClient(url='https://example.com', token='1234')
-    assert client._token == '1234'
+@pytest.fixture()
+def auth_realm() -> str:
+    """Authentication realm for token client tests"""
+    return 'test_realm'
 
 
-def test_get_initial_tokens_with_credentials_from_env_variables(credentials, monkeypatch):
-    """
-    Tests that credentials are read from environment variables if they are not given as arguments
-    """
-    tokens = prepare_tokens(300, 3600, **credentials)
-    expected_credentials = Credentials(
-        access_token=tokens['access_token'], refresh_token=tokens['refresh_token'], **credentials
-    )
-    monkeypatch.setenv('IQM_AUTH_SERVER', credentials['auth_server_url'])
-    monkeypatch.setenv('IQM_AUTH_USERNAME', credentials['username'])
-    monkeypatch.setenv('IQM_AUTH_PASSWORD', credentials['password'])
-
-    client = IQMClient(url='https://example.com')
-    assert client._credentials == expected_credentials
-    unstub()
+@pytest.fixture()
+def auth_username() -> str:
+    """Username for getting token from an authentication server"""
+    return 'some-user'
 
 
-def test_get_token_from_env_variable(monkeypatch):
-    """
-    Tests that plaintext token is read from the environment variable if they are not given as arguments
-    """
-    monkeypatch.setenv('IQM_TOKEN', '1234')
-    client = IQMClient(url='https://example.com')
-    assert client._token == '1234'
+@pytest.fixture()
+def auth_password() -> str:
+    """Username for getting token from an authentication server"""
+    return 'very-secret'
 
 
-def test_get_initial_tokens_with_incomplete_credentials_from_env_variables(credentials, monkeypatch):
-    """
-    Tests configuration error is reported if IQM_AUTH_SERVER is set, but no credentials provided
-    """
-    monkeypatch.setenv('IQM_AUTH_SERVER', credentials['auth_server_url'])
-    with pytest.raises(ClientConfigurationError) as e:
-        IQMClient('https://example.com')
-    assert str(e.value) == 'Auth server URL is set but no username or password'
-    unstub()
+def test_external_token_provides_token():
+    """Tests that ExternalToken provides the configured token"""
+    token = make_token('Bearer', 300)
 
-
-def test_add_authorization_header_when_credentials_are_provided(
-    client_with_credentials, existing_job_url, existing_run_id, pending_compilation_job_result
-):
-    """
-    Tests that ``get_run`` requests are sent with Authorization header when credentials are provided
-    """
-    expect(requests, times=1).get(
-        existing_job_url, **post_jobs_args(access_token=client_with_credentials._credentials.access_token)
-    ).thenReturn(pending_compilation_job_result)
-
-    result = client_with_credentials.get_run(existing_run_id)
-    assert result.status == 'pending compilation'
+    provider = ExternalToken(token)
+    assert provider.get_token() == token
+    with pytest.raises(ClientAuthenticationError, match='Can not close externally managed auth session'):
+        provider.close()
+    with pytest.raises(ClientAuthenticationError, match='No external token available'):
+        provider.get_token()
 
     verifyNoUnwantedInteractions()
     unstub()
 
 
-def test_add_authorization_header_on_submit_circuits_when_credentials_are_provided(
-    client_with_credentials,
-    jobs_url,
-    minimal_run_request,
-    existing_run_id,
-    submit_success,
-    quantum_architecture_url,
-    quantum_architecture_success,
+def test_tokens_file_reader_provides_token(tmp_path):
+    """Tests that TokensFileReader provides the access token stored in the file"""
+    path = str(tmp_path / 'tokens_file.json')
+    token = make_token('Bearer', 300)
+    with open(path, 'w', encoding='utf-8') as tokens_file:
+        tokens_file.write(json.dumps({'access_token': token}))
+
+    provider = TokensFileReader(path)
+    assert provider.get_token() == token
+    with pytest.raises(ClientAuthenticationError, match='Can not close externally managed auth session'):
+        provider.close()
+    with pytest.raises(ClientAuthenticationError, match='No tokens file available'):
+        provider.get_token()
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_tokens_file_reader_file_not_found(tmp_path):
+    """Tests that TokensFileReader raises ClientAuthenticationError if the configured file is not found"""
+    path = str(tmp_path / 'tokens_file.json')
+    provider = TokensFileReader(path)
+    with pytest.raises(ClientAuthenticationError, match='Failed to read access token'):
+        provider.get_token()
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_tokens_file_reader_file_contains_invalid_data(tmp_path):
+    """Tests that TokensFileReader raises ClientAuthenticaitonError if the configured file contains invalid data"""
+    path = str(tmp_path / 'tokens_file.json')
+    with open(path, 'w', encoding='utf-8') as tokens_file:
+        tokens_file.write('some-invalid-data')
+
+    provider = TokensFileReader(path)
+    with pytest.raises(ClientAuthenticationError, match='Failed to read access token'):
+        provider.get_token()
+    with pytest.raises(ClientAuthenticationError, match='Can not close externally managed auth session'):
+        provider.close()
+    with pytest.raises(ClientAuthenticationError, match='No tokens file available'):
+        provider.get_token()
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_token_client_provides_token(auth_server_url, auth_realm, auth_username, auth_password):
+    """Tests that TokenClient provides the access token acquired from an authentication server"""
+    # pylint: disable=too-many-locals
+
+    token_url = f'{auth_server_url}/realms/{auth_realm}/protocol/openid-connect/token'
+    logout_url = f'{auth_server_url}/realms/{auth_realm}/protocol/openid-connect/logout'
+    provider = TokenClient(auth_server_url, auth_realm, auth_username, auth_password)
+
+    # login
+    with freeze_time('2024-05-20 12:00:00'):
+        login_data1 = {
+            'client_id': AUTH_CLIENT_ID,
+            'grant_type': 'password',
+            'username': auth_username,
+            'password': auth_password,
+        }
+        access_token1 = make_token('Bearer', 300)
+        refresh_token1 = make_token('Refresh', 3000)
+
+        expect(requests, times=1).post(token_url, data=login_data1, timeout=AUTH_REQUESTS_TIMEOUT).thenReturn(
+            MockJsonResponse(200, {'access_token': access_token1, 'refresh_token': refresh_token1})
+        )
+
+        assert provider.get_token() == access_token1
+
+    # 1st refresh
+    with freeze_time('2024-05-20 12:01:00'):
+        refresh_data1 = {'client_id': AUTH_CLIENT_ID, 'grant_type': 'refresh_token', 'refresh_token': refresh_token1}
+        access_token2 = make_token('Bearer', 300)
+        refresh_token2 = make_token('Refresh', 3000)
+
+        expect(requests, times=1).post(token_url, data=refresh_data1, timeout=AUTH_REQUESTS_TIMEOUT).thenReturn(
+            MockJsonResponse(200, {'access_token': access_token2, 'refresh_token': refresh_token2})
+        )
+
+        assert provider.get_token() == access_token2
+
+    # 2nd refresh
+    with freeze_time('2024-05-20 12:02:00'):
+        refresh_data2 = {'client_id': AUTH_CLIENT_ID, 'grant_type': 'refresh_token', 'refresh_token': refresh_token2}
+        access_token3 = make_token('Bearer', 300)
+        refresh_token3 = make_token('Refresh', 3000)
+
+        expect(requests, times=1).post(token_url, data=refresh_data2, timeout=AUTH_REQUESTS_TIMEOUT).thenReturn(
+            MockJsonResponse(200, {'access_token': access_token3, 'refresh_token': refresh_token3})
+        )
+
+        assert provider.get_token() == access_token3
+
+    # logout
+    with freeze_time('2024-05-20 12:03:00'):
+        logout_data = {'client_id': AUTH_CLIENT_ID, 'refresh_token': refresh_token3}
+
+        expect(requests, times=1).post(logout_url, data=logout_data, timeout=AUTH_REQUESTS_TIMEOUT).thenReturn(
+            MockJsonResponse(200, {})
+        )
+
+        provider.close()
+
+    # new session
+    with freeze_time('2024-05-20 12:04:00'):
+        login_data2 = {
+            'client_id': AUTH_CLIENT_ID,
+            'grant_type': 'password',
+            'username': auth_username,
+            'password': auth_password,
+        }
+        access_token4 = make_token('Bearer', 300)
+        refresh_token4 = make_token('Refresh', 3000)
+
+        expect(requests, times=1).post(token_url, data=login_data2, timeout=AUTH_REQUESTS_TIMEOUT).thenReturn(
+            MockJsonResponse(200, {'access_token': access_token4, 'refresh_token': refresh_token4})
+        )
+
+        assert provider.get_token() == access_token4
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_token_client_login_fails_with_no_auth_server():
+    """Tests that TokenClient raises ClientAuthenticationError if auth server has not been set"""
+
+    provider = TokenClient('', '', '', '')
+    provider._token_url = ''
+    with pytest.raises(ClientConfigurationError, match='No auth server configured'):
+        provider.get_token()
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_token_client_login_fails_with_wrong_password(auth_server_url, auth_realm, auth_username, auth_password):
+    """Tests that TokenClient raises ClientAuthenticationError if server login fails"""
+
+    token_url = f'{auth_server_url}/realms/{auth_realm}/protocol/openid-connect/token'
+    login_data = {
+        'client_id': AUTH_CLIENT_ID,
+        'grant_type': 'password',
+        'username': auth_username,
+        'password': auth_password,
+    }
+    response_body = {'detail': 'invalid password'}
+
+    # Prepare login
+    expect(requests, times=1).post(token_url, data=login_data, timeout=AUTH_REQUESTS_TIMEOUT).thenReturn(
+        MockJsonResponse(401, response_body)
+    )
+
+    provider = TokenClient(auth_server_url, auth_realm, auth_username, auth_password)
+    with pytest.raises(ClientAuthenticationError, match='Getting access token from auth server failed'):
+        provider.get_token()
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_token_client_recovers_from_revoked_session(auth_server_url, auth_realm, auth_username, auth_password):
+    """Tests that TokenClient starts a new session when getting new tokens using the refresh token fails."""
+
+    refresh_token = make_token('Refresh', 3000)
+    token_url = f'{auth_server_url}/realms/{auth_realm}/protocol/openid-connect/token'
+    refresh_data = {
+        'client_id': AUTH_CLIENT_ID,
+        'grant_type': 'refresh_token',
+        'refresh_token': refresh_token,
+    }
+    refresh_response_body = {'detail': 'session has been revoked'}
+
+    # Prepare refresh request
+    expect(requests, times=1).post(token_url, data=refresh_data, timeout=AUTH_REQUESTS_TIMEOUT).thenReturn(
+        MockJsonResponse(401, refresh_response_body)
+    )
+
+    login_data = {
+        'client_id': AUTH_CLIENT_ID,
+        'grant_type': 'password',
+        'username': auth_username,
+        'password': auth_password,
+    }
+    login_response_body = {
+        'access_token': make_token('Bearer', 300),
+        'refresh_token': make_token('Refresh', 3000),
+    }
+
+    # Prepare login request
+    expect(requests, times=1).post(token_url, data=login_data, timeout=AUTH_REQUESTS_TIMEOUT).thenReturn(
+        MockJsonResponse(200, login_response_body)
+    )
+
+    provider = TokenClient(auth_server_url, auth_realm, auth_username, auth_password)
+    provider._refresh_token = refresh_token
+
+    assert provider.get_token() == login_response_body['access_token']
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_token_client_logout_fails(auth_server_url, auth_realm, auth_username, auth_password):
+    """Tests that TokenClient raises ClientAuthenticationError if logout fails"""
+
+    token_url = f'{auth_server_url}/realms/{auth_realm}/protocol/openid-connect/token'
+    logout_url = f'{auth_server_url}/realms/{auth_realm}/protocol/openid-connect/logout'
+
+    access_token1 = make_token('Bearer', 300)
+    refresh_token1 = make_token('Refresh', 3000)
+
+    login_data = {
+        'client_id': AUTH_CLIENT_ID,
+        'grant_type': 'password',
+        'username': auth_username,
+        'password': auth_password,
+    }
+    logout_data = {'client_id': AUTH_CLIENT_ID, 'refresh_token': refresh_token1}
+    response_body = {'detail': 'unknown session'}
+
+    # Prepare login
+    expect(requests, times=1).post(token_url, data=login_data, timeout=AUTH_REQUESTS_TIMEOUT).thenReturn(
+        MockJsonResponse(200, {'access_token': access_token1, 'refresh_token': refresh_token1})
+    )
+
+    # Prepare logout
+    expect(requests, times=1).post(logout_url, data=logout_data, timeout=AUTH_REQUESTS_TIMEOUT).thenReturn(
+        MockJsonResponse(404, response_body)
+    )
+
+    provider = TokenClient(auth_server_url, auth_realm, auth_username, auth_password)
+    assert provider.get_token() == access_token1
+    with pytest.raises(ClientAuthenticationError, match='Logout failed'):
+        provider.close()
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def _patch_env(patcher, **patched):
+    for key in ['IQM_TOKEN', 'IQM_TOKENS_FILE', 'IQM_AUTH_SERVER', 'IQM_AUTH_USERNAME', 'IQM_AUTH_PASSWORD']:
+        if patched.get(key):
+            patcher(key, patched[key])
+        else:
+            patcher(key, '')
+
+
+def test_token_manager_initialization_with_keyword_args(
+    monkeypatch, auth_server_url, auth_username, auth_password
+) -> None:
+    """Test that TokenManager initializes correct token provider based on keyword arguments"""
+    _patch_env(monkeypatch.setenv)
+
+    token_manager = TokenManager()
+    assert token_manager._token_provider is None
+
+    token = make_token('Bearer', 300)
+    token_manager = TokenManager(token=token)
+    assert isinstance(token_manager._token_provider, ExternalToken)
+    assert token_manager._token_provider._token == token
+
+    path = '/some/path/to/tokens_file.json'
+    token_manager = TokenManager(tokens_file=path)
+    assert isinstance(token_manager._token_provider, TokensFileReader)
+    assert token_manager._token_provider._path == path
+
+    token_manager = TokenManager(auth_server_url=auth_server_url, username=auth_username, password=auth_password)
+    assert isinstance(token_manager._token_provider, TokenClient)
+    assert (
+        token_manager._token_provider._token_url
+        == f'{auth_server_url}/realms/{AUTH_REALM}/protocol/openid-connect/token'
+    )
+    assert (
+        token_manager._token_provider._logout_url
+        == f'{auth_server_url}/realms/{AUTH_REALM}/protocol/openid-connect/logout'
+    )
+    assert token_manager._token_provider._username == auth_username
+    assert token_manager._token_provider._password == auth_password
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_token_manager_initialization_with_environment_vars(monkeypatch, auth_server_url, auth_username, auth_password):
+    """Test that TokenManager initializes correct token provider based on environment variables"""
+    _patch_env(monkeypatch.setenv)
+
+    token_manager = TokenManager()
+    assert token_manager._token_provider is None
+
+    token = make_token('Bearer', 300)
+    _patch_env(monkeypatch.setenv, **{'IQM_TOKEN': token})
+    token_manager = TokenManager()
+    assert isinstance(token_manager._token_provider, ExternalToken)
+    assert token_manager._token_provider._token == token
+
+    path = '/some/path/to/tokens_file.json'
+    _patch_env(monkeypatch.setenv, **{'IQM_TOKENS_FILE': path})
+    token_manager = TokenManager()
+    assert isinstance(token_manager._token_provider, TokensFileReader)
+    assert token_manager._token_provider._path == path
+
+    _patch_env(
+        monkeypatch.setenv,
+        **{'IQM_AUTH_SERVER': auth_server_url, 'IQM_AUTH_USERNAME': auth_username, 'IQM_AUTH_PASSWORD': auth_password},
+    )
+    token_manager = TokenManager()
+    assert isinstance(token_manager._token_provider, TokenClient)
+    assert (
+        token_manager._token_provider._token_url
+        == f'{auth_server_url}/realms/{AUTH_REALM}/protocol/openid-connect/token'
+    )
+    assert (
+        token_manager._token_provider._logout_url
+        == f'{auth_server_url}/realms/{AUTH_REALM}/protocol/openid-connect/logout'
+    )
+    assert token_manager._token_provider._username == auth_username
+    assert token_manager._token_provider._password == auth_password
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+@pytest.mark.parametrize(
+    'args,env',
+    [
+        # Token and some other parameter
+        ({'token': 'some-token', 'tokens_file': 'some-path'}, {}),
+        # Tokens file and some other parameter
+        ({'tokens_file': 'some-path', 'username': 'some-user'}, {}),
+        # Some auth server parameter is missing
+        ({'auth_server_url': 'some-url', 'password': 'very-secret'}, {}),
+        # Token and some other parameter as environment variables
+        ({}, {'IQM_TOKEN': 'some-token', 'IQM_AUTH_USERNAME': 'some-path'}),
+        # Tokens file and some other parameter
+        ({}, {'IQM_TOKENS_FILE': 'some-path', 'IQM_AUTH_PASSWORD': 'very-secret'}),
+        # Some auth server parameter is missing
+        ({}, {'IQM_AUTH_USERNAME': 'some_user', 'IQM_AUTH_PASSWORD': 'very-secret'}),
+    ],
+)
+def test_token_manager_invalid_combination_of_parameters(args, env, monkeypatch):
+    """Test that TokenManager raises ClientConfigurationError if the parameters are ambiguous"""
+    _patch_env(monkeypatch.setenv, **env)
+    with pytest.raises(ClientConfigurationError, match='Invalid combination of authentication parameters specified'):
+        TokenManager(**args)
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+@pytest.mark.parametrize(
+    'args,env',
+    [
+        # Mixed initialisation parameters and environment variables
+        ({'tokens_file': 'some-path'}, {'IQM_TOKEN': 'some-token'}),
+        # Mixed initialisation parameters and environment variables
+        ({'auth_server_url': 'some-url'}, {'IQM_AUTH_USERNAME': 'some-user', 'IQM_AUTH_PASSWORD': 'very-secret'}),
+    ],
+)
+def test_token_manager_mixed_source_of_parameters(args, env, monkeypatch):
+    """Test that TokenManager raises ClientConfigurationError if the parameters are ambiguous"""
+    _patch_env(monkeypatch.setenv, **env)
+    error_message = 'Authentication parameters given both as initialisation args and as environment variables'
+    with pytest.raises(ClientConfigurationError, match=error_message):
+        TokenManager(**args)
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_token_manager_provides_bearer_token(monkeypatch):
+    """Test that TokenManager provides bearer token"""
+
+    _patch_env(monkeypatch.setenv)
+    expected_token = make_token('Bearer', 300)
+    mock_provider = mock(TokenProviderInterface)
+    when(mock_provider).get_token().thenReturn(expected_token)
+
+    token_manager = TokenManager()
+
+    # When authentication is not configured get_bearer_token returns None
+    assert token_manager._token_provider is None
+    assert token_manager.get_bearer_token() is None
+
+    # An existing valid access token is returned instead of asking token_provider for a new one
+    token_manager._token_provider = mock_provider
+    existing_token = make_token('Bearer', 300)
+    token_manager._access_token = existing_token
+    assert token_manager.get_bearer_token() == f'Bearer {existing_token}'
+
+    # Otherwise get_bearer_token returns the token from the token_provider    token_manager._access_token = None
+    token_manager._access_token = None
+    assert token_manager.get_bearer_token() == f'Bearer {expected_token}'
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_token_manager_close(monkeypatch):
+    """Test that TokenManager closes the token provider"""
+
+    _patch_env(monkeypatch.setenv)
+    mock_provider = mock(TokenProviderInterface)
+    expect(mock_provider, times=1).close().thenReturn(None)
+
+    # When authentication is not configured there is nothing to close
+    token_manager = TokenManager()
+    assert not token_manager.close()
+
+    # TokenManager calls `close()` of the token provider, sets token provider to None and returns True
+    token_manager._token_provider = mock_provider
+    assert token_manager.close()
+    assert token_manager._token_provider is None
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_submit_circuits_gets_token(
+    monkeypatch, base_url, quantum_architecture_url, jobs_url, sample_quantum_architecture, sample_circuit
 ):
-    """
-    Tests that ``submit_circuits`` requests are sent with Authorization header when credentials are provided
-    """
-    expect(requests, times=1).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
+    """Test that submit_circuits gets bearer token from TokenManager"""
+    _patch_env(monkeypatch.setenv)
+
+    token = token = make_token('Bearer', 300)
+    client = IQMClient(base_url, token=token)
+
+    when(requests).get(
+        quantum_architecture_url,
+        headers={'User-Agent': client._signature, 'Authorization': f'Bearer {token}'},
+        timeout=REQUESTS_TIMEOUT,
+    ).thenReturn(MockJsonResponse(200, json_data=sample_quantum_architecture))
+
     expect(requests, times=1).post(
-        jobs_url, **post_jobs_args(minimal_run_request, access_token=client_with_credentials._credentials.access_token)
-    ).thenReturn(submit_success)
+        jobs_url,
+        json=ANY,
+        headers={'User-Agent': client._signature, 'Authorization': f'Bearer {token}', 'Expect': '100-Continue'},
+        timeout=REQUESTS_TIMEOUT,
+    ).thenReturn(MockJsonResponse(200, json_data={'id': str(uuid4())}))
 
-    assert existing_run_id == client_with_credentials.submit_circuits(**submit_circuits_args(minimal_run_request))
+    assert isinstance(client.submit_circuits(circuits=[sample_circuit], shots=10), UUID)
 
     verifyNoUnwantedInteractions()
     unstub()
 
 
-def test_submit_circuits_raises_when_auth_failed(
-    client_with_credentials,
-    jobs_url,
-    minimal_run_request,
-    submit_failed_auth,
-    quantum_architecture_url,
-    quantum_architecture_success,
-):
-    """
-    Tests that ``submit_circuits`` raises ClientAuthenticationError when authentication fails
-    """
-    expect(requests, times=1).get(quantum_architecture_url, ...).thenReturn(quantum_architecture_success)
+def test_get_run_gets_token(monkeypatch, base_url, jobs_url, ready_job_result):
+    """Test that get_run gets bearer token from TokenManager"""
+    _patch_env(monkeypatch.setenv)
+
+    token = make_token('Bearer', 300)
+    client = IQMClient(base_url, token=token)
+    job_id = uuid4()
+
+    expect(requests, times=1).get(
+        f'{jobs_url}/{str(job_id)}',
+        headers={'User-Agent': client._signature, 'Authorization': f'Bearer {token}'},
+        timeout=REQUESTS_TIMEOUT,
+    ).thenReturn(ready_job_result)
+
+    assert isinstance(client.get_run(job_id), RunResult)
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_get_run_status_gets_token(monkeypatch, base_url, jobs_url, pending_compilation_status):
+    """Test that get_run gets bearer token from TokenManager"""
+    _patch_env(monkeypatch.setenv)
+
+    token = make_token('Bearer', 300)
+    client = IQMClient(base_url, token=token)
+    job_id = uuid4()
+
+    expect(requests, times=1).get(
+        f'{jobs_url}/{str(job_id)}/status',
+        headers={'User-Agent': client._signature, 'Authorization': f'Bearer {token}'},
+        timeout=REQUESTS_TIMEOUT,
+    ).thenReturn(pending_compilation_status)
+
+    assert isinstance(client.get_run_status(job_id), RunStatus)
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_abort_job_gets_token(monkeypatch, base_url, jobs_url):
+    """Test that abort_job gets bearer token from TokenManager"""
+    _patch_env(monkeypatch.setenv)
+
+    token = make_token('Bearer', 300)
+    client = IQMClient(base_url, token=token)
+    job_id = uuid4()
+
     expect(requests, times=1).post(
-        jobs_url, **post_jobs_args(minimal_run_request, access_token=client_with_credentials._credentials.access_token)
-    ).thenReturn(submit_failed_auth)
+        f'{jobs_url}/{str(job_id)}/abort',
+        headers={'User-Agent': client._signature, 'Authorization': f'Bearer {token}'},
+        timeout=REQUESTS_TIMEOUT,
+    ).thenReturn(MockJsonResponse(200, {}))
 
-    with pytest.raises(ClientAuthenticationError) as e:
-        client_with_credentials.submit_circuits(**submit_circuits_args(minimal_run_request))
-    assert str(e.value).startswith('Authentication failed')
-
-    verifyNoUnwantedInteractions()
-    unstub()
-
-
-def test_add_authorization_header_on_get_jobs_when_external_token_is_provided(
-    client_with_external_token, existing_job_url, tokens_dict, existing_run_id, pending_execution_job_result
-):
-    """
-    Tests that get jobs requests are sent with Authorization header when external token is provided
-    """
-    expect(requests, times=1).get(
-        existing_job_url, **get_jobs_args(access_token=tokens_dict['access_token'])
-    ).thenReturn(pending_execution_job_result)
-
-    result = client_with_external_token.get_run(existing_run_id)
-    assert result.status == 'pending execution'
+    client.abort_job(job_id)
 
     verifyNoUnwantedInteractions()
     unstub()
 
 
-def test_no_authorization_header_on_get_jobs_when_credentials_are_not_provided(
-    sample_client, existing_job_url, existing_run_id, pending_execution_job_result
-):
-    """
-    Tests that get jobs requests are sent without Authorization header when no credentials are provided
-    """
-    expect(requests, times=1).get(existing_job_url, **get_jobs_args(access_token=None)).thenReturn(
-        pending_execution_job_result
-    )
+def test_close_auth_session(monkeypatch, base_url):
+    """Test that closing auth session closes TokenManager"""
+    _patch_env(monkeypatch.setenv)
 
-    result = sample_client.get_run(existing_run_id)
-    assert result.status == 'pending execution'
+    token = make_token('Bearer', 300)
+    client = IQMClient(base_url, token=token)
+    client._token_manager = mock(TokenManager)
+    expect(client._token_manager, times=1).close().thenReturn(True)
+
+    assert client.close_auth_session()
 
     verifyNoUnwantedInteractions()
     unstub()
 
 
-def test_raises_client_authentication_error_if_authentication_fails(base_url, credentials):
-    """
-    Tests that authentication failure raises ClientAuthenticationError
-    """
-    prepare_tokens(300, 3600, status_code=401, **credentials)
-    with pytest.raises(ClientAuthenticationError) as e:
-        IQMClient(base_url, **credentials)
-    assert str(e.value).startswith('Failed to update tokens')
+def test_close_auth_session_when_client_destroyed(monkeypatch, base_url):
+    """Test that deleting client closes TokenManager"""
+    _patch_env(monkeypatch.setenv)
 
-    verifyNoUnwantedInteractions()
-    unstub()
+    token = make_token('Bearer', 300)
+    client = IQMClient(base_url, token=token)
+    client._token_manager = mock(TokenManager)
+    expect(client._token_manager, times=1).close().thenReturn(True)
 
-
-def test_get_quantum_architecture_raises_if_no_auth_provided(sample_client, quantum_architecture_url):
-    """Test retrieving the quantum architecture if server responded with redirect"""
-    redirection_response = requests.Response()
-    redirection_response.status_code = 302
-
-    expect(requests, times=1).get(quantum_architecture_url, **get_jobs_args(access_token=None)).thenReturn(
-        MockJsonResponse(401, {'detail': 'unauthorized'}, [redirection_response])
-    )
-
-    with pytest.raises(ClientConfigurationError) as e:
-        sample_client.get_quantum_architecture()
-    assert str(e.value) == 'Authentication is required.'
-
-    verifyNoUnwantedInteractions()
-    unstub()
-
-
-def test_get_quantum_architecture_raises_if_wrong_auth_provided(client_with_credentials, quantum_architecture_url):
-    """Test retrieving the quantum architecture if server responded with auth error"""
-    expect(requests, times=1).get(
-        quantum_architecture_url, **get_jobs_args(access_token=client_with_credentials._credentials.access_token)
-    ).thenReturn(MockJsonResponse(401, {'detail': 'unauthorized'}))
-
-    with pytest.raises(ClientAuthenticationError) as e:
-        client_with_credentials.get_quantum_architecture()
-    assert str(e.value).startswith('Authentication failed')
-
-    verifyNoUnwantedInteractions()
-    unstub()
-
-
-def test_access_token_is_not_refreshed_if_it_has_not_expired(
-    client_with_credentials, credentials, existing_job_url, existing_run_id, pending_execution_job_result
-):
-    """
-    Test that access token is not refreshed if it has not expired
-    """
-    tokens = prepare_tokens(300, 3600, **credentials)
-    assert client_with_credentials._credentials.access_token == tokens['access_token']
-
-    expect(requests, times=3).get(
-        existing_job_url, **get_jobs_args(access_token=client_with_credentials._credentials.access_token)
-    ).thenReturn(pending_execution_job_result)
-
-    client_with_credentials.get_run(existing_run_id)
-    client_with_credentials.get_run(existing_run_id)
-    client_with_credentials.get_run(existing_run_id)
-
-    verifyNoUnwantedInteractions()
-    unstub()
-
-
-def test_expired_access_token_is_refreshed_automatically(
-    client_with_credentials, credentials, existing_job_url, existing_run_id, pending_execution_job_result
-):
-    """
-    Test that access token is refreshed automatically if it has expired
-    """
-    # Provide client with an expired access token
-    client_with_credentials._credentials.access_token = make_token('Bearer', -300)
-    client_with_credentials._credentials.refresh_token = make_token('Refresh', 4200)
-
-    # Prepare for token refresh request
-    refreshed_tokens = prepare_tokens(300, 4200, client_with_credentials._credentials.refresh_token, **credentials)
-
-    # Expect get jobs request with refreshed token
-    expect(requests, times=1).get(
-        existing_job_url, **get_jobs_args(access_token=refreshed_tokens['access_token'])
-    ).thenReturn(pending_execution_job_result)
-
-    # Client should refresh tokens for get jobs request
-    result = client_with_credentials.get_run(existing_run_id)
-    assert result.status == 'pending execution'
-
-    # Verify that access token has been refreshed
-    assert client_with_credentials._credentials.access_token == refreshed_tokens['access_token']
-
-    verifyNoUnwantedInteractions()
-    unstub()
-
-
-def test_start_new_session_when_refresh_token_has_expired(
-    client_with_credentials, credentials, existing_job_url, existing_run_id, pending_execution_job_result
-):
-    """
-    Test that a new session is started automatically if refresh token has expired
-    """
-    # Provide client with an expired tokens
-    client_with_credentials._credentials.access_token = make_token('Bearer', -300)
-    client_with_credentials._credentials.refresh_token = make_token('Refresh', -300)
-
-    # Prepare for new session start instead of token refresh request
-    refreshed_tokens = prepare_tokens(300, 3600, **credentials)
-
-    # Expect get jobs request with refreshed token
-    expect(requests, times=1).get(
-        existing_job_url, **get_jobs_args(access_token=refreshed_tokens['access_token'])
-    ).thenReturn(pending_execution_job_result)
-
-    # Client should refresh tokens for get jobs request
-    result = client_with_credentials.get_run(existing_run_id)
-    assert result.status == 'pending execution'
-
-    assert client_with_credentials._credentials.access_token == refreshed_tokens['access_token']
-    assert client_with_credentials._credentials.refresh_token == refreshed_tokens['refresh_token']
-
-    verifyNoUnwantedInteractions()
-    unstub()
-
-
-def test_tokens_are_cleared_at_logout(client_with_credentials, credentials):
-    """
-    Tests that calling ``close`` will terminate the session and clear tokens
-    """
-    expect_logout(credentials['auth_server_url'], client_with_credentials._credentials.refresh_token)
-
-    client_with_credentials.close_auth_session()
-    assert client_with_credentials._credentials.access_token is None
-    assert client_with_credentials._credentials.refresh_token is None
-
-    verifyNoUnwantedInteractions()
-    unstub()
-
-
-def test_cannot_close_external_auth_session(client_with_external_token):
-    """
-    Tests that calling ``close_auth_session`` while initialized with an external auth session
-    raises ClientAuthenticationError
-    """
-    with pytest.raises(ClientAuthenticationError) as e:
-        client_with_external_token.close_auth_session()
-    assert 'Unable to close externally managed auth session' == str(e.value)
-
-
-def test_logout_on_client_destruction(base_url, credentials):
-    """
-    Tests that client is trying to terminate the authentication session on destruction
-    """
-    prepare_tokens(300, 300, **credentials)
-    client = IQMClient(base_url, **credentials)
-
-    expect_logout(credentials['auth_server_url'], client._credentials.refresh_token)
     del client
 
     verifyNoUnwantedInteractions()
     unstub()
-
-
-def test_external_token_updated_if_expired(base_url):
-    """
-    Tests that client gets updated token from tokens file if old external token has expired
-    """
-    tokens_path = 'dummy_path'
-
-    def setup_tokens_file(access_token_lifetime):
-        access_token = make_token('Bearer', access_token_lifetime)
-        tokens_file_contents = json.dumps({'auth_server_url': base_url + '/auth', 'access_token': access_token})
-        when(builtins).open(tokens_path, 'r', encoding='utf-8').thenReturn(io.StringIO(tokens_file_contents))
-
-    setup_tokens_file(1)
-    client = IQMClient(base_url, tokens_file=tokens_path)
-    sleep(2)
-    setup_tokens_file(300)
-    bearer_token = client._get_bearer_token()
-    assert bearer_token is not None
-    assert _time_left_seconds(bearer_token.removeprefix('Bearer ')) > 0
-    unstub()
-
-
-def test_tokens_file_overrides_plaintext_token(base_url):
-    """
-    Tests tokens_file is preferred over plaintext token
-    """
-    tokens_path = 'dummy_path'
-    access_token = make_token('Bearer', lifetime=300)
-    tokens_file_contents = json.dumps({'auth_server_url': base_url + '/auth', 'access_token': access_token})
-    when(builtins).open(tokens_path, 'r', encoding='utf-8').thenReturn(io.StringIO(tokens_file_contents))
-    try:
-        client = IQMClient(base_url, tokens_file=tokens_path, token='12345')
-        bearer_token = client._get_bearer_token()
-        assert bearer_token is not None
-        assert bearer_token == f'Bearer {access_token}'
-    finally:
-        unstub()
-
-
-def test_plaintext_token_is_used_as_bearer_token_if_tokens_file_is_not_set(base_url):
-    """
-    Tests that plaintext token is used as a bearer token correctly
-    """
-    client = IQMClient(base_url, token='1234')
-    bearer_token = client._get_bearer_token()
-    assert bearer_token == 'Bearer 1234'

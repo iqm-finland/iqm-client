@@ -2,6 +2,84 @@
 Changelog
 =========
 
+Version 18.8
+============
+
+* Fix MOVE gate validation for qubit mappings containing only some of the architecture qubits `#137 <https://github.com/iqm-finland/iqm-client/pull/137>`_
+
+Version 18.7
+============
+
+* Fix list of endpoints supported by the V1 API. `#138 <https://github.com/iqm-finland/iqm-client/pull/138>`_
+
+Version 18.6
+============
+
+* Add IQM Server API versioning support. `#135 <https://github.com/iqm-finland/iqm-client/pull/135>`_
+
+Version 18.5
+============
+
+* Added ``isort`` formatting to the tox configuration, so it is automatically run when running
+  ``tox -e format``. `#130 <https://github.com/iqm-finland/iqm-client/pull/130>`_
+* Bugfix: Fix the issue where the :class:`CircuitCompilationOptions` was not used in local circuit
+  validation when using the :meth:`submit_circuit` method. Improved testing to catch the bug.
+  `#130 <https://github.com/iqm-finland/iqm-client/pull/130>`_
+* Bugfix: MOVE gate validation now also works with more than one resonator. `#130 <https://github.com/iqm-finland/iqm-client/pull/130>`_
+* More specific validation and transpilation errors. `#130 <https://github.com/iqm-finland/iqm-client/pull/130>`_
+* Docs updated: mid-circuit measurements are allowed on stations with ``cocos >= 30.2``. `#130 <https://github.com/iqm-finland/iqm-client/pull/130>`_
+* Integration guide updated. `#130 <https://github.com/iqm-finland/iqm-client/pull/130>`_
+* Circuit validation: All measurement keys must be unique. `#130 <https://github.com/iqm-finland/iqm-client/pull/130>`_
+
+Version 18.4
+============
+
+* Do not verify external auth token expiration. This fixes IQM Resonance authentication. `#134 <https://github.com/iqm-finland/iqm-client/pull/134>`_
+
+Version 18.3
+============
+
+* Remove unnecessary build files when publishing documentation. `#133 <https://github.com/iqm-finland/iqm-client/pull/133>`_
+
+Version 18.2
+============
+
+* Add mitigation for failed authentication sessions. `#132 <https://github.com/iqm-finland/iqm-client/pull/132>`_
+
+Version 18.1
+============
+
+* Add :meth:`IQMClient.get_dynamic_quantum_architecture`. `#131 <https://github.com/iqm-finland/iqm-client/pull/131>`_
+
+Version 18.0
+============
+
+* Added the naive MOVE transpilation method for unified transpilation behavior for different external APIs. `#124 <https://github.com/iqm-finland/iqm-client/pull/124>`_
+* Added class for compilation options :class:`CircuitCompilationOptions` to allow for more fine-grained control over the compilation process. (breaking change)
+
+  * :meth:`IQMClient.submit_circuit` now takes a :class:`CircuitCompilationOptions` parameter instead of ``max_circuit_duration_over_t2`` and ``heralding_mode``.
+  * Moved the existing ``max_circuit_duration_over_t2`` parameter to :class:`CircuitCompilationOptions`.
+  * Moved the existing ``heralding_mode`` parameter to :class:`CircuitCompilationOptions`.
+  * Introduced new option ``move_gate_validation`` to turn off MOVE gate validation during compilation (ADVANCED).
+  * Introduced new option ``move_gate_frame_tracking`` to turn off frame tracking for the MOVE gate (ADVANCED).
+  * New options can only be used on stations with ``CoCoS`` version 29.9 or later that support the MOVE gate instruction. Otherwise, the options will be ignored.
+
+Version 17.8
+============
+
+* Allow inspecting a run request before submitting it for execution. `#129 <https://github.com/iqm-finland/iqm-client/pull/129>`_
+
+Version 17.7
+============
+
+* Update documentation. `#128 <https://github.com/iqm-finland/iqm-client/pull/128>`_
+
+Version 17.6
+============
+
+* Move all data models to ``iqm.iqm_client.models``. `#125 <https://github.com/iqm-finland/iqm-client/pull/125>`_
+* Refactor user authentication and check authentication parameters for conflicts. `#125 <https://github.com/iqm-finland/iqm-client/pull/125>`_
+
 Version 17.5
 ============
 
