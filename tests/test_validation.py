@@ -51,10 +51,10 @@ def test_valid_instruction(sample_dynamic_architecture, instruction):
     'instruction,match',
     [
         [Instruction(name='barrier', qubits=['QB1', 'QB2', 'XXX'], args={}), 'does not exist'],
-        [Instruction(name='prx', qubits=['QB3'], args={'phase_t': 0.3, 'angle_t': -0.2}), 'not allowed as locus'],
-        [Instruction(name='cz', qubits=['QB2', 'QB3'], args={}), 'not allowed as locus'],
-        [Instruction(name='measure', qubits=['QB1', 'QB3'], args={'key': 'm'}), 'is not allowed as locus'],
-        [Instruction(name='measure', qubits=['QB3'], args={'key': 'm'}), 'is not allowed as locus'],
+        [Instruction(name='prx', qubits=['QB4'], args={'phase_t': 0.3, 'angle_t': -0.2}), 'not allowed as locus'],
+        [Instruction(name='cz', qubits=['QB2', 'QB4'], args={}), 'not allowed as locus'],
+        [Instruction(name='measure', qubits=['QB1', 'QB4'], args={'key': 'm'}), 'is not allowed as locus'],
+        [Instruction(name='measure', qubits=['QB4'], args={'key': 'm'}), 'is not allowed as locus'],
     ],
 )
 def test_invalid_instruction(sample_dynamic_architecture, instruction, match):
