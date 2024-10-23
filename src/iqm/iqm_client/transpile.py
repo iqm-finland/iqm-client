@@ -63,9 +63,9 @@ class ResonatorStateTracker:
         Args:
             arch: The architecture to track the resonator state on.
         """
-        resonators = tuple(q for q in arch.computational_resonators)
         available_moves: dict[str, list[str]] = {
-            r: [q for q, r2 in arch.gates[ResonatorStateTracker.move_gate].loci if r == r2] for r in resonators
+            r: [q for q, r2 in arch.gates[ResonatorStateTracker.move_gate].loci if r == r2]
+            for r in arch.computational_resonators
         }
         return ResonatorStateTracker(available_moves)
 

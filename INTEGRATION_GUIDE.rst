@@ -130,8 +130,8 @@ Circuit transpilation
 IQM does not provide an open source circuit transpilation library, so this will have to be supplied
 by the quantum computing framework or a third party library.  To obtain the necessary information
 for circuit transpilation, :meth:`.IQMClient.get_dynamic_quantum_architecture` returns the names of the
-components (qubits or computational resonators), component connectivity, and native operations available
-for the given calibration set. This information should enable circuit transpilation for IQM quantum architectures.
+QPU components (qubits and computational resonators), and the native operations available
+in the given calibration set. This information should enable circuit transpilation for IQM quantum architectures.
 
 The notable exception is the transpilation of MOVE gates for IQM quantum computers with
 computational resonators, for which some specialized transpilation logic is provided.  The MOVE gate

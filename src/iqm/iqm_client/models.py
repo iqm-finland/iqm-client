@@ -565,7 +565,7 @@ class GateInfo(BaseModel):
         )
         """
         loci_set = set(locus for impl in self.implementations.values() for locus in impl.loci)
-        loci_sorted = sorted(loci_set, key=lambda loc: (tuple(_component_sort_key(loc[i]) for i in range(len(loc)))))
+        loci_sorted = sorted(loci_set, key=lambda locus: tuple(map(_component_sort_key, locus)))
         return tuple(loci_sorted)
 
 
