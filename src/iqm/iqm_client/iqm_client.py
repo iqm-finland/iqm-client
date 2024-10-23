@@ -386,15 +386,15 @@ class IQMClient:
         Raises:
             CircuitValidationError: validation failed
         """
-        if instruction.name not in architecture.gates and instruction.name != 'barrier':
+        op_info = _SUPPORTED_OPERATIONS.get(instruction.name, None)
+        if (op_info is None) or (instruction.name not in architecture.gates and not op_info.no_calibration_needed):
             raise CircuitValidationError(
                 f"Instruction '{instruction.name}' is not supported by the quantum architecture."
             )
-        op_info = _SUPPORTED_OPERATIONS[instruction.name]
         # apply the qubit mapping if any
         qubits = tuple(qubit_mapping[q] for q in instruction.qubits) if qubit_mapping else instruction.qubits
 
-        if op_info.allow_all_loci:
+        if op_info.no_calibration_needed:
             # all QPU loci are allowed
             for q, mapped_q in zip(instruction.qubits, qubits):
                 if mapped_q not in architecture.components:

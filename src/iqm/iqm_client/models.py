@@ -50,7 +50,7 @@ class NativeOperation:
     factorizable: bool = False
     """Iff True, any multi-component instance of this operation can be broken down to
     single-component instances, and calibration data is specific to single-component loci."""
-    allow_all_loci: bool = False
+    no_calibration_needed: bool = False
     """Iff true, the operation is always allowed on all QPU loci regardless of calibration state.
     Typically a metaoperation like barrier."""
 
@@ -58,7 +58,7 @@ class NativeOperation:
 _SUPPORTED_OPERATIONS: dict[str, NativeOperation] = {
     op.name: op
     for op in [
-        NativeOperation('barrier', 0, symmetric=True, allow_all_loci=True),
+        NativeOperation('barrier', 0, symmetric=True, no_calibration_needed=True),
         NativeOperation('measure', 0, {'key': (str,)}, {'feedback_key': (str,)}, factorizable=True),
         NativeOperation(
             'prx',
