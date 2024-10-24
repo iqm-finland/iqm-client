@@ -389,7 +389,15 @@ class IQMClient:
         op_info = _SUPPORTED_OPERATIONS.get(instruction.name, None)
         if (op_info is None) or (instruction.name not in architecture.gates and not op_info.no_calibration_needed):
             raise CircuitValidationError(
-                f"Instruction '{instruction.name}' is not supported by the quantum architecture."
+                f"Instruction '{instruction.name}' is not supported by the dynamic quantum architecture."
+            )
+        if (
+            instruction.implementation is not None
+            and instruction.implementation not in architecture.gates[instruction.name].implementations
+        ):
+            raise CircuitValidationError(
+                f"Instruction '{instruction.name}' implementation '{instruction.implementation}' "
+                f'is not supported by the dynamic quantum architecture.'
             )
         # apply the qubit mapping if any
         qubits = tuple(qubit_mapping[q] for q in instruction.qubits) if qubit_mapping else instruction.qubits

@@ -55,6 +55,10 @@ def test_valid_instruction(sample_dynamic_architecture, instruction):
         [Instruction(name='cz', qubits=['QB2', 'QB4'], args={}), 'not allowed as locus'],
         [Instruction(name='measure', qubits=['QB1', 'QB4'], args={'key': 'm'}), 'is not allowed as locus'],
         [Instruction(name='measure', qubits=['QB4'], args={'key': 'm'}), 'is not allowed as locus'],
+        [
+            Instruction(name='cz', qubits=['QB1', 'QB2'], args={}, implementation='xyz'),
+            "'cz' implementation 'xyz' is not supported",
+        ],
     ],
 )
 def test_invalid_instruction(sample_dynamic_architecture, instruction, match):
