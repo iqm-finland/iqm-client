@@ -12,9 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Tests for the IQM client models."""
+from uuid import UUID
+
 import pytest
 
-from iqm.iqm_client.models import CircuitBatch, HeraldingMode, JobParameters, Metadata, RunRequest
+from iqm.iqm_client.models import (
+    CircuitBatch,
+    DynamicQuantumArchitecture,
+    GateImplementationInfo,
+    GateInfo,
+    HeraldingMode,
+    JobParameters,
+    Metadata,
+    RunRequest,
+)
 
 
 @pytest.fixture
@@ -33,7 +44,7 @@ def heralding_mode():
 
 
 @pytest.mark.parametrize(
-    "metadata_factory",
+    'metadata_factory',
     [
         # V1 and RESONANCE_V1
         lambda shots, circuits_batch, heralding_mode: Metadata(
@@ -51,3 +62,33 @@ def test_metadata(metadata_factory, shots, circuits_batch, heralding_mode):
     assert metadata.shots == shots
     assert metadata.circuits == circuits_batch
     assert metadata.heralding_mode == heralding_mode
+
+
+def test_gate_info_loci():
+    gate_info = GateInfo(
+        implementations={
+            'tgss': GateImplementationInfo(loci=(('QB1', 'QB2'), ('QB2', 'QB3'), ('QB10', 'QB2'), ('QB3', 'COMPR2'))),
+            'crf': GateImplementationInfo(loci=(('QB3', 'QB1'), ('QB2', 'QB3'), ('QB2', 'COMPR1'), ('QB3', 'COMPR1'))),
+        },
+        default_implementation='tgss',
+        override_default_implementation={},
+    )
+    assert gate_info.loci == (
+        ('QB1', 'QB2'),
+        ('QB2', 'COMPR1'),
+        ('QB2', 'QB3'),
+        ('QB3', 'COMPR1'),
+        ('QB3', 'COMPR2'),
+        ('QB3', 'QB1'),
+        ('QB10', 'QB2'),
+    )
+
+
+def test_dqa_components():
+    dqa = DynamicQuantumArchitecture(
+        calibration_set_id=UUID('59478539-dcef-4b2e-80c8-122d7ec3fc89'),
+        qubits=['QB3', 'QB1', 'QB11', 'QB20', 'QB2', 'QB10'],
+        computational_resonators=['COMPR2', 'COMPR1'],
+        gates={},
+    )
+    assert dqa.components == ('COMPR1', 'COMPR2', 'QB1', 'QB2', 'QB3', 'QB10', 'QB11', 'QB20')

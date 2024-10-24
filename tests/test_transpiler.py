@@ -1,15 +1,29 @@
-from typing import Any
+# Copyright 2024 IQM client developers
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+from uuid import UUID
 
 import pytest
 
 from iqm.iqm_client import (
     Circuit,
     CircuitTranspilationError,
+    DynamicQuantumArchitecture,
     ExistingMoveHandlingOptions,
+    GateImplementationInfo,
+    GateInfo,
     Instruction,
     IQMClient,
-    QuantumArchitecture,
-    QuantumArchitectureSpecification,
     transpile_insert_moves,
     transpile_remove_moves,
 )
@@ -20,11 +34,9 @@ class TestNaiveMoveTranspiler:
     # pylint: disable=too-many-public-methods
 
     @pytest.fixture(autouse=True)
-    def init_arch(self, sample_move_architecture: dict[str, Any]):
+    def init_arch(self, sample_move_architecture):
         # pylint: disable=attribute-defined-outside-init
-        self.arch: QuantumArchitectureSpecification = QuantumArchitecture(
-            **sample_move_architecture
-        ).quantum_architecture
+        self.arch: DynamicQuantumArchitecture = sample_move_architecture
 
     @property
     def unsafe_circuit(self):
@@ -210,17 +222,16 @@ class TestNaiveMoveTranspiler:
                 idx += 1
         return idx == len(moves)
 
-    def test_no_moves_supported(self, sample_quantum_architecture: dict[str, Any]):
+    def test_no_moves_supported(self, sample_dynamic_architecture):
         """Tests transpiler for architectures without a resonator"""
-        arch = QuantumArchitecture(**sample_quantum_architecture).quantum_architecture
         for option in ExistingMoveHandlingOptions:
-            c1 = transpile_insert_moves(self.simple_circuit, arch, existing_moves=option)
+            c1 = transpile_insert_moves(self.simple_circuit, sample_dynamic_architecture, existing_moves=option)
             assert c1 == self.simple_circuit
             if option != ExistingMoveHandlingOptions.REMOVE:
                 with pytest.raises(ValueError):
-                    _ = transpile_insert_moves(self.safe_circuit, arch, existing_moves=option)
+                    _ = transpile_insert_moves(self.safe_circuit, sample_dynamic_architecture, existing_moves=option)
             else:
-                c2 = transpile_insert_moves(self.safe_circuit, arch, existing_moves=option)
+                c2 = transpile_insert_moves(self.safe_circuit, sample_dynamic_architecture, existing_moves=option)
                 assert self.check_equiv_without_moves(self.safe_circuit, c2)
 
     def test_unspecified(self):
@@ -291,12 +302,11 @@ class TestNaiveMoveTranspiler:
             self.assert_valid_circuit(c1, qb_map)
             assert self.check_equiv_without_moves(c1, circuit)
 
-    def test_multiple_resonators(self, sample_move_architecture: dict[str, Any]):
+    def test_multiple_resonators(self, sample_move_architecture):
         """Test if multiple resonators works."""
-        sample_move_architecture['quantum_architecture']['qubits'].append('COMP_R2')
-        sample_move_architecture['quantum_architecture']['operations']['move'].append(['QB1', 'COMP_R2'])
+        default_move_impl = sample_move_architecture.gates['move'].default_implementation
+        sample_move_architecture.gates['move'].implementations[default_move_impl].loci += (('QB1', 'COMP_R2'),)
         # Test with bad architecture
-        arch = QuantumArchitecture(**sample_move_architecture).quantum_architecture
         circuit = Circuit(
             name='multi resonators',
             instructions=(
@@ -306,15 +316,19 @@ class TestNaiveMoveTranspiler:
             ),
         )
         with pytest.raises(CircuitTranspilationError):
-            transpiled_circuit = transpile_insert_moves(circuit, arch)
+            # Create a new copy of the DQA to ensure the cached properties are computed only for this architecture.
+            bad_architecture = sample_move_architecture.model_copy(deep=True)
+            transpiled_circuit = transpile_insert_moves(circuit, bad_architecture)
 
         # Add the necessary CZ gates to make it a good architecture.
-        sample_move_architecture['quantum_architecture']['operations']['cz'] += (
-            [qb, 'COMP_R2'] for qb in sample_move_architecture['quantum_architecture']['qubits']
+        default_cz_impl = sample_move_architecture.gates['cz'].default_implementation
+        sample_move_architecture.gates['cz'].implementations[default_cz_impl].loci += tuple(
+            (qb, 'COMP_R2') for qb in sample_move_architecture.components
         )
-        arch = QuantumArchitecture(**sample_move_architecture).quantum_architecture
-        transpiled_circuit = transpile_insert_moves(circuit, arch)
-        IQMClient._validate_circuit_instructions(arch, [transpiled_circuit])
+        # Create a new copy of the DQA to ensure the cached properties are computed only for this architecture.
+        good_architecture = sample_move_architecture.model_copy(deep=True)
+        transpiled_circuit = transpile_insert_moves(circuit, good_architecture)
+        IQMClient._validate_circuit_instructions(good_architecture, [transpiled_circuit])
 
         print(transpiled_circuit)
 
@@ -337,22 +351,6 @@ class TestNaiveMoveTranspiler:
 
     def test_unavailable_cz(self):
         """Test for unavailable CZ gates. This test reproduces the bug COMP-1485."""
-        # pylint: disable=inconsistent-quotes
-        arch_json = {
-            "quantum_architecture": {
-                "name": "Ndonis",
-                "operations": {
-                    "prx": [["QB1"], ["QB2"]],
-                    "cz": [["QB2", "COMP_R"]],
-                    "move": [["QB1", "COMP_R"], ["QB2", "COMP_R"]],
-                    "measure": [["QB1"], ["QB2"]],
-                    "barrier": [],
-                },
-                "qubits": ["COMP_R", "QB1", "QB2"],
-                "qubit_connectivity": [["QB1", "COMP_R"], ["QB2", "COMP_R"]],
-            }
-        }
-
         c = Circuit(
             name='bell',
             instructions=(  # prx uses wrong values for the H gate, but that's not the point of this test
@@ -378,7 +376,7 @@ class TestNaiveMoveTranspiler:
                 ),
             ),
         )
-        c2 = c = Circuit(
+        c2 = Circuit(
             name='bell',
             instructions=(  # prx uses wrong values for the H gate, but that's not the point of this test
                 Instruction(
@@ -403,7 +401,33 @@ class TestNaiveMoveTranspiler:
                 ),
             ),
         )
-        arch = QuantumArchitecture(**arch_json).quantum_architecture
+        arch = DynamicQuantumArchitecture(
+            calibration_set_id=UUID('0c5a5624-2faf-4885-888c-805af891479c'),
+            qubits=['QB1', 'QB2'],
+            computational_resonators=['COMP_R'],
+            gates={
+                'prx': GateInfo(
+                    implementations={'drag_gaussian': GateImplementationInfo(loci=(('QB1',), ('QB2',)))},
+                    default_implementation='drag_gaussian',
+                    override_default_implementation={},
+                ),
+                'cz': GateInfo(
+                    implementations={'tgss': GateImplementationInfo(loci=(('QB2', 'COMP_R'),))},
+                    default_implementation='tgss',
+                    override_default_implementation={},
+                ),
+                'move': GateInfo(
+                    implementations={'tgss_crf': GateImplementationInfo(loci=(('QB1', 'COMP_R'), ('QB2', 'COMP_R')))},
+                    default_implementation='tgss_crf',
+                    override_default_implementation={},
+                ),
+                'measure': GateInfo(
+                    implementations={'constant': GateImplementationInfo(loci=(('QB1',), ('QB2',)))},
+                    default_implementation='constant',
+                    override_default_implementation={},
+                ),
+            },
+        )
         circuits = [transpile_insert_moves(c, arch=arch), transpile_insert_moves(c2, arch=arch)]
         IQMClient._validate_circuit_instructions(arch, circuits)
 
@@ -411,16 +435,14 @@ class TestNaiveMoveTranspiler:
 class TestResonatorStateTracker:
     alt_qubit_names = {'COMP_R': 'A', 'QB1': 'B', 'QB3': 'C'}
 
-    def test_apply_move(self, sample_quantum_architecture: dict[str, Any], sample_move_architecture: dict[str, Any]):
+    def test_apply_move(self, sample_dynamic_architecture, sample_move_architecture):
         # Check handling of an architecture without a resonator
-        no_move_arch = QuantumArchitecture(**sample_quantum_architecture).quantum_architecture
-        arch = QuantumArchitecture(**sample_move_architecture).quantum_architecture
-        no_move_status = ResonatorStateTracker.from_quantum_architecture_specification(no_move_arch)
+        no_move_status = ResonatorStateTracker.from_dynamic_architecture(sample_dynamic_architecture)
         assert not no_move_status.supports_move
         with pytest.raises(CircuitTranspilationError):
             no_move_status.apply_move('QB1', 'QB2')
         # Check handling of an architecture with resonator
-        status = ResonatorStateTracker.from_quantum_architecture_specification(arch)
+        status = ResonatorStateTracker.from_dynamic_architecture(sample_move_architecture)
         assert status.supports_move
         status.apply_move('QB3', 'COMP_R')
         assert status.res_qb_map['COMP_R'] == 'QB3'
@@ -434,10 +456,10 @@ class TestResonatorStateTracker:
         with pytest.raises(CircuitTranspilationError):
             status.apply_move('QB3', 'COMP_R')
 
-    def test_create_move_instructions(self, sample_move_architecture: dict[str, Any]):
-        sample_move_architecture['quantum_architecture']['operations']['move'].append(['QB1', 'COMP_R'])
-        arch = QuantumArchitecture(**sample_move_architecture).quantum_architecture
-        status = ResonatorStateTracker.from_quantum_architecture_specification(arch)
+    def test_create_move_instructions(self, sample_move_architecture):
+        default_move_impl = sample_move_architecture.gates['move'].default_implementation
+        sample_move_architecture.gates['move'].implementations[default_move_impl].loci += (('QB1', 'COMP_R'),)
+        status = ResonatorStateTracker.from_dynamic_architecture(sample_move_architecture)
         instr = Instruction(name='move', qubits=('QB3', 'COMP_R'), args={})
         # Check insertion without and with apply_move
         gen_instr = tuple(status.create_move_instructions('QB3', 'COMP_R', apply_move=False))
@@ -463,9 +485,8 @@ class TestResonatorStateTracker:
         assert gen_instr[1] == Instruction(name='move', qubits=('C', 'A'), args={})
         assert status.res_qb_map['COMP_R'] == 'QB3'
 
-    def test_reset_as_move_instructions(self, sample_move_architecture: dict[str, Any]):
-        arch = QuantumArchitecture(**sample_move_architecture).quantum_architecture
-        status = ResonatorStateTracker.from_quantum_architecture_specification(arch)
+    def test_reset_as_move_instructions(self, sample_move_architecture):
+        status = ResonatorStateTracker.from_dynamic_architecture(sample_move_architecture)
         # No reset needed
         gen_instr = tuple(status.reset_as_move_instructions())
         assert len(gen_instr) == 0
@@ -486,11 +507,10 @@ class TestResonatorStateTracker:
         assert gen_instr[0] == Instruction(name='move', qubits=('QB3', 'COMP_R'), args={})
         assert status.res_qb_map['COMP_R'] == 'COMP_R'
 
-    def test_available_resonators_to_move(self, sample_move_architecture: dict[str, Any]):
-        qubits = sample_move_architecture['quantum_architecture']['qubits']
-        arch: QuantumArchitectureSpecification = QuantumArchitecture(**sample_move_architecture).quantum_architecture
-        status = ResonatorStateTracker.from_quantum_architecture_specification(arch)
-        assert status.available_resonators_to_move(qubits) == {
+    def test_available_resonators_to_move(self, sample_move_architecture):
+        components = sample_move_architecture.components
+        status = ResonatorStateTracker.from_dynamic_architecture(sample_move_architecture)
+        assert status.available_resonators_to_move(components) == {
             'COMP_R': [],
             'COMP_R2': [],
             'QB1': [],
@@ -498,17 +518,15 @@ class TestResonatorStateTracker:
             'QB3': ['COMP_R'],
         }
 
-    def test_qubits_in_resonator(self, sample_move_architecture: dict[str, Any]):
-        qubits = sample_move_architecture['quantum_architecture']['qubits']
-        arch: QuantumArchitectureSpecification = QuantumArchitecture(**sample_move_architecture).quantum_architecture
-        status = ResonatorStateTracker.from_quantum_architecture_specification(arch)
-        assert status.resonators_holding_qubits(qubits) == []
+    def test_qubits_in_resonator(self, sample_move_architecture):
+        components = sample_move_architecture.components
+        status = ResonatorStateTracker.from_dynamic_architecture(sample_move_architecture)
+        assert status.resonators_holding_qubits(components) == []
         status.apply_move('QB3', 'COMP_R')
-        assert status.resonators_holding_qubits(qubits) == ['COMP_R']
+        assert status.resonators_holding_qubits(components) == ['COMP_R']
 
-    def test_choose_move_pair(self, sample_move_architecture: dict[str, Any]):
-        arch: QuantumArchitectureSpecification = QuantumArchitecture(**sample_move_architecture).quantum_architecture
-        status = ResonatorStateTracker.from_quantum_architecture_specification(arch)
+    def test_choose_move_pair(self, sample_move_architecture):
+        status = ResonatorStateTracker.from_dynamic_architecture(sample_move_architecture)
         with pytest.raises(CircuitTranspilationError):
             status.choose_move_pair(['QB1', 'QB2'], [])
         resonator_candidates = status.choose_move_pair(
@@ -518,9 +536,8 @@ class TestResonatorStateTracker:
         assert r == 'COMP_R'
         assert q == 'QB3'
 
-    def test_update_state_in_resonator(self, sample_move_architecture: dict[str, Any]):
-        qubits = sample_move_architecture['quantum_architecture']['qubits']
-        arch: QuantumArchitectureSpecification = QuantumArchitecture(**sample_move_architecture).quantum_architecture
-        status = ResonatorStateTracker.from_quantum_architecture_specification(arch)
+    def test_update_state_in_resonator(self, sample_move_architecture):
+        components = sample_move_architecture.components
+        status = ResonatorStateTracker.from_dynamic_architecture(sample_move_architecture)
         status.apply_move('QB3', 'COMP_R')
-        assert status.update_qubits_in_resonator(qubits) == ['QB3', 'QB1', 'QB2', 'QB3', 'COMP_R2']
+        assert status.update_qubits_in_resonator(components) == ['QB3', 'COMP_R2', 'QB1', 'QB2', 'QB3']
