@@ -591,7 +591,7 @@ class DynamicQuantumArchitecture(BaseModel):
 
         The components are first sorted alphabetically based on their non-numeric part, and then
         components with the same non-numeric part are sorted numerically. An example of components
-        sorted this way would be: ['COMPR1', 'COMPR2', 'QB1', 'QB2', 'QB3', 'QB10', 'QB11', 'QB20'].
+        sorted this way would be: ('COMPR1', 'COMPR2', 'QB1', 'QB2', 'QB3', 'QB10', 'QB11', 'QB20').
         """
         return tuple(sorted(self.qubits + self.computational_resonators, key=_component_sort_key))
 
