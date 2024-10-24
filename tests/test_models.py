@@ -91,4 +91,4 @@ def test_dqa_components():
         computational_resonators=['COMPR2', 'COMPR1'],
         gates={},
     )
-    assert dqa.components == ['COMPR1', 'COMPR2', 'QB1', 'QB2', 'QB3', 'QB10', 'QB11', 'QB20']
+    assert dqa.components == ('COMPR1', 'COMPR2', 'QB1', 'QB2', 'QB3', 'QB10', 'QB11', 'QB20')
