@@ -17,6 +17,7 @@ Client for connecting to the IQM quantum computer server interface.
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from datetime import datetime
 from importlib.metadata import version
 import itertools
@@ -220,7 +221,7 @@ class IQMClient:
 
         for i, circuit in enumerate(circuits):
             try:
-                # validate the circuit against the local information in iqm.iqm_client.models._SUPPORTED_OPERATIONS
+                # validate the circuit against the static information in iqm.iqm_client.models._SUPPORTED_OPERATIONS
                 validate_circuit(circuit)
             except ValueError as e:
                 raise CircuitValidationError(f'The circuit at index {i} failed the validation').with_traceback(
@@ -232,7 +233,7 @@ class IQMClient:
         self._validate_qubit_mapping(architecture, circuits, qubit_mapping)
         serialized_qubit_mapping = serialize_qubit_mapping(qubit_mapping) if qubit_mapping else None
 
-        # validate the circuit against the quantum architecture of the server
+        # validate the circuit against the calibration-dependent dynamic quantum architecture
         self._validate_circuit_instructions(
             architecture, circuits, qubit_mapping, validate_moves=options.move_gate_validation
         )
@@ -375,7 +376,9 @@ class IQMClient:
         instruction: Instruction,
         qubit_mapping: Optional[dict[str, str]] = None,
     ) -> None:
-        """Check that the instruction targets a valid qubit locus in the given quantum architecture.
+        """Validate an instruction against the dynamic quantum quantum architecture.
+
+        Checks that the instruction uses a valid implementation, and targets a valid locus.
 
         Args:
           architecture: quantum architecture to check against
@@ -386,55 +389,63 @@ class IQMClient:
         Raises:
             CircuitValidationError: validation failed
         """
-        op_info = _SUPPORTED_OPERATIONS.get(instruction.name, None)
-        if (op_info is None) or (instruction.name not in architecture.gates and not op_info.no_calibration_needed):
-            raise CircuitValidationError(
-                f"Instruction '{instruction.name}' is not supported by the dynamic quantum architecture."
-            )
-        if (
-            instruction.implementation is not None
-            and instruction.implementation not in architecture.gates[instruction.name].implementations
-        ):
-            raise CircuitValidationError(
-                f"Instruction '{instruction.name}' implementation '{instruction.implementation}' "
-                f'is not supported by the dynamic quantum architecture.'
-            )
+        op_info = _SUPPORTED_OPERATIONS.get(instruction.name)
+        if op_info is None:
+            raise CircuitValidationError(f"Unknown quantum operation '{instruction.name}'.")
+
         # apply the qubit mapping if any
-        qubits = tuple(qubit_mapping[q] for q in instruction.qubits) if qubit_mapping else instruction.qubits
+        mapped_qubits = tuple(qubit_mapping[q] for q in instruction.qubits) if qubit_mapping else instruction.qubits
+
+        def check_locus_components(allowed_components: Iterable[str], msg: str) -> None:
+            """Checks that the instruction locus consists of the allowed components only."""
+            for q, mapped_q in zip(instruction.qubits, mapped_qubits):
+                if mapped_q not in allowed_components:
+                    raise CircuitValidationError(
+                        f'{instruction!r}: Component {q} = {mapped_q} {msg}.'
+                        if qubit_mapping
+                        else f'{instruction!r}: Component {q} {msg}.'
+                    )
 
         if op_info.no_calibration_needed:
             # all QPU loci are allowed
-            for q, mapped_q in zip(instruction.qubits, qubits):
-                if mapped_q not in architecture.components:
-                    raise CircuitValidationError(
-                        f'{instruction}: Component {q} = {mapped_q} does not exist on the QPU.'
-                        if qubit_mapping
-                        else f'{instruction}: Component {q} does not exist on the QPU.'
-                    )
+            check_locus_components(architecture.components, msg='does not exist on the QPU')
             return
 
-        allowed_loci = architecture.gates[instruction.name].loci
+        gate_info = architecture.gates.get(instruction.name)
+        if gate_info is None:
+            raise CircuitValidationError(
+                f"Operation '{instruction.name}' is not supported by the dynamic quantum architecture."
+            )
+
+        if instruction.implementation is not None:
+            # specific implementation requested
+            impl_info = gate_info.implementations.get(instruction.implementation)
+            if impl_info is None:
+                raise CircuitValidationError(
+                    f"Operation '{instruction.name}' implementation '{instruction.implementation}' "
+                    f'is not supported by the dynamic quantum architecture.'
+                )
+            allowed_loci = impl_info.loci
+        else:
+            # any implementation is fine
+            allowed_loci = gate_info.loci
+
         if op_info.factorizable:
-            # Check that all qubits in the locus are allowed by the architecture
-            allowed_qubits = set(q for locus in allowed_loci for q in locus)
-            for q, mapped_q in zip(instruction.qubits, qubits):
-                if mapped_q not in allowed_qubits:
-                    raise CircuitValidationError(
-                        f'Qubit {q} = {mapped_q} is not allowed as locus for {instruction.name}'
-                        if qubit_mapping
-                        else f'Qubit {q} is not allowed as locus for {instruction.name}'
-                    )
+            # Check that all the locus components are allowed by the architecture
+            check_locus_components(
+                set(q for locus in allowed_loci for q in locus), msg=f'is not allowed as locus for {instruction.name}'
+            )
             return
 
-        # Check that locus matches one of the loci defined in architecture
+        # Check that locus matches one of the allowed loci
         all_loci = (
             tuple(tuple(x) for locus in allowed_loci for x in itertools.permutations(locus))
             if op_info.symmetric
             else allowed_loci
         )
-        if qubits not in all_loci:
+        if mapped_qubits not in all_loci:
             raise CircuitValidationError(
-                f'{instruction.qubits} = {tuple(qubits)} not allowed as locus for {instruction.name}'
+                f'{instruction.qubits} = {tuple(mapped_qubits)} not allowed as locus for {instruction.name}'
                 if qubit_mapping
                 else f'{instruction.qubits} not allowed as locus for {instruction.name}'
             )

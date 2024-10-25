@@ -153,7 +153,7 @@ def test_disallowed_measure_qubits(sample_move_architecture, qubits):
     """
     Tests that instruction validation fails for loci containing any qubits that are not valid measure qubits
     """
-    with pytest.raises(CircuitValidationError, match='Qubit (.+) is not allowed as locus for measure'):
+    with pytest.raises(CircuitValidationError, match='is not allowed as locus for measure'):
         IQMClient._validate_instruction(
             sample_move_architecture,
             Instruction(name='measure', qubits=qubits, args={'key': 'measure_1'}),
