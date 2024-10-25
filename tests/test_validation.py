@@ -51,13 +51,20 @@ def test_valid_instruction(sample_dynamic_architecture, instruction):
     'instruction,match',
     [
         [Instruction(name='barrier', qubits=['QB1', 'QB2', 'XXX'], args={}), 'does not exist'],
-        [Instruction(name='prx', qubits=['QB4'], args={'phase_t': 0.3, 'angle_t': -0.2}), 'not allowed as locus'],
-        [Instruction(name='cz', qubits=['QB2', 'QB4'], args={}), 'not allowed as locus'],
-        [Instruction(name='measure', qubits=['QB1', 'QB4'], args={'key': 'm'}), 'is not allowed as locus'],
-        [Instruction(name='measure', qubits=['QB4'], args={'key': 'm'}), 'is not allowed as locus'],
+        [
+            Instruction(name='prx', qubits=['QB4'], args={'phase_t': 0.3, 'angle_t': -0.2}),
+            "not allowed as locus for 'prx'",
+        ],
+        [Instruction(name='cz', qubits=['QB2', 'QB4'], args={}), "not allowed as locus for 'cz'"],
+        [Instruction(name='measure', qubits=['QB1', 'QB4'], args={'key': 'm'}), "not allowed as locus for 'measure'"],
+        [Instruction(name='measure', qubits=['QB4'], args={'key': 'm'}), "not allowed as locus for 'measure'"],
         [
             Instruction(name='cz', qubits=['QB1', 'QB2'], args={}, implementation='xyz'),
             "'cz' implementation 'xyz' is not supported",
+        ],
+        [
+            Instruction(name='prx', qubits=['QB2'], args={'phase_t': 0.3, 'angle_t': -0.2}, implementation='drag_crf'),
+            "not allowed as locus for 'prx.drag_crf'",
         ],
     ],
 )
@@ -92,7 +99,7 @@ def test_disallowed_cz_qubits(sample_move_architecture, qubits, qubit_mapping):
     """
     if qubit_mapping:
         qubits = [reverse_qb_mapping[q] for q in qubits]
-    with pytest.raises(CircuitValidationError, match='not allowed as locus for cz'):
+    with pytest.raises(CircuitValidationError, match="not allowed as locus for 'cz'"):
         IQMClient._validate_instruction(
             sample_move_architecture,
             Instruction(name='cz', qubits=qubits, args={}),
@@ -128,7 +135,7 @@ def test_disallowed_move_qubits(sample_move_architecture, qubits, qubit_mapping)
     if qubit_mapping:
         qubits = [reverse_qb_mapping[q] for q in qubits]
 
-    with pytest.raises(CircuitValidationError, match='not allowed as locus for move'):
+    with pytest.raises(CircuitValidationError, match="not allowed as locus for 'move'"):
         IQMClient._validate_instruction(
             sample_move_architecture,
             Instruction(name='move', qubits=qubits, args={}),
@@ -153,7 +160,7 @@ def test_disallowed_measure_qubits(sample_move_architecture, qubits):
     """
     Tests that instruction validation fails for loci containing any qubits that are not valid measure qubits
     """
-    with pytest.raises(CircuitValidationError, match='is not allowed as locus for measure'):
+    with pytest.raises(CircuitValidationError, match="is not allowed as locus for 'measure'"):
         IQMClient._validate_instruction(
             sample_move_architecture,
             Instruction(name='measure', qubits=qubits, args={'key': 'measure_1'}),

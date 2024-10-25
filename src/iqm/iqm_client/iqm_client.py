@@ -426,14 +426,16 @@ class IQMClient:
                     f'is not supported by the dynamic quantum architecture.'
                 )
             allowed_loci = impl_info.loci
+            instruction_name = f'{instruction.name}.{instruction.implementation}'
         else:
             # any implementation is fine
             allowed_loci = gate_info.loci
+            instruction_name = f'{instruction.name}'
 
         if op_info.factorizable:
             # Check that all the locus components are allowed by the architecture
             check_locus_components(
-                set(q for locus in allowed_loci for q in locus), msg=f'is not allowed as locus for {instruction.name}'
+                set(q for locus in allowed_loci for q in locus), msg=f"is not allowed as locus for '{instruction_name}'"
             )
             return
 
@@ -445,9 +447,9 @@ class IQMClient:
         )
         if mapped_qubits not in all_loci:
             raise CircuitValidationError(
-                f'{instruction.qubits} = {tuple(mapped_qubits)} not allowed as locus for {instruction.name}'
+                f"{instruction.qubits} = {tuple(mapped_qubits)} is not allowed as locus for '{instruction_name}'"
                 if qubit_mapping
-                else f'{instruction.qubits} not allowed as locus for {instruction.name}'
+                else f"'{instruction.qubits} is not allowed as locus for '{instruction_name}'"
             )
 
     @staticmethod

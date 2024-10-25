@@ -457,7 +457,7 @@ def sample_dynamic_architecture():
             'prx': GateInfo(
                 implementations={
                     'drag_gaussian': GateImplementationInfo(loci=(('QB1',), ('QB2',), ('QB3',))),
-                    'drag_crf': GateImplementationInfo(loci=(('QB1',), ('QB2',), ('QB3',))),
+                    'drag_crf': GateImplementationInfo(loci=(('QB1',), ('QB3',))),
                 },
                 default_implementation='drag_gaussian',
                 override_default_implementation={('QB3',): 'drag_crf'},
