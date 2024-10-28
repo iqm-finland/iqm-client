@@ -94,20 +94,21 @@ class Instruction(BaseModel):
 
     We currently support the following native operations:
 
-    ================ =========== ========================================= ===========
+    ================ =========== ======================================= ===========
     name             # of qubits args                                      description
-    ================ =========== ========================================= ===========
-    measure          >= 1        ``key: str``, ``feedback_key: str``       Measurement in the Z basis.
-    prx              1           ``angle_t: float``, ``phase_t: float``    Phased x-rotation gate.
+    ================ =========== ======================================= ===========
+    measure          >= 1        ``key: str``, ``feedback_key: str``     Measurement in the Z basis.
+    prx              1           ``angle_t: float``, ``phase_t: float``  Phased x-rotation gate.
     cc_prx           1           ``angle_t: float``, ``phase_t: float``,
-                                 ``feedback_qubit``, ``feedback_key: str`` Classically controlled PRX gate.
-    cz               2                                                     Controlled-Z gate.
-    move             2                                                     Moves a qubit state between a qubit and a
-                                                                           computational resonator, as long as
-                                                                           at least one of the components is
-                                                                           in the :math:`|0\rangle` state.
-    barrier          >= 1                                                  Execution barrier.
-    ================ =========== ========================================= ===========
+                                 ``feedback_qubit: str``,
+                                 ``feedback_key: str``                   Classically controlled PRX gate.
+    cz               2                                                   Controlled-Z gate.
+    move             2                                                   Moves a qubit state between a qubit and a
+                                                                         computational resonator, as long as
+                                                                         at least one of the components is
+                                                                         in the :math:`|0\rangle` state.
+    barrier          >= 1                                                Execution barrier.
+    ================ =========== ======================================= ===========
 
     For each Instruction you may also optionally specify :attr:`~Instruction.implementation`,
     which contains the name of an implementation of the operation to use.
