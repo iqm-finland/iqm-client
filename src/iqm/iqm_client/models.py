@@ -95,7 +95,7 @@ class Instruction(BaseModel):
     We currently support the following native operations:
 
     ================ =========== ======================================= ===========
-    name             # of qubits args                                      description
+    name             # of qubits args                                    description
     ================ =========== ======================================= ===========
     measure          >= 1        ``key: str``, ``feedback_key: str``     Measurement in the Z basis.
     prx              1           ``angle_t: float``, ``phase_t: float``  Phased x-rotation gate.
