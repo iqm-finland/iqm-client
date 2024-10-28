@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 19.1
+============
+
+* Bugfix: ``cc_prx`` params fixed. `#141 <https://github.com/iqm-finland/iqm-client/pull/141>`_
+
 Version 19.0
 ============
 

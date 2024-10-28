@@ -72,7 +72,8 @@ _SUPPORTED_OPERATIONS: dict[str, NativeOperation] = {
             {
                 'angle_t': (float, int),
                 'phase_t': (float, int),
-                'feedback_label': (str,),
+                'feedback_key': (str,),
+                'feedback_qubit': (str,),
             },
         ),
         NativeOperation('cz', 2, symmetric=True),
@@ -93,20 +94,20 @@ class Instruction(BaseModel):
 
     We currently support the following native operations:
 
-    ================ =========== ======================================= ===========
-    name             # of qubits args                                    description
-    ================ =========== ======================================= ===========
-    measure          >= 1        ``key: str``, ``feedback_key: str``     Measurement in the Z basis.
-    prx              1           ``angle_t: float``, ``phase_t: float``  Phased x-rotation gate.
+    ================ =========== ========================================= ===========
+    name             # of qubits args                                      description
+    ================ =========== ========================================= ===========
+    measure          >= 1        ``key: str``, ``feedback_key: str``       Measurement in the Z basis.
+    prx              1           ``angle_t: float``, ``phase_t: float``    Phased x-rotation gate.
     cc_prx           1           ``angle_t: float``, ``phase_t: float``,
-                                 ``feedback_label: str``                 Classically controlled PRX gate.
-    cz               2                                                   Controlled-Z gate.
-    move             2                                                   Moves a qubit state between a qubit and a
-                                                                         computational resonator, as long as
-                                                                         at least one of the components is
-                                                                         in the :math:`|0\rangle` state.
-    barrier          >= 1                                                Execution barrier.
-    ================ =========== ======================================= ===========
+                                 ``feedback_qubit``, ``feedback_key: str`` Classically controlled PRX gate.
+    cz               2                                                     Controlled-Z gate.
+    move             2                                                     Moves a qubit state between a qubit and a
+                                                                           computational resonator, as long as
+                                                                           at least one of the components is
+                                                                           in the :math:`|0\rangle` state.
+    barrier          >= 1                                                  Execution barrier.
+    ================ =========== ========================================= ===========
 
     For each Instruction you may also optionally specify :attr:`~Instruction.implementation`,
     which contains the name of an implementation of the operation to use.
@@ -152,9 +153,10 @@ class Instruction(BaseModel):
     CC_PRX
     ------
 
-    Classically controlled PRX gate. Takes three arguments. ``angle_t`` and ``phase_t`` are exactly as in PRX.
-    ``feedback_label == f"{physical_qubit_name}__{feedback_key}`` is a string that identifies the
-    ``measure`` operation and the qubit within it whose measurement result controls the gate.
+    Classically controlled PRX gate. Takes four arguments. ``angle_t`` and ``phase_t`` are exactly as in PRX.
+    ``feedback_key`` is a string that identifies the ``measure`` instruction whose result controls
+    the gate (the one that shares the feedback key).
+    ``feedback_qubit`` is the name of the physical qubit within the ``measure`` instruction that produces the feedback.
     If the measurement result is 1, the PRX gate is applied. If it is 0, an identity gate of similar time
     duration gate is applied instead.
     The measurement instruction must precede the classically controlled gate instruction in the quantum circuit.
