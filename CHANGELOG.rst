@@ -2,6 +2,12 @@
 Changelog
 =========
 
+Version 20.0
+============
+
+* Use dynamic quantum architecture for transpilation and validation. `#140 <https://github.com/iqm-finland/iqm-client/pull/140>`_
+* Bugfix: ``cc_prx`` params fixed. `#140 <https://github.com/iqm-finland/iqm-client/pull/140>`_
+
 Version 19.0
 ============
 

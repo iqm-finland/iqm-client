@@ -506,19 +506,19 @@ def test_token_manager_close(monkeypatch):
 
 
 def test_submit_circuits_gets_token(
-    monkeypatch, base_url, quantum_architecture_url, jobs_url, sample_quantum_architecture, sample_circuit
+    monkeypatch, base_url, dynamic_architecture_url, jobs_url, sample_dynamic_architecture, sample_circuit
 ):
     """Test that submit_circuits gets bearer token from TokenManager"""
     _patch_env(monkeypatch.setenv)
 
-    token = token = make_token('Bearer', 300)
+    token = make_token('Bearer', 300)
     client = IQMClient(base_url, token=token)
 
     when(requests).get(
-        quantum_architecture_url,
+        dynamic_architecture_url,
         headers={'User-Agent': client._signature, 'Authorization': f'Bearer {token}'},
         timeout=REQUESTS_TIMEOUT,
-    ).thenReturn(MockJsonResponse(200, json_data=sample_quantum_architecture))
+    ).thenReturn(MockJsonResponse(200, json_data=sample_dynamic_architecture.model_dump()))
 
     expect(requests, times=1).post(
         jobs_url,
