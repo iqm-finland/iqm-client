@@ -5,7 +5,7 @@ Changelog
 Version 20.1
 ============
 
-* Disable attestations on ``gh-action-pypi-publish`` to fix failing PyPI publishing `#143 <https://github.com/iqm-finland/iqm-client/pull/142>`_
+* Disable attestations on ``gh-action-pypi-publish`` to fix failing PyPI publishing `#143 <https://github.com/iqm-finland/iqm-client/pull/143>`_
 
 Version 20.0
 ============
