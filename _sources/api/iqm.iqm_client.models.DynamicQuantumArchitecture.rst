@@ -13,6 +13,7 @@ iqm.iqm\_client.models.DynamicQuantumArchitecture
 
    .. autosummary::
    
+      ~DynamicQuantumArchitecture.components
       ~DynamicQuantumArchitecture.model_computed_fields
       ~DynamicQuantumArchitecture.model_config
       ~DynamicQuantumArchitecture.model_fields

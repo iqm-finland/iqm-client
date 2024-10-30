@@ -13,6 +13,7 @@ iqm.iqm\_client.models.GateInfo
 
    .. autosummary::
    
+      ~GateInfo.loci
       ~GateInfo.model_computed_fields
       ~GateInfo.model_config
       ~GateInfo.model_fields

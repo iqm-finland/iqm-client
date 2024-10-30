@@ -13,8 +13,8 @@ iqm.iqm\_client.models.NativeOperation
 
    .. autosummary::
    
-      ~NativeOperation.allow_all_loci
       ~NativeOperation.factorizable
+      ~NativeOperation.no_calibration_needed
       ~NativeOperation.renamed_to
       ~NativeOperation.symmetric
       ~NativeOperation.name

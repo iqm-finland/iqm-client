@@ -32,8 +32,8 @@ iqm.iqm\_client.transpile.ResonatorStateTracker
       ~ResonatorStateTracker.choose_move_pair
       ~ResonatorStateTracker.create_move_instructions
       ~ResonatorStateTracker.from_circuit
+      ~ResonatorStateTracker.from_dynamic_architecture
       ~ResonatorStateTracker.from_instructions
-      ~ResonatorStateTracker.from_quantum_architecture_specification
       ~ResonatorStateTracker.reset_as_move_instructions
       ~ResonatorStateTracker.resonators_holding_qubits
       ~ResonatorStateTracker.update_qubits_in_resonator
