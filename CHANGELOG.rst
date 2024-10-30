@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 20.1
+============
+
+* Pin ``gh-action-pypi-publish`` to older version to fix failing PyPI publishing `#142 <https://github.com/iqm-finland/iqm-client/pull/142>`_
+
 Version 20.0
 ============
 
