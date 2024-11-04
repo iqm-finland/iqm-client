@@ -121,9 +121,13 @@ class IQMClient:
         self._architecture: QuantumArchitectureSpecification | None = None
         self._dynamic_architectures: dict[UUID, DynamicQuantumArchitecture] = {}
 
-        if api_variant is None:
-            env_var = os.environ.get('IQM_CLIENT_API_VARIANT')
-            api_variant = APIVariant(env_var) if env_var else APIVariant.V1
+        env_var = os.environ.get('IQM_CLIENT_API_VARIANT')
+        if api_variant is None and env_var:
+            api_variant = APIVariant(env_var)
+        elif api_variant is None and url.startswith('https://cocos.resonance.meetiqm.com'):
+            api_variant = APIVariant.RESONANCE
+        elif api_variant is None:
+            api_variant = APIVariant.V1
         self._api = APIConfig(api_variant, url)
 
     def __del__(self):
@@ -228,15 +232,17 @@ class IQMClient:
                     e.__traceback__
                 )
 
-        architecture = self.get_dynamic_quantum_architecture(calibration_set_id)
+        # Fallback to static quantum archtecture if dynamic quantum architecture is not available
+        if self._api.is_supported(APIEndpoint.CALIBRATED_GATES):
+            dynamic_architecture = self.get_dynamic_quantum_architecture(calibration_set_id)
+            self._validate_qubit_mapping(dynamic_architecture, circuits, qubit_mapping)
 
-        self._validate_qubit_mapping(architecture, circuits, qubit_mapping)
+            # validate the circuit against the calibration-dependent dynamic quantum architecture
+            self._validate_circuit_instructions(
+                dynamic_architecture, circuits, qubit_mapping, validate_moves=options.move_gate_validation
+            )
+
         serialized_qubit_mapping = serialize_qubit_mapping(qubit_mapping) if qubit_mapping else None
-
-        # validate the circuit against the calibration-dependent dynamic quantum architecture
-        self._validate_circuit_instructions(
-            architecture, circuits, qubit_mapping, validate_moves=options.move_gate_validation
-        )
 
         return RunRequest(
             qubit_mapping=serialized_qubit_mapping,

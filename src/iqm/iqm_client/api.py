@@ -57,7 +57,8 @@ class APIVariant(Enum):
     Use with caution, as future updates may introduce breaking changes or remove functionality entirely.
     """
 
-    V1 = "V1"  # IQM Resonance and Cocos-based circuits execution
+    RESONANCE = "RESONANCE"  # IQM Resonance circuits execution
+    V1 = "V1"  # Cocos-based circuits execution
     V2 = "V2"  # Station-Control-based circuits execution
 
 
@@ -69,7 +70,8 @@ class APIConfig:
         Args:
             variant: API variant.
             iqm_server_url: URL of the IQM server,
-                            e.g. https://test.qc.iqm.fi/cocos or https://cocos.resonance.meetiqm.com/garnet for .V1
+                            e.g. https://test.qc.iqm.fi/cocos for .V1
+                            or https://cocos.resonance.meetiqm.com/garnet for .RESONANCE
                             or https://test.qc.iqm.fi for .V2
         """
         self.variant = variant
@@ -81,6 +83,15 @@ class APIConfig:
         Returns:
             Relative URLs for each supported API endpoints.
         """
+        if self.variant == APIVariant.RESONANCE:
+            return {
+                APIEndpoint.SUBMIT_JOB: "jobs",
+                APIEndpoint.GET_JOB_RESULT: "jobs/%s",
+                APIEndpoint.GET_JOB_STATUS: "jobs/%s/status",
+                APIEndpoint.GET_JOB_COUNTS: "jobs/%s/counts",
+                APIEndpoint.ABORT_JOB: "jobs/%s/abort",
+                APIEndpoint.QUANTUM_ARCHITECTURE: "quantum-architecture",
+            }
         if self.variant == APIVariant.V1:
             return {
                 APIEndpoint.CONFIGURATION: "configuration",
