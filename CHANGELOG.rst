@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 20.2
+============
+
+* Fix compatibility issue with IQM Resonance only serving static quantum architecture. `#144 <https://github.com/iqm-finland/iqm-client/pull/144>`_
+
 Version 20.1
 ============
 
