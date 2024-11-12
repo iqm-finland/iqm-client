@@ -29,6 +29,7 @@ from typing import Any, Callable, Optional
 from uuid import UUID
 import warnings
 
+from packaging.version import parse
 import requests
 
 from iqm.iqm_client.api import APIConfig, APIEndpoint, APIVariant
@@ -125,6 +126,7 @@ class IQMClient:
             env_var = os.environ.get('IQM_CLIENT_API_VARIANT')
             api_variant = APIVariant(env_var) if env_var else APIVariant.V1
         self._api = APIConfig(api_variant, url)
+        self._check_versions()
 
     def __del__(self):
         try:
@@ -899,3 +901,22 @@ class IQMClient:
             raise ClientAuthenticationError('Authentication is required.')
         if result.status_code == 401:
             raise ClientAuthenticationError(f'Authentication failed: {result.text}')
+
+    def _check_versions(self):
+        versions_response = requests.get(
+            self._api.url(APIEndpoint.CLIENT_LIBRARIES),
+            headers=self._default_headers(),
+            timeout=REQUESTS_TIMEOUT,
+        )
+        if versions_response.status_code == 200:
+            compatible_versions = versions_response.json()['iqm-client']
+            min_version = parse(compatible_versions['min'])
+            max_version = parse(compatible_versions['max'])
+            # print(versions_response.json())
+            client_version = parse(version('iqm-client'))
+            if client_version < min_version or client_version >= max_version:
+                warnings.warn(
+                    f'iqm-client version {client_version} is incompatible with the IQM server, '
+                    f'which requires {min_version} <= iqm-client < {max_version}. '
+                    f'Please use a compatible client version to make sure all features work correctly.',
+                )

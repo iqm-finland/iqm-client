@@ -17,6 +17,7 @@ Mocks server calls for testing
 """
 
 from base64 import b64encode
+from importlib.metadata import version
 import json
 import os
 import platform
@@ -24,7 +25,10 @@ import time
 from typing import Any, Optional
 from uuid import UUID
 
+from mockito import ANY, when
+from packaging.version import parse
 import pytest
+import requests
 from requests import HTTPError, Response
 
 from iqm.iqm_client import (
@@ -73,6 +77,12 @@ def missing_run_id() -> UUID:
 
 @pytest.fixture()
 def sample_client(base_url) -> IQMClient:
+    client_version = parse(version('iqm-client'))
+    when(requests).get(f'{base_url}/info/client-libraries', headers=ANY, timeout=ANY).thenReturn(
+        MockJsonResponse(
+            200, {'iqm-client': {'min': f'{client_version.major}.0', 'max': f'{client_version.major + 1}.0'}}
+        )
+    )
     client = IQMClient(url=base_url)
     client._token_manager = None  # Do not use authentication
     return client

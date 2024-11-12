@@ -14,9 +14,12 @@
 """Tests for the IQM client.
 """
 # pylint: disable=too-many-arguments,too-many-lines
+from importlib.metadata import version
+import re
 import uuid
 
-from mockito import expect, unstub, verifyNoUnwantedInteractions, when
+from mockito import ANY, expect, unstub, verifyNoUnwantedInteractions, when
+from packaging.version import parse
 import pytest
 import requests
 from requests import HTTPError
@@ -1006,3 +1009,33 @@ def test_get_dynamic_quantum_architecture_throws_json_decode_error_if_received_n
 
     verifyNoUnwantedInteractions()
     unstub()
+
+
+@pytest.mark.parametrize('server_version_diff', [-1, 0, 1])
+def test_check_versions(base_url, server_version_diff, recwarn):
+    client_version = parse(version('iqm-client'))
+    min_version = f'{client_version.major + server_version_diff}.0'
+    max_version = f'{client_version.major + server_version_diff + 1}.0'
+    when(requests).get(f'{base_url}/info/client-libraries', headers=ANY, timeout=ANY).thenReturn(
+        MockJsonResponse(
+            200,
+            {
+                'iqm-client': {
+                    'min': min_version,
+                    'max': max_version,
+                }
+            },
+        )
+    )
+    if server_version_diff == 0:
+        IQMClient(base_url)
+        assert len(recwarn) == 0
+    else:
+        with pytest.warns(
+            UserWarning,
+            match=re.escape(
+                f'iqm-client version {client_version} is incompatible with the IQM server, '
+                f'which requires {min_version} <= iqm-client < {max_version}'
+            ),
+        ):
+            IQMClient(base_url)
