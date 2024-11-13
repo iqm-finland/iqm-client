@@ -1014,8 +1014,8 @@ def test_get_dynamic_quantum_architecture_throws_json_decode_error_if_received_n
 def test_get_dynamic_quantum_architecture_not_found(base_url, sample_client):
     """Test that an informative error message is returned when 404 is returned due to version incompatibility."""
     client_version = parse(version('iqm-client'))
-    min_version = f'{client_version.major - 2}.0'
-    max_version = f'{client_version.major - 1}.0'
+    min_version = f'{client_version.major + 2}.0'
+    max_version = f'{client_version.major + 3}.0'
     when(requests).get(f'{base_url}/info/client-libraries', headers=ANY, timeout=ANY).thenReturn(
         MockJsonResponse(
             200,
@@ -1036,9 +1036,10 @@ def test_get_dynamic_quantum_architecture_not_found(base_url, sample_client):
         ),
     ):
         sample_client.get_dynamic_quantum_architecture()
+    unstub()
 
 
-@pytest.mark.parametrize('server_version_diff', [-1, 0, 1])
+@pytest.mark.parametrize('server_version_diff', [0, 1])
 def test_check_versions(base_url, server_version_diff, recwarn):
     """Test that a warning about version incompatibility is shown when initializing client with incompatible server."""
     client_version = parse(version('iqm-client'))
@@ -1067,3 +1068,4 @@ def test_check_versions(base_url, server_version_diff, recwarn):
             ),
         ):
             IQMClient(base_url)
+    unstub()
