@@ -1011,8 +1011,36 @@ def test_get_dynamic_quantum_architecture_throws_json_decode_error_if_received_n
     unstub()
 
 
+def test_get_dynamic_quantum_architecture_not_found(base_url, sample_client):
+    """Test that an informative error message is returned when 404 is returned due to version incompatibility."""
+    client_version = parse(version('iqm-client'))
+    min_version = f'{client_version.major - 2}.0'
+    max_version = f'{client_version.major - 1}.0'
+    when(requests).get(f'{base_url}/info/client-libraries', headers=ANY, timeout=ANY).thenReturn(
+        MockJsonResponse(
+            200,
+            {
+                'iqm-client': {
+                    'min': min_version,
+                    'max': max_version,
+                }
+            },
+        )
+    )
+    when(requests).get(f'{base_url}/api/v1/calibration/default/gates', ...).thenReturn(MockJsonResponse(404, {}))
+    with pytest.raises(
+        HTTPError,
+        match=re.escape(
+            f'IQM Client version {client_version} is incompatible with the IQM server, '
+            f'which requires {min_version} <= iqm-client < {max_version}'
+        ),
+    ):
+        sample_client.get_dynamic_quantum_architecture()
+
+
 @pytest.mark.parametrize('server_version_diff', [-1, 0, 1])
 def test_check_versions(base_url, server_version_diff, recwarn):
+    """Test that a warning about version incompatibility is shown when initializing client with incompatible server."""
     client_version = parse(version('iqm-client'))
     min_version = f'{client_version.major + server_version_diff}.0'
     max_version = f'{client_version.major + server_version_diff + 1}.0'
@@ -1034,7 +1062,7 @@ def test_check_versions(base_url, server_version_diff, recwarn):
         with pytest.warns(
             UserWarning,
             match=re.escape(
-                f'iqm-client version {client_version} is incompatible with the IQM server, '
+                f'IQM Client version {client_version} is incompatible with the IQM server, '
                 f'which requires {min_version} <= iqm-client < {max_version}'
             ),
         ):

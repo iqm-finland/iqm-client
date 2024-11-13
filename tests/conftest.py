@@ -544,6 +544,7 @@ class MockJsonResponse:
         self.status_code = status_code
         self.json_data = json_data
         self.history = history
+        self.url = 'https://example.com'
 
     @property
     def text(self):
