@@ -25,6 +25,7 @@ iqm.iqm\_client.models.RunRequest
       ~RunRequest.heralding_mode
       ~RunRequest.move_validation_mode
       ~RunRequest.move_gate_frame_tracking_mode
+      ~RunRequest.active_reset_cycles
    
    
 
