@@ -2,11 +2,17 @@
 Changelog
 =========
 
-Version 20.2
+Version 20.3
 ============
 
 * Add warning when initializing client with server that has incompatible version. `#145 <https://github.com/iqm-finland/iqm-client/pull/145>`_
 * Improve error message when an endpoint returns a 404 error due to the server version not supporting the endpoint. `#145 <https://github.com/iqm-finland/iqm-client/pull/145>`_
+
+Version 20.2
+============
+
+* Add ``active_reset_cycles`` circuit execution option, used for deciding between reset-by-wait and active reset (and how
+  active reset cycles). `#146 <https://github.com/iqm-finland/iqm-client/pull/146>`_
 
 Version 20.1
 ============
