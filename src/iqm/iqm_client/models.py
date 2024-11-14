@@ -698,6 +698,11 @@ class RunRequest(BaseModel):
     """Which method of MOVE gate validation to use for circuit compilation."""
     move_gate_frame_tracking_mode: MoveGateFrameTrackingMode = Field(MoveGateFrameTrackingMode.FULL)
     """Which method of MOVE gate frame tracking to use for circuit compilation."""
+    active_reset_cycles: Optional[int] = Field(None)
+    """Number of active ``reset`` operations inserted at the beginning of each circuit for each active qubit. 
+    ``None`` means active reset is not used but instead reset is done by waiting (relaxation). Integer values smaller
+    than 1 result in neither active nor reset by wait being used, in which case any reset operations must be explicitly
+    added in the circuit."""
 
 
 CircuitMeasurementResults = dict[str, list[list[int]]]
