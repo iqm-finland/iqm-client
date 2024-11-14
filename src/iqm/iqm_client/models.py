@@ -704,6 +704,7 @@ class RunRequest(BaseModel):
     than 1 result in neither active nor reset by wait being used, in which case any reset operations must be explicitly
     added in the circuit."""
 
+
 CircuitMeasurementResults = dict[str, list[list[int]]]
 """Measurement results from a single circuit. For each measurement operation in the circuit,
 maps the measurement key to the corresponding results. The outer list elements correspond to shots,
