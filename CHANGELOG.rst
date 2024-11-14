@@ -5,7 +5,8 @@ Changelog
 Version 20.2
 ============
 
-* Add
+* Add `active_reset_cycles` circuit execution option, used for deciding between reset-by-wait and active reset (and how
+  active reset cycles).
 
 Version 20.1
 ============
