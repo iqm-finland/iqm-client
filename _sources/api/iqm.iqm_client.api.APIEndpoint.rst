@@ -27,6 +27,7 @@ iqm.iqm\_client.api.APIEndpoint
       ~APIEndpoint.DELETE_JOB
       ~APIEndpoint.HEALTH
       ~APIEndpoint.ABOUT
+      ~APIEndpoint.CLIENT_LIBRARIES
       ~APIEndpoint.CALIBRATION_SERVICE_CONFIGURATION
       ~APIEndpoint.QUANTUM_ARCHITECTURE
       ~APIEndpoint.QUALITYT_METRICS_LATEST

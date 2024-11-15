@@ -20,6 +20,8 @@ iqm.iqm\_client.iqm\_client.IQMClient
    
       ~IQMClient.__del__
       ~IQMClient._check_authentication_errors
+      ~IQMClient._check_not_found_error
+      ~IQMClient._check_versions
       ~IQMClient._default_headers
       ~IQMClient._get_run_v1
       ~IQMClient._get_run_v2
