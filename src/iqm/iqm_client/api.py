@@ -34,6 +34,7 @@ class APIEndpoint(Enum):
     DELETE_JOB = auto()
     HEALTH = auto()
     ABOUT = auto()
+    CLIENT_LIBRARIES = auto()
 
     # Calibration and Calibration Service endpoints
     CALIBRATION_SERVICE_CONFIGURATION = auto()
@@ -97,6 +98,7 @@ class APIConfig:
                 APIEndpoint.QUALITYT_METRICS_MONITORING: "api/v1/monitor/calibration/metrics",
                 APIEndpoint.HEALTH: "health",
                 APIEndpoint.ABOUT: "about",
+                APIEndpoint.CLIENT_LIBRARIES: "info/client-libraries",
                 APIEndpoint.START_CALIBRATION_JOB: "calibration/run",
                 APIEndpoint.CALIBRATION_SERVICE_CONFIGURATION: "calibration/configuration",
                 APIEndpoint.CALIBRATION_SERVICE_JOBS: "calibration/jobs",
@@ -123,6 +125,7 @@ class APIConfig:
                 APIEndpoint.QUALITYT_METRICS_MONITORING: "cocos/api/v1/monitor/calibration/metrics",
                 APIEndpoint.HEALTH: "cocos/health",
                 APIEndpoint.ABOUT: "cocos/about",
+                APIEndpoint.CLIENT_LIBRARIES: "info/client-libraries",
                 APIEndpoint.START_CALIBRATION_JOB: "cocos/calibration/run",
                 APIEndpoint.CALIBRATION_SERVICE_CONFIGURATION: "cocos/calibration/configuration",
                 APIEndpoint.CALIBRATION_SERVICE_JOBS: "cocos/calibration/jobs",

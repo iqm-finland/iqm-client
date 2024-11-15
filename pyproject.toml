@@ -19,6 +19,7 @@ classifiers = [
 requires-python = ">=3.9, <3.12"
 dependencies = [
     "numpy",
+    "packaging",
     "requests >= 2.28.2, < 3.0",
     "pydantic >= 2.4.2, < 3.0",
 ]

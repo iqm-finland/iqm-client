@@ -14,9 +14,12 @@
 """Tests for the IQM client.
 """
 # pylint: disable=too-many-arguments,too-many-lines
+from importlib.metadata import version
+import re
 import uuid
 
-from mockito import expect, unstub, verifyNoUnwantedInteractions, when
+from mockito import ANY, expect, unstub, verifyNoUnwantedInteractions, when
+from packaging.version import parse
 import pytest
 import requests
 from requests import HTTPError
@@ -1005,4 +1008,66 @@ def test_get_dynamic_quantum_architecture_throws_json_decode_error_if_received_n
         sample_client.get_dynamic_quantum_architecture()
 
     verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_get_dynamic_quantum_architecture_not_found(base_url, sample_client):
+    """Test that an informative error message is returned when 404 is returned due to version incompatibility."""
+    client_version = parse(version('iqm-client'))
+    min_version = f'{client_version.major + 2}.0'
+    max_version = f'{client_version.major + 3}.0'
+    when(requests).get(f'{base_url}/info/client-libraries', headers=ANY, timeout=ANY).thenReturn(
+        MockJsonResponse(
+            200,
+            {
+                'iqm-client': {
+                    'min': min_version,
+                    'max': max_version,
+                }
+            },
+        )
+    )
+    when(requests).get(f'{base_url}/api/v1/calibration/default/gates', ...).thenReturn(MockJsonResponse(404, {}))
+    with pytest.raises(
+        HTTPError,
+        match=re.escape(
+            f'Your IQM Client version {client_version} was built for a different version of IQM Server. '
+            f'You might encounter issues. For the best experience, consider using a version '
+            f'of IQM Client that satisfies {min_version} <= iqm-client < {max_version}.'
+        ),
+    ):
+        sample_client.get_dynamic_quantum_architecture()
+    unstub()
+
+
+@pytest.mark.parametrize('server_version_diff', [0, 1])
+def test_check_versions(base_url, server_version_diff, recwarn):
+    """Test that a warning about version incompatibility is shown when initializing client with incompatible server."""
+    client_version = parse(version('iqm-client'))
+    min_version = f'{client_version.major + server_version_diff}.0'
+    max_version = f'{client_version.major + server_version_diff + 1}.0'
+    when(requests).get(f'{base_url}/info/client-libraries', headers=ANY, timeout=ANY).thenReturn(
+        MockJsonResponse(
+            200,
+            {
+                'iqm-client': {
+                    'min': min_version,
+                    'max': max_version,
+                }
+            },
+        )
+    )
+    if server_version_diff == 0:
+        IQMClient(base_url)
+        assert len(recwarn) == 0
+    else:
+        with pytest.warns(
+            UserWarning,
+            match=re.escape(
+                f'Your IQM Client version {client_version} was built for a different version of IQM Server. '
+                f'You might encounter issues. For the best experience, consider using a version '
+                f'of IQM Client that satisfies {min_version} <= iqm-client < {max_version}.'
+            ),
+        ):
+            IQMClient(base_url)
     unstub()

@@ -29,7 +29,9 @@ from typing import Any, Callable, Optional
 from uuid import UUID
 import warnings
 
+from packaging.version import parse
 import requests
+from requests import HTTPError
 
 from iqm.iqm_client.api import APIConfig, APIEndpoint, APIVariant
 from iqm.iqm_client.authentication import TokenManager
@@ -125,6 +127,8 @@ class IQMClient:
             env_var = os.environ.get('IQM_CLIENT_API_VARIANT')
             api_variant = APIVariant(env_var) if env_var else APIVariant.V1
         self._api = APIConfig(api_variant, url)
+        if (version_incompatibility_msg := self._check_versions()) is not None:
+            warnings.warn(version_incompatibility_msg)
 
     def __del__(self):
         try:
@@ -283,6 +287,8 @@ class IQMClient:
                 timeout=REQUESTS_TIMEOUT,
             )
         )
+
+        self._check_not_found_error(result)
 
         if result.status_code == 401:
             raise ClientAuthenticationError(f'Authentication failed: {result.text}')
@@ -549,6 +555,7 @@ class IQMClient:
                 timeout=timeout_secs,
             )
         )
+        self._check_not_found_error(result)
         result.raise_for_status()
         return RunResult.from_dict(result.json())
 
@@ -561,6 +568,7 @@ class IQMClient:
             headers=self._default_headers(),
             timeout=timeout_secs,
         )
+        self._check_not_found_error(status_response)
         status_response.raise_for_status()
         status = status_response.json()
         if Status(status['status']) not in [Status.READY, Status.ABORTED, Status.DELETED, Status.FAILED]:
@@ -703,6 +711,7 @@ class IQMClient:
             )
         )
 
+        self._check_not_found_error(result)
         result.raise_for_status()
         try:
             run_result = RunStatus.from_dict(result.json())
@@ -773,7 +782,6 @@ class IQMClient:
             timeout_secs: network request timeout
 
         Raises:
-            HTTPException: HTTP exceptions
             JobAbortionError: if aborting the job failed
         """
         result = requests.post(
@@ -808,8 +816,10 @@ class IQMClient:
             timeout=timeout_secs,
         )
 
+        self._check_not_found_error(result)
         self._check_authentication_errors(result)
         result.raise_for_status()
+
         try:
             qa = QuantumArchitecture(**result.json()).quantum_architecture
         except (json.decoder.JSONDecodeError, KeyError) as e:
@@ -855,8 +865,10 @@ class IQMClient:
             timeout=timeout_secs,
         )
 
+        self._check_not_found_error(result)
         self._check_authentication_errors(result)
         result.raise_for_status()
+
         try:
             dqa = DynamicQuantumArchitecture(**result.json())
         except (json.decoder.JSONDecodeError, KeyError) as e:
@@ -899,3 +911,39 @@ class IQMClient:
             raise ClientAuthenticationError('Authentication is required.')
         if result.status_code == 401:
             raise ClientAuthenticationError(f'Authentication failed: {result.text}')
+
+    def _check_not_found_error(self, response: requests.Response) -> None:
+        """Raises HTTPError with appropriate message if ``response.status_code == 404``."""
+        if response.status_code == 404:
+            version_message = ''
+            if (version_incompatibility_msg := self._check_versions()) is not None:
+                version_message = (
+                    f' This may be caused by the server version not supporting this endpoint. '
+                    f'{version_incompatibility_msg}'
+                )
+            raise HTTPError(f'{response.url} not found.{version_message}', response=response)
+
+    def _check_versions(self) -> Optional[str]:
+        """Checks the client version against compatible client versions reported by server.
+
+        Returns:
+            A message about the versions being incompatible if they are,
+            None if they are compatible or if the version information could not be obtained.
+        """
+        versions_response = requests.get(
+            self._api.url(APIEndpoint.CLIENT_LIBRARIES),
+            headers=self._default_headers(),
+            timeout=REQUESTS_TIMEOUT,
+        )
+        if versions_response.status_code == 200:
+            compatible_versions = versions_response.json()['iqm-client']
+            min_version = parse(compatible_versions['min'])
+            max_version = parse(compatible_versions['max'])
+            client_version = parse(version('iqm-client'))
+            if client_version < min_version or client_version >= max_version:
+                return (
+                    f'Your IQM Client version {client_version} was built for a different version of IQM Server. '
+                    f'You might encounter issues. For the best experience, consider using a version '
+                    f'of IQM Client that satisfies {min_version} <= iqm-client < {max_version}.'
+                )
+        return None
