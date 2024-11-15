@@ -1031,8 +1031,9 @@ def test_get_dynamic_quantum_architecture_not_found(base_url, sample_client):
     with pytest.raises(
         HTTPError,
         match=re.escape(
-            f'IQM Client version {client_version} is incompatible with the IQM server, '
-            f'which requires {min_version} <= iqm-client < {max_version}'
+            f'Your IQM Client version {client_version} was built for a different version of IQM Server. '
+            f'You might encounter issues. For the best experience, consider using a version '
+            f'of IQM Client that satisfies {min_version} <= iqm-client < {max_version}.'
         ),
     ):
         sample_client.get_dynamic_quantum_architecture()
@@ -1063,8 +1064,9 @@ def test_check_versions(base_url, server_version_diff, recwarn):
         with pytest.warns(
             UserWarning,
             match=re.escape(
-                f'IQM Client version {client_version} is incompatible with the IQM server, '
-                f'which requires {min_version} <= iqm-client < {max_version}'
+                f'Your IQM Client version {client_version} was built for a different version of IQM Server. '
+                f'You might encounter issues. For the best experience, consider using a version '
+                f'of IQM Client that satisfies {min_version} <= iqm-client < {max_version}.'
             ),
         ):
             IQMClient(base_url)

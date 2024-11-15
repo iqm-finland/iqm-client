@@ -942,8 +942,8 @@ class IQMClient:
             client_version = parse(version('iqm-client'))
             if client_version < min_version or client_version >= max_version:
                 return (
-                    f'IQM Client version {client_version} is incompatible with the IQM server, '
-                    f'which requires {min_version} <= iqm-client < {max_version}. '
-                    f'Please use a compatible client version to make sure all features work correctly.'
+                    f'Your IQM Client version {client_version} was built for a different version of IQM Server. '
+                    f'You might encounter issues. For the best experience, consider using a version '
+                    f'of IQM Client that satisfies {min_version} <= iqm-client < {max_version}.'
                 )
         return None
