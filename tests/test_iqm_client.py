@@ -831,7 +831,7 @@ def test_abort_job_failed(status_code, sample_client, existing_job_url, existing
     'params',
     [
         {},
-        {'options': CircuitCompilationOptions(heralding_mode=HeraldingMode.ZEROS)},
+        {'options': CircuitCompilationOptions(heralding_mode=HeraldingMode.ZEROS, active_reset_cycles=1)},
         {'custom_settings': {'some_setting': 1}},
         {'calibration_set_id': uuid.uuid4()},
         {'options': CircuitCompilationOptions(max_circuit_duration_over_t2=0.0)},
@@ -859,7 +859,8 @@ def test_create_and_submit_run_request(
         when(requests).get(dynamic_architecture_url, ...).thenReturn(dynamic_architecture_success)
 
     run_request = sample_client.create_run_request([sample_circuit], **params)
-
+    if 'options' in params:
+        assert run_request.active_reset_cycles == params['options'].active_reset_cycles
     expect(requests, times=2).post(jobs_url, **post_jobs_args(run_request)).thenReturn(submit_success)
     assert sample_client.submit_run_request(run_request) == existing_run_id
     assert sample_client.submit_circuits([sample_circuit], **params) == existing_run_id

@@ -241,7 +241,6 @@ class IQMClient:
         self._validate_circuit_instructions(
             architecture, circuits, qubit_mapping, validate_moves=options.move_gate_validation
         )
-
         return RunRequest(
             qubit_mapping=serialized_qubit_mapping,
             circuits=circuits,
@@ -252,6 +251,7 @@ class IQMClient:
             heralding_mode=options.heralding_mode,
             move_validation_mode=options.move_gate_validation,
             move_gate_frame_tracking_mode=options.move_gate_frame_tracking,
+            active_reset_cycles=options.active_reset_cycles,
         )
 
     def submit_run_request(self, run_request: RunRequest) -> UUID:
