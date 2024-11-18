@@ -13,6 +13,7 @@ iqm.iqm\_client.models.CircuitCompilationOptions
 
    .. autosummary::
    
+      ~CircuitCompilationOptions.active_reset_cycles
       ~CircuitCompilationOptions.heralding_mode
       ~CircuitCompilationOptions.max_circuit_duration_over_t2
       ~CircuitCompilationOptions.move_gate_frame_tracking

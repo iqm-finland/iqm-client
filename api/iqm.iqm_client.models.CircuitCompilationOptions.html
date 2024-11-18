@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>iqm.iqm_client.models.CircuitCompilationOptions &#8212; IQM client 20.3 documentation</title>
+    <title>iqm.iqm_client.models.CircuitCompilationOptions &#8212; IQM client 20.4 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="../_static/documentation_options.js?v=88557bec"></script>
+    <script src="../_static/documentation_options.js?v=1d40f93d"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
@@ -52,8 +52,8 @@
     <link rel="prev" title="iqm.iqm_client.models.Circuit" href="iqm.iqm_client.models.Circuit.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="20.3" />
-    <meta name="docbuild:last-update" content="2024-11-15"/>
+  <meta name="docsearch:version" content="20.4" />
+    <meta name="docbuild:last-update" content="2024-11-18"/>
   </head>
   
   
@@ -132,8 +132,8 @@
       
     
     
-    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 20.3 documentation - Home"/>
-    <img src="../_static/logo.png" class="logo__image only-dark pst-js-only" alt="IQM client 20.3 documentation - Home"/>
+    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 20.4 documentation - Home"/>
+    <img src="../_static/logo.png" class="logo__image only-dark pst-js-only" alt="IQM client 20.4 documentation - Home"/>
   
   
 </a></div>
@@ -375,6 +375,7 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.CircuitCompilationOptions.heralding_mode"><code class="docutils literal notranslate"><span class="pre">CircuitCompilationOptions.heralding_mode</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.CircuitCompilationOptions.move_gate_validation"><code class="docutils literal notranslate"><span class="pre">CircuitCompilationOptions.move_gate_validation</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.CircuitCompilationOptions.move_gate_frame_tracking"><code class="docutils literal notranslate"><span class="pre">CircuitCompilationOptions.move_gate_frame_tracking</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.CircuitCompilationOptions.active_reset_cycles"><code class="docutils literal notranslate"><span class="pre">CircuitCompilationOptions.active_reset_cycles</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -392,22 +393,25 @@
 <h1>iqm.iqm_client.models.CircuitCompilationOptions<a class="headerlink" href="#iqm-iqm-client-models-circuitcompilationoptions" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="iqm.iqm_client.models.CircuitCompilationOptions">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">iqm.iqm_client.models.</span></span><span class="sig-name descname"><span class="pre">CircuitCompilationOptions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_circuit_duration_over_t2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#float" title="(in Python v3.9)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heralding_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="iqm.iqm_client.models.HeraldingMode.html#iqm.iqm_client.models.HeraldingMode" title="iqm.iqm_client.models.HeraldingMode"><span class="pre">HeraldingMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">HeraldingMode.NONE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">move_gate_validation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="iqm.iqm_client.models.MoveGateValidationMode.html#iqm.iqm_client.models.MoveGateValidationMode" title="iqm.iqm_client.models.MoveGateValidationMode"><span class="pre">MoveGateValidationMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">MoveGateValidationMode.STRICT</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">move_gate_frame_tracking</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="iqm.iqm_client.models.MoveGateFrameTrackingMode.html#iqm.iqm_client.models.MoveGateFrameTrackingMode" title="iqm.iqm_client.models.MoveGateFrameTrackingMode"><span class="pre">MoveGateFrameTrackingMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">MoveGateFrameTrackingMode.FULL</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm.iqm_client.models.CircuitCompilationOptions" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">iqm.iqm_client.models.</span></span><span class="sig-name descname"><span class="pre">CircuitCompilationOptions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_circuit_duration_over_t2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#float" title="(in Python v3.9)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heralding_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="iqm.iqm_client.models.HeraldingMode.html#iqm.iqm_client.models.HeraldingMode" title="iqm.iqm_client.models.HeraldingMode"><span class="pre">HeraldingMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">HeraldingMode.NONE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">move_gate_validation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="iqm.iqm_client.models.MoveGateValidationMode.html#iqm.iqm_client.models.MoveGateValidationMode" title="iqm.iqm_client.models.MoveGateValidationMode"><span class="pre">MoveGateValidationMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">MoveGateValidationMode.STRICT</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">move_gate_frame_tracking</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="iqm.iqm_client.models.MoveGateFrameTrackingMode.html#iqm.iqm_client.models.MoveGateFrameTrackingMode" title="iqm.iqm_client.models.MoveGateFrameTrackingMode"><span class="pre">MoveGateFrameTrackingMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">MoveGateFrameTrackingMode.FULL</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active_reset_cycles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm.iqm_client.models.CircuitCompilationOptions" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.9/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Various discrete options for quantum circuit compilation to pulse schedule.</p>
 <p class="rubric">Attributes</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.models.CircuitCompilationOptions.heralding_mode" title="iqm.iqm_client.models.CircuitCompilationOptions.heralding_mode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">heralding_mode</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.models.CircuitCompilationOptions.active_reset_cycles" title="iqm.iqm_client.models.CircuitCompilationOptions.active_reset_cycles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">active_reset_cycles</span></code></a></p></td>
+<td><p>Number of active <code class="docutils literal notranslate"><span class="pre">reset</span></code> operations inserted at the beginning of each circuit for each active qubit.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.models.CircuitCompilationOptions.heralding_mode" title="iqm.iqm_client.models.CircuitCompilationOptions.heralding_mode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">heralding_mode</span></code></a></p></td>
 <td><p>Heralding mode to use during the execution.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.models.CircuitCompilationOptions.max_circuit_duration_over_t2" title="iqm.iqm_client.models.CircuitCompilationOptions.max_circuit_duration_over_t2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_circuit_duration_over_t2</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.models.CircuitCompilationOptions.max_circuit_duration_over_t2" title="iqm.iqm_client.models.CircuitCompilationOptions.max_circuit_duration_over_t2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_circuit_duration_over_t2</span></code></a></p></td>
 <td><p>Server-side circuit disqualification threshold.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.models.CircuitCompilationOptions.move_gate_frame_tracking" title="iqm.iqm_client.models.CircuitCompilationOptions.move_gate_frame_tracking"><code class="xref py py-obj docutils literal notranslate"><span class="pre">move_gate_frame_tracking</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.models.CircuitCompilationOptions.move_gate_frame_tracking" title="iqm.iqm_client.models.CircuitCompilationOptions.move_gate_frame_tracking"><code class="xref py py-obj docutils literal notranslate"><span class="pre">move_gate_frame_tracking</span></code></a></p></td>
 <td><p>MOVE gate frame tracking mode for circuit compilation.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.models.CircuitCompilationOptions.move_gate_validation" title="iqm.iqm_client.models.CircuitCompilationOptions.move_gate_validation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">move_gate_validation</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.models.CircuitCompilationOptions.move_gate_validation" title="iqm.iqm_client.models.CircuitCompilationOptions.move_gate_validation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">move_gate_validation</span></code></a></p></td>
 <td><p>MOVE gate validation mode for circuit compilation.</p></td>
 </tr>
 </tbody>
@@ -444,6 +448,7 @@
 <li><p><strong>heralding_mode</strong> (<a class="reference internal" href="iqm.iqm_client.models.HeraldingMode.html#iqm.iqm_client.models.HeraldingMode" title="iqm.iqm_client.models.HeraldingMode"><em>HeraldingMode</em></a>) – </p></li>
 <li><p><strong>move_gate_validation</strong> (<a class="reference internal" href="iqm.iqm_client.models.MoveGateValidationMode.html#iqm.iqm_client.models.MoveGateValidationMode" title="iqm.iqm_client.models.MoveGateValidationMode"><em>MoveGateValidationMode</em></a>) – </p></li>
 <li><p><strong>move_gate_frame_tracking</strong> (<a class="reference internal" href="iqm.iqm_client.models.MoveGateFrameTrackingMode.html#iqm.iqm_client.models.MoveGateFrameTrackingMode" title="iqm.iqm_client.models.MoveGateFrameTrackingMode"><em>MoveGateFrameTrackingMode</em></a>) – </p></li>
+<li><p><strong>active_reset_cycles</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> | </em><em>None</em>) – </p></li>
 </ul>
 </dd>
 </dl>
@@ -475,6 +480,15 @@ and for circuits that do not contain MOVE gates.</p>
 <span class="sig-name descname"><span class="pre">move_gate_frame_tracking</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="iqm.iqm_client.models.MoveGateFrameTrackingMode.html#iqm.iqm_client.models.MoveGateFrameTrackingMode" title="iqm.iqm_client.models.MoveGateFrameTrackingMode"><span class="pre">MoveGateFrameTrackingMode</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'full'</span></em><a class="headerlink" href="#iqm.iqm_client.models.CircuitCompilationOptions.move_gate_frame_tracking" title="Link to this definition">#</a></dt>
 <dd><p>MOVE gate frame tracking mode for circuit compilation. This options is ignored on devices that do not support
 MOVE and for circuits that do not contain MOVE gates.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="iqm.iqm_client.models.CircuitCompilationOptions.active_reset_cycles">
+<span class="sig-name descname"><span class="pre">active_reset_cycles</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#iqm.iqm_client.models.CircuitCompilationOptions.active_reset_cycles" title="Link to this definition">#</a></dt>
+<dd><p>Number of active <code class="docutils literal notranslate"><span class="pre">reset</span></code> operations inserted at the beginning of each circuit for each active qubit.
+<code class="docutils literal notranslate"><span class="pre">None</span></code> means active reset is not used but instead reset is done by waiting (relaxation). Integer values smaller
+than 1 result in neither active nor reset by wait being used, in which case any reset operations must be explicitly
+added in the circuit.</p>
 </dd></dl>
 
 </dd></dl>
@@ -532,6 +546,7 @@ MOVE and for circuits that do not contain MOVE gates.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.CircuitCompilationOptions.heralding_mode"><code class="docutils literal notranslate"><span class="pre">CircuitCompilationOptions.heralding_mode</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.CircuitCompilationOptions.move_gate_validation"><code class="docutils literal notranslate"><span class="pre">CircuitCompilationOptions.move_gate_validation</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.CircuitCompilationOptions.move_gate_frame_tracking"><code class="docutils literal notranslate"><span class="pre">CircuitCompilationOptions.move_gate_frame_tracking</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.CircuitCompilationOptions.active_reset_cycles"><code class="docutils literal notranslate"><span class="pre">CircuitCompilationOptions.active_reset_cycles</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -567,7 +582,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2024-11-15.
+  Last updated on 2024-11-18.
   <br/>
 </p>
   </div>
