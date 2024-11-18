@@ -241,7 +241,7 @@ class IQMClient:
         self._validate_circuit_instructions(
             architecture, circuits, qubit_mapping, validate_moves=options.move_gate_validation
         )
-
+        print(options)
         return RunRequest(
             qubit_mapping=serialized_qubit_mapping,
             circuits=circuits,

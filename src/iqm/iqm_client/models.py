@@ -656,7 +656,7 @@ class CircuitCompilationOptions:
     move_gate_frame_tracking: MoveGateFrameTrackingMode = MoveGateFrameTrackingMode.FULL
     """MOVE gate frame tracking mode for circuit compilation. This options is ignored on devices that do not support
         MOVE and for circuits that do not contain MOVE gates."""
-    active_reset_cycles: Optional[int] = Field(None)
+    active_reset_cycles: Optional[int] = None
     """Number of active ``reset`` operations inserted at the beginning of each circuit for each active qubit. 
     ``None`` means active reset is not used but instead reset is done by waiting (relaxation). Integer values smaller
     than 1 result in neither active nor reset by wait being used, in which case any reset operations must be explicitly
