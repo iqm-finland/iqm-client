@@ -2,6 +2,10 @@
 Changelog
 =========
 
+Version 20.4
+============
+* active_reset_cycles added to ``CircuitCompilationOptions``
+
 Version 20.3
 ============
 
