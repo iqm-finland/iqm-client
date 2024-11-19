@@ -938,7 +938,7 @@ class IQMClient:
         if versions_response.status_code == 200:
             try:
                 libraries = versions_response.json()
-                compatible_versions = libraries.get('iqm_client', libraries.get('iqm-client'))
+                compatible_versions = libraries.get('iqm-client', libraries.get('iqm_client'))
                 min_version = parse(compatible_versions['min'])
                 max_version = parse(compatible_versions['max'])
                 client_version = parse(version('iqm-client'))
@@ -949,6 +949,6 @@ class IQMClient:
                         f'of IQM Client that satisfies {min_version} <= iqm-client < {max_version}.'
                     )
             except Exception:  # pylint: disable=broad-except
-                return f'Could not verify IQM client library compatibility. You might encounter issues.'
+                return 'Could not verify IQM client library compatibility. You might encounter issues.'
 
         return None
