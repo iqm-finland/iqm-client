@@ -936,14 +936,19 @@ class IQMClient:
             timeout=REQUESTS_TIMEOUT,
         )
         if versions_response.status_code == 200:
-            compatible_versions = versions_response.json()['iqm-client']
-            min_version = parse(compatible_versions['min'])
-            max_version = parse(compatible_versions['max'])
-            client_version = parse(version('iqm-client'))
-            if client_version < min_version or client_version >= max_version:
-                return (
-                    f'Your IQM Client version {client_version} was built for a different version of IQM Server. '
-                    f'You might encounter issues. For the best experience, consider using a version '
-                    f'of IQM Client that satisfies {min_version} <= iqm-client < {max_version}.'
-                )
+            try:
+                libraries = versions_response.json()
+                compatible_versions = libraries.get('iqm-client', libraries.get('iqm_client'))
+                min_version = parse(compatible_versions['min'])
+                max_version = parse(compatible_versions['max'])
+                client_version = parse(version('iqm-client'))
+                if client_version < min_version or client_version >= max_version:
+                    return (
+                        f'Your IQM Client version {client_version} was built for a different version of IQM Server. '
+                        f'You might encounter issues. For the best experience, consider using a version '
+                        f'of IQM Client that satisfies {min_version} <= iqm-client < {max_version}.'
+                    )
+            except Exception:  # pylint: disable=broad-except
+                return 'Could not verify IQM client library compatibility. You might encounter issues.'
+
         return None

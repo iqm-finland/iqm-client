@@ -1041,8 +1041,14 @@ def test_get_dynamic_quantum_architecture_not_found(base_url, sample_client):
     unstub()
 
 
-@pytest.mark.parametrize('server_version_diff', [0, 1])
-def test_check_versions(base_url, server_version_diff, recwarn):
+@pytest.mark.parametrize(
+    'iqm_client_name,server_version_diff',
+    [
+        ('iqm_client', 0),
+        ('iqm-client', 1),
+    ],
+)
+def test_check_versions_success(base_url, iqm_client_name, server_version_diff, recwarn):
     """Test that a warning about version incompatibility is shown when initializing client with incompatible server."""
     client_version = parse(version('iqm-client'))
     min_version = f'{client_version.major + server_version_diff}.0'
@@ -1051,7 +1057,7 @@ def test_check_versions(base_url, server_version_diff, recwarn):
         MockJsonResponse(
             200,
             {
-                'iqm-client': {
+                iqm_client_name: {
                     'min': min_version,
                     'max': max_version,
                 }
@@ -1071,4 +1077,20 @@ def test_check_versions(base_url, server_version_diff, recwarn):
             ),
         ):
             IQMClient(base_url)
+    unstub()
+
+
+def test_check_versions_bad_response(base_url):
+    """Test that unexpected response from /client-libraries endpoint does not break the client."""
+    when(requests).get(f'{base_url}/info/client-libraries', headers=ANY, timeout=ANY).thenReturn(
+        MockJsonResponse(
+            200,
+            {'iqm_client': 'invalid-payload'},
+        )
+    )
+    with pytest.warns(
+        UserWarning,
+        match=re.escape('Could not verify IQM client library compatibility. You might encounter issues.'),
+    ):
+        IQMClient(base_url)
     unstub()

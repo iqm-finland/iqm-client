@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 20.5
+============
+
+* Fixed client version compatibility check. `#148 <https://github.com/iqm-finland/iqm-client/pull/148>`_
+
 Version 20.4
 ============
 * ``active_reset_cycles`` added to ``CircuitCompilationOptions`` (in 20.2 it was only added to ``RunRequest`` making it
