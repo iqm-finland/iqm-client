@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 20.6
+============
+
+* Fix typo of `QUALITY` in `src/iqm/iqm_client/api.py` `#149 <https://github.com/iqm-finland/iqm-client/pull/149>`_
+
 Version 20.5
 ============
 
