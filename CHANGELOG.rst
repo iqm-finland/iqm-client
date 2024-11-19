@@ -5,7 +5,7 @@ Changelog
 Version 20.5
 ============
 
-* Fixed client version compatibility check.
+* Fixed client version compatibility check. `#148 <https://github.com/iqm-finland/iqm-client/pull/148>`_
 
 Version 20.4
 ============
