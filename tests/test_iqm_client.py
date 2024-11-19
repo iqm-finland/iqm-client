@@ -1073,21 +1073,18 @@ def test_check_versions_success(base_url, server_version_diff, recwarn):
             IQMClient(base_url)
     unstub()
 
+
 def test_check_versions_bad_response(base_url):
     """Test that unexpected response from /client-libraries endpoint does not break the client."""
     when(requests).get(f'{base_url}/info/client-libraries', headers=ANY, timeout=ANY).thenReturn(
         MockJsonResponse(
             200,
-            {
-                'iqm_client': 'invalid-payload'
-            },
+            {'iqm_client': 'invalid-payload'},
         )
     )
     with pytest.warns(
-            UserWarning,
-            match=re.escape(
-                f'Could not verify IQM client library compatibility. You might encounter issues.'
-            ),
+        UserWarning,
+        match=re.escape(f'Could not verify IQM client library compatibility. You might encounter issues.'),
     ):
         IQMClient(base_url)
     unstub()

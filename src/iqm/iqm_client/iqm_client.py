@@ -948,9 +948,7 @@ class IQMClient:
                         f'You might encounter issues. For the best experience, consider using a version '
                         f'of IQM Client that satisfies {min_version} <= iqm-client < {max_version}.'
                     )
-            except Exception: # pylint: disable=broad-except
-                return (
-                    f'Could not verify IQM client library compatibility. You might encounter issues.'
-                )
+            except Exception:  # pylint: disable=broad-except
+                return f'Could not verify IQM client library compatibility. You might encounter issues.'
 
         return None
