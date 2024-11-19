@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 20.5
+============
+
+* Fixed client version compatibility check.
+
 Version 20.4
 ============
 * ``active_reset_cycles`` added to ``CircuitCompilationOptions`` (in 20.2 it was only added to ``RunRequest`` making it
