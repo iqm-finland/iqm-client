@@ -39,8 +39,8 @@ class APIEndpoint(Enum):
     # Calibration and Calibration Service endpoints
     CALIBRATION_SERVICE_CONFIGURATION = auto()
     QUANTUM_ARCHITECTURE = auto()
-    QUALITYT_METRICS_LATEST = auto()
-    QUALITYT_METRICS_MONITORING = auto()
+    QUALITY_METRICS_LATEST = auto()
+    QUALITY_METRICS_MONITORING = auto()
     CALIBRATED_GATES = auto()
     START_CALIBRATION_JOB = auto()
     ABORT_CALIBRATION_JOB = auto()
@@ -85,7 +85,7 @@ class APIConfig:
         if self.variant == APIVariant.V1:
             return {
                 APIEndpoint.CONFIGURATION: "configuration",
-                APIEndpoint.QUALITYT_METRICS_LATEST: "calibration/metrics/latest",
+                APIEndpoint.QUALITY_METRICS_LATEST: "calibration/metrics/latest",
                 APIEndpoint.SUBMIT_JOB: "jobs",
                 APIEndpoint.GET_JOB_RESULT: "jobs/%s",
                 APIEndpoint.GET_JOB_STATUS: "jobs/%s/status",
@@ -108,7 +108,7 @@ class APIConfig:
             return {
                 APIEndpoint.GET_JOB_REQUEST_PARAMETERS: "station/circuits/%s/request_parameters",
                 APIEndpoint.CONFIGURATION: "cocos/configuration",
-                APIEndpoint.QUALITYT_METRICS_LATEST: "cocos/calibration/metrics/latest",
+                APIEndpoint.QUALITY_METRICS_LATEST: "cocos/calibration/metrics/latest",
                 APIEndpoint.SUBMIT_JOB: "station/circuits",
                 APIEndpoint.GET_JOB_RESULT: "station/circuits/%s/measurements",
                 APIEndpoint.GET_JOB_STATUS: "station/circuits/%s/status",
