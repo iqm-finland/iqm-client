@@ -1090,7 +1090,7 @@ def test_check_versions_bad_response(base_url):
     )
     with pytest.warns(
         UserWarning,
-        match=re.escape(f'Could not verify IQM client library compatibility. You might encounter issues.'),
+        match=re.escape('Could not verify IQM client library compatibility. You might encounter issues.'),
     ):
         IQMClient(base_url)
     unstub()
