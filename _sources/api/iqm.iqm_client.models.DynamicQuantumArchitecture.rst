@@ -14,9 +14,7 @@ iqm.iqm\_client.models.DynamicQuantumArchitecture
    .. autosummary::
    
       ~DynamicQuantumArchitecture.components
-      ~DynamicQuantumArchitecture.model_computed_fields
       ~DynamicQuantumArchitecture.model_config
-      ~DynamicQuantumArchitecture.model_fields
       ~DynamicQuantumArchitecture.calibration_set_id
       ~DynamicQuantumArchitecture.qubits
       ~DynamicQuantumArchitecture.computational_resonators

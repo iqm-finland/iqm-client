@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>iqm.iqm_client.models.Instruction &#8212; IQM client 20.5 documentation</title>
+    <title>iqm.iqm_client.models.Instruction &#8212; IQM client 20.6 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="../_static/documentation_options.js?v=a6bc7b20"></script>
+    <script src="../_static/documentation_options.js?v=b1c8fb46"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
@@ -54,8 +54,8 @@
     <link rel="prev" title="iqm.iqm_client.models.HeraldingMode" href="iqm.iqm_client.models.HeraldingMode.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="20.5" />
-    <meta name="docbuild:last-update" content="2024-11-19"/>
+  <meta name="docsearch:version" content="20.6" />
+    <meta name="docbuild:last-update" content="2024-11-21"/>
   </head>
   
   
@@ -134,8 +134,8 @@
       
     
     
-    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 20.5 documentation - Home"/>
-    <img src="../_static/logo.png" class="logo__image only-dark pst-js-only" alt="IQM client 20.5 documentation - Home"/>
+    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 20.6 documentation - Home"/>
+    <img src="../_static/logo.png" class="logo__image only-dark pst-js-only" alt="IQM client 20.6 documentation - Home"/>
   
   
 </a></div>
@@ -381,9 +381,7 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.Instruction.implementation_validator"><code class="docutils literal notranslate"><span class="pre">Instruction.implementation_validator()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.Instruction.qubits_validator"><code class="docutils literal notranslate"><span class="pre">Instruction.qubits_validator()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.Instruction.args_validator"><code class="docutils literal notranslate"><span class="pre">Instruction.args_validator()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.Instruction.model_computed_fields"><code class="docutils literal notranslate"><span class="pre">Instruction.model_computed_fields</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.Instruction.model_config"><code class="docutils literal notranslate"><span class="pre">Instruction.model_config</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.Instruction.model_fields"><code class="docutils literal notranslate"><span class="pre">Instruction.model_fields</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -563,14 +561,8 @@ therefore having them is allowed.</p>
 <p class="rubric">Attributes</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.models.Instruction.model_computed_fields" title="iqm.iqm_client.models.Instruction.model_computed_fields"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_computed_fields</span></code></a></p></td>
-<td><p>A dictionary of computed field names and their corresponding <cite>ComputedFieldInfo</cite> objects.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.models.Instruction.model_config" title="iqm.iqm_client.models.Instruction.model_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_config</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.models.Instruction.model_config" title="iqm.iqm_client.models.Instruction.model_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_config</span></code></a></p></td>
 <td><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.models.Instruction.model_fields" title="iqm.iqm_client.models.Instruction.model_fields"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_fields</span></code></a></p></td>
-<td><p>Metadata about the fields defined on the model, mapping of field names to [<cite>FieldInfo</cite>][pydantic.fields.FieldInfo] objects.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.models.Instruction.name" title="iqm.iqm_client.models.Instruction.name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></a></p></td>
 <td><p>name of the quantum operation</p></td>
@@ -664,23 +656,9 @@ therefore having them is allowed.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="iqm.iqm_client.models.Instruction.model_computed_fields">
-<span class="sig-name descname"><span class="pre">model_computed_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ComputedFieldInfo</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#iqm.iqm_client.models.Instruction.model_computed_fields" title="Link to this definition">#</a></dt>
-<dd><p>A dictionary of computed field names and their corresponding <cite>ComputedFieldInfo</cite> objects.</p>
-</dd></dl>
-
-<dl class="py attribute">
 <dt class="sig sig-object py" id="iqm.iqm_client.models.Instruction.model_config">
 <span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#iqm.iqm_client.models.Instruction.model_config" title="Link to this definition">#</a></dt>
 <dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="iqm.iqm_client.models.Instruction.model_fields">
-<span class="sig-name descname"><span class="pre">model_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">FieldInfo</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'args':</span> <span class="pre">FieldInfo(annotation=dict[str,</span> <span class="pre">Any],</span> <span class="pre">required=True,</span> <span class="pre">examples=[{'key':</span> <span class="pre">'m'}]),</span> <span class="pre">'implementation':</span> <span class="pre">FieldInfo(annotation=Union[Annotated[str,</span> <span class="pre">Strict(strict=True)],</span> <span class="pre">NoneType],</span> <span class="pre">required=False,</span> <span class="pre">default=None),</span> <span class="pre">'name':</span> <span class="pre">FieldInfo(annotation=str,</span> <span class="pre">required=True,</span> <span class="pre">examples=['measure']),</span> <span class="pre">'qubits':</span> <span class="pre">FieldInfo(annotation=tuple[Annotated[str,</span> <span class="pre">Strict(strict=True)],</span> <span class="pre">...],</span> <span class="pre">required=True,</span> <span class="pre">examples=[('alice',)])}</span></em><a class="headerlink" href="#iqm.iqm_client.models.Instruction.model_fields" title="Link to this definition">#</a></dt>
-<dd><p>Metadata about the fields defined on the model,
-mapping of field names to [<cite>FieldInfo</cite>][pydantic.fields.FieldInfo] objects.</p>
-<p>This replaces <cite>Model.__fields__</cite> from Pydantic V1.</p>
 </dd></dl>
 
 </section>
@@ -753,9 +731,7 @@ mapping of field names to [<cite>FieldInfo</cite>][pydantic.fields.FieldInfo] ob
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.Instruction.implementation_validator"><code class="docutils literal notranslate"><span class="pre">Instruction.implementation_validator()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.Instruction.qubits_validator"><code class="docutils literal notranslate"><span class="pre">Instruction.qubits_validator()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.Instruction.args_validator"><code class="docutils literal notranslate"><span class="pre">Instruction.args_validator()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.Instruction.model_computed_fields"><code class="docutils literal notranslate"><span class="pre">Instruction.model_computed_fields</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.Instruction.model_config"><code class="docutils literal notranslate"><span class="pre">Instruction.model_config</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.Instruction.model_fields"><code class="docutils literal notranslate"><span class="pre">Instruction.model_fields</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -791,7 +767,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2024-11-19.
+  Last updated on 2024-11-21.
   <br/>
 </p>
   </div>

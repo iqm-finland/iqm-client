@@ -13,9 +13,7 @@ iqm.iqm\_client.models.Circuit
 
    .. autosummary::
    
-      ~Circuit.model_computed_fields
       ~Circuit.model_config
-      ~Circuit.model_fields
       ~Circuit.name
       ~Circuit.instructions
       ~Circuit.metadata

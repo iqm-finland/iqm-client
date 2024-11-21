@@ -13,9 +13,7 @@ iqm.iqm\_client.models.QuantumArchitectureSpecification
 
    .. autosummary::
    
-      ~QuantumArchitectureSpecification.model_computed_fields
       ~QuantumArchitectureSpecification.model_config
-      ~QuantumArchitectureSpecification.model_fields
       ~QuantumArchitectureSpecification.name
       ~QuantumArchitectureSpecification.operations
       ~QuantumArchitectureSpecification.qubits

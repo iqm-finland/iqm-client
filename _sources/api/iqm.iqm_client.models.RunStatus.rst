@@ -13,9 +13,7 @@ iqm.iqm\_client.models.RunStatus
 
    .. autosummary::
    
-      ~RunStatus.model_computed_fields
       ~RunStatus.model_config
-      ~RunStatus.model_fields
       ~RunStatus.status
       ~RunStatus.message
       ~RunStatus.warnings

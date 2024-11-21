@@ -13,9 +13,7 @@ iqm.iqm\_client.models.JobParameters
 
    .. autosummary::
    
-      ~JobParameters.model_computed_fields
       ~JobParameters.model_config
-      ~JobParameters.model_fields
       ~JobParameters.shots
       ~JobParameters.max_circuit_duration_over_t2
       ~JobParameters.heralding_mode

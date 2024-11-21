@@ -1,5 +1,5 @@
 <map id="inheritance587d2887de" name="inheritance587d2887de">
-<area shape="rect" id="node1" title="Usage docs: https://docs.pydantic.dev/2.9/concepts/models/" alt="" coords="55,499,149,524"/>
+<area shape="rect" id="node1" title="Usage docs: https://docs.pydantic.dev/2.10/concepts/models/" alt="" coords="55,499,149,524"/>
 <area shape="rect" id="node2" href="iqm.iqm_client.models.Circuit.html#iqm.iqm_client.models.Circuit" target="_top" title="Quantum circuit to be executed." alt="" coords="333,203,405,228"/>
 <area shape="rect" id="node4" href="iqm.iqm_client.models.DynamicQuantumArchitecture.html#iqm.iqm_client.models.DynamicQuantumArchitecture" target="_top" title="Dynamic quantum architecture as returned by server." alt="" coords="259,252,478,277"/>
 <area shape="rect" id="node6" href="iqm.iqm_client.models.GateImplementationInfo.html#iqm.iqm_client.models.GateImplementationInfo" target="_top" title="Information about an implementation of a quantum gate/operation." alt="" coords="277,301,460,327"/>
