@@ -1090,7 +1090,20 @@ def test_check_versions_bad_response(base_url):
     )
     with pytest.warns(
         UserWarning,
-        match=re.escape('Could not verify IQM client library compatibility. You might encounter issues.'),
+        match=re.escape('Could not verify IQM Client compatibility with the server. You might encounter issues.'),
+    ):
+        IQMClient(base_url)
+    unstub()
+
+
+def test_check_versions_request_exception(base_url):
+    """Test that exception raised by request to /client-libraries endpoint does not break the client."""
+    when(requests).get(f'{base_url}/info/client-libraries', headers=ANY, timeout=ANY).thenRaise(
+        requests.exceptions.RequestException
+    )
+    with pytest.warns(
+        UserWarning,
+        match=re.escape('Could not verify IQM Client compatibility with the server. You might encounter issues.'),
     ):
         IQMClient(base_url)
     unstub()
