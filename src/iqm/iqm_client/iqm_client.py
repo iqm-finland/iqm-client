@@ -927,16 +927,16 @@ class IQMClient:
         """Checks the client version against compatible client versions reported by server.
 
         Returns:
-            A message about the versions being incompatible if they are,
-            None if they are compatible or if the version information could not be obtained.
+            A message about client incompatibility with the server if the versions are incompatible or if the
+            compatibility could not be confirmed, None if they are compatible.
         """
-        versions_response = requests.get(
-            self._api.url(APIEndpoint.CLIENT_LIBRARIES),
-            headers=self._default_headers(),
-            timeout=REQUESTS_TIMEOUT,
-        )
-        if versions_response.status_code == 200:
-            try:
+        try:
+            versions_response = requests.get(
+                self._api.url(APIEndpoint.CLIENT_LIBRARIES),
+                headers=self._default_headers(),
+                timeout=REQUESTS_TIMEOUT,
+            )
+            if versions_response.status_code == 200:
                 libraries = versions_response.json()
                 compatible_versions = libraries.get('iqm-client', libraries.get('iqm_client'))
                 min_version = parse(compatible_versions['min'])
@@ -948,7 +948,8 @@ class IQMClient:
                         f'You might encounter issues. For the best experience, consider using a version '
                         f'of IQM Client that satisfies {min_version} <= iqm-client < {max_version}.'
                     )
-            except Exception:  # pylint: disable=broad-except
-                return 'Could not verify IQM client library compatibility. You might encounter issues.'
-
-        return None
+                return None
+        except Exception:  # pylint: disable=broad-except
+            # we don't want the version check to prevent usage of IQMClient in any situation
+            pass
+        return 'Could not verify IQM Client compatibility with the server. You might encounter issues.'
