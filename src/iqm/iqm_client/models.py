@@ -19,7 +19,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from functools import cached_property
 import re
-from typing import Any, Final, Optional, TypeAlias, Union
+from typing import Any, Final, Optional, Union
 from uuid import UUID
 
 from pydantic import BaseModel, Field, StrictStr, field_validator
@@ -647,7 +647,7 @@ class DDMode(str, Enum):
     """Apply dynamical decoupling."""
 
 
-PRXSequence: TypeAlias = list[tuple[float, float]]
+PRXSequence = list[tuple[float, float]]
 """A sequence of PRX gates. A generic PRX gate is defined by rotation angle and phase angle, Theta and Phi,
 respectively."""
 
