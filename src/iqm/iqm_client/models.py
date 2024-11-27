@@ -16,7 +16,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from enum import Enum, StrEnum
+from enum import Enum
 from functools import cached_property
 import re
 from typing import Any, Final, Optional, TypeAlias, Union
@@ -638,7 +638,7 @@ class MoveGateFrameTrackingMode(str, Enum):
     """Do not perform any MOVE gate frame tracking. The user is expected to do these manually."""
 
 
-class DDMode(StrEnum):
+class DDMode(str, Enum):
     """Dynamical Decoupling (DD) mode for circuit execution."""
 
     DISABLED: Final[str] = 'disabled'
