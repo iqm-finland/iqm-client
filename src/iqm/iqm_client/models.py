@@ -679,7 +679,7 @@ class DDStrategy:
 
     Each sequence is defined by a tuple of ``(ratio, gate pattern, align)``:
 
-        * ratio: Minimal duration for the sequence (in PRX gate durations).
+        * ratio: Minimal duration for the sequence (in PRX gate durations) as integer.
 
         * gate pattern: Gate pattern can be defined in two ways. It can be a string containing "X" and "Y" characters,
           encoding a PRX gate sequence. For example, "YXYX" corresponds to the
