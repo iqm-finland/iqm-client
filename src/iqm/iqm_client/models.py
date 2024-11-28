@@ -665,7 +665,7 @@ class DDStrategy:
     merge_contiguous_waits: bool = True
     """Merge contiguous ``Wait`` instructions into one if they are separated only by ``Block`` instructions."""
 
-    target_qubits: frozenset[str] | None = None
+    target_qubits: Optional[frozenset[str]] = None
     """Qubits on which dynamical decoupling should be applied. If ``None``, all qubits are targeted."""
 
     skip_leading_wait: bool = True
@@ -674,7 +674,7 @@ class DDStrategy:
     skip_trailing_wait: bool = True
     """Skip processing trailing ``Wait`` instructions."""
 
-    gate_sequences: list[tuple[int, str | PRXSequence, str]] = field(default_factory=list)
+    gate_sequences: list[tuple[int, Union[str, PRXSequence], str]] = field(default_factory=list)
     """Available decoupling gate sequences to chose from in this strategy.
 
     Each sequence is defined by a tuple of ``(ratio, gate pattern, align)``:
@@ -733,7 +733,7 @@ class CircuitCompilationOptions:
     added in the circuit."""
     dd_mode: DDMode = DDMode.DISABLED
     """Control whether dynamical decoupling should be enabled or disabled during the execution."""
-    dd_strategy: DDStrategy | None = None
+    dd_strategy: Optional[DDStrategy] = None
     """A particular dynamical decoupling strategy to be used during the execution."""
 
     def __post_init__(self):
