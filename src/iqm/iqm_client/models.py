@@ -782,6 +782,10 @@ class RunRequest(BaseModel):
     ``None`` means active reset is not used but instead reset is done by waiting (relaxation). Integer values smaller
     than 1 result in neither active nor reset by wait being used, in which case any reset operations must be explicitly
     added in the circuit."""
+    dd_mode: DDMode = Field(DDMode.DISABLED)
+    """Control whether dynamical decoupling should be enabled or disabled during the execution."""
+    dd_strategy: Optional[DDStrategy] = Field(None)
+    """A particular dynamical decoupling strategy to be used during the execution."""
 
 
 CircuitMeasurementResults = dict[str, list[list[int]]]
@@ -801,6 +805,8 @@ class JobParameters(BaseModel):
     heralding_mode: HeraldingMode = Field(HeraldingMode.NONE)
     move_validation_mode: MoveGateValidationMode = Field(MoveGateValidationMode.STRICT)
     move_gate_frame_tracking_mode: MoveGateFrameTrackingMode = Field(MoveGateFrameTrackingMode.FULL)
+    dd_mode: DDMode = Field(DDMode.DISABLED)
+    dd_strategy: Optional[DDStrategy] = Field(None)
 
 
 class Metadata(BaseModel):
@@ -845,6 +851,24 @@ class Metadata(BaseModel):
         if self.request is not None:
             return self.request.heralding_mode
         raise ValueError('No heralding mode information available in the metadata')
+
+    @property
+    def dd_mode(self) -> DDMode:
+        """Return the dynamical decoupling mode requested with the job."""
+        if self.parameters is not None:
+            return self.parameters.dd_mode
+        if self.request is not None:
+            return self.request.dd_mode
+        raise ValueError('No dynamical decoupling mode information available in the metadata')
+
+    @property
+    def dd_strategy(self) -> Optional[DDStrategy]:
+        """Return the dynamical decoupling strategy used with the job."""
+        if self.parameters is not None:
+            return self.parameters.dd_strategy
+        if self.request is not None:
+            return self.request.dd_strategy
+        raise ValueError('No dynamical decoupling strategy information available in the metadata')
 
 
 class Status(str, Enum):

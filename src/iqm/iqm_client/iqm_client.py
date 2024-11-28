@@ -252,6 +252,8 @@ class IQMClient:
             move_validation_mode=options.move_gate_validation,
             move_gate_frame_tracking_mode=options.move_gate_frame_tracking,
             active_reset_cycles=options.active_reset_cycles,
+            dd_mode=options.dd_mode,
+            dd_strategy=options.dd_strategy,
         )
 
     def submit_run_request(self, run_request: RunRequest) -> UUID:
