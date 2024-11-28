@@ -4,7 +4,7 @@ Changelog
 
 Version 20.8
 ============
-* Add ``dd_mode`` and ``dd_strategy`` to ``CircuitCompilationOptions`` `#152 <https://github.com/iqm-finland/iqm-client/pull/152>`_
+* Add ``dd_mode`` and ``dd_strategy`` to ``CircuitCompilationOptions`` and ``RunRequest`` `#152 <https://github.com/iqm-finland/iqm-client/pull/152>`_
 
 Version 20.7
 ============
