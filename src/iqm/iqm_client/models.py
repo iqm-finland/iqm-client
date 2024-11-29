@@ -638,6 +638,76 @@ class MoveGateFrameTrackingMode(str, Enum):
     """Do not perform any MOVE gate frame tracking. The user is expected to do these manually."""
 
 
+class DDMode(str, Enum):
+    """Dynamical Decoupling (DD) mode for circuit execution."""
+
+    DISABLED: Final[str] = 'disabled'
+    """Do not apply dynamical decoupling."""
+    ENABLED: Final[str] = 'enabled'
+    """Apply dynamical decoupling."""
+
+
+PRXSequence = list[tuple[float, float]]
+"""A sequence of PRX gates. A generic PRX gate is defined by rotation angle and phase angle, Theta and Phi,
+respectively."""
+
+
+@dataclass
+class DDStrategy:
+    """Describes a particular dynamical decoupling strategy.
+
+    The current standard DD stategy can be found in :attr:`.STANDARD_DD_STRATEGY`,
+    but users can use this class to provide their own dynamical decoupling strategies.
+
+    See :cite:`Ezzell_2022` for information on DD sequences.
+    """
+
+    merge_contiguous_waits: bool = True
+    """Merge contiguous ``Wait`` instructions into one if they are separated only by ``Block`` instructions."""
+
+    target_qubits: Optional[frozenset[str]] = None
+    """Qubits on which dynamical decoupling should be applied. If ``None``, all qubits are targeted."""
+
+    skip_leading_wait: bool = True
+    """Skip processing leading ``Wait`` instructions."""
+
+    skip_trailing_wait: bool = True
+    """Skip processing trailing ``Wait`` instructions."""
+
+    gate_sequences: list[tuple[int, Union[str, PRXSequence], str]] = field(default_factory=list)
+    """Available decoupling gate sequences to chose from in this strategy.
+
+    Each sequence is defined by a tuple of ``(ratio, gate pattern, align)``:
+
+        * ratio: Minimal duration for the sequence (in PRX gate durations) as integer.
+
+        * gate pattern: Gate pattern can be defined in two ways. It can be a string containing "X" and "Y" characters,
+          encoding a PRX gate sequence. For example, "YXYX" corresponds to the
+          XY4 sequence, "XYXYYXYX" to the EDD sequence, etc. If more flexibility is needed, a gate pattern can be
+          defined as a sequence of PRX gate argument tuples (that contain a rotation angle and a phase angle). For
+          example, sequence "YX" could be written as ``[(math.pi, math.pi / 2), (math.pi, 0)]``.
+
+        * align: Controls the alignment of the sequence within the time window it is inserted in. Supported values:
+
+          - "asap": Corresponds to a ASAP-aligned sequence with no waiting time before the first pulse.
+          - "center": Corresponds to a symmetric sequence.
+          - "alap": Corresponds to a ALAP-aligned sequence.
+
+    The Dynamical Decoupling algorithm uses the best fitting gate sequence by first sorting them
+    by ``ratio`` in descending order. Then the longest fitting pattern is determined by comparing ``ratio``
+    with the duration of the time window divided by the PRX gate duration.
+    """
+
+
+STANDARD_DD_STRATEGY = DDStrategy(gate_sequences=[(9, 'XYXYYXYX', 'asap'), (5, 'YXYX', 'asap'), (2, 'XX', 'center')])
+"""The default DD strategy uses the following gate sequences:
+
+* Simple symmetric CPMG sequence for short idling times.
+* Asymmetric (left-aligned) universal XY4 sequence for medium idling times.
+* Asymmetric (left-aligned) universal EDD sequence for longer idling times.
+"""
+
+
 @dataclass(frozen=True)
 class CircuitCompilationOptions:
     """Various discrete options for quantum circuit compilation to pulse schedule."""
@@ -661,6 +731,10 @@ class CircuitCompilationOptions:
     ``None`` means active reset is not used but instead reset is done by waiting (relaxation). Integer values smaller
     than 1 result in neither active nor reset by wait being used, in which case any reset operations must be explicitly
     added in the circuit."""
+    dd_mode: DDMode = DDMode.DISABLED
+    """Control whether dynamical decoupling should be enabled or disabled during the execution."""
+    dd_strategy: Optional[DDStrategy] = None
+    """A particular dynamical decoupling strategy to be used during the execution."""
 
     def __post_init__(self):
         """Validate the options."""
@@ -708,6 +782,10 @@ class RunRequest(BaseModel):
     ``None`` means active reset is not used but instead reset is done by waiting (relaxation). Integer values smaller
     than 1 result in neither active nor reset by wait being used, in which case any reset operations must be explicitly
     added in the circuit."""
+    dd_mode: DDMode = Field(DDMode.DISABLED)
+    """Control whether dynamical decoupling should be enabled or disabled during the execution."""
+    dd_strategy: Optional[DDStrategy] = Field(None)
+    """A particular dynamical decoupling strategy to be used during the execution."""
 
 
 CircuitMeasurementResults = dict[str, list[list[int]]]
@@ -727,6 +805,8 @@ class JobParameters(BaseModel):
     heralding_mode: HeraldingMode = Field(HeraldingMode.NONE)
     move_validation_mode: MoveGateValidationMode = Field(MoveGateValidationMode.STRICT)
     move_gate_frame_tracking_mode: MoveGateFrameTrackingMode = Field(MoveGateFrameTrackingMode.FULL)
+    dd_mode: DDMode = Field(DDMode.DISABLED)
+    dd_strategy: Optional[DDStrategy] = Field(None)
 
 
 class Metadata(BaseModel):
@@ -771,6 +851,24 @@ class Metadata(BaseModel):
         if self.request is not None:
             return self.request.heralding_mode
         raise ValueError('No heralding mode information available in the metadata')
+
+    @property
+    def dd_mode(self) -> DDMode:
+        """Return the dynamical decoupling mode requested with the job."""
+        if self.parameters is not None:
+            return self.parameters.dd_mode
+        if self.request is not None:
+            return self.request.dd_mode
+        raise ValueError('No dynamical decoupling mode information available in the metadata')
+
+    @property
+    def dd_strategy(self) -> Optional[DDStrategy]:
+        """Return the dynamical decoupling strategy used with the job."""
+        if self.parameters is not None:
+            return self.parameters.dd_strategy
+        if self.request is not None:
+            return self.request.dd_strategy
+        raise ValueError('No dynamical decoupling strategy information available in the metadata')
 
 
 class Status(str, Enum):
