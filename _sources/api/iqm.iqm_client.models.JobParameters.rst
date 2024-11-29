@@ -19,6 +19,8 @@ iqm.iqm\_client.models.JobParameters
       ~JobParameters.heralding_mode
       ~JobParameters.move_validation_mode
       ~JobParameters.move_gate_frame_tracking_mode
+      ~JobParameters.dd_mode
+      ~JobParameters.dd_strategy
    
    
 

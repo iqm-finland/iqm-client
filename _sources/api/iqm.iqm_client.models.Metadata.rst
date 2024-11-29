@@ -14,6 +14,8 @@ iqm.iqm\_client.models.Metadata
    .. autosummary::
    
       ~Metadata.circuits
+      ~Metadata.dd_mode
+      ~Metadata.dd_strategy
       ~Metadata.heralding_mode
       ~Metadata.model_config
       ~Metadata.shots

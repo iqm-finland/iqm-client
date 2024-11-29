@@ -13,6 +13,8 @@ iqm.iqm\_client.models
       Locus
       CircuitBatch
       QubitMapping
+      PRXSequence
+      STANDARD_DD_STRATEGY
       CircuitMeasurementResults
       CircuitMeasurementResultsBatch
    
@@ -40,6 +42,8 @@ iqm.iqm\_client.models
    
       Circuit
       CircuitCompilationOptions
+      DDMode
+      DDStrategy
       DynamicQuantumArchitecture
       GateImplementationInfo
       GateInfo

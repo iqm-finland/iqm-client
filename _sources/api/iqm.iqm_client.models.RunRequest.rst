@@ -24,6 +24,8 @@ iqm.iqm\_client.models.RunRequest
       ~RunRequest.move_validation_mode
       ~RunRequest.move_gate_frame_tracking_mode
       ~RunRequest.active_reset_cycles
+      ~RunRequest.dd_mode
+      ~RunRequest.dd_strategy
    
    
 
