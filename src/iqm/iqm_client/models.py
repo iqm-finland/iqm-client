@@ -658,7 +658,7 @@ class DDStrategy(BaseModel):
     The current standard DD stategy can be found in :attr:`.STANDARD_DD_STRATEGY`,
     but users can use this class to provide their own dynamical decoupling strategies.
 
-    See :cite:`Ezzell_2022` for information on DD sequences.
+    See Ezzell et al., Phys. Rev. Appl. 20, 064027 (2022) for information on DD sequences.
     """
 
     merge_contiguous_waits: bool = Field(True)
