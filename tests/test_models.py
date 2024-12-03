@@ -75,7 +75,7 @@ def test_metadata(metadata_factory, shots, circuits_batch, heralding_mode, dd_mo
     assert metadata.circuits == circuits_batch
     assert metadata.heralding_mode == heralding_mode
     assert metadata.dd_mode == dd_mode
-    assert metadata.dd_strategy == None
+    assert metadata.dd_strategy is None
 
 
 def test_gate_info_loci():
