@@ -54,11 +54,17 @@ def dd_mode():
     [
         # V1 and RESONANCE_V1
         lambda shots, circuits_batch, heralding_mode, dd_mode: Metadata(
-            request=RunRequest(circuits=circuits_batch, shots=shots, heralding_mode=heralding_mode, dd_mode=dd_mode,)
+            request=RunRequest(
+                circuits=circuits_batch,
+                shots=shots,
+                heralding_mode=heralding_mode,
+                dd_mode=dd_mode,
+            )
         ),
         # V2
         lambda shots, circuits_batch, heralding_mode, dd_mode: Metadata(
-            parameters=JobParameters(shots=shots, heralding_mode=heralding_mode, dd_mode=dd_mode), circuits_batch=circuits_batch
+            parameters=JobParameters(shots=shots, heralding_mode=heralding_mode, dd_mode=dd_mode),
+            circuits_batch=circuits_batch,
         ),
     ],
 )
