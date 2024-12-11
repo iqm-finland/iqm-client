@@ -245,9 +245,8 @@ class Instruction(BaseModel):
         """Check if the name of instruction is set to one of the supported quantum operations."""
         name = value
         if name not in _SUPPORTED_OPERATIONS:
-            raise ValueError(
-                f'Unknown operation "{name}". ' f'Supported operations are \"{", ".join(_SUPPORTED_OPERATIONS)}\"'
-            )
+            message = ', '.join(_SUPPORTED_OPERATIONS)
+            raise ValueError(f'Unknown operation "{name}". ' f'Supported operations are \"{message}\"')
         return name
 
     @field_validator('implementation')
@@ -294,9 +293,10 @@ class Instruction(BaseModel):
                 f'but {tuple(submitted_arg_names)} were given'
             )
         if not submitted_arg_names <= allowed_arg_names:
+            message = tuple(allowed_arg_names) if allowed_arg_names else 'no'
             raise ValueError(
                 f'The operation "{name}" allows '
-                f'{tuple(allowed_arg_names) if allowed_arg_names else "no"} argument(s), '
+                f'{message} argument(s), '
                 f'but {tuple(submitted_arg_names)} were given'
             )
 

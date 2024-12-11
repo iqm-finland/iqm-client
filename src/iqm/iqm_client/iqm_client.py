@@ -115,9 +115,10 @@ class IQMClient:
             username,
             password,
         )
+        version_string = 'iqm-client'
         self._signature = f'{platform.platform(terse=True)}'
         self._signature += f', python {platform.python_version()}'
-        self._signature += f', iqm-client {version("iqm-client")}'
+        self._signature += f', iqm-client {version(version_string)}'
         if client_signature:
             self._signature += f', {client_signature}'
         self._architecture: QuantumArchitectureSpecification | None = None
@@ -648,15 +649,17 @@ class IQMClient:
                 'metadata': {
                     '`': calibration_set_id,
                     'circuits_batch': circuits_batch,
-                    'parameters': None
-                    if result.status_code == 404
-                    else {
-                        'shots': request_parameters['shots'],
-                        'max_circuit_duration_over_t2': request_parameters['max_circuit_duration_over_t2'],
-                        'heralding_mode': request_parameters['heralding_mode'],
-                        'move_validation_mode': request_parameters['move_validation_mode'],
-                        'move_gate_frame_tracking_mode': request_parameters['move_gate_frame_tracking_mode'],
-                    },
+                    'parameters': (
+                        None
+                        if result.status_code == 404
+                        else {
+                            'shots': request_parameters['shots'],
+                            'max_circuit_duration_over_t2': request_parameters['max_circuit_duration_over_t2'],
+                            'heralding_mode': request_parameters['heralding_mode'],
+                            'move_validation_mode': request_parameters['move_validation_mode'],
+                            'move_gate_frame_tracking_mode': request_parameters['move_gate_frame_tracking_mode'],
+                        }
+                    ),
                     'timestamps': {datapoint['stage']: datapoint['timestamp'] for datapoint in timeline},
                 },
             }

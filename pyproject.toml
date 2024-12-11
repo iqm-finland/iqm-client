@@ -16,7 +16,7 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: Apache Software License",
 ]
-requires-python = ">=3.9, <3.12"
+requires-python = ">=3.9, <3.13"
 dependencies = [
     "numpy",
     "packaging",
@@ -63,7 +63,7 @@ version_scheme = "no-guess-dev"
 [tool.black]
 line-length = 120
 skip-string-normalization = true
-target-version = ["py311"]
+target-version = ["py312"]
 extend-exclude = "_pb2.py$"
 
 
