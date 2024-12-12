@@ -2,6 +2,12 @@
 Changelog
 =========
 
+Version 20.9
+============
+
+* Add Python 3.12 support
+* Support for Python 3.9 will be dropped in a later major release.
+
 Version 20.8
 ============
 
