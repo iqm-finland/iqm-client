@@ -246,7 +246,7 @@ class Instruction(BaseModel):
         name = value
         if name not in _SUPPORTED_OPERATIONS:
             message = ', '.join(_SUPPORTED_OPERATIONS)
-            raise ValueError(f'Unknown operation "{name}". ' f'Supported operations are "{message}"')
+            raise ValueError(f'Unknown operation "{name}". Supported operations are "{message}"')
         return name
 
     @field_validator('implementation')
