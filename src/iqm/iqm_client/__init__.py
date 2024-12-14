@@ -14,6 +14,8 @@
 """Client-side library for connecting to and executing quantum circuits on IQM quantum computers.
 """
 from importlib.metadata import PackageNotFoundError, version
+import sys
+import warnings
 
 from iqm.iqm_client.api import *
 from iqm.iqm_client.authentication import *
@@ -29,3 +31,6 @@ except PackageNotFoundError:
     __version__ = "unknown"
 finally:
     del version, PackageNotFoundError
+
+if sys.version_info < (3, 10):
+    warnings.warn(DeprecationWarning("Python 3.9 will no longer be supported in a later release of IQM client."))

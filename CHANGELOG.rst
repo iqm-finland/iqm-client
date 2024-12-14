@@ -2,6 +2,12 @@
 Changelog
 =========
 
+Version 20.9
+============
+
+* Added Python 3.12 support `#154 <https://github.com/iqm-finland/iqm-client/pull/154>`_
+* Python 3.9 support is deprecated and will be removed in the future
+
 Version 20.8
 ============
 
