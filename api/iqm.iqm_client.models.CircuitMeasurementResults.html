@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>iqm.iqm_client.models.CircuitMeasurementResults &#8212; IQM client 20.8 documentation</title>
+    <title>iqm.iqm_client.models.CircuitMeasurementResults &#8212; IQM client 20.9 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="../_static/documentation_options.js?v=4092f8a5"></script>
+    <script src="../_static/documentation_options.js?v=fb6e7ab8"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
@@ -52,8 +52,8 @@
     <link rel="prev" title="iqm.iqm_client.models.STANDARD_DD_STRATEGY" href="iqm.iqm_client.models.STANDARD_DD_STRATEGY.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="20.8" />
-    <meta name="docbuild:last-update" content="2024-11-29"/>
+  <meta name="docsearch:version" content="20.9" />
+    <meta name="docbuild:last-update" content="2024-12-14"/>
   </head>
   
   
@@ -132,8 +132,8 @@
       
     
     
-    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 20.8 documentation - Home"/>
-    <img src="../_static/logo.png" class="logo__image only-dark pst-js-only" alt="IQM client 20.8 documentation - Home"/>
+    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 20.9 documentation - Home"/>
+    <img src="../_static/logo.png" class="logo__image only-dark pst-js-only" alt="IQM client 20.9 documentation - Home"/>
   
   
 </a></div>
@@ -388,54 +388,13 @@
                   
   <section id="iqm-iqm-client-models-circuitmeasurementresults">
 <h1>iqm.iqm_client.models.CircuitMeasurementResults<a class="headerlink" href="#iqm-iqm-client-models-circuitmeasurementresults" title="Link to this heading">#</a></h1>
-<dl class="py attribute">
+<dl class="py data">
 <dt class="sig sig-object py" id="iqm.iqm_client.models.CircuitMeasurementResults">
 <span class="sig-prename descclassname"><span class="pre">iqm.iqm_client.models.</span></span><span class="sig-name descname"><span class="pre">CircuitMeasurementResults</span></span><a class="headerlink" href="#iqm.iqm_client.models.CircuitMeasurementResults" title="Link to this definition">#</a></dt>
 <dd><p>Measurement results from a single circuit. For each measurement operation in the circuit,
 maps the measurement key to the corresponding results. The outer list elements correspond to shots,
 and the inner list elements to the qubits measured in the measurement operation.</p>
-<p class="rubric">Methods</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code>(*args, **kwargs)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear</span></code>()</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code>()</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fromkeys</span></code>([value])</p></td>
-<td><p>Create a new dictionary with keys from iterable and values set to value.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get</span></code>(key[, default])</p></td>
-<td><p>Return the value for key if key is in the dictionary, else default.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">items</span></code>()</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">keys</span></code>()</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">pop</span></code>(k[,d])</p></td>
-<td><p>If key is not found, default is returned if given, otherwise KeyError is raised</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">popitem</span></code>()</p></td>
-<td><p>Remove and return a (key, value) pair as a 2-tuple.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">setdefault</span></code>(key[, default])</p></td>
-<td><p>Insert key with a value of default if key is not in the dictionary.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code>([E, ]**F)</p></td>
-<td><p>If E is present and has a .keys() method, then does:  for k in E: D[k] = E[k] If E is present and lacks a .keys() method, then does:  for k, v in E: D[k] = v In either case, this is followed by: for k in F:  D[k] = F[k]</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">values</span></code>()</p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
-</div>
+<p>alias of <a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3.12/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]]]</p>
 </dd></dl>
 
 </section>
@@ -520,7 +479,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2024-11-29.
+  Last updated on 2024-12-14.
   <br/>
 </p>
   </div>

@@ -21,4 +21,9 @@ iqm.iqm\_client.api.APIVariant
 
    
    
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+   
    

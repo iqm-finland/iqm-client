@@ -26,5 +26,11 @@ iqm.iqm\_client.models.DDMode
    .. autosummary::
    
       ~DDMode._generate_next_value_
+      ~DDMode._new_member_
+      ~DDMode._value_repr_
+      ~DDMode.__format__
+      ~DDMode.__new__
+      ~DDMode.__repr__
+      ~DDMode.__str__
    
    

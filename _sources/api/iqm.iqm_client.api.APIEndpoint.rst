@@ -43,4 +43,9 @@ iqm.iqm\_client.api.APIEndpoint
 
    
    
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+   
    
