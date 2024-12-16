@@ -487,7 +487,7 @@ class QuantumArchitectureSpecification(BaseModel):
         another architecture specification.
 
         Returns:
-             True if the operation and the loci are equivalent.
+            True if the operation and the loci are equivalent.
         """
         return QuantumArchitectureSpecification.compare_operations(self.operations, other.operations)
 
@@ -496,7 +496,7 @@ class QuantumArchitectureSpecification(BaseModel):
         """Compares the given operation sets.
 
         Returns:
-             True if the operation and the loci are equivalent.
+            True if the operation and the loci are equivalent.
         """
         if set(ops1) != set(ops2):
             return False
@@ -557,7 +557,7 @@ class GateInfo(BaseModel):
         The sorting of individual locus components is first done alphabetically based on their
         non-numeric part, and then components with the same non-numeric part are sorted numerically.
         An example of loci sorted this way would be:
-        (
+
             ('QB1', 'QB2'),
             ('QB2', 'COMPR1'),
             ('QB2', 'QB3'),
@@ -565,7 +565,7 @@ class GateInfo(BaseModel):
             ('QB3', 'COMPR2'),
             ('QB3', 'QB1'),
             ('QB10', 'QB2'),
-        )
+
         """
         loci_set = set(locus for impl in self.implementations.values() for locus in impl.loci)
         loci_sorted = sorted(loci_set, key=lambda locus: tuple(map(_component_sort_key, locus)))
@@ -659,7 +659,7 @@ class DDStrategy:
     The current standard DD stategy can be found in :attr:`.STANDARD_DD_STRATEGY`,
     but users can use this class to provide their own dynamical decoupling strategies.
 
-    See :cite:`Ezzell_2022` for information on DD sequences.
+    See Ezzell et al., Phys. Rev. Appl. 20, 064027 (2022) for information on DD sequences.
     """
 
     merge_contiguous_waits: bool = True
@@ -727,7 +727,7 @@ class CircuitCompilationOptions:
     """MOVE gate frame tracking mode for circuit compilation. This options is ignored on devices that do not support
         MOVE and for circuits that do not contain MOVE gates."""
     active_reset_cycles: Optional[int] = None
-    """Number of active ``reset`` operations inserted at the beginning of each circuit for each active qubit. 
+    """Number of active ``reset`` operations inserted at the beginning of each circuit for each active qubit.
     ``None`` means active reset is not used but instead reset is done by waiting (relaxation). Integer values smaller
     than 1 result in neither active nor reset by wait being used, in which case any reset operations must be explicitly
     added in the circuit."""
@@ -778,7 +778,7 @@ class RunRequest(BaseModel):
     move_gate_frame_tracking_mode: MoveGateFrameTrackingMode = Field(MoveGateFrameTrackingMode.FULL)
     """Which method of MOVE gate frame tracking to use for circuit compilation."""
     active_reset_cycles: Optional[int] = Field(None)
-    """Number of active ``reset`` operations inserted at the beginning of each circuit for each active qubit. 
+    """Number of active ``reset`` operations inserted at the beginning of each circuit for each active qubit.
     ``None`` means active reset is not used but instead reset is done by waiting (relaxation). Integer values smaller
     than 1 result in neither active nor reset by wait being used, in which case any reset operations must be explicitly
     added in the circuit."""
