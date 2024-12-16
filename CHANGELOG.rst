@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 21.0
+============
+
+* Updated changelog for version 19.0 to fix sphinx warning `#155 <https://github.com/iqm-finland/iqm-client/pull/155>`_
+
 Version 20.9
 ============
 
