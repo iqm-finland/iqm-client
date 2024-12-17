@@ -12,7 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """
-Functions for transpiling for specific IQM devices.
+Transpiling circuits to IQM devices involving computational resonators.
+
+In the IQM Star architecture, computational resonators are connected to multiple qubits.
+The qubit state can be moved into connected resonator and back using a MOVE gate between
+the qubit and resonator. Additionally, two-qubit gates like CZ can be applied between a qubit
+and a connected resonator. However, the resonator cannot be measured, and no single-qubit gates
+can be applied on it.
+
+To enable third-party transpilers to work on the IQM Star architecture, we may abstract away the
+resonators, and replace a resonator and its ``n`` neighboring qubits with a fully connected subgraph
+(clique) of ``n`` qubits with the qubit-resonator gates now acting on pairs of qubits.
+This is called a *fake architecture*.
+
+Before a circuit transpiled to a fake architecture can be executed it must be further transpiled to
+the real Star architecture using :func:`transpile_insert_moves`, which will introduce the
+resonators, add MOVE gates as necessary to move the states, and convert the two-qubit gates into
+gates acting on a qubit-resonator pair.
+
+Likewise :func:`transpile_remove_moves` can be used to perform the opposite transformation,
+converting a circuit valid for the real Star architecture into an equivalent circuit for
+the corresponding fake architecture.
 """
 from __future__ import annotations
 
@@ -29,6 +49,7 @@ from iqm.iqm_client import (
     Instruction,
     IQMClient,
 )
+from iqm.iqm_client.models import Locus
 
 
 class ExistingMoveHandlingOptions(str, Enum):
@@ -43,11 +64,10 @@ class ExistingMoveHandlingOptions(str, Enum):
 
 
 class _ResonatorStateTracker:
-    r"""Tracks the location of the :math:`|0\rangle` state of the computational resonators on the
-    quantum computer as they are moved with MOVE gates.
+    r"""Tracks the qubit states stored in computational resonators on the QPU as they are moved with MOVE gates.
 
-    This is required because the MOVE gate is not defined when acting on a :math:`|11\rangle` state.
-    It is equivalent to tracking which qubit state has been moved into which resonator.
+    This is required because the MOVE gate is not defined when acting on a :math:`|11\rangle` state,
+    and involves an unknown phase.
 
     Args:
         available_moves: Mapping from resonator to qubits with which it has a MOVE gate available.
@@ -57,8 +77,8 @@ class _ResonatorStateTracker:
 
     def __init__(self, available_moves: dict[str, list[str]]) -> None:
         self.available_moves = available_moves
-        self.res_state_location = {r: r for r in self.resonators}
-        """Maps resonator to the QPU component that currently holds its state."""
+        self.res_state_owner = {r: r for r in self.resonators}
+        """Maps resonator to the QPU component whose state it currently holds."""
 
     @staticmethod
     def from_dynamic_architecture(arch: DynamicQuantumArchitecture) -> _ResonatorStateTracker:
@@ -126,9 +146,9 @@ class _ResonatorStateTracker:
         if (
             resonator in self.resonators
             and qubit in self.available_moves[resonator]
-            and self.res_state_location[resonator] in [qubit, resonator]
+            and self.res_state_owner[resonator] in [qubit, resonator]
         ):
-            self.res_state_location[resonator] = qubit if self.res_state_location[resonator] == resonator else resonator
+            self.res_state_owner[resonator] = qubit if self.res_state_owner[resonator] == resonator else resonator
         else:
             raise CircuitTranspilationError('Attempted move is not allowed.')
 
@@ -136,24 +156,25 @@ class _ResonatorStateTracker:
         self,
         qubit: str,
         resonator: str,
+        *,
         apply_move: Optional[bool] = True,
         alt_qubit_names: Optional[dict[str, str]] = None,
     ) -> Iterable[Instruction]:
-        """Create the MOVE instruction(s) to move the state of the given resonator into the
+        """MOVE instruction(s) to move the state of the given resonator into the
         resonator if needed and then move resonator state to the given qubit.
 
         Args:
             qubit: The qubit
             resonator: The resonator
             apply_move: Whether the moves should be applied to the resonator tracking state.
-            alt_qubit_names: Mapping of logical qubit names to physical qubit names.
+            alt_qubit_names: Mapping of physical qubit names to logical qubit names.
 
         Yields:
             The one or two MOVE instructions needed.
         """
-        res_state_loc = self.res_state_location[resonator]
-        if res_state_loc not in [qubit, resonator]:
-            other = res_state_loc
+        res_state_owner = self.res_state_owner[resonator]
+        if res_state_owner not in [qubit, resonator]:
+            other = res_state_owner
             if apply_move:
                 self.apply_move(other, resonator)
             qbs = tuple(alt_qubit_names[q] if alt_qubit_names else q for q in [other, resonator])
@@ -166,52 +187,63 @@ class _ResonatorStateTracker:
     def reset_as_move_instructions(
         self,
         resonators: Optional[Iterable[str]] = None,
+        *,
         apply_move: Optional[bool] = True,
         alt_qubit_names: Optional[dict[str, str]] = None,
     ) -> list[Instruction]:
-        """Creates the MOVE instructions needed to move all resonator states to their original state.
+        """MOVE instructions that move all the states held in the given resonators back to their qubits.
 
         Args:
-            resonators: The set of resonators to reset. If None, all resonators will be reset.
+            resonators: Resonators that hold qubit states that should be moved back to the qubits.
+                If ``None``, the states in any resonators will be returned to the qubits.
             apply_move: Whether the moves should be applied to the resonator tracking state.
+            alt_qubit_names: physical to logical mapping????
 
         Returns:
             Instructions needed to move all qubit states out of the resonators.
         """
         if resonators is None:
             resonators = self.resonators
+
         instructions: list[Instruction] = []
-        for r, q in self.res_state_location.items():
+        for r, q in self.res_state_owner.items():
             if r != q and r in resonators:
-                instructions += self.create_move_instructions(q, r, apply_move, alt_qubit_names)
+                # qbs = tuple(alt_qubit_names[q] if alt_qubit_names else q for q in [qubit, resonator])
+                # instructions.append(Instruction(name=self.move_gate, qubits=qbs, args={}))
+                instructions += self.create_move_instructions(
+                    q, r, apply_move=apply_move, alt_qubit_names=alt_qubit_names
+                )
         return instructions
 
     def available_resonators_to_move(self, qubits: Iterable[str]) -> dict[str, list[str]]:
-        """Generates a dictionary with which resonators a qubit can be moved to, for each qubit.
+        """Find out to which resonators the given qubits' states can be moved to.
 
         Args:
-            qubits: The qubits to check which MOVE gates are available.
+            qubits: The qubits to check.
 
         Returns:
-            The dict that maps each qubit to a list of resonators.
+            Mapping from qubit to a list of resonators its state can be moved to.
         """
         return {q: [r for r in self.resonators if q in self.available_moves[r]] for q in qubits}
 
     def resonators_holding_qubits(self, qubits: Iterable[str]) -> list[str]:
-        """Returns the resonators that are currently holding one of the given qubit states.
+        """Return the resonators that are holding the state of one of the given qubits.
 
         Args:
-            qubits: The qubits
+            qubits: The qubits to check.
 
         Returns:
-            The resonators
+            Resonators holding their states.
         """
-        return [r for r, q in self.res_state_location.items() if q in qubits and q not in self.resonators]
+        return [r for r, q in self.res_state_owner.items() if q in qubits and q not in self.resonators]
 
     def choose_move_pair(
         self, qubits: list[str], remaining_instructions: list[list[str]]
     ) -> list[tuple[str, str, list[list[str]]]]:
-        """Chooses which qubit of the given qubits to move into which resonator, given a sequence of instructions to be
+        """Choose which of the given qubits to move into which resonator.
+
+
+        , given a sequence of instructions to be
         executed later for looking ahead.
 
         Args:
@@ -255,60 +287,73 @@ class _ResonatorStateTracker:
                 score += 1
         return score
 
-    def update_qubits_in_resonator(self, qubits: Iterable[str]) -> list[str]:
-        """Applies the resonator to qubit map in the state of the resonator state tracker to the given qubits.
+    def map_resonators_in_locus(self, locus: Iterable[str]) -> Locus:
+        """Map any resonators in the given instruction locus into the QPU components whose state is
+        currently stored in that resonator.
+
+        If the resonator contains no qubit state at the moment, it is not changed.
+        Non-resonator components in the locus are also unchanged.
 
         Args:
-            qubits: The qubits or resonators to apply the state to
+            locus: Instruction locus to map.
 
         Returns:
-            The remapped qubits
+            The mapped locus.
         """
-        return [self.res_state_location.get(q, q) for q in qubits]
+        return tuple(self.res_state_owner.get(q, q) for q in locus)
 
 
 def transpile_insert_moves(
     circuit: Circuit,
     arch: DynamicQuantumArchitecture,
+    *,
     existing_moves: Optional[ExistingMoveHandlingOptions] = None,
     qubit_mapping: Optional[dict[str, str]] = None,
 ) -> Circuit:
-    """Inserts MOVEs to the circuit according to a given architecture specification.
+    """Convert a circuit for a fake architecture into a equivalent real architecture circuit with
+    resonators and MOVE gates.
 
-    The function does nothing if the given architecture specification does not support MOVE gates.
-    Note that this method assumes that the circuit is already transpiled to a coupling map/architecture where the
-    resonator has been abstracted away, i.e. the edges of the coupling map that contain resonators are replaced by
-    edges between the other qubit and all qubits that can be moved to that resonator.
+    The function does nothing if ``arch`` does not support MOVE gates.
+    Note that this method normally assumes that ``circuit`` is transpiled to a fake architecture
+    where the resonators have been abstracted away.
 
     Args:
-        circuit: The circuit to add MOVE instructions to.
-        arch: Restrictions of the target device
-        existing_moves: Specifies how to deal with existing MOVE instruction,
-            If None, the function will use ExistingMoveHandlingOptions.REMOVE with a user warning if there are move
-            instructions in the circuit.
+        circuit: The fake architecture circuit to convert.
+        arch: Real architecture of the target device.
+        existing_moves: Specifies how to deal with existing MOVE instructions in ``circuit``, if any.
+            If ``None``, the function will use :attr:`ExistingMoveHandlingOptions.REMOVE` with a user
+            warning if there are MOVE instructions in ``circuit``.
         qubit_mapping: Mapping of logical qubit names to physical qubit names.
-            Can be set to ``None`` if all ``circuits`` already use physical qubit names.
+            Can be set to ``None`` if ``circuit`` already uses physical qubit names.
+
+    Returns:
+        Equivalent Star architecture circuit with MOVEs and resonators added.
     """
-    res_status = _ResonatorStateTracker.from_dynamic_architecture(arch)
-    if not qubit_mapping:
+    tracker = _ResonatorStateTracker.from_dynamic_architecture(arch)
+
+    # add missing QPU components to the mapping (mapped to themselves)
+    if qubit_mapping is None:
         qubit_mapping = {}
     for q in arch.components:
         if q not in qubit_mapping.values():
             qubit_mapping[q] = q
-    existing_moves_in_circuit = [i for i in circuit.instructions if i.name == res_status.move_gate]
 
+    # see if the circuit already contains some MOVEs/resonators
+    existing_moves_in_circuit = [i for i in circuit.instructions if i.name == tracker.move_gate]
     if existing_moves is None and len(existing_moves_in_circuit) > 0:
         warnings.warn('Circuit already contains MOVE instructions, removing them before transpiling.')
         existing_moves = ExistingMoveHandlingOptions.REMOVE
 
-    if not res_status.supports_move:
+    if not tracker.supports_move:
         if not existing_moves_in_circuit:
             return circuit
         if existing_moves == ExistingMoveHandlingOptions.REMOVE:
+            # TODO does this make sense?
             return transpile_remove_moves(circuit)
-        raise ValueError('Circuit contains MOVE instructions, but device does not support them')
+        raise ValueError('Circuit contains MOVE instructions, but the device does not support them.')
 
     if existing_moves is None or existing_moves == ExistingMoveHandlingOptions.REMOVE:
+        # convert the circuit into a pure fake architecture circuit
         circuit = transpile_remove_moves(circuit)
     elif existing_moves == ExistingMoveHandlingOptions.KEEP:
         try:
@@ -319,27 +364,32 @@ def transpile_insert_moves(
             ) from e
 
     rev_qubit_mapping = {v: k for k, v in qubit_mapping.items()}
-    new_instructions = _transpile_insert_moves(list(circuit.instructions), res_status, arch, qubit_mapping)
-    new_instructions += res_status.reset_as_move_instructions(alt_qubit_names=rev_qubit_mapping)
+    new_instructions = _transpile_insert_moves(list(circuit.instructions), tracker, arch, qubit_mapping)
+    new_instructions += tracker.reset_as_move_instructions(alt_qubit_names=rev_qubit_mapping)
 
     return Circuit(name=circuit.name, instructions=new_instructions, metadata=circuit.metadata)
 
 
 def _transpile_insert_moves(
     instructions: list[Instruction],
-    res_status: _ResonatorStateTracker,
+    tracker: _ResonatorStateTracker,
     arch: DynamicQuantumArchitecture,
     qubit_mapping: dict[str, str],
 ) -> list[Instruction]:
-    """Inserts MOVE gates into a list of instructions and changes the existing instructions as needed.
+    """Convert a circuit for a fake architecture into a equivalent real architecture circuit with
+    resonators and MOVE gates.
 
+    Inserts MOVE gates into the circuit and changes the existing instruction loci as needed.
     Helper function for :func:`transpile_insert_moves`.
+
+    Assumes only CZ and MOVE gates can be executed on a resonator.
 
     Args:
         instructions: The instructions in the circuit.
-        res_status: The location of the resonator states at the start of the instructions. At
-        the end of this method this tracker is adjusted to reflect the state at the end of the returned instructions.
-        arch: The target quantum architecture.
+        tracker: Keeps track of the MOVE gate loci available, and the state stored in each resonator.
+            At the end of the function the tracker is adjusted to reflect the state at the end of
+            the returned instructions.
+        arch: Real quantum architecture we transpile to.
         qubit_mapping: Mapping from logical qubit names to physical qubit names.
 
     Raises:
@@ -347,16 +397,19 @@ def _transpile_insert_moves(
             method.
 
     Returns:
-        The transpiled list of instructions.
+        Real Star architecture equivalent of ``circuit`` with MOVEs and resonators added.
     """
     new_instructions = []
+    # physical to logical
     rev_qubit_mapping = {v: k for k, v in qubit_mapping.items()}
+
     for idx, i in enumerate(instructions):
         qubits = [qubit_mapping[q] for q in i.qubits]
-        res_match = res_status.resonators_holding_qubits(qubits)
-        if res_match and i.name not in ['cz', res_status.move_gate]:
-            # We have a gate on a qubit in the resonator that cannot be executed on the resonator (incl. barriers)
-            new_instructions += res_status.reset_as_move_instructions(res_match, alt_qubit_names=rev_qubit_mapping)
+        res_match = tracker.resonators_holding_qubits(qubits)
+        if res_match and i.name not in ['cz', tracker.move_gate]:
+            # We have a gate on a qubit whose state is currently in a resonator, and that gate cannot
+            # be executed on the resonator (incl. barriers)
+            new_instructions += tracker.reset_as_move_instructions(res_match, alt_qubit_names=rev_qubit_mapping)
             new_instructions.append(i)
         else:
             # Check if the instruction is valid, which raises an exception if not.
@@ -367,8 +420,8 @@ def _transpile_insert_moves(
                     qubit_mapping=qubit_mapping,
                 )
                 new_instructions.append(i)  # No adjustment needed
-                if i.name == res_status.move_gate:  # update the tracker if needed
-                    res_status.apply_move(*[qubit_mapping[q] for q in i.qubits])
+                if i.name == tracker.move_gate:  # update the tracker if needed
+                    tracker.apply_move(*[qubit_mapping[q] for q in i.qubits])
             except CircuitValidationError as e:
                 if i.name != 'cz':  # We can only fix cz gates at this point
                     raise CircuitTranspilationError(
@@ -376,8 +429,8 @@ def _transpile_insert_moves(
                     ) from e
                 # Pick which qubit-resonator pair to apply this cz to
                 # Pick from qubits already in a resonator or both targets if none off them are in a resonator
-                resonator_candidates: Optional[list[tuple[str, str, Any]]] = res_status.choose_move_pair(
-                    [res_status.res_state_location[res] for res in res_match] if res_match else qubits,
+                resonator_candidates: Optional[list[tuple[str, str, Any]]] = tracker.choose_move_pair(
+                    [tracker.res_state_owner[res] for res in res_match] if res_match else qubits,
                     [[i.name] + [qubit_mapping[q] for q in i.qubits] for i in instructions[idx:]],
                 )
                 while resonator_candidates:
@@ -402,12 +455,12 @@ def _transpile_insert_moves(
                     ) from e
 
                 # remove the other qubit from the resonator if it was in
-                new_instructions += res_status.reset_as_move_instructions(
+                new_instructions += tracker.reset_as_move_instructions(
                     [res for res in res_match if res != r], alt_qubit_names=rev_qubit_mapping
                 )
                 # move the qubit into the resonator if it was not yet in.
                 if not res_match:
-                    new_instructions += res_status.create_move_instructions(q1, r, alt_qubit_names=rev_qubit_mapping)
+                    new_instructions += tracker.create_move_instructions(q1, r, alt_qubit_names=rev_qubit_mapping)
                 new_instructions.append(
                     Instruction(name='cz', qubits=(rev_qubit_mapping[q2], rev_qubit_mapping[r]), args={})
                 )
@@ -415,23 +468,28 @@ def _transpile_insert_moves(
 
 
 def transpile_remove_moves(circuit: Circuit) -> Circuit:
-    """Removes MOVE gates from a circuit.
+    """Convert a circuit involving resonators and MOVE gates into an equivalent circuit without them.
 
-    The method assumes that these MOVE gates are moving the resonator state in and out the resonator register to
-    reconstruct the CZ gates. If this is not the case, the semantic equivalence cannot be guaranteed.
+    The method assumes that in ``circuit`` a MOVE gate is always used to move a qubit state into a
+    resonator before any gates act on the resonator. If this is not the case, this function will not
+    work as intended.
 
     Args:
-        circuit: The circuit from which the MOVE gates need to be removed.
+        circuit: The circuit from which resonators and MOVE gates should be removed.
 
     Returns:
-        The circuit with the MOVE gates removed and the targets for all other gates updated accordingly.
+        Equivalent fake architecture circuit without resonators and MOVEs.
     """
-    res_status = _ResonatorStateTracker.from_circuit(circuit)
+    tracker = _ResonatorStateTracker.from_circuit(circuit)
     new_instructions = []
     for i in circuit.instructions:
-        if i.name == res_status.move_gate:
-            res_status.apply_move(*i.qubits)
+        if i.name == tracker.move_gate:
+            # update the state tracking, drop the MOVE
+            tracker.apply_move(*i.qubits)
         else:
-            new_qubits = res_status.update_qubits_in_resonator(i.qubits)
-            new_instructions.append(Instruction(name=i.name, qubits=new_qubits, args=i.args))
+            # map the instruction locus
+            new_qubits = tracker.map_resonators_in_locus(i.qubits)
+            new_instructions.append(
+                Instruction(name=i.name, implementation=i.implementation, qubits=new_qubits, args=i.args)
+            )
     return Circuit(name=circuit.name, instructions=new_instructions, metadata=circuit.metadata)
