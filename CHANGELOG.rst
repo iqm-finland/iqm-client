@@ -2,6 +2,12 @@
 Changelog
 =========
 
+Version 20.10
+=============
+
+* Fix Sphinx documentation build warnings `#155 <https://github.com/iqm-finland/iqm-client/pull/155>`_
+* Enable Sphinx documentation build option to treat warnings as errors `#155 <https://github.com/iqm-finland/iqm-client/pull/155>`_
+
 Version 20.9
 ============
 
@@ -62,7 +68,7 @@ Version 19.0
 * Allow mid-circuit measurements and classically controlled PRX gates.
   `#136 <https://github.com/iqm-finland/iqm-client/pull/136>`_
 * Deprecated native operations names ``phased_rx`` and ``measurement`` removed,
-   use ``prx`` and ``measure`` instead.
+  use ``prx`` and ``measure`` instead.
   `#136 <https://github.com/iqm-finland/iqm-client/pull/136>`_
 
 Version 18.8
