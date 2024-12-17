@@ -2,8 +2,8 @@
 Changelog
 =========
 
-Version 21.0
-============
+Version 20.10
+=============
 
 * Fix Sphinx documentation build warnings `#155 <https://github.com/iqm-finland/iqm-client/pull/155>`_
 * Enable Sphinx documentation build option to treat warnings as errors `#155 <https://github.com/iqm-finland/iqm-client/pull/155>`_
