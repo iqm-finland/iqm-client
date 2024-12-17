@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Changelog &#8212; IQM client 20.9 documentation</title>
+    <title>Changelog &#8212; IQM client 20.10 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="_static/documentation_options.js?v=fb6e7ab8"></script>
+    <script src="_static/documentation_options.js?v=a784a972"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
@@ -51,8 +51,8 @@
     <link rel="prev" title="Contributors" href="authors.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="20.9" />
-    <meta name="docbuild:last-update" content="2024-12-14"/>
+  <meta name="docsearch:version" content="20.10" />
+    <meta name="docbuild:last-update" content="2024-12-17"/>
   </head>
   
   
@@ -131,8 +131,8 @@
       
     
     
-    <img src="_static/logo.png" class="logo__image only-light" alt="IQM client 20.9 documentation - Home"/>
-    <img src="_static/logo.png" class="logo__image only-dark pst-js-only" alt="IQM client 20.9 documentation - Home"/>
+    <img src="_static/logo.png" class="logo__image only-light" alt="IQM client 20.10 documentation - Home"/>
+    <img src="_static/logo.png" class="logo__image only-dark pst-js-only" alt="IQM client 20.10 documentation - Home"/>
   
   
 </a></div>
@@ -373,6 +373,7 @@
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-20-10">Version 20.10</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-20-9">Version 20.9</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-20-8">Version 20.8</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-20-7">Version 20.7</a></li>
@@ -490,11 +491,11 @@
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-1">Version 1.1</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id134">Fixes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id136">Fixes</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-0">Version 1.0</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id136">Features</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id138">Features</a></li>
 </ul>
 </li>
 </ul>
@@ -510,6 +511,13 @@
                   
   <section id="changelog">
 <span id="changes"></span><h1>Changelog<a class="headerlink" href="#changelog" title="Link to this heading">#</a></h1>
+<section id="version-20-10">
+<h2>Version 20.10<a class="headerlink" href="#version-20-10" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Fix Sphinx documentation build warnings <a class="reference external" href="https://github.com/iqm-finland/iqm-client/pull/155">#155</a></p></li>
+<li><p>Enable Sphinx documentation build option to treat warnings as errors <a class="reference external" href="https://github.com/iqm-finland/iqm-client/pull/155">#155</a></p></li>
+</ul>
+</section>
 <section id="version-20-9">
 <h2>Version 20.9<a class="headerlink" href="#version-20-9" title="Link to this heading">#</a></h2>
 <ul class="simple">
@@ -577,15 +585,12 @@ active reset cycles). <a class="reference external" href="https://github.com/iqm
 </section>
 <section id="version-19-0">
 <h2>Version 19.0<a class="headerlink" href="#version-19-0" title="Link to this heading">#</a></h2>
-<ul>
+<ul class="simple">
 <li><p>Allow mid-circuit measurements and classically controlled PRX gates.
 <a class="reference external" href="https://github.com/iqm-finland/iqm-client/pull/136">#136</a></p></li>
-<li><dl class="simple">
-<dt>Deprecated native operations names <code class="docutils literal notranslate"><span class="pre">phased_rx</span></code> and <code class="docutils literal notranslate"><span class="pre">measurement</span></code> removed,</dt><dd><p>use <code class="docutils literal notranslate"><span class="pre">prx</span></code> and <code class="docutils literal notranslate"><span class="pre">measure</span></code> instead.</p>
-</dd>
-</dl>
-<p><a class="reference external" href="https://github.com/iqm-finland/iqm-client/pull/136">#136</a></p>
-</li>
+<li><p>Deprecated native operations names <code class="docutils literal notranslate"><span class="pre">phased_rx</span></code> and <code class="docutils literal notranslate"><span class="pre">measurement</span></code> removed,
+use <code class="docutils literal notranslate"><span class="pre">prx</span></code> and <code class="docutils literal notranslate"><span class="pre">measure</span></code> instead.
+<a class="reference external" href="https://github.com/iqm-finland/iqm-client/pull/136">#136</a></p></li>
 </ul>
 </section>
 <section id="version-18-8">
@@ -1228,8 +1233,8 @@ but still supported). <a class="reference external" href="https://github.com/iqm
 </section>
 <section id="version-1-1">
 <h2>Version 1.1<a class="headerlink" href="#version-1-1" title="Link to this heading">#</a></h2>
-<section id="id134">
-<h3>Fixes<a class="headerlink" href="#id134" title="Link to this heading">#</a></h3>
+<section id="id136">
+<h3>Fixes<a class="headerlink" href="#id136" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Changed example instruction phased_rx to measurement. <a class="reference external" href="https://github.com/iqm-finland/iqm-client/pull/2">#2</a></p></li>
 </ul>
@@ -1237,8 +1242,8 @@ but still supported). <a class="reference external" href="https://github.com/iqm
 </section>
 <section id="version-1-0">
 <h2>Version 1.0<a class="headerlink" href="#version-1-0" title="Link to this heading">#</a></h2>
-<section id="id136">
-<h3>Features<a class="headerlink" href="#id136" title="Link to this heading">#</a></h3>
+<section id="id138">
+<h3>Features<a class="headerlink" href="#id138" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Split IQM client from the Cirq on IQM library</p></li>
 </ul>
@@ -1283,6 +1288,7 @@ but still supported). <a class="reference external" href="https://github.com/iqm
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-20-10">Version 20.10</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-20-9">Version 20.9</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-20-8">Version 20.8</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-20-7">Version 20.7</a></li>
@@ -1400,11 +1406,11 @@ but still supported). <a class="reference external" href="https://github.com/iqm
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-1">Version 1.1</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id134">Fixes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id136">Fixes</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-0">Version 1.0</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id136">Features</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id138">Features</a></li>
 </ul>
 </li>
 </ul>
@@ -1440,7 +1446,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2024-12-14.
+  Last updated on 2024-12-17.
   <br/>
 </p>
   </div>
