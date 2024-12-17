@@ -590,7 +590,7 @@ class DynamicQuantumArchitecture(BaseModel):
 
     @cached_property
     def components(self) -> tuple[str, ...]:
-        """Returns all locus components (qubits and computational resonators) sorted.
+        """All locus components (qubits and computational resonators) sorted.
 
         The components are first sorted alphabetically based on their non-numeric part, and then
         components with the same non-numeric part are sorted numerically. An example of components

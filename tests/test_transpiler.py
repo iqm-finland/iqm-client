@@ -27,7 +27,7 @@ from iqm.iqm_client import (
     transpile_insert_moves,
     transpile_remove_moves,
 )
-from iqm.iqm_client.transpile import ResonatorStateTracker
+from iqm.iqm_client.transpile import _ResonatorStateTracker as ResonatorStateTracker
 
 
 class TestNaiveMoveTranspiler:
@@ -445,14 +445,14 @@ class TestResonatorStateTracker:
         status = ResonatorStateTracker.from_dynamic_architecture(sample_move_architecture)
         assert status.supports_move
         status.apply_move('QB3', 'COMP_R')
-        assert status.res_qb_map['COMP_R'] == 'QB3'
+        assert status.res_state_location['COMP_R'] == 'QB3'
         status.apply_move('QB3', 'COMP_R')
-        assert status.res_qb_map['COMP_R'] == 'COMP_R'
+        assert status.res_state_location['COMP_R'] == 'COMP_R'
         with pytest.raises(CircuitTranspilationError):
             status.apply_move('QB1', 'COMP_R')
         with pytest.raises(CircuitTranspilationError):
             status.apply_move('QB1', 'QB2')
-        status.res_qb_map['COMP_R'] = 'QB1'
+        status.res_state_location['COMP_R'] = 'QB1'
         with pytest.raises(CircuitTranspilationError):
             status.apply_move('QB3', 'COMP_R')
 
@@ -465,12 +465,12 @@ class TestResonatorStateTracker:
         gen_instr = tuple(status.create_move_instructions('QB3', 'COMP_R', apply_move=False))
         assert len(gen_instr) == 1
         assert gen_instr[0] == instr
-        assert status.res_qb_map['COMP_R'] == 'COMP_R'
+        assert status.res_state_location['COMP_R'] == 'COMP_R'
         gen_instr = tuple(status.create_move_instructions('QB3', 'COMP_R', apply_move=True))
         assert len(gen_instr) == 1
         assert gen_instr[0] == instr
-        assert status.res_qb_map['COMP_R'] == 'QB3'
-        status.res_qb_map['COMP_R'] = 'QB1'
+        assert status.res_state_location['COMP_R'] == 'QB3'
+        status.res_state_location['COMP_R'] = 'QB1'
         # Check removal without and with apply_move
         gen_instr = tuple(status.create_move_instructions('QB3', 'COMP_R', apply_move=False))
         assert len(gen_instr) == 2
@@ -483,7 +483,7 @@ class TestResonatorStateTracker:
         assert len(gen_instr) == 2
         assert gen_instr[0] == Instruction(name='move', qubits=('B', 'A'), args={})
         assert gen_instr[1] == Instruction(name='move', qubits=('C', 'A'), args={})
-        assert status.res_qb_map['COMP_R'] == 'QB3'
+        assert status.res_state_location['COMP_R'] == 'QB3'
 
     def test_reset_as_move_instructions(self, sample_move_architecture):
         status = ResonatorStateTracker.from_dynamic_architecture(sample_move_architecture)
@@ -495,17 +495,17 @@ class TestResonatorStateTracker:
         gen_instr = tuple(status.reset_as_move_instructions(['COMP_R'], apply_move=False))
         assert len(gen_instr) == 1
         assert gen_instr[0] == Instruction(name='move', qubits=('QB3', 'COMP_R'), args={})
-        assert status.res_qb_map['COMP_R'] == 'QB3'
+        assert status.res_state_location['COMP_R'] == 'QB3'
         # Reset without argument, with qubit mapping, and not apply_move
         gen_instr = tuple(status.reset_as_move_instructions(apply_move=False, alt_qubit_names=self.alt_qubit_names))
         assert len(gen_instr) == 1
         assert gen_instr[0] == Instruction(name='move', qubits=('C', 'A'), args={})
-        assert status.res_qb_map['COMP_R'] == 'QB3'
+        assert status.res_state_location['COMP_R'] == 'QB3'
         # Reset without arguments and with apply_move
         gen_instr = tuple(status.reset_as_move_instructions(apply_move=True))
         assert len(gen_instr) == 1
         assert gen_instr[0] == Instruction(name='move', qubits=('QB3', 'COMP_R'), args={})
-        assert status.res_qb_map['COMP_R'] == 'COMP_R'
+        assert status.res_state_location['COMP_R'] == 'COMP_R'
 
     def test_available_resonators_to_move(self, sample_move_architecture):
         components = sample_move_architecture.components

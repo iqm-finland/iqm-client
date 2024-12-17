@@ -12,10 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """
-Collection of transpilation functions needed for transpiling to specific devices.
+Functions for transpiling for specific IQM devices.
 """
+from __future__ import annotations
+
+from collections.abc import Iterable
 from enum import Enum
-from typing import Any, Iterable, Optional
+from typing import Any, Optional
 import warnings
 
 from iqm.iqm_client import (
@@ -39,50 +42,52 @@ class ExistingMoveHandlingOptions(str, Enum):
     """Transpiler will keep the MOVE instructions without checking if they are correct, and add more as needed."""
 
 
-class ResonatorStateTracker:
-    r"""Class for tracking the location of the :math:`|0\rangle` state of the resonators on the
-    quantum computer as they are moved with the MOVE gates because the MOVE gate is not defined
-    when acting on a :math:`|11\rangle` state. This is equivalent to tracking
-    which qubit state has been moved into which resonator.
+class _ResonatorStateTracker:
+    r"""Tracks the location of the :math:`|0\rangle` state of the computational resonators on the
+    quantum computer as they are moved with MOVE gates.
+
+    This is required because the MOVE gate is not defined when acting on a :math:`|11\rangle` state.
+    It is equivalent to tracking which qubit state has been moved into which resonator.
 
     Args:
-        available_moves: A dictionary describing between which qubits a MOVE gate is
-            available, for each resonator, i.e. ``available_moves[resonator] = [qubit]``
+        available_moves: Mapping from resonator to qubits with which it has a MOVE gate available.
     """
 
     move_gate = 'move'
 
     def __init__(self, available_moves: dict[str, list[str]]) -> None:
         self.available_moves = available_moves
-        self.res_qb_map = {r: r for r in self.resonators}
+        self.res_state_location = {r: r for r in self.resonators}
+        """Maps resonator to the QPU component that currently holds its state."""
 
     @staticmethod
-    def from_dynamic_architecture(arch: DynamicQuantumArchitecture) -> 'ResonatorStateTracker':
-        """Constructor to make the ResonatorStateTracker from a DynamicQuantumArchitecture.
+    def from_dynamic_architecture(arch: DynamicQuantumArchitecture) -> _ResonatorStateTracker:
+        """Constructor to make a _ResonatorStateTracker from a dynamic quantum architecture.
 
         Args:
-            arch: The architecture to track the resonator state on.
+            arch: Architecture that determines the available MOVE gate loci.
         """
-        available_moves: dict[str, list[str]] = {
-            r: [q for q, r2 in arch.gates[ResonatorStateTracker.move_gate].loci if r == r2]
-            for r in arch.computational_resonators
-        }
-        return ResonatorStateTracker(available_moves)
+        available_moves: dict[str, list[str]] = {}
+        if gate_info := arch.gates.get(_ResonatorStateTracker.move_gate):
+            for q, r in gate_info.loci:
+                # assume MOVE gate loci are always [qubit, resonator]
+                available_moves.setdefault(r, []).append(q)
+        return _ResonatorStateTracker(available_moves)
 
     @staticmethod
-    def from_circuit(circuit: Circuit) -> 'ResonatorStateTracker':
-        """Constructor to make the ResonatorStateTracker from a circuit.
+    def from_circuit(circuit: Circuit) -> _ResonatorStateTracker:
+        """Constructor to make the _ResonatorStateTracker from a circuit.
 
         Infers the resonator connectivity from the MOVE gates in the circuit.
 
         Args:
             circuit: The circuit to track the resonator state on.
         """
-        return ResonatorStateTracker.from_instructions(circuit.instructions)
+        return _ResonatorStateTracker.from_instructions(circuit.instructions)
 
     @staticmethod
-    def from_instructions(instructions: Iterable[Instruction]) -> 'ResonatorStateTracker':
-        """Constructor to make the ResonatorStateTracker from a sequence of instructions.
+    def from_instructions(instructions: Iterable[Instruction]) -> _ResonatorStateTracker:
+        """Constructor to make the _ResonatorStateTracker from a sequence of instructions.
 
         Infers the resonator connectivity from the MOVE gates.
 
@@ -91,10 +96,10 @@ class ResonatorStateTracker:
         """
         available_moves: dict[str, list[str]] = {}
         for i in instructions:
-            if i.name == ResonatorStateTracker.move_gate:
+            if i.name == _ResonatorStateTracker.move_gate:
                 q, r = i.qubits
                 available_moves.setdefault(r, []).append(q)
-        return ResonatorStateTracker(available_moves)
+        return _ResonatorStateTracker(available_moves)
 
     @property
     def resonators(self) -> Iterable[str]:
@@ -103,12 +108,11 @@ class ResonatorStateTracker:
 
     @property
     def supports_move(self) -> bool:
-        """Bool whether any MOVE gate is allowed."""
+        """True iff any MOVE gates are available."""
         return bool(self.available_moves)
 
     def apply_move(self, qubit: str, resonator: str) -> None:
-        """Apply the logical changes of the resonator state location when a MOVE gate between qubit and resonator is
-        applied.
+        """Record changes to resonator state location when a MOVE gate is applied.
 
         Args:
             qubit: The moved qubit.
@@ -117,14 +121,14 @@ class ResonatorStateTracker:
         Raises:
             CircuitTranspilationError: MOVE is not allowed, either because the resonator does not exist,
                 the MOVE gate is not available between this qubit-resonator pair, or the resonator state
-                is currently in a different qubit register.
+                is currently held in a different qubit.
         """
         if (
             resonator in self.resonators
             and qubit in self.available_moves[resonator]
-            and self.res_qb_map[resonator] in [qubit, resonator]
+            and self.res_state_location[resonator] in [qubit, resonator]
         ):
-            self.res_qb_map[resonator] = qubit if self.res_qb_map[resonator] == resonator else resonator
+            self.res_state_location[resonator] = qubit if self.res_state_location[resonator] == resonator else resonator
         else:
             raise CircuitTranspilationError('Attempted move is not allowed.')
 
@@ -135,8 +139,8 @@ class ResonatorStateTracker:
         apply_move: Optional[bool] = True,
         alt_qubit_names: Optional[dict[str, str]] = None,
     ) -> Iterable[Instruction]:
-        """Create the MOVE instructions needed to move the given resonator state into the resonator if needed and then
-        move resonator state to the given qubit.
+        """Create the MOVE instruction(s) to move the state of the given resonator into the
+        resonator if needed and then move resonator state to the given qubit.
 
         Args:
             qubit: The qubit
@@ -147,8 +151,9 @@ class ResonatorStateTracker:
         Yields:
             The one or two MOVE instructions needed.
         """
-        if self.res_qb_map[resonator] not in [qubit, resonator]:
-            other = self.res_qb_map[resonator]
+        res_state_loc = self.res_state_location[resonator]
+        if res_state_loc not in [qubit, resonator]:
+            other = res_state_loc
             if apply_move:
                 self.apply_move(other, resonator)
             qbs = tuple(alt_qubit_names[q] if alt_qubit_names else q for q in [other, resonator])
@@ -167,17 +172,18 @@ class ResonatorStateTracker:
         """Creates the MOVE instructions needed to move all resonator states to their original state.
 
         Args:
-            resonators: The set of resonators to reset, if None, all resonators will be reset.
+            resonators: The set of resonators to reset. If None, all resonators will be reset.
             apply_move: Whether the moves should be applied to the resonator tracking state.
 
         Returns:
-            The instructions needed to move all qubit states out of the resonators.
+            Instructions needed to move all qubit states out of the resonators.
         """
         if resonators is None:
             resonators = self.resonators
         instructions: list[Instruction] = []
-        for r, q in [(r, q) for r, q in self.res_qb_map.items() if r != q and r in resonators]:
-            instructions += self.create_move_instructions(q, r, apply_move, alt_qubit_names)
+        for r, q in self.res_state_location.items():
+            if r != q and r in resonators:
+                instructions += self.create_move_instructions(q, r, apply_move, alt_qubit_names)
         return instructions
 
     def available_resonators_to_move(self, qubits: Iterable[str]) -> dict[str, list[str]]:
@@ -200,7 +206,7 @@ class ResonatorStateTracker:
         Returns:
             The resonators
         """
-        return [r for r, q in self.res_qb_map.items() if q in qubits and q not in self.resonators]
+        return [r for r, q in self.res_state_location.items() if q in qubits and q not in self.resonators]
 
     def choose_move_pair(
         self, qubits: list[str], remaining_instructions: list[list[str]]
@@ -258,7 +264,7 @@ class ResonatorStateTracker:
         Returns:
             The remapped qubits
         """
-        return [self.res_qb_map.get(q, q) for q in qubits]
+        return [self.res_state_location.get(q, q) for q in qubits]
 
 
 def transpile_insert_moves(
@@ -283,7 +289,7 @@ def transpile_insert_moves(
         qubit_mapping: Mapping of logical qubit names to physical qubit names.
             Can be set to ``None`` if all ``circuits`` already use physical qubit names.
     """
-    res_status = ResonatorStateTracker.from_dynamic_architecture(arch)
+    res_status = _ResonatorStateTracker.from_dynamic_architecture(arch)
     if not qubit_mapping:
         qubit_mapping = {}
     for q in arch.components:
@@ -321,7 +327,7 @@ def transpile_insert_moves(
 
 def _transpile_insert_moves(
     instructions: list[Instruction],
-    res_status: ResonatorStateTracker,
+    res_status: _ResonatorStateTracker,
     arch: DynamicQuantumArchitecture,
     qubit_mapping: dict[str, str],
 ) -> list[Instruction]:
@@ -371,7 +377,7 @@ def _transpile_insert_moves(
                 # Pick which qubit-resonator pair to apply this cz to
                 # Pick from qubits already in a resonator or both targets if none off them are in a resonator
                 resonator_candidates: Optional[list[tuple[str, str, Any]]] = res_status.choose_move_pair(
-                    [res_status.res_qb_map[res] for res in res_match] if res_match else qubits,
+                    [res_status.res_state_location[res] for res in res_match] if res_match else qubits,
                     [[i.name] + [qubit_mapping[q] for q in i.qubits] for i in instructions[idx:]],
                 )
                 while resonator_candidates:
@@ -420,7 +426,7 @@ def transpile_remove_moves(circuit: Circuit) -> Circuit:
     Returns:
         The circuit with the MOVE gates removed and the targets for all other gates updated accordingly.
     """
-    res_status = ResonatorStateTracker.from_circuit(circuit)
+    res_status = _ResonatorStateTracker.from_circuit(circuit)
     new_instructions = []
     for i in circuit.instructions:
         if i.name == res_status.move_gate:
