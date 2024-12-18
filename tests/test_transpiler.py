@@ -27,7 +27,7 @@ from iqm.iqm_client import (
     transpile_insert_moves,
     transpile_remove_moves,
 )
-from iqm.iqm_client.transpile import ResonatorStateTracker
+from iqm.iqm_client.transpile import _ResonatorStateTracker as ResonatorStateTracker
 
 
 class TestNaiveMoveTranspiler:
@@ -191,12 +191,9 @@ class TestNaiveMoveTranspiler:
     ):
         return transpile_insert_moves(circuit, arch=self.arch, existing_moves=arg, qubit_mapping=qb_map)
 
-    def remove(self, circuit: Circuit):
-        return transpile_remove_moves(circuit)
-
     def check_equiv_without_moves(self, c1: Circuit, c2: Circuit):
-        c1 = self.remove(c1)
-        c2 = self.remove(c2)
+        c1 = transpile_remove_moves(c1)
+        c2 = transpile_remove_moves(c2)
         for i1, i2 in zip(c1.instructions, c2.instructions):
             if i1.name != i2.name or i1.args != i2.args:
                 return False
@@ -269,7 +266,7 @@ class TestNaiveMoveTranspiler:
         """Tests if removing works as intended."""
         for c in [self.safe_circuit, self.unsafe_circuit, self.ambiguous_circuit]:
             moves = tuple(i for i in c.instructions if i.name == 'move')
-            c1 = self.remove(c)
+            c1 = transpile_remove_moves(c)
             assert not self.check_moves_in_circuit(c1, moves)
             c1_with = self.insert(c1, ExistingMoveHandlingOptions.REMOVE)
             c1_direct = self.insert(c, ExistingMoveHandlingOptions.REMOVE)
@@ -304,8 +301,10 @@ class TestNaiveMoveTranspiler:
 
     def test_multiple_resonators(self, sample_move_architecture):
         """Test if multiple resonators works."""
+        # add MOVE loci to the architecture
         default_move_impl = sample_move_architecture.gates['move'].default_implementation
         sample_move_architecture.gates['move'].implementations[default_move_impl].loci += (('QB1', 'COMP_R2'),)
+
         # Test with bad architecture
         circuit = Circuit(
             name='multi resonators',
@@ -315,16 +314,18 @@ class TestNaiveMoveTranspiler:
                 Instruction(name='cz', qubits=('QB1', 'QB3'), args={}),
             ),
         )
-        with pytest.raises(CircuitTranspilationError):
+        with pytest.raises(CircuitTranspilationError, match='Unable to find a valid resonator-qubit pair'):
+            # CZ(QB1, QB2) is not possible
             # Create a new copy of the DQA to ensure the cached properties are computed only for this architecture.
             bad_architecture = sample_move_architecture.model_copy(deep=True)
             transpiled_circuit = transpile_insert_moves(circuit, bad_architecture)
 
-        # Add the necessary CZ gates to make it a good architecture.
+        # Add the CZ loci to the architecture make it ok for this circuit.
         default_cz_impl = sample_move_architecture.gates['cz'].default_implementation
         sample_move_architecture.gates['cz'].implementations[default_cz_impl].loci += tuple(
             (qb, 'COMP_R2') for qb in sample_move_architecture.components
         )
+
         # Create a new copy of the DQA to ensure the cached properties are computed only for this architecture.
         good_architecture = sample_move_architecture.model_copy(deep=True)
         transpiled_circuit = transpile_insert_moves(circuit, good_architecture)
@@ -433,7 +434,6 @@ class TestNaiveMoveTranspiler:
 
 
 class TestResonatorStateTracker:
-    alt_qubit_names = {'COMP_R': 'A', 'QB1': 'B', 'QB3': 'C'}
 
     def test_apply_move(self, sample_dynamic_architecture, sample_move_architecture):
         # Check handling of an architecture without a resonator
@@ -445,14 +445,14 @@ class TestResonatorStateTracker:
         status = ResonatorStateTracker.from_dynamic_architecture(sample_move_architecture)
         assert status.supports_move
         status.apply_move('QB3', 'COMP_R')
-        assert status.res_qb_map['COMP_R'] == 'QB3'
+        assert status.res_state_owner['COMP_R'] == 'QB3'
         status.apply_move('QB3', 'COMP_R')
-        assert status.res_qb_map['COMP_R'] == 'COMP_R'
+        assert status.res_state_owner['COMP_R'] == 'COMP_R'
         with pytest.raises(CircuitTranspilationError):
             status.apply_move('QB1', 'COMP_R')
         with pytest.raises(CircuitTranspilationError):
             status.apply_move('QB1', 'QB2')
-        status.res_qb_map['COMP_R'] = 'QB1'
+        status.res_state_owner['COMP_R'] = 'QB1'
         with pytest.raises(CircuitTranspilationError):
             status.apply_move('QB3', 'COMP_R')
 
@@ -461,51 +461,40 @@ class TestResonatorStateTracker:
         sample_move_architecture.gates['move'].implementations[default_move_impl].loci += (('QB1', 'COMP_R'),)
         status = ResonatorStateTracker.from_dynamic_architecture(sample_move_architecture)
         instr = Instruction(name='move', qubits=('QB3', 'COMP_R'), args={})
-        # Check insertion without and with apply_move
-        gen_instr = tuple(status.create_move_instructions('QB3', 'COMP_R', apply_move=False))
+        # Check insertion
+        gen_instr = tuple(status.create_move_instructions('QB3', 'COMP_R'))
         assert len(gen_instr) == 1
         assert gen_instr[0] == instr
-        assert status.res_qb_map['COMP_R'] == 'COMP_R'
-        gen_instr = tuple(status.create_move_instructions('QB3', 'COMP_R', apply_move=True))
+        assert status.res_state_owner['COMP_R'] == 'QB3'
+        gen_instr = tuple(status.create_move_instructions('QB3', 'COMP_R'))
         assert len(gen_instr) == 1
         assert gen_instr[0] == instr
-        assert status.res_qb_map['COMP_R'] == 'QB3'
-        status.res_qb_map['COMP_R'] = 'QB1'
-        # Check removal without and with apply_move
-        gen_instr = tuple(status.create_move_instructions('QB3', 'COMP_R', apply_move=False))
+        assert status.res_state_owner['COMP_R'] == 'COMP_R'
+        status.res_state_owner['COMP_R'] = 'QB1'
+        # Check removal
+        gen_instr = tuple(status.create_move_instructions('QB3', 'COMP_R'))
         assert len(gen_instr) == 2
         assert gen_instr[0] == Instruction(name='move', qubits=('QB1', 'COMP_R'), args={})
         assert gen_instr[1] == instr
-        # Check with a qubit mapping
-        gen_instr = tuple(
-            status.create_move_instructions('QB3', 'COMP_R', apply_move=True, alt_qubit_names=self.alt_qubit_names)
-        )
-        assert len(gen_instr) == 2
-        assert gen_instr[0] == Instruction(name='move', qubits=('B', 'A'), args={})
-        assert gen_instr[1] == Instruction(name='move', qubits=('C', 'A'), args={})
-        assert status.res_qb_map['COMP_R'] == 'QB3'
+        assert status.res_state_owner['COMP_R'] == 'QB3'
 
     def test_reset_as_move_instructions(self, sample_move_architecture):
         status = ResonatorStateTracker.from_dynamic_architecture(sample_move_architecture)
         # No reset needed
         gen_instr = tuple(status.reset_as_move_instructions())
         assert len(gen_instr) == 0
-        # Reset with argument and not apply_move
+        # Reset with argument
         status.apply_move('QB3', 'COMP_R')
-        gen_instr = tuple(status.reset_as_move_instructions(['COMP_R'], apply_move=False))
+        gen_instr = tuple(status.reset_as_move_instructions(['COMP_R']))
         assert len(gen_instr) == 1
         assert gen_instr[0] == Instruction(name='move', qubits=('QB3', 'COMP_R'), args={})
-        assert status.res_qb_map['COMP_R'] == 'QB3'
-        # Reset without argument, with qubit mapping, and not apply_move
-        gen_instr = tuple(status.reset_as_move_instructions(apply_move=False, alt_qubit_names=self.alt_qubit_names))
-        assert len(gen_instr) == 1
-        assert gen_instr[0] == Instruction(name='move', qubits=('C', 'A'), args={})
-        assert status.res_qb_map['COMP_R'] == 'QB3'
-        # Reset without arguments and with apply_move
-        gen_instr = tuple(status.reset_as_move_instructions(apply_move=True))
+        assert status.res_state_owner['COMP_R'] == 'COMP_R'
+        # Reset without arguments
+        status.apply_move('QB3', 'COMP_R')
+        gen_instr = tuple(status.reset_as_move_instructions())
         assert len(gen_instr) == 1
         assert gen_instr[0] == Instruction(name='move', qubits=('QB3', 'COMP_R'), args={})
-        assert status.res_qb_map['COMP_R'] == 'COMP_R'
+        assert status.res_state_owner['COMP_R'] == 'COMP_R'
 
     def test_available_resonators_to_move(self, sample_move_architecture):
         components = sample_move_architecture.components
@@ -530,14 +519,19 @@ class TestResonatorStateTracker:
         with pytest.raises(CircuitTranspilationError):
             status.choose_move_pair(['QB1', 'QB2'], [])
         resonator_candidates = status.choose_move_pair(
-            ['QB1', 'QB2', 'QB3'], [['cz', 'QB2', 'QB3'], ['prx', 'QB2'], ['prx', 'QB3']]
+            ['QB1', 'QB2', 'QB3'],
+            [
+                Instruction(name='cz', qubits=('QB2', 'QB3'), args={}),
+                Instruction(name='prx', qubits=('QB2',), args={'phase_t': 0.3, 'angle_t': -0.2}),
+                Instruction(name='prx', qubits=('QB3',), args={'phase_t': 0.3, 'angle_t': -0.2}),
+            ],
         )
-        r, q, _ = resonator_candidates[0]
+        r, q = resonator_candidates[0]
         assert r == 'COMP_R'
         assert q == 'QB3'
 
-    def test_update_state_in_resonator(self, sample_move_architecture):
+    def test_map_resonators_in_locus(self, sample_move_architecture):
         components = sample_move_architecture.components
         status = ResonatorStateTracker.from_dynamic_architecture(sample_move_architecture)
         status.apply_move('QB3', 'COMP_R')
-        assert status.update_qubits_in_resonator(components) == ['QB3', 'COMP_R2', 'QB1', 'QB2', 'QB3']
+        assert status.map_resonators_in_locus(components) == ('QB3', 'COMP_R2', 'QB1', 'QB2', 'QB3')
