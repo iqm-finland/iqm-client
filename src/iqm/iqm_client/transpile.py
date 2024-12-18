@@ -158,7 +158,7 @@ class _ResonatorStateTracker:
         resonator: str,
         *,
         apply_move: Optional[bool] = True,
-        alt_qubit_names: Optional[dict[str, str]] = None,
+        reverse_qubit_mapping: Optional[dict[str, str]] = None,
     ) -> Iterable[Instruction]:
         """MOVE instruction(s) to move the state of the given resonator into the
         resonator if needed and then move resonator state to the given qubit.
@@ -167,7 +167,7 @@ class _ResonatorStateTracker:
             qubit: The qubit
             resonator: The resonator
             apply_move: Whether the moves should be applied to the resonator tracking state.
-            alt_qubit_names: Mapping of physical qubit names to logical qubit names.
+            reverse_qubit_mapping: Mapping of physical qubit names to logical qubit names.
 
         Yields:
             The one or two MOVE instructions needed.
@@ -177,27 +177,27 @@ class _ResonatorStateTracker:
             other = res_state_owner
             if apply_move:
                 self.apply_move(other, resonator)
-            qbs = tuple(alt_qubit_names[q] if alt_qubit_names else q for q in [other, resonator])
+            qbs = tuple(reverse_qubit_mapping[q] if reverse_qubit_mapping else q for q in [other, resonator])
             yield Instruction(name=self.move_gate, qubits=qbs, args={})
         if apply_move:
             self.apply_move(qubit, resonator)
-        qbs = tuple(alt_qubit_names[q] if alt_qubit_names else q for q in [qubit, resonator])
+        qbs = tuple(reverse_qubit_mapping[q] if reverse_qubit_mapping else q for q in [qubit, resonator])
         yield Instruction(name=self.move_gate, qubits=qbs, args={})
 
     def reset_as_move_instructions(
         self,
         resonators: Optional[Iterable[str]] = None,
         *,
-        apply_move: Optional[bool] = True,
-        alt_qubit_names: Optional[dict[str, str]] = None,
+        reverse_qubit_mapping: Optional[dict[str, str]] = None,
     ) -> list[Instruction]:
         """MOVE instructions that move all the states held in the given resonators back to their qubits.
+
+        Applies the returned MOVE instructions on the tracker state.
 
         Args:
             resonators: Resonators that hold qubit states that should be moved back to the qubits.
                 If ``None``, the states in any resonators will be returned to the qubits.
-            apply_move: Whether the moves should be applied to the resonator tracking state.
-            alt_qubit_names: physical to logical mapping????
+            reverse_qubit_mapping: Mapping of physical qubit names to logical qubit names.
 
         Returns:
             Instructions needed to move all qubit states out of the resonators.
@@ -208,11 +208,9 @@ class _ResonatorStateTracker:
         instructions: list[Instruction] = []
         for r, q in self.res_state_owner.items():
             if r != q and r in resonators:
-                # qbs = tuple(alt_qubit_names[q] if alt_qubit_names else q for q in [qubit, resonator])
-                # instructions.append(Instruction(name=self.move_gate, qubits=qbs, args={}))
-                instructions += self.create_move_instructions(
-                    q, r, apply_move=apply_move, alt_qubit_names=alt_qubit_names
-                )
+                locus = tuple(reverse_qubit_mapping[q] if reverse_qubit_mapping else q for q in [q, r])
+                instructions.append(Instruction(name=self.move_gate, qubits=locus, args={}))
+                self.apply_move(q, r)
         return instructions
 
     def available_resonators_to_move(self, qubits: Iterable[str]) -> dict[str, list[str]]:
@@ -239,53 +237,53 @@ class _ResonatorStateTracker:
 
     def choose_move_pair(
         self, qubits: list[str], remaining_instructions: list[list[str]]
-    ) -> list[tuple[str, str, list[list[str]]]]:
+    ) -> list[tuple[str, str]]:
         """Choose which of the given qubits to move into which resonator.
 
-
-        , given a sequence of instructions to be
-        executed later for looking ahead.
+        The choice is made using a heuristic based on the given lookahead sequence
+        of instructions to executed later.
 
         Args:
-            qubits: The qubits to choose from
-            remaining_instructions: The instructions to use for the look-ahead.
+            qubits: The qubits to choose from.
+            remaining_instructions: Look-ahead instructions.
 
         Raises:
-            CircuitTranspilationError: When no move pair is available, most likely because the circuit was not routed.
+            CircuitTranspilationError: No MOVE pair is available, most likely because the circuit
+                was not properly routed.
 
         Returns:
-            A sorted preference list of resonator and qubit chosen to apply the move on.
+            A sorted preference list of (resonator, qubit) pairs to apply the MOVE on.
         """
-        r_candidates = [
-            (r, q, remaining_instructions) for q, rs in self.available_resonators_to_move(qubits).items() for r in rs
-        ]
+
+        def choice_heuristic(args: tuple[str, str]) -> int:
+            """A simple look ahead heuristic for choosing which qubit to move where.
+
+            Counts the number of CZ gates until the qubit needs to be moved out.
+
+            Args:
+                args: resonator, qubit
+
+            Returns:
+                The count/score.
+            """
+            _, qb = args
+            score: int = 0
+            for instr in remaining_instructions:
+                if qb in instr:
+                    if instr[0] != 'cz':
+                        return score
+                    score += 1
+            return score
+
+        r_candidates = [(r, q) for q, rs in self.available_resonators_to_move(qubits).items() for r in rs]
         if len(r_candidates) == 0:
             raise CircuitTranspilationError(
                 f'Unable to insert MOVE gates because none of the qubits {qubits} share a resonator. '
                 + 'This can be resolved by routing the circuit first without resonators.'
             )
-        resonator_candidates = list(sorted(r_candidates, key=self._score_choice_heuristic, reverse=True))
+        resonator_candidates = list(sorted(r_candidates, key=choice_heuristic, reverse=True))
         return resonator_candidates
 
-    def _score_choice_heuristic(self, args: tuple[str, str, list[list[str]]]) -> int:
-        """A simple look ahead heuristic for choosing which qubit to move where.
-
-        Counts the number of CZ gates until the qubit needs to be moved out.
-
-        Args:
-            args: resonator, qubit, instructions.
-
-        Returns:
-            The count/score.
-        """
-        _, qb, circ = args
-        score: int = 0
-        for instr in circ:
-            if qb in instr:
-                if instr[0] != 'cz':
-                    return score
-                score += 1
-        return score
 
     def map_resonators_in_locus(self, locus: Iterable[str]) -> Locus:
         """Map any resonators in the given instruction locus into the QPU components whose state is
@@ -316,6 +314,8 @@ def transpile_insert_moves(
     The function does nothing if ``arch`` does not support MOVE gates.
     Note that this method normally assumes that ``circuit`` is transpiled to a fake architecture
     where the resonators have been abstracted away.
+
+    Assumes that MOVE and CZ gates on the Star architecture act always on a (qubit, resonator) locus.
 
     Args:
         circuit: The fake architecture circuit to convert.
@@ -354,6 +354,7 @@ def transpile_insert_moves(
 
     if existing_moves is None or existing_moves == ExistingMoveHandlingOptions.REMOVE:
         # convert the circuit into a pure fake architecture circuit
+        # TODO do we need to call this if the circuit has no MOVEs?
         circuit = transpile_remove_moves(circuit)
     elif existing_moves == ExistingMoveHandlingOptions.KEEP:
         try:
@@ -365,7 +366,7 @@ def transpile_insert_moves(
 
     rev_qubit_mapping = {v: k for k, v in qubit_mapping.items()}
     new_instructions = _transpile_insert_moves(list(circuit.instructions), tracker, arch, qubit_mapping)
-    new_instructions += tracker.reset_as_move_instructions(alt_qubit_names=rev_qubit_mapping)
+    new_instructions += tracker.reset_as_move_instructions(reverse_qubit_mapping=rev_qubit_mapping)
 
     return Circuit(name=circuit.name, instructions=new_instructions, metadata=circuit.metadata)
 
@@ -403,39 +404,47 @@ def _transpile_insert_moves(
     # physical to logical
     rev_qubit_mapping = {v: k for k, v in qubit_mapping.items()}
 
-    for idx, i in enumerate(instructions):
-        qubits = [qubit_mapping[q] for q in i.qubits]
-        res_match = tracker.resonators_holding_qubits(qubits)
-        if res_match and i.name not in ['cz', tracker.move_gate]:
+    for idx, inst in enumerate(instructions):
+        phys_locus = [qubit_mapping[q] for q in inst.qubits]
+
+        # are some of the locus qubits' states currently in a resonator?
+        res_match = tracker.resonators_holding_qubits(phys_locus)
+        if res_match and inst.name not in ['cz', tracker.move_gate]:
             # We have a gate on a qubit whose state is currently in a resonator, and that gate cannot
-            # be executed on the resonator (incl. barriers)
-            new_instructions += tracker.reset_as_move_instructions(res_match, alt_qubit_names=rev_qubit_mapping)
-            new_instructions.append(i)
+            # be executed on the resonator (incl. barriers), so return the state to the qubit and then apply the gate.
+            new_instructions += tracker.reset_as_move_instructions(res_match, reverse_qubit_mapping=rev_qubit_mapping)
+            new_instructions.append(inst)
         else:
+            # Either the gate locus does not involve qubits whose states are in a resonator,
+            # or the gate is MOVE or CZ.
             # Check if the instruction is valid, which raises an exception if not.
             try:
                 IQMClient._validate_instruction(
                     architecture=arch,
-                    instruction=i,
+                    instruction=inst,
                     qubit_mapping=qubit_mapping,
                 )
-                new_instructions.append(i)  # No adjustment needed
-                if i.name == tracker.move_gate:  # update the tracker if needed
-                    tracker.apply_move(*[qubit_mapping[q] for q in i.qubits])
+                new_instructions.append(inst)  # No adjustment needed
+                if inst.name == tracker.move_gate:
+                    # MOVE: update the tracker
+                    tracker.apply_move(*phys_locus)
             except CircuitValidationError as e:
-                if i.name != 'cz':  # We can only fix cz gates at this point
+                if inst.name != 'cz':  # We can only fix CZ gates at this point
                     raise CircuitTranspilationError(
                         f'Unable to transpile the circuit after validation error: {e.args[0]}'
                     ) from e
-                # Pick which qubit-resonator pair to apply this cz to
+                # CZ: cannot be applied to this locus, one of the qubits needs to be moved into a resonator.
+                # Pick which qubit-resonator pair to apply this CZ to
                 # Pick from qubits already in a resonator or both targets if none off them are in a resonator
+
+
                 resonator_candidates: Optional[list[tuple[str, str, Any]]] = tracker.choose_move_pair(
-                    [tracker.res_state_owner[res] for res in res_match] if res_match else qubits,
-                    [[i.name] + [qubit_mapping[q] for q in i.qubits] for i in instructions[idx:]],
+                    [tracker.res_state_owner[res] for res in res_match] if res_match else phys_locus,
+                    [[k.name] + [qubit_mapping[q] for q in k.qubits] for k in instructions[idx:]],
                 )
                 while resonator_candidates:
-                    r, q1, _ = resonator_candidates.pop(0)
-                    q2 = [q for q in qubits if q != q1][0]
+                    r, q1 = resonator_candidates.pop(0)
+                    q2 = [q for q in phys_locus if q != q1][0]
                     try:
                         IQMClient._validate_instruction(
                             architecture=arch,
@@ -456,11 +465,11 @@ def _transpile_insert_moves(
 
                 # remove the other qubit from the resonator if it was in
                 new_instructions += tracker.reset_as_move_instructions(
-                    [res for res in res_match if res != r], alt_qubit_names=rev_qubit_mapping
+                    [res for res in res_match if res != r], reverse_qubit_mapping=rev_qubit_mapping
                 )
                 # move the qubit into the resonator if it was not yet in.
                 if not res_match:
-                    new_instructions += tracker.create_move_instructions(q1, r, alt_qubit_names=rev_qubit_mapping)
+                    new_instructions += tracker.create_move_instructions(q1, r, reverse_qubit_mapping=rev_qubit_mapping)
                 new_instructions.append(
                     Instruction(name='cz', qubits=(rev_qubit_mapping[q2], rev_qubit_mapping[r]), args={})
                 )
@@ -482,14 +491,14 @@ def transpile_remove_moves(circuit: Circuit) -> Circuit:
     """
     tracker = _ResonatorStateTracker.from_circuit(circuit)
     new_instructions = []
-    for i in circuit.instructions:
-        if i.name == tracker.move_gate:
+    for inst in circuit.instructions:
+        if inst.name == tracker.move_gate:
             # update the state tracking, drop the MOVE
-            tracker.apply_move(*i.qubits)
+            tracker.apply_move(*inst.qubits)
         else:
             # map the instruction locus
-            new_qubits = tracker.map_resonators_in_locus(i.qubits)
+            new_qubits = tracker.map_resonators_in_locus(inst.qubits)
             new_instructions.append(
-                Instruction(name=i.name, implementation=i.implementation, qubits=new_qubits, args=i.args)
+                Instruction(name=inst.name, implementation=inst.implementation, qubits=new_qubits, args=inst.args)
             )
     return Circuit(name=circuit.name, instructions=new_instructions, metadata=circuit.metadata)
