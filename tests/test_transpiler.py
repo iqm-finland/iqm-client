@@ -535,7 +535,12 @@ class TestResonatorStateTracker:
         with pytest.raises(CircuitTranspilationError):
             status.choose_move_pair(['QB1', 'QB2'], [])
         resonator_candidates = status.choose_move_pair(
-            ['QB1', 'QB2', 'QB3'], [['cz', 'QB2', 'QB3'], ['prx', 'QB2'], ['prx', 'QB3']]
+            ['QB1', 'QB2', 'QB3'],
+            [
+                Instruction(name='cz', qubits=('QB2', 'QB3'), args={}),
+                Instruction(name='prx', qubits=('QB2',), args={'phase_t': 0.3, 'angle_t': -0.2}),
+                Instruction(name='prx', qubits=('QB3',), args={'phase_t': 0.3, 'angle_t': -0.2}),
+            ],
         )
         r, q = resonator_candidates[0]
         assert r == 'COMP_R'

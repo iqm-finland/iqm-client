@@ -242,7 +242,7 @@ class _ResonatorStateTracker:
         """
         return [r for r, q in self.res_state_owner.items() if q in qubits and q not in self.resonators]
 
-    def choose_move_pair(self, qubits: list[str], remaining_instructions: list[list[str]]) -> list[tuple[str, str]]:
+    def choose_move_pair(self, qubits: list[str], remaining_instructions: Iterable[Instruction]) -> list[tuple[str, str]]:
         """Choose which of the given qubits to move into which resonator.
 
         The choice is made using a heuristic based on the given lookahead sequence
@@ -262,20 +262,16 @@ class _ResonatorStateTracker:
 
         def choice_heuristic(args: tuple[str, str]) -> int:
             """A simple look ahead heuristic for choosing which qubit to move where.
-
-            Counts the number of CZ gates until the qubit needs to be moved out.
+            Returns the number of CZ gates until the qubit needs to be moved out.
 
             Args:
                 args: resonator, qubit
-
-            Returns:
-                The count/score.
             """
             _, qb = args
             score: int = 0
             for instr in remaining_instructions:
-                if qb in instr:
-                    if instr[0] != 'cz':
+                if qb in instr.qubits:
+                    if instr.name != 'cz':
                         return score
                     score += 1
             return score
@@ -444,32 +440,30 @@ def _transpile_insert_moves(
                 # CZ: cannot be applied to this locus, one of the qubits needs to be moved into a resonator.
                 # Pick which qubit-resonator pair to apply this CZ to
                 # Pick from qubits already in a resonator or both targets if none off them are in a resonator
-                resonator_candidates: Optional[list[tuple[str, str, Any]]] = tracker.choose_move_pair(
+                move_candidates = tracker.choose_move_pair(
                     [tracker.res_state_owner[res] for res in res_match] if res_match else locus,
-                    [[k.name] + list(k.qubits) for k in instructions[idx:]],
+                    instructions[idx:],
                 )
-                while resonator_candidates:
-                    r, q1 = resonator_candidates.pop(0)
+                for r, q1 in move_candidates:
+                    # the other CZ locus qubit is not moved
                     q2 = [q for q in locus if q != q1][0]
                     try:
                         IQMClient._validate_instruction(
                             architecture=arch,
                             instruction=Instruction(name='cz', qubits=(q2, r), args={}),
                         )
-                        resonator_candidates = None
                         break
                     except CircuitValidationError:
                         pass
-
-                if resonator_candidates is not None:
+                else:
+                    # ran out of candidates, did not hit break
                     raise CircuitTranspilationError(
                         'Unable to find a valid resonator-qubit pair for a MOVE gate to enable this CZ gate.'
                     ) from e
 
                 # remove the other qubit from the resonator if it was in
-                new_instructions += tracker.reset_as_move_instructions(
-                    [res for res in res_match if res != r],
-                )
+                new_instructions += tracker.reset_as_move_instructions([res for res in res_match if res != r])
+
                 # move the qubit into the resonator if it was not yet in.
                 if not res_match:
                     new_instructions += tracker.create_move_instructions(q1, r)
