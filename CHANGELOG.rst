@@ -5,7 +5,7 @@ Changelog
 Version 21.0
 ============
 
-* Make the transpilation details private, improve the docs.  `#156 <https://github.com/iqm-finland/iqm-client/pull/156>`_
+* Simplify the transpilation code, make its details private, improve the docs. `#156 <https://github.com/iqm-finland/iqm-client/pull/156>`_
 
 Version 20.10
 =============
