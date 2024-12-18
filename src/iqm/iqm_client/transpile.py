@@ -38,7 +38,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from enum import Enum
-from typing import Any, Optional
+from typing import Optional
 import warnings
 
 from iqm.iqm_client import (
@@ -163,39 +163,30 @@ class _ResonatorStateTracker:
         self,
         qubit: str,
         resonator: str,
-        *,
-        apply_move: Optional[bool] = True,
-        reverse_qubit_mapping: Optional[dict[str, str]] = None,
     ) -> Iterable[Instruction]:
         """MOVE instruction(s) to move the state of the given resonator into the
-        resonator if needed and then move resonator state to the given qubit.
+        qubit that owns it if needed, and then move the state of the given qubit to the resonator.
 
         Args:
             qubit: The qubit
             resonator: The resonator
-            apply_move: Whether the moves should be applied to the resonator tracking state.
-            reverse_qubit_mapping: Mapping of physical qubit names to logical qubit names.
 
         Yields:
             The one or two MOVE instructions needed.
         """
         res_state_owner = self.res_state_owner[resonator]
         if res_state_owner not in [qubit, resonator]:
-            other = res_state_owner
-            if apply_move:
-                self.apply_move(other, resonator)
-            qbs = tuple(reverse_qubit_mapping[q] if reverse_qubit_mapping else q for q in [other, resonator])
-            yield Instruction(name=self.move_gate, qubits=qbs, args={})
-        if apply_move:
-            self.apply_move(qubit, resonator)
-        qbs = tuple(reverse_qubit_mapping[q] if reverse_qubit_mapping else q for q in [qubit, resonator])
-        yield Instruction(name=self.move_gate, qubits=qbs, args={})
+            locus = (res_state_owner, resonator)
+            self.apply_move(*locus)
+            yield Instruction(name=self.move_gate, qubits=locus, args={})
+
+        locus = (qubit, resonator)
+        self.apply_move(*locus)
+        yield Instruction(name=self.move_gate, qubits=locus, args={})
 
     def reset_as_move_instructions(
         self,
         resonators: Optional[Iterable[str]] = None,
-        *,
-        reverse_qubit_mapping: Optional[dict[str, str]] = None,
     ) -> list[Instruction]:
         """MOVE instructions that move all the states held in the given resonators back to their qubits.
 
@@ -204,7 +195,6 @@ class _ResonatorStateTracker:
         Args:
             resonators: Resonators that hold qubit states that should be moved back to the qubits.
                 If ``None``, the states in any resonators will be returned to the qubits.
-            reverse_qubit_mapping: Mapping of physical qubit names to logical qubit names.
 
         Returns:
             Instructions needed to move all qubit states out of the resonators.
@@ -215,9 +205,9 @@ class _ResonatorStateTracker:
         instructions: list[Instruction] = []
         for r, q in self.res_state_owner.items():
             if r != q and r in resonators:
-                locus = tuple(reverse_qubit_mapping[q] if reverse_qubit_mapping else q for q in [q, r])
+                locus = (q, r)
                 instructions.append(Instruction(name=self.move_gate, qubits=locus, args={}))
-                self.apply_move(q, r)
+                self.apply_move(*locus)
         return instructions
 
     def available_resonators_to_move(self, qubits: Iterable[str]) -> dict[str, list[str]]:
@@ -242,7 +232,9 @@ class _ResonatorStateTracker:
         """
         return [r for r, q in self.res_state_owner.items() if q in qubits and q not in self.resonators]
 
-    def choose_move_pair(self, qubits: list[str], remaining_instructions: Iterable[Instruction]) -> list[tuple[str, str]]:
+    def choose_move_pair(
+        self, qubits: list[str], remaining_instructions: Iterable[Instruction]
+    ) -> list[tuple[str, str]]:
         """Choose which of the given qubits to move into which resonator.
 
         The choice is made using a heuristic based on the given lookahead sequence
