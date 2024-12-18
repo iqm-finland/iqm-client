@@ -191,12 +191,9 @@ class TestNaiveMoveTranspiler:
     ):
         return transpile_insert_moves(circuit, arch=self.arch, existing_moves=arg, qubit_mapping=qb_map)
 
-    def remove(self, circuit: Circuit):
-        return transpile_remove_moves(circuit)
-
     def check_equiv_without_moves(self, c1: Circuit, c2: Circuit):
-        c1 = self.remove(c1)
-        c2 = self.remove(c2)
+        c1 = transpile_remove_moves(c1)
+        c2 = transpile_remove_moves(c2)
         for i1, i2 in zip(c1.instructions, c2.instructions):
             if i1.name != i2.name or i1.args != i2.args:
                 return False
@@ -269,7 +266,7 @@ class TestNaiveMoveTranspiler:
         """Tests if removing works as intended."""
         for c in [self.safe_circuit, self.unsafe_circuit, self.ambiguous_circuit]:
             moves = tuple(i for i in c.instructions if i.name == 'move')
-            c1 = self.remove(c)
+            c1 = transpile_remove_moves(c)
             assert not self.check_moves_in_circuit(c1, moves)
             c1_with = self.insert(c1, ExistingMoveHandlingOptions.REMOVE)
             c1_direct = self.insert(c, ExistingMoveHandlingOptions.REMOVE)
@@ -482,7 +479,9 @@ class TestResonatorStateTracker:
         assert gen_instr[1] == instr
         # Check with a qubit mapping
         gen_instr = tuple(
-            status.create_move_instructions('QB3', 'COMP_R', apply_move=True, reverse_qubit_mapping=self.reverse_qubit_mapping)
+            status.create_move_instructions(
+                'QB3', 'COMP_R', apply_move=True, reverse_qubit_mapping=self.reverse_qubit_mapping
+            )
         )
         assert len(gen_instr) == 2
         assert gen_instr[0] == Instruction(name='move', qubits=('B', 'A'), args={})
