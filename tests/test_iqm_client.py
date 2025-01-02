@@ -32,6 +32,7 @@ from iqm.iqm_client import (
     CircuitExecutionError,
     CircuitValidationError,
     ClientConfigurationError,
+    Counts,
     DynamicQuantumArchitecture,
     HeraldingMode,
     Instruction,
@@ -1106,4 +1107,35 @@ def test_check_versions_request_exception(base_url):
         match=re.escape('Could not verify IQM Client compatibility with the server. You might encounter issues.'),
     ):
         IQMClient(base_url)
+    unstub()
+
+
+def test_get_run_counts(base_url, sample_client, existing_run_id):
+    """Test that the number of runs is returned."""
+    expect(requests, times=1).get(f'{base_url}/jobs/{existing_run_id}/counts', ...).thenReturn(
+        MockJsonResponse(
+            200,
+            {
+                'status': 'ready',
+                'counts_batch': [
+                    {
+                        'measurement_keys': ['m1'],
+                        'counts': {'0': 5, '1': 5},
+                    },
+                    {
+                        'measurement_keys': ['m2'],
+                        'counts': {'0': 1, '1': 9},
+                    },
+                ],
+                'warnings': [],
+            },
+        )
+    )
+    counts = sample_client.get_run_counts(existing_run_id)
+    assert counts.status == Status.READY
+    assert counts.counts_batch == [
+        Counts(measurement_keys=['m1'], counts={'0': 5, '1': 5}),
+        Counts(measurement_keys=['m2'], counts={'0': 1, '1': 9}),
+    ]
+    verifyNoUnwantedInteractions()
     unstub()

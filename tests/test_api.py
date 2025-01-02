@@ -30,7 +30,7 @@ def test_api_config_initialization(sample_api_config):
     assert isinstance(sample_api_config.urls, dict)
 
 
-@pytest.mark.parametrize("variant", [None, APIVariant.V1, APIVariant.V2])
+@pytest.mark.parametrize("variant", [None, APIVariant.V1, APIVariant.V2, APIVariant.RESONANCE_V1])
 def test_api_config_is_v1_by_default(variant):
     """Test that APIConfig is V1 by default for backward compatibility."""
     iqm_client = IQMClient("https://example.com", api_variant=variant)
@@ -43,7 +43,7 @@ def test_api_config_get_api_urls_invalid_variant():
         APIConfig("INVALID", "https://example.com")._get_api_urls()
 
 
-@pytest.mark.parametrize("variant", [APIVariant.V1, APIVariant.V2])
+@pytest.mark.parametrize("variant", [APIVariant.V1, APIVariant.V2, APIVariant.RESONANCE_V1])
 def test_api_config_is_supported(variant):
     """Test that is_supported returns correct values"""
     api_config = APIConfig(variant, "https://example.com")

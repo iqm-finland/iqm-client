@@ -960,3 +960,41 @@ class RunStatus(BaseModel):
         """
         input_copy = inp.copy()
         return RunStatus(status=Status(input_copy.pop('status')), **input_copy)
+
+
+class Counts(BaseModel):
+    """Measurement results in the counts representation"""
+
+    measurement_keys: list[str]
+    """measurement keys in the order they are concatenated to form the states in counts"""
+    counts: dict[str, int]
+    """counts as a dictionary mapping states represented as bitstrings to the number of shots they were measured"""
+
+
+class RunCounts(BaseModel):
+    """Measurement counts of a circuit execution job."""
+
+    status: Status = Field(...)
+    """current status of the job, in ``{'pending compilation', 'pending execution', 'ready', 'failed', 'aborted'}``"""
+    counts_batch: Optional[list[Counts]] = Field(
+        None,
+        description="""Measurement results in histogram representation.
+    The `measurement_keys` list provides the order of the measurment keys for the repesentation of the states in the keys
+    of the `counts` dictionary. As an example if `measurement_keys` is `['mk_1', 'mk2']` and `mk_1` refers to `QB1` and `mk_2`
+    refers to `QB3` and `QB5` then counts could contains keys such as '010' with `QB1` in the 0, `QB3` in the 1 and `QB5` in
+    the 0 state.""",
+    )
+
+    @staticmethod
+    def from_dict(inp: dict[str, Union[str, dict, list, None]]) -> RunCounts:
+        """Parses the result from a dict.
+
+        Args:
+            inp: value to parse, has to map to RunCounts
+
+        Returns:
+            parsed job status
+
+        """
+        input_copy = inp.copy()
+        return RunCounts(status=Status(input_copy.pop('status')), **input_copy)

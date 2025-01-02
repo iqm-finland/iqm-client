@@ -54,6 +54,7 @@ from iqm.iqm_client.models import (
     MoveGateValidationMode,
     QuantumArchitecture,
     QuantumArchitectureSpecification,
+    RunCounts,
     RunRequest,
     RunResult,
     RunStatus,
@@ -958,3 +959,35 @@ class IQMClient:
             # we don't want the version check to prevent usage of IQMClient in any situation
             pass
         return 'Could not verify IQM Client compatibility with the server. You might encounter issues.'
+
+
+    def get_run_counts(self, job_id: UUID, *, timeout_secs: float = REQUESTS_TIMEOUT) -> RunCounts:
+        """Query the counts of an executed job.
+
+        Args:
+            job_id: id of the job to query
+            timeout_secs: network request timeout
+
+        Returns:
+            counts strings dictionary
+
+        Raises:
+            CircuitExecutionError: IQM server specific exceptions
+            HTTPException: HTTP exceptions
+        """
+        result = self._retry_request_on_error(
+            lambda: requests.get(
+                self._api.url(APIEndpoint.GET_JOB_COUNTS, str(job_id)),
+                headers=self._default_headers(),
+                timeout=timeout_secs,
+            )
+        )
+
+        self._check_not_found_error(result)
+        result.raise_for_status()
+        try:
+            run_counts = RunCounts.from_dict(result.json())
+        except (json.decoder.JSONDecodeError, KeyError) as e:
+            raise CircuitExecutionError(f'Invalid response: {result.text}, {e}') from e
+
+        return run_counts
