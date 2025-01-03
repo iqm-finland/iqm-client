@@ -2,6 +2,13 @@
 Changelog
 =========
 
+Version 20.11
+=============
+
+* Add ``RESONANCE_COCOS_V1`` API variant option for Resonance Cocos API v1. `#158 <https://github.com/iqm-finland/iqm-client/pull/158>`_
+* Add ``IQMClient::get_run_counts`` method. `#158 <https://github.com/iqm-finland/iqm-client/pull/158>`_
+* Add ``IQMClient::get_supported_client_libraries`` method. `#158 <https://github.com/iqm-finland/iqm-client/pull/158>`_
+
 Version 20.10
 =============
 
