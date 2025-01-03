@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "iqm-client"
-dynamic = ["version"]
+dynamic = ["version", "dependencies", "optional-dependencies"]
 description = "Client library for accessing an IQM quantum computer"
 authors = [{name="IQM Finland Oy", email="developers@meetiqm.com"}]
 readme = "README.rst"
@@ -17,43 +17,24 @@ classifiers = [
     "License :: OSI Approved :: Apache Software License",
 ]
 requires-python = ">=3.9, <3.13"
-dependencies = [
-    "numpy",
-    "packaging",
-    "requests >= 2.28.2, < 3.0",
-    "pydantic >= 2.4.2, < 3.0",
-]
-
 [project.urls]
 Homepage = "https://github.com/iqm-finland/iqm-client"
 Documentation = "https://iqm-finland.github.io/iqm-client"
 
-[project.optional-dependencies]
-# Add here additional requirements for extra features, to install with:
-# `pip install iqm-client[dev]`
-dev = [
-    "tox == 4.11.3",
-]
-testing = [
-    "black == 23.11.0",
-    "isort == 5.12.0",
-    "pylint == 3.0.2",
-    "mypy == 1.7.1",
-    "mockito == 1.4.0",
-    "pytest == 7.4.3",
-    "pytest-cov == 4.1.0",
-    "pytest-isort == 3.1.0",
-    "pytest-pylint == 0.21.0",
-    "pylint-pydantic == 0.3.0",
-    "types-requests == 2.28.9",
-    "jsons == 1.6.1",
-    "freezegun == 1.5.1",
-]
-docs = [
-    "sphinx == 7.2.6",
-    "sphinx-book-theme == 1.1.2",
-]
+[tool.setuptools.dynamic.dependencies]
+file = "requirements/base.in"
 
+[tool.setuptools.dynamic.optional-dependencies.testing]
+file = "requirements/testing.in"
+
+[tool.setuptools.dynamic.optional-dependencies.docs]
+file = "requirements/docs.in"
+
+[tool.setuptools.dynamic.optional-dependencies.dev]
+file = "requirements/dev.in"
+
+[tool.setuptools.dynamic.optional-dependencies.lock]
+file = "requirements/lock.txt"
 
 [tool.setuptools_scm]
 # See configuration details in https://github.com/pypa/setuptools_scm

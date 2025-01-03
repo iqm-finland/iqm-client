@@ -22,6 +22,27 @@ If you want just this library, though, you can install it from the Python Packag
 
     $ pip install iqm-client
 
+Contributing
+============
+
+Format your code:
+
+.. code-block:: bash
+
+   $ tox -e format
+
+Run the tests:
+
+.. code-block:: bash
+
+   $ tox
+
+Update the requirements:
+
+.. code-block:: bash
+
+   $ tox -e pip-compile
+
 Documentation
 =============
 
