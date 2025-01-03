@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# pylint: disable=too-many-lines
 """This module contains the data models used by IQMClient."""
 
 from __future__ import annotations
@@ -998,3 +999,23 @@ class RunCounts(BaseModel):
         """
         input_copy = inp.copy()
         return RunCounts(status=Status(input_copy.pop('status')), **input_copy)
+
+
+class ClientLibrary(BaseModel):
+    """Represents a client library with its metadata.
+
+    Args:
+        name: display name of the client library.
+        package_name: name of the package as published in package repositories.
+        repo_url: URL to the source code repository.
+        package_url: URL to the package in the package repository.
+        min: minimum supported version.
+        max: maximum supported version.
+    """
+
+    name: str
+    package_name: Optional[str] = Field(None)
+    repo_url: Optional[str] = Field(None)
+    package_url: Optional[str] = Field(None)
+    min: str
+    max: str

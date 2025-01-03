@@ -77,11 +77,8 @@ def missing_run_id() -> UUID:
 
 @pytest.fixture()
 def sample_client(base_url) -> IQMClient:
-    client_version = parse(version('iqm-client'))
     when(requests).get(f'{base_url}/info/client-libraries', headers=ANY, timeout=ANY).thenReturn(
-        MockJsonResponse(
-            200, {'iqm-client': {'min': f'{client_version.major}.0', 'max': f'{client_version.major + 1}.0'}}
-        )
+        mock_supported_client_libraries_response()
     )
     client = IQMClient(url=base_url)
     client._token_manager = None  # Do not use authentication
@@ -90,6 +87,9 @@ def sample_client(base_url) -> IQMClient:
 
 @pytest.fixture()
 def client_with_signature(base_url) -> IQMClient:
+    when(requests).get(f'{base_url}/info/client-libraries', headers=ANY, timeout=ANY).thenReturn(
+        mock_supported_client_libraries_response()
+    )
     client = IQMClient(url=base_url, client_signature='some-signature')
     client._token_manager = None  # Do not use authentication
     return client
@@ -556,6 +556,24 @@ class MockJsonResponse:
     def raise_for_status(self):
         if 400 <= self.status_code < 600:
             raise HTTPError(f'{self.status_code}', response=self)
+
+
+def mock_supported_client_libraries_response(
+    iqm_client_name: str = 'iqm-client', max_version: Optional[str] = None, min_version: Optional[str] = None
+) -> MockJsonResponse:
+    client_version = parse(version('iqm-client'))
+    min_version = f'{client_version.major}.0' if min_version is None else min_version
+    max_version = f'{client_version.major + 1}.0' if max_version is None else max_version
+    return MockJsonResponse(
+        200,
+        {
+            iqm_client_name: {
+                'name': iqm_client_name,
+                'min': min_version,
+                'max': max_version,
+            }
+        },
+    )
 
 
 @pytest.fixture()
