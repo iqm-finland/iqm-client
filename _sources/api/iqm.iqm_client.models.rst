@@ -42,6 +42,8 @@ iqm.iqm\_client.models
    
       Circuit
       CircuitCompilationOptions
+      ClientLibrary
+      Counts
       DDMode
       DDStrategy
       DynamicQuantumArchitecture
@@ -56,6 +58,7 @@ iqm.iqm\_client.models
       NativeOperation
       QuantumArchitecture
       QuantumArchitectureSpecification
+      RunCounts
       RunRequest
       RunResult
       RunStatus

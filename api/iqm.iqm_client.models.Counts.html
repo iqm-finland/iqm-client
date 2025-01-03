@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>iqm.iqm_client.authentication.TokensFileReader &#8212; IQM client 20.11 documentation</title>
+    <title>iqm.iqm_client.models.Counts &#8212; IQM client 20.11 documentation</title>
   
   
   
@@ -44,12 +44,12 @@
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'api/iqm.iqm_client.authentication.TokensFileReader';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/iqm.iqm_client.models.Counts';</script>
     <link rel="icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="iqm.iqm_client.errors" href="iqm.iqm_client.errors.html" />
-    <link rel="prev" title="iqm.iqm_client.authentication.TokenProviderInterface" href="iqm.iqm_client.authentication.TokenProviderInterface.html" />
+    <link rel="next" title="iqm.iqm_client.models.DDMode" href="iqm.iqm_client.models.DDMode.html" />
+    <link rel="prev" title="iqm.iqm_client.models.ClientLibrary" href="iqm.iqm_client.models.ClientLibrary.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="20.11" />
@@ -156,12 +156,12 @@
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.api.APIVariant.html">iqm.iqm_client.api.APIVariant</a></li>
 </ul>
 </details></li>
-<li class="toctree-l3 current active has-children"><a class="reference internal" href="iqm.iqm_client.authentication.html">iqm.iqm_client.authentication</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3 has-children"><a class="reference internal" href="iqm.iqm_client.authentication.html">iqm.iqm_client.authentication</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.authentication.ExternalToken.html">iqm.iqm_client.authentication.ExternalToken</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.authentication.TokenClient.html">iqm.iqm_client.authentication.TokenClient</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.authentication.TokenManager.html">iqm.iqm_client.authentication.TokenManager</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.authentication.TokenProviderInterface.html">iqm.iqm_client.authentication.TokenProviderInterface</a></li>
-<li class="toctree-l4 current active"><a class="current reference internal" href="#">iqm.iqm_client.authentication.TokensFileReader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.authentication.TokensFileReader.html">iqm.iqm_client.authentication.TokensFileReader</a></li>
 </ul>
 </details></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="iqm.iqm_client.errors.html">iqm.iqm_client.errors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -179,7 +179,7 @@
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.IQMClient.html">iqm.iqm_client.iqm_client.IQMClient</a></li>
 </ul>
 </details></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="iqm.iqm_client.models.html">iqm.iqm_client.models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 current active has-children"><a class="reference internal" href="iqm.iqm_client.models.html">iqm.iqm_client.models</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.Locus.html">iqm.iqm_client.models.Locus</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.CircuitBatch.html">iqm.iqm_client.models.CircuitBatch</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.QubitMapping.html">iqm.iqm_client.models.QubitMapping</a></li>
@@ -192,7 +192,7 @@
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.Circuit.html">iqm.iqm_client.models.Circuit</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.CircuitCompilationOptions.html">iqm.iqm_client.models.CircuitCompilationOptions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.ClientLibrary.html">iqm.iqm_client.models.ClientLibrary</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.Counts.html">iqm.iqm_client.models.Counts</a></li>
+<li class="toctree-l4 current active"><a class="current reference internal" href="#">iqm.iqm_client.models.Counts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.DDMode.html">iqm.iqm_client.models.DDMode</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.DDStrategy.html">iqm.iqm_client.models.DDStrategy</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.DynamicQuantumArchitecture.html">iqm.iqm_client.models.DynamicQuantumArchitecture</a></li>
@@ -296,7 +296,7 @@
       
       
       
-      <li><a href="../_sources/api/iqm.iqm_client.authentication.TokensFileReader.rst" target="_blank"
+      <li><a href="../_sources/api/iqm.iqm_client.models.Counts.rst" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -372,7 +372,7 @@
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>iqm.iqm_client.authentication.TokensFileReader</h1>
+    <h1>iqm.iqm_client.models.Counts</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -382,9 +382,10 @@
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.authentication.TokensFileReader"><code class="docutils literal notranslate"><span class="pre">TokensFileReader</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.authentication.TokensFileReader.get_token"><code class="docutils literal notranslate"><span class="pre">TokensFileReader.get_token()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.authentication.TokensFileReader.close"><code class="docutils literal notranslate"><span class="pre">TokensFileReader.close()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.Counts"><code class="docutils literal notranslate"><span class="pre">Counts</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.Counts.model_config"><code class="docutils literal notranslate"><span class="pre">Counts.model_config</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.Counts.measurement_keys"><code class="docutils literal notranslate"><span class="pre">Counts.measurement_keys</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.Counts.counts"><code class="docutils literal notranslate"><span class="pre">Counts.counts</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -398,56 +399,58 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="iqm-iqm-client-authentication-tokensfilereader">
-<h1>iqm.iqm_client.authentication.TokensFileReader<a class="headerlink" href="#iqm-iqm-client-authentication-tokensfilereader" title="Link to this heading">#</a></h1>
+  <section id="iqm-iqm-client-models-counts">
+<h1>iqm.iqm_client.models.Counts<a class="headerlink" href="#iqm-iqm-client-models-counts" title="Link to this heading">#</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="iqm.iqm_client.authentication.TokensFileReader">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">iqm.iqm_client.authentication.</span></span><span class="sig-name descname"><span class="pre">TokensFileReader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tokens_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm.iqm_client.authentication.TokensFileReader" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="iqm.iqm_client.authentication.TokenProviderInterface.html#iqm.iqm_client.authentication.TokenProviderInterface" title="iqm.iqm_client.authentication.TokenProviderInterface"><code class="xref py py-class docutils literal notranslate"><span class="pre">TokenProviderInterface</span></code></a></p>
-<p>Reads token from a file</p>
+<dt class="sig sig-object py" id="iqm.iqm_client.models.Counts">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">iqm.iqm_client.models.</span></span><span class="sig-name descname"><span class="pre">Counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurement_keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#list" title="(in Python v3.12)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">counts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.12/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm.iqm_client.models.Counts" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Measurement results in the counts representation</p>
+<p class="rubric">Attributes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.models.Counts.model_config" title="iqm.iqm_client.models.Counts.model_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_config</span></code></a></p></td>
+<td><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.models.Counts.measurement_keys" title="iqm.iqm_client.models.Counts.measurement_keys"><code class="xref py py-obj docutils literal notranslate"><span class="pre">measurement_keys</span></code></a></p></td>
+<td><p>measurement keys in the order they are concatenated to form the states in counts</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.models.Counts.counts" title="iqm.iqm_client.models.Counts.counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">counts</span></code></a></p></td>
+<td><p>counts as a dictionary mapping states represented as bitstrings to the number of shots they were measured</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <p class="rubric">Methods</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.authentication.TokensFileReader.close" title="iqm.iqm_client.authentication.TokensFileReader.close"><code class="xref py py-obj docutils literal notranslate"><span class="pre">close</span></code></a>()</p></td>
-<td><p>Closes authentication session.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.authentication.TokensFileReader.get_token" title="iqm.iqm_client.authentication.TokensFileReader.get_token"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_token</span></code></a>()</p></td>
-<td><p>Returns a valid access token.</p></td>
-</tr>
 </tbody>
 </table>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>tokens_file</strong> (<a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>measurement_keys</strong> (<a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>]</em>) – </p></li>
+<li><p><strong>counts</strong> (<a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3.12/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>]</em>) – </p></li>
+</ul>
 </dd>
 </dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="iqm.iqm_client.authentication.TokensFileReader.get_token">
-<span class="sig-name descname"><span class="pre">get_token</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></span><a class="headerlink" href="#iqm.iqm_client.authentication.TokensFileReader.get_token" title="Link to this definition">#</a></dt>
-<dd><p>Returns a valid access token.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="iqm.iqm_client.errors.ClientAuthenticationError.html#iqm.iqm_client.errors.ClientAuthenticationError" title="iqm.iqm_client.errors.ClientAuthenticationError"><strong>ClientAuthenticationError</strong></a> – acquiring the token failed</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)">str</a></p>
-</dd>
-</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="iqm.iqm_client.models.Counts.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#iqm.iqm_client.models.Counts.model_config" title="Link to this definition">#</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="iqm.iqm_client.authentication.TokensFileReader.close">
-<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.12/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#iqm.iqm_client.authentication.TokensFileReader.close" title="Link to this definition">#</a></dt>
-<dd><p>Closes authentication session.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="iqm.iqm_client.errors.ClientAuthenticationError.html#iqm.iqm_client.errors.ClientAuthenticationError" title="iqm.iqm_client.errors.ClientAuthenticationError"><strong>ClientAuthenticationError</strong></a> – closing the session failed</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="iqm.iqm_client.models.Counts.measurement_keys">
+<span class="sig-name descname"><span class="pre">measurement_keys</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#list" title="(in Python v3.12)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#iqm.iqm_client.models.Counts.measurement_keys" title="Link to this definition">#</a></dt>
+<dd><p>measurement keys in the order they are concatenated to form the states in counts</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="iqm.iqm_client.models.Counts.counts">
+<span class="sig-name descname"><span class="pre">counts</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.12/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#iqm.iqm_client.models.Counts.counts" title="Link to this definition">#</a></dt>
+<dd><p>counts as a dictionary mapping states represented as bitstrings to the number of shots they were measured</p>
 </dd></dl>
 
 </dd></dl>
@@ -466,20 +469,20 @@
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="iqm.iqm_client.authentication.TokenProviderInterface.html"
+       href="iqm.iqm_client.models.ClientLibrary.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">iqm.iqm_client.authentication.TokenProviderInterface</p>
+        <p class="prev-next-title">iqm.iqm_client.models.ClientLibrary</p>
       </div>
     </a>
     <a class="right-next"
-       href="iqm.iqm_client.errors.html"
+       href="iqm.iqm_client.models.DDMode.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">iqm.iqm_client.errors</p>
+        <p class="prev-next-title">iqm.iqm_client.models.DDMode</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -500,9 +503,10 @@
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.authentication.TokensFileReader"><code class="docutils literal notranslate"><span class="pre">TokensFileReader</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.authentication.TokensFileReader.get_token"><code class="docutils literal notranslate"><span class="pre">TokensFileReader.get_token()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.authentication.TokensFileReader.close"><code class="docutils literal notranslate"><span class="pre">TokensFileReader.close()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.Counts"><code class="docutils literal notranslate"><span class="pre">Counts</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.Counts.model_config"><code class="docutils literal notranslate"><span class="pre">Counts.model_config</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.Counts.measurement_keys"><code class="docutils literal notranslate"><span class="pre">Counts.measurement_keys</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.Counts.counts"><code class="docutils literal notranslate"><span class="pre">Counts.counts</span></code></a></li>
 </ul>
 </li>
 </ul>

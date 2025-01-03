@@ -36,7 +36,9 @@ iqm.iqm\_client.iqm\_client.IQMClient
       ~IQMClient.get_dynamic_quantum_architecture
       ~IQMClient.get_quantum_architecture
       ~IQMClient.get_run
+      ~IQMClient.get_run_counts
       ~IQMClient.get_run_status
+      ~IQMClient.get_supported_client_libraries
       ~IQMClient.submit_circuits
       ~IQMClient.submit_run_request
       ~IQMClient.wait_for_compilation

@@ -15,6 +15,7 @@ iqm.iqm\_client.api.APIVariant
    
       ~APIVariant.V1
       ~APIVariant.V2
+      ~APIVariant.RESONANCE_COCOS_V1
    
    
 

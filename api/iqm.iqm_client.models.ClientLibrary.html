@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>iqm.iqm_client.authentication.TokensFileReader &#8212; IQM client 20.11 documentation</title>
+    <title>iqm.iqm_client.models.ClientLibrary &#8212; IQM client 20.11 documentation</title>
   
   
   
@@ -44,12 +44,12 @@
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'api/iqm.iqm_client.authentication.TokensFileReader';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/iqm.iqm_client.models.ClientLibrary';</script>
     <link rel="icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="iqm.iqm_client.errors" href="iqm.iqm_client.errors.html" />
-    <link rel="prev" title="iqm.iqm_client.authentication.TokenProviderInterface" href="iqm.iqm_client.authentication.TokenProviderInterface.html" />
+    <link rel="next" title="iqm.iqm_client.models.Counts" href="iqm.iqm_client.models.Counts.html" />
+    <link rel="prev" title="iqm.iqm_client.models.CircuitCompilationOptions" href="iqm.iqm_client.models.CircuitCompilationOptions.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="20.11" />
@@ -156,12 +156,12 @@
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.api.APIVariant.html">iqm.iqm_client.api.APIVariant</a></li>
 </ul>
 </details></li>
-<li class="toctree-l3 current active has-children"><a class="reference internal" href="iqm.iqm_client.authentication.html">iqm.iqm_client.authentication</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3 has-children"><a class="reference internal" href="iqm.iqm_client.authentication.html">iqm.iqm_client.authentication</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.authentication.ExternalToken.html">iqm.iqm_client.authentication.ExternalToken</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.authentication.TokenClient.html">iqm.iqm_client.authentication.TokenClient</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.authentication.TokenManager.html">iqm.iqm_client.authentication.TokenManager</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.authentication.TokenProviderInterface.html">iqm.iqm_client.authentication.TokenProviderInterface</a></li>
-<li class="toctree-l4 current active"><a class="current reference internal" href="#">iqm.iqm_client.authentication.TokensFileReader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.authentication.TokensFileReader.html">iqm.iqm_client.authentication.TokensFileReader</a></li>
 </ul>
 </details></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="iqm.iqm_client.errors.html">iqm.iqm_client.errors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -179,7 +179,7 @@
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.iqm_client.IQMClient.html">iqm.iqm_client.iqm_client.IQMClient</a></li>
 </ul>
 </details></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="iqm.iqm_client.models.html">iqm.iqm_client.models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 current active has-children"><a class="reference internal" href="iqm.iqm_client.models.html">iqm.iqm_client.models</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.Locus.html">iqm.iqm_client.models.Locus</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.CircuitBatch.html">iqm.iqm_client.models.CircuitBatch</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.QubitMapping.html">iqm.iqm_client.models.QubitMapping</a></li>
@@ -191,7 +191,7 @@
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.validate_circuit.html">iqm.iqm_client.models.validate_circuit</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.Circuit.html">iqm.iqm_client.models.Circuit</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.CircuitCompilationOptions.html">iqm.iqm_client.models.CircuitCompilationOptions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.ClientLibrary.html">iqm.iqm_client.models.ClientLibrary</a></li>
+<li class="toctree-l4 current active"><a class="current reference internal" href="#">iqm.iqm_client.models.ClientLibrary</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.Counts.html">iqm.iqm_client.models.Counts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.DDMode.html">iqm.iqm_client.models.DDMode</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.DDStrategy.html">iqm.iqm_client.models.DDStrategy</a></li>
@@ -296,7 +296,7 @@
       
       
       
-      <li><a href="../_sources/api/iqm.iqm_client.authentication.TokensFileReader.rst" target="_blank"
+      <li><a href="../_sources/api/iqm.iqm_client.models.ClientLibrary.rst" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -372,7 +372,7 @@
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>iqm.iqm_client.authentication.TokensFileReader</h1>
+    <h1>iqm.iqm_client.models.ClientLibrary</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -382,9 +382,8 @@
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.authentication.TokensFileReader"><code class="docutils literal notranslate"><span class="pre">TokensFileReader</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.authentication.TokensFileReader.get_token"><code class="docutils literal notranslate"><span class="pre">TokensFileReader.get_token()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.authentication.TokensFileReader.close"><code class="docutils literal notranslate"><span class="pre">TokensFileReader.close()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.ClientLibrary"><code class="docutils literal notranslate"><span class="pre">ClientLibrary</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.ClientLibrary.model_config"><code class="docutils literal notranslate"><span class="pre">ClientLibrary.model_config</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -398,56 +397,62 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="iqm-iqm-client-authentication-tokensfilereader">
-<h1>iqm.iqm_client.authentication.TokensFileReader<a class="headerlink" href="#iqm-iqm-client-authentication-tokensfilereader" title="Link to this heading">#</a></h1>
+  <section id="iqm-iqm-client-models-clientlibrary">
+<h1>iqm.iqm_client.models.ClientLibrary<a class="headerlink" href="#iqm-iqm-client-models-clientlibrary" title="Link to this heading">#</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="iqm.iqm_client.authentication.TokensFileReader">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">iqm.iqm_client.authentication.</span></span><span class="sig-name descname"><span class="pre">TokensFileReader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tokens_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm.iqm_client.authentication.TokensFileReader" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="iqm.iqm_client.authentication.TokenProviderInterface.html#iqm.iqm_client.authentication.TokenProviderInterface" title="iqm.iqm_client.authentication.TokenProviderInterface"><code class="xref py py-class docutils literal notranslate"><span class="pre">TokenProviderInterface</span></code></a></p>
-<p>Reads token from a file</p>
-<p class="rubric">Methods</p>
+<dt class="sig sig-object py" id="iqm.iqm_client.models.ClientLibrary">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">iqm.iqm_client.models.</span></span><span class="sig-name descname"><span class="pre">ClientLibrary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">package_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.12/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repo_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.12/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">package_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.12/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm.iqm_client.models.ClientLibrary" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Represents a client library with its metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – display name of the client library.</p></li>
+<li><p><strong>package_name</strong> (<a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> | </em><em>None</em>) – name of the package as published in package repositories.</p></li>
+<li><p><strong>repo_url</strong> (<a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> | </em><em>None</em>) – URL to the source code repository.</p></li>
+<li><p><strong>package_url</strong> (<a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> | </em><em>None</em>) – URL to the package in the package repository.</p></li>
+<li><p><strong>min</strong> (<a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – minimum supported version.</p></li>
+<li><p><strong>max</strong> (<a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – maximum supported version.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Attributes</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.authentication.TokensFileReader.close" title="iqm.iqm_client.authentication.TokensFileReader.close"><code class="xref py py-obj docutils literal notranslate"><span class="pre">close</span></code></a>()</p></td>
-<td><p>Closes authentication session.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.models.ClientLibrary.model_config" title="iqm.iqm_client.models.ClientLibrary.model_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_config</span></code></a></p></td>
+<td><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.authentication.TokensFileReader.get_token" title="iqm.iqm_client.authentication.TokensFileReader.get_token"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_token</span></code></a>()</p></td>
-<td><p>Returns a valid access token.</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">package_name</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">repo_url</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">package_url</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">min</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">max</span></code></p></td>
+<td><p></p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>tokens_file</strong> (<a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – </p>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="iqm.iqm_client.authentication.TokensFileReader.get_token">
-<span class="sig-name descname"><span class="pre">get_token</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></span><a class="headerlink" href="#iqm.iqm_client.authentication.TokensFileReader.get_token" title="Link to this definition">#</a></dt>
-<dd><p>Returns a valid access token.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="iqm.iqm_client.errors.ClientAuthenticationError.html#iqm.iqm_client.errors.ClientAuthenticationError" title="iqm.iqm_client.errors.ClientAuthenticationError"><strong>ClientAuthenticationError</strong></a> – acquiring the token failed</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)">str</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="iqm.iqm_client.authentication.TokensFileReader.close">
-<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.12/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#iqm.iqm_client.authentication.TokensFileReader.close" title="Link to this definition">#</a></dt>
-<dd><p>Closes authentication session.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="iqm.iqm_client.errors.ClientAuthenticationError.html#iqm.iqm_client.errors.ClientAuthenticationError" title="iqm.iqm_client.errors.ClientAuthenticationError"><strong>ClientAuthenticationError</strong></a> – closing the session failed</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
+<p class="rubric">Methods</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+</tbody>
+</table>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="iqm.iqm_client.models.ClientLibrary.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#iqm.iqm_client.models.ClientLibrary.model_config" title="Link to this definition">#</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
 </dd></dl>
 
 </dd></dl>
@@ -466,20 +471,20 @@
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="iqm.iqm_client.authentication.TokenProviderInterface.html"
+       href="iqm.iqm_client.models.CircuitCompilationOptions.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">iqm.iqm_client.authentication.TokenProviderInterface</p>
+        <p class="prev-next-title">iqm.iqm_client.models.CircuitCompilationOptions</p>
       </div>
     </a>
     <a class="right-next"
-       href="iqm.iqm_client.errors.html"
+       href="iqm.iqm_client.models.Counts.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">iqm.iqm_client.errors</p>
+        <p class="prev-next-title">iqm.iqm_client.models.Counts</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -500,9 +505,8 @@
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.authentication.TokensFileReader"><code class="docutils literal notranslate"><span class="pre">TokensFileReader</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.authentication.TokensFileReader.get_token"><code class="docutils literal notranslate"><span class="pre">TokensFileReader.get_token()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.authentication.TokensFileReader.close"><code class="docutils literal notranslate"><span class="pre">TokensFileReader.close()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.ClientLibrary"><code class="docutils literal notranslate"><span class="pre">ClientLibrary</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.ClientLibrary.model_config"><code class="docutils literal notranslate"><span class="pre">ClientLibrary.model_config</span></code></a></li>
 </ul>
 </li>
 </ul>
