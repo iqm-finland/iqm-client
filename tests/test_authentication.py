@@ -41,7 +41,7 @@ from iqm.iqm_client.authentication import (
     TokenProviderInterface,
     TokensFileReader,
 )
-from tests.conftest import MockJsonResponse, make_token
+from tests.conftest import MockJsonResponse, make_token, mock_supported_client_libraries_response
 
 
 @pytest.fixture()
@@ -66,6 +66,15 @@ def auth_username() -> str:
 def auth_password() -> str:
     """Username for getting token from an authentication server"""
     return 'very-secret'
+
+
+def _make_client_with_token(base_url) -> tuple[str, IQMClient]:
+    when(requests).get(f'{base_url}/info/client-libraries', headers=ANY, timeout=ANY).thenReturn(
+        mock_supported_client_libraries_response()
+    )
+    token = make_token('Bearer', 300)
+    client = IQMClient(base_url, token=token)
+    return token, client
 
 
 def test_external_token_provides_token():
@@ -510,9 +519,7 @@ def test_submit_circuits_gets_token(
 ):
     """Test that submit_circuits gets bearer token from TokenManager"""
     _patch_env(monkeypatch.setenv)
-
-    token = make_token('Bearer', 300)
-    client = IQMClient(base_url, token=token)
+    token, client = _make_client_with_token(base_url)
 
     when(requests).get(
         dynamic_architecture_url,
@@ -536,9 +543,7 @@ def test_submit_circuits_gets_token(
 def test_get_run_gets_token(monkeypatch, base_url, jobs_url, ready_job_result):
     """Test that get_run gets bearer token from TokenManager"""
     _patch_env(monkeypatch.setenv)
-
-    token = make_token('Bearer', 300)
-    client = IQMClient(base_url, token=token)
+    token, client = _make_client_with_token(base_url)
     job_id = uuid4()
 
     expect(requests, times=1).get(
@@ -556,9 +561,7 @@ def test_get_run_gets_token(monkeypatch, base_url, jobs_url, ready_job_result):
 def test_get_run_status_gets_token(monkeypatch, base_url, jobs_url, pending_compilation_status):
     """Test that get_run gets bearer token from TokenManager"""
     _patch_env(monkeypatch.setenv)
-
-    token = make_token('Bearer', 300)
-    client = IQMClient(base_url, token=token)
+    token, client = _make_client_with_token(base_url)
     job_id = uuid4()
 
     expect(requests, times=1).get(
@@ -576,9 +579,7 @@ def test_get_run_status_gets_token(monkeypatch, base_url, jobs_url, pending_comp
 def test_abort_job_gets_token(monkeypatch, base_url, jobs_url):
     """Test that abort_job gets bearer token from TokenManager"""
     _patch_env(monkeypatch.setenv)
-
-    token = make_token('Bearer', 300)
-    client = IQMClient(base_url, token=token)
+    token, client = _make_client_with_token(base_url)
     job_id = uuid4()
 
     expect(requests, times=1).post(
@@ -596,9 +597,7 @@ def test_abort_job_gets_token(monkeypatch, base_url, jobs_url):
 def test_close_auth_session(monkeypatch, base_url):
     """Test that closing auth session closes TokenManager"""
     _patch_env(monkeypatch.setenv)
-
-    token = make_token('Bearer', 300)
-    client = IQMClient(base_url, token=token)
+    _, client = _make_client_with_token(base_url)
     client._token_manager = mock(TokenManager)
     expect(client._token_manager, times=1).close().thenReturn(True)
 
@@ -611,9 +610,7 @@ def test_close_auth_session(monkeypatch, base_url):
 def test_close_auth_session_when_client_destroyed(monkeypatch, base_url):
     """Test that deleting client closes TokenManager"""
     _patch_env(monkeypatch.setenv)
-
-    token = make_token('Bearer', 300)
-    client = IQMClient(base_url, token=token)
+    _, client = _make_client_with_token(base_url)
     client._token_manager = mock(TokenManager)
     expect(client._token_manager, times=1).close().thenReturn(True)
 
