@@ -63,9 +63,9 @@ class ExistingMoveHandlingOptions(str, Enum):
     """Transpiler will keep the MOVE instructions without checking if they are correct, and add more as needed."""
 
 
-def _map_loci(instructions: Iterable[Instruction], qubit_mapping: dict[str, str]) -> tuple[Instruction, ...]:
+def _map_loci(instructions: Iterable[Instruction], qubit_mapping: dict[str, str]) -> list[Instruction]:
     """Map the loci of the instructions in the circuit using the given qubit mapping."""
-    return tuple(
+    return list(
         inst.model_copy(update={'qubits': tuple(qubit_mapping[q] for q in inst.qubits)}) for inst in instructions
     )
 
@@ -233,7 +233,7 @@ class _ResonatorStateTracker:
         return [r for r, q in self.res_state_owner.items() if q in qubits and q not in self.resonators]
 
     def choose_move_pair(
-        self, qubits: list[str], remaining_instructions: Iterable[Instruction]
+        self, qubits: Iterable[str], remaining_instructions: Iterable[Instruction]
     ) -> list[tuple[str, str]]:
         """Choose which of the given qubits to move into which resonator.
 

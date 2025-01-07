@@ -434,7 +434,6 @@ class TestNaiveMoveTranspiler:
 
 
 class TestResonatorStateTracker:
-
     def test_apply_move(self, sample_dynamic_architecture, sample_move_architecture):
         # Check handling of an architecture without a resonator
         no_move_status = ResonatorStateTracker.from_dynamic_architecture(sample_dynamic_architecture)
