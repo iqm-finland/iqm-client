@@ -22,6 +22,14 @@ If you want just this library, though, you can install it from the Python Packag
 
     $ pip install iqm-client
 
+Supplied within the python package there is an additional `requirements.txt` file containing locked, security scanned
+dependencies. The file can be used to constrain installed dependencies either directly from the repo or by
+extracting it from the PyPI package.
+
+.. code-block:: bash
+
+    $ pip install -r requirements.txt iqm-client
+
 Contributing
 ============
 
