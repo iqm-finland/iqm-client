@@ -32,6 +32,7 @@ from iqm.iqm_client import (
     CircuitExecutionError,
     CircuitValidationError,
     ClientConfigurationError,
+    Counts,
     DynamicQuantumArchitecture,
     HeraldingMode,
     Instruction,
@@ -43,7 +44,13 @@ from iqm.iqm_client import (
     serialize_qubit_mapping,
     validate_circuit,
 )
-from tests.conftest import MockJsonResponse, get_jobs_args, post_jobs_args, submit_circuits_args
+from tests.conftest import (
+    MockJsonResponse,
+    get_jobs_args,
+    mock_supported_client_libraries_response,
+    post_jobs_args,
+    submit_circuits_args,
+)
 
 
 @pytest.fixture
@@ -1018,15 +1025,7 @@ def test_get_dynamic_quantum_architecture_not_found(base_url, sample_client):
     min_version = f'{client_version.major + 2}.0'
     max_version = f'{client_version.major + 3}.0'
     when(requests).get(f'{base_url}/info/client-libraries', headers=ANY, timeout=ANY).thenReturn(
-        MockJsonResponse(
-            200,
-            {
-                'iqm-client': {
-                    'min': min_version,
-                    'max': max_version,
-                }
-            },
-        )
+        mock_supported_client_libraries_response(min_version=min_version, max_version=max_version)
     )
     when(requests).get(f'{base_url}/api/v1/calibration/default/gates', ...).thenReturn(MockJsonResponse(404, {}))
     with pytest.raises(
@@ -1054,14 +1053,8 @@ def test_check_versions_success(base_url, iqm_client_name, server_version_diff, 
     min_version = f'{client_version.major + server_version_diff}.0'
     max_version = f'{client_version.major + server_version_diff + 1}.0'
     when(requests).get(f'{base_url}/info/client-libraries', headers=ANY, timeout=ANY).thenReturn(
-        MockJsonResponse(
-            200,
-            {
-                iqm_client_name: {
-                    'min': min_version,
-                    'max': max_version,
-                }
-            },
+        mock_supported_client_libraries_response(
+            iqm_client_name=iqm_client_name, min_version=min_version, max_version=max_version
         )
     )
     if server_version_diff == 0:
@@ -1106,4 +1099,82 @@ def test_check_versions_request_exception(base_url):
         match=re.escape('Could not verify IQM Client compatibility with the server. You might encounter issues.'),
     ):
         IQMClient(base_url)
+    unstub()
+
+
+def test_get_run_counts(base_url, sample_client, existing_run_id):
+    """Test that the number of runs is returned."""
+    expect(requests, times=1).get(f'{base_url}/jobs/{existing_run_id}/counts', ...).thenReturn(
+        MockJsonResponse(
+            200,
+            {
+                'status': 'ready',
+                'counts_batch': [
+                    {
+                        'measurement_keys': ['m1'],
+                        'counts': {'0': 5, '1': 5},
+                    },
+                    {
+                        'measurement_keys': ['m2'],
+                        'counts': {'0': 1, '1': 9},
+                    },
+                ],
+                'warnings': [],
+            },
+        )
+    )
+    counts = sample_client.get_run_counts(existing_run_id)
+    assert counts.status == Status.READY
+    assert counts.counts_batch == [
+        Counts(measurement_keys=['m1'], counts={'0': 5, '1': 5}),
+        Counts(measurement_keys=['m2'], counts={'0': 1, '1': 9}),
+    ]
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_get_supported_client_libraries(base_url, sample_client):
+    """Test retrieving client library information from server."""
+    libraries_data = {
+        'iqm-client': {
+            'name': 'IQM Client',
+            'package_name': 'iqm-client',
+            'repo_url': 'https://github.com/iqm-finland/iqm-client',
+            'package_url': 'https://pypi.org/project/iqm-client',
+            'min': '14.0.0',
+            'max': '15.0.0',
+            'images': None,
+        },
+        'iqm-cortex-cli': {
+            'name': 'IQM Cortex CLI',
+            'package_name': 'iqm-cortex-cli',
+            'repo_url': 'https://github.com/iqm-finland/cortex-cli',
+            'package_url': 'https://pypi.org/project/iqm-cortex-cli',
+            'min': '1.0.0',
+            'max': '2.0.0',
+            'images': [],
+        },
+    }
+
+    expect(requests, times=1).get(f'{base_url}/info/client-libraries', headers=ANY, timeout=ANY).thenReturn(
+        MockJsonResponse(200, libraries_data)
+    )
+
+    libraries = sample_client.get_supported_client_libraries()
+
+    # Verify returned data matches expected structure
+    assert len(libraries) == 2
+    assert 'iqm-client' in libraries
+    assert 'iqm-cortex-cli' in libraries
+
+    # Verify specific library details
+    iqm_client = libraries['iqm-client']
+    assert iqm_client.name == 'IQM Client'
+    assert iqm_client.package_name == 'iqm-client'
+    assert iqm_client.repo_url == 'https://github.com/iqm-finland/iqm-client'
+    assert iqm_client.package_url == 'https://pypi.org/project/iqm-client'
+    assert iqm_client.min == '14.0.0'
+    assert iqm_client.max == '15.0.0'
+
+    verifyNoUnwantedInteractions()
     unstub()
