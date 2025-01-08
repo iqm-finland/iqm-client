@@ -189,7 +189,8 @@ class TestNaiveMoveTranspiler:
         arg=None,
         qb_map=None,
     ):
-        return transpile_insert_moves(circuit, arch=self.arch, existing_moves=arg, qubit_mapping=qb_map)
+        kwargs = {} if arg is None else {'existing_moves': arg}
+        return transpile_insert_moves(circuit, arch=self.arch, qubit_mapping=qb_map, **kwargs)
 
     def check_equiv_without_moves(self, c1: Circuit, c2: Circuit):
         c1 = transpile_remove_moves(c1)
@@ -219,26 +220,24 @@ class TestNaiveMoveTranspiler:
                 idx += 1
         return idx == len(moves)
 
-    def test_no_moves_supported(self, sample_dynamic_architecture):
+    @pytest.mark.parametrize('option', ExistingMoveHandlingOptions)
+    def test_no_moves_supported(self, sample_dynamic_architecture, option):
         """Tests transpiler for architectures without a resonator"""
-        for option in ExistingMoveHandlingOptions:
-            c1 = transpile_insert_moves(self.simple_circuit, sample_dynamic_architecture, existing_moves=option)
-            assert c1 == self.simple_circuit
-            if option != ExistingMoveHandlingOptions.REMOVE:
-                with pytest.raises(ValueError):
-                    _ = transpile_insert_moves(self.safe_circuit, sample_dynamic_architecture, existing_moves=option)
-            else:
-                c2 = transpile_insert_moves(self.safe_circuit, sample_dynamic_architecture, existing_moves=option)
-                assert self.check_equiv_without_moves(self.safe_circuit, c2)
+        c1 = transpile_insert_moves(self.simple_circuit, sample_dynamic_architecture, existing_moves=option)
+        # no changes
+        assert c1 == self.simple_circuit
+        # MOVEs in the circuit cause an error
+        with pytest.raises(ValueError):
+            _ = transpile_insert_moves(self.safe_circuit, sample_dynamic_architecture, existing_moves=option)
 
     def test_unspecified(self):
         """Tests transpiler in case the handling option is not specified."""
         c1 = self.insert(self.simple_circuit)
         self.assert_valid_circuit(c1)
         assert self.check_equiv_without_moves(c1, self.simple_circuit)
-        with pytest.warns(UserWarning):
-            c2 = self.insert(self.safe_circuit)
-            assert self.check_equiv_without_moves(c2, self.safe_circuit)
+
+        c2 = self.insert(self.safe_circuit)
+        assert self.check_equiv_without_moves(c2, self.safe_circuit)
 
     def test_normal_usage(self, sample_circuit: Circuit):
         """Tests basic usage of the transpile method"""

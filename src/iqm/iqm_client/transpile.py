@@ -41,7 +41,6 @@ from __future__ import annotations
 from collections.abc import Collection, Iterable
 from enum import Enum
 from typing import Optional
-import warnings
 
 from iqm.iqm_client import (
     Circuit,
@@ -58,15 +57,22 @@ class ExistingMoveHandlingOptions(str, Enum):
     """Options for how :func:`transpile_insert_moves` should handle existing MOVE instructions."""
 
     KEEP = 'keep'
-    """Transpiler will keep the MOVE instructions as specified checking if they are correct, adding more as needed."""
-    REMOVE = 'remove'
-    """Transpiler will remove the instructions and add new ones."""
+    """Keep existing MOVE instructions, check if they are correct, and add more as needed."""
     TRUST = 'trust'
-    """Transpiler will keep the MOVE instructions without checking if they are correct, and add more as needed."""
+    """Keep existing MOVE instructions without checking if they are correct, and add more as needed."""
+    REMOVE = 'remove'
+    """Remove existing MOVE instructions using :func:`transpile_remove_moves`, and
+    then add new ones as needed. This may produce a more optimized end result."""
 
 
-def _map_loci(instructions: Iterable[Instruction], qubit_mapping: dict[str, str]) -> list[Instruction]:
-    """Map the loci of the instructions in the circuit using the given qubit mapping."""
+def _map_loci(
+    instructions: Iterable[Instruction],
+    qubit_mapping: dict[str, str],
+    inverse: bool = False,
+) -> list[Instruction]:
+    """Map the loci of the instructions in the circuit using the given qubit mapping, or its inverse."""
+    if inverse:
+        qubit_mapping = {phys: log for log, phys in qubit_mapping.items()}
     return list(
         inst.model_copy(update={'qubits': tuple(qubit_mapping[q] for q in inst.qubits)}) for inst in instructions
     )
@@ -159,7 +165,7 @@ class _ResonatorStateTracker:
         ):
             self.res_state_owner[resonator] = qubit if self.res_state_owner[resonator] == resonator else resonator
         else:
-            raise CircuitTranspilationError('Attempted move is not allowed.')
+            raise CircuitTranspilationError('Attempted MOVE is not allowed.')
 
     def create_move_instructions(
         self,
@@ -299,47 +305,44 @@ def transpile_insert_moves(
     circuit: Circuit,
     arch: DynamicQuantumArchitecture,
     *,
-    existing_moves: Optional[ExistingMoveHandlingOptions] = None,
+    existing_moves: ExistingMoveHandlingOptions = ExistingMoveHandlingOptions.KEEP,
     qubit_mapping: Optional[dict[str, str]] = None,
 ) -> Circuit:
     """Convert a fake architecture circuit into a equivalent real architecture circuit with
     resonators and MOVE gates.
 
+    In the typical use case ``circuit`` has been transpiled to a fake architecture
+    where the resonators have been abstracted away, and this function converts it into
+    the corresponding real architecture circuit.
+
+    It can also handle the case where ``circuit`` already contains MOVE gates and resonators,
+    which are treated according to ``existing_moves``, followed by the conversion
+    of the fake two-qubit gates that are not supported by the real architecture.
+
     The function does nothing if ``arch`` does not support MOVE gates.
-    Note that this method normally assumes that ``circuit`` is transpiled to a fake architecture
-    where the resonators have been abstracted away.
-    It can also handle cases where ``circuit`` already contains MOVE gates and resonators, in which
-    case it only converts the two-qubit gates that are not supported by the real architecture.
 
     Assumes that MOVE and CZ gates on the Star architecture act always on a (qubit, resonator) locus.
 
     Args:
-        circuit: The fake architecture circuit to convert.
+        circuit: The circuit to convert.
         arch: Real architecture of the target device.
         existing_moves: Specifies how to deal with existing MOVE instructions in ``circuit``, if any.
-            If ``None``, the function will use :attr:`ExistingMoveHandlingOptions.REMOVE` with a user
-            warning if there are MOVE instructions in ``circuit``.
         qubit_mapping: Mapping of logical qubit names to physical qubit names.
             Can be set to ``None`` if ``circuit`` already uses physical qubit names.
 
     Returns:
-        Equivalent Star architecture circuit with MOVEs and resonators added.
+        Equivalent real architecture circuit with MOVEs and resonators added.
     """
     tracker = _ResonatorStateTracker.from_dynamic_architecture(arch)
 
     # see if the circuit already contains some MOVEs/resonators
-    existing_moves_in_circuit = [i for i in circuit.instructions if i.name == tracker.move_gate]
-    if existing_moves is None and len(existing_moves_in_circuit) > 0:
-        warnings.warn('Circuit already contains MOVE instructions, removing them before transpiling.')
-        existing_moves = ExistingMoveHandlingOptions.REMOVE
-
+    circuit_has_moves = any(i for i in circuit.instructions if i.name == tracker.move_gate)
+    # can we use MOVEs?
     if not tracker.supports_move:
-        if not existing_moves_in_circuit:
-            return circuit
-        if existing_moves == ExistingMoveHandlingOptions.REMOVE:
-            # TODO does this make sense?
-            return transpile_remove_moves(circuit)
-        raise ValueError('Circuit contains MOVE instructions, but the device does not support them.')
+        if circuit_has_moves:
+            raise ValueError('Circuit contains MOVE instructions, but the device does not support them.')
+        # nothing to do (do not validate the circuit)
+        return circuit
 
     # add missing QPU components to the mapping (mapped to themselves)
     if qubit_mapping is None:
@@ -357,13 +360,10 @@ def transpile_insert_moves(
                 Circuit(name=circuit.name, instructions=phys_instructions, metadata=circuit.metadata),
             )
         except CircuitValidationError as e:
-            raise CircuitTranspilationError(
-                f'Unable to transpile the circuit after validation error: {e.args[0]}'
-            ) from e
+            raise CircuitTranspilationError(f'Unable to transpile the circuit after validation error: {e}') from e
     else:
-        if existing_moves is None or existing_moves == ExistingMoveHandlingOptions.REMOVE:
+        if circuit_has_moves and existing_moves == ExistingMoveHandlingOptions.REMOVE:
             # convert the circuit into a pure fake architecture circuit
-            # TODO do we need to call this if the circuit has no MOVEs?
             circuit = transpile_remove_moves(circuit)
 
         # convert to physical qubit names
@@ -373,7 +373,7 @@ def transpile_insert_moves(
     new_instructions += tracker.reset_as_move_instructions()
 
     # convert back to logical qubit names
-    new_instructions = _map_loci(new_instructions, {phys: log for log, phys in qubit_mapping.items()})
+    new_instructions = _map_loci(new_instructions, qubit_mapping, inverse=True)
     return Circuit(name=circuit.name, instructions=new_instructions, metadata=circuit.metadata)
 
 
@@ -402,7 +402,7 @@ def _transpile_insert_moves(
             method.
 
     Returns:
-        Real Star architecture equivalent of ``circuit`` with MOVEs and resonators added.
+        Real architecture equivalent of ``circuit`` with MOVEs and resonators added.
     """
     new_instructions = []
     for idx, inst in enumerate(instructions):
