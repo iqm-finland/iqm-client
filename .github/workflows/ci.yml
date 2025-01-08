@@ -51,7 +51,11 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
       - name: Regenerate requirements.txt
         run: tox -e pip-compile
       - name: Check lockfile is up-to-date
-        run: git diff --exit-code HEAD requirements/lock.txt
+        run: git diff --exit-code HEAD requirements.txt
