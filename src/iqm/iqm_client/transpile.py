@@ -1,4 +1,4 @@
-# Copyright 2021-2024 IQM client developers
+# Copyright 2021-2025 IQM client developers
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,14 +21,16 @@ and a connected resonator. However, the resonator cannot be measured, and no sin
 can be applied on it.
 
 To enable third-party transpilers to work on the IQM Star architecture, we may abstract away the
-resonators, and replace a resonator and its ``n`` neighboring qubits with a fully connected subgraph
-(clique) of ``n`` qubits with the qubit-resonator gates now acting on pairs of qubits.
-This is called a *fake architecture*.
+resonators and replace the real dynamic quantum architecture with a *fake* one without them.
+Specifically, this happens by removing the resonators from the architecture, and for each
+resonator ``r``, for each pair of supported native gates ``(CZ(q1, r), MOVE(q2, r))``
+add the gate ``CZ(q1, q2)`` to the fake architecture (since the latter can be implemented as
+the sequence ``MOVE(q2, r), CZ(q1, r), MOVE(q2, r)``).
 
 Before a circuit transpiled to a fake architecture can be executed it must be further transpiled to
 the real Star architecture using :func:`transpile_insert_moves`, which will introduce the
-resonators, add MOVE gates as necessary to move the states, and convert the two-qubit gates into
-gates acting on a qubit-resonator pair.
+resonators, add MOVE gates as necessary to move the states, and convert the fake two-qubit gates
+into real native gates acting on a qubit-resonator pair.
 
 Likewise :func:`transpile_remove_moves` can be used to perform the opposite transformation,
 converting a circuit valid for the real Star architecture into an equivalent circuit for
@@ -36,7 +38,7 @@ the corresponding fake architecture.
 """
 from __future__ import annotations
 
-from collections.abc import Iterable
+from collections.abc import Collection, Iterable
 from enum import Enum
 from typing import Optional
 import warnings
@@ -53,7 +55,7 @@ from iqm.iqm_client.models import Locus
 
 
 class ExistingMoveHandlingOptions(str, Enum):
-    """Transpile options for handling of existing MOVE instructions."""
+    """Options for how :func:`transpile_insert_moves` should handle existing MOVE instructions."""
 
     KEEP = 'keep'
     """Transpiler will keep the MOVE instructions as specified checking if they are correct, adding more as needed."""
@@ -129,9 +131,9 @@ class _ResonatorStateTracker:
         return _ResonatorStateTracker(available_moves)
 
     @property
-    def resonators(self) -> Iterable[str]:
+    def resonators(self) -> Collection[str]:
         """Getter for the resonator registers that are being tracked."""
-        return self.available_moves
+        return self.available_moves.keys()
 
     @property
     def supports_move(self) -> bool:
@@ -300,12 +302,14 @@ def transpile_insert_moves(
     existing_moves: Optional[ExistingMoveHandlingOptions] = None,
     qubit_mapping: Optional[dict[str, str]] = None,
 ) -> Circuit:
-    """Convert a circuit for a fake architecture into a equivalent real architecture circuit with
+    """Convert a fake architecture circuit into a equivalent real architecture circuit with
     resonators and MOVE gates.
 
     The function does nothing if ``arch`` does not support MOVE gates.
     Note that this method normally assumes that ``circuit`` is transpiled to a fake architecture
     where the resonators have been abstracted away.
+    It can also handle cases where ``circuit`` already contains MOVE gates and resonators, in which
+    case it only converts the two-qubit gates that are not supported by the real architecture.
 
     Assumes that MOVE and CZ gates on the Star architecture act always on a (qubit, resonator) locus.
 
@@ -378,7 +382,7 @@ def _transpile_insert_moves(
     tracker: _ResonatorStateTracker,
     arch: DynamicQuantumArchitecture,
 ) -> list[Instruction]:
-    """Convert a circuit for a fake architecture into a equivalent real architecture circuit with
+    """Convert a fake architecture circuit into a equivalent real architecture circuit with
     resonators and MOVE gates.
 
     Inserts MOVE gates into the circuit and changes the existing instruction loci as needed.
@@ -467,11 +471,11 @@ def transpile_remove_moves(circuit: Circuit) -> Circuit:
     """Convert a circuit involving resonators and MOVE gates into an equivalent circuit without them.
 
     The method assumes that in ``circuit`` a MOVE gate is always used to move a qubit state into a
-    resonator before any gates act on the resonator. If this is not the case, this function will not
-    work as intended.
+    resonator before any other gates act on the resonator. If this is not the case, this function
+    will not work as intended.
 
     Args:
-        circuit: The circuit from which resonators and MOVE gates should be removed.
+        circuit: Real-architecture circuit from which resonators and MOVE gates should be removed.
 
     Returns:
         Equivalent fake architecture circuit without resonators and MOVEs.
