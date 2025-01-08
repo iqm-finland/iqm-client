@@ -20,7 +20,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from functools import cached_property
 import re
-from typing import Any, Final, Optional, Union
+from typing import Any, Optional, Union
 from uuid import UUID
 
 from pydantic import BaseModel, Field, StrictStr, field_validator
@@ -618,33 +618,33 @@ class HeraldingMode(str, Enum):
 class MoveGateValidationMode(str, Enum):
     """MOVE gate validation mode for circuit compilation. This options is meant for advanced users."""
 
-    STRICT: Final[str] = 'strict'
+    STRICT = 'strict'
     """Perform standard MOVE gate validation: MOVE gates must only appear in sandwiches, with no gates acting on the
     MOVE qubit inside the sandwich."""
-    ALLOW_PRX: Final[str] = 'allow_prx'
+    ALLOW_PRX = 'allow_prx'
     """Allow PRX gates on the MOVE qubit inside MOVE sandwiches during validation."""
-    NONE: Final[str] = 'none'
+    NONE = 'none'
     """Do not perform any MOVE gate validation."""
 
 
 class MoveGateFrameTrackingMode(str, Enum):
     """MOVE gate frame tracking mode for circuit compilation. This option is meant for advanced users."""
 
-    FULL: Final[str] = 'full'
+    FULL = 'full'
     """Perform complete MOVE gate frame tracking."""
-    NO_DETUNING_CORRECTION: Final[str] = 'no_detuning_correction'
+    NO_DETUNING_CORRECTION = 'no_detuning_correction'
     """Do not add the phase detuning corrections to the pulse schedule for the MOVE gate. The user is expected to do
     these manually."""
-    NONE: Final[str] = 'none'
+    NONE = 'none'
     """Do not perform any MOVE gate frame tracking. The user is expected to do these manually."""
 
 
 class DDMode(str, Enum):
     """Dynamical Decoupling (DD) mode for circuit execution."""
 
-    DISABLED: Final[str] = 'disabled'
+    DISABLED = 'disabled'
     """Do not apply dynamical decoupling."""
-    ENABLED: Final[str] = 'enabled'
+    ENABLED = 'enabled'
     """Apply dynamical decoupling."""
 
 

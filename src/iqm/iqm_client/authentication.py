@@ -75,6 +75,7 @@ class TokenManager:
         username: Optional[str] = None,
         password: Optional[str] = None,
     ):
+        # pylint: disable=too-many-positional-arguments
         def _format_names(variable_names: list[str]) -> str:
             """Format a list of variable names"""
             return ', '.join(f'"{name}"' for name in variable_names)
