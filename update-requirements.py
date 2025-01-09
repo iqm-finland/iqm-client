@@ -7,11 +7,12 @@ if __name__ == "__main__":
     with open("pyproject.toml", "rb") as file:
         pyproject = tomllib.load(file)
 
-    dependencies = pyproject.get("project", {}).get("dependencies", [])
-    dependencies += pyproject.get("project", {}).get("optional-dependencies", {}).get("testing", [])
-    dependencies += pyproject.get("project", {}).get("optional-dependencies", {}).get("docs", [])
-    update_lines = [f"--upgrade-package={Requirement(dep).name}" for dep in dependencies]
+    dependencies = pyproject["project"]["dependencies"]
+    dependencies += pyproject["project"]["optional-dependencies"]["testing"]
+    dependencies += pyproject["project"]["optional-dependencies"]["docs"]
+    dependencies += pyproject["project"]["optional-dependencies"]["cicd"]
 
+    update_lines = [f"--upgrade-package={Requirement(dep).name}" for dep in dependencies]
     cmd = [
         "uv",
         "pip",
