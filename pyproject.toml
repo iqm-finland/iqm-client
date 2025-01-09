@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=65.4.1", "setuptools_scm[toml]>=7"]
+requires = []  # See note in optional-dependencies "cicd"
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -47,6 +47,15 @@ testing = [
 docs = [
     "sphinx == 7.2.6",
     "sphinx-book-theme == 1.1.2",
+]
+cicd = [
+    "build == 1.0.3",
+    "pip-licenses == 5.0.0",
+
+    # NOTE: Include build-system deps here as locking them is not yet directly supported by uv. With this, build is to
+    #       be done with `--no-build-isolation`. See https://github.com/astral-sh/uv/issues/5190.
+    "setuptools>=65.4.1",
+    "setuptools_scm[toml]>=7",
 ]
 
 
