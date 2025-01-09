@@ -29,11 +29,6 @@ Homepage = "https://github.com/iqm-finland/iqm-client"
 Documentation = "https://iqm-finland.github.io/iqm-client"
 
 [project.optional-dependencies]
-# Add here additional requirements for extra features, to install with:
-# `pip install iqm-client[dev]`
-dev = [
-    "tox == 4.11.3",
-]
 testing = [
     "black == 23.11.0",
     "isort == 5.12.0",
