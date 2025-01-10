@@ -12,13 +12,7 @@ if __name__ == "__main__":
     dependencies += pyproject["project"]["optional-dependencies"]["docs"]
     dependencies += pyproject["project"]["optional-dependencies"]["cicd"]
 
-    if not all(
-        req in pyproject["project"]["optional-dependencies"]["cicd"] for req in pyproject["build-system"]["requires"]
-    ):
-        raise ValueError(
-            f'All entries in {pyproject["build-system"]["requires"]=} must be duplicated in '
-            f'{pyproject["project"]["optional-dependencies"]["cicd"]=}. See the note in pyproject.toml.'
-        )
+    # NOTE: see comment about build deps in pyproject.toml.
 
     update_lines = [f"--upgrade-package={Requirement(dep).name}" for dep in dependencies]
     cmd = [

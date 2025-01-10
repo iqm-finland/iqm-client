@@ -18,7 +18,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install dependencies
-        run: uv pip install --no-build-isolation --constraint requirements.txt --editable .[cicd]
+        run: uv pip install --constraint requirements.txt --editable .[cicd]
       - name: Build distribution
         run: uv build --no-build-isolation
       - name: Store distribution packages
@@ -59,7 +59,7 @@ jobs:
           git checkout $(git describe --tags --abbrev=0)
       - name: Install dependencies
         run: |
-          uv pip install --no-build-isolation --constraint requirements.txt --editable .[cicd,docs]
+          uv pip install --constraint requirements.txt --editable .[cicd,docs]
           sudo apt-get install graphviz
       - name: Build docs
         run: |
@@ -85,7 +85,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install dependencies
-        run: uv pip install --no-build-isolation --constraint requirements.txt --editable .[cicd]
+        run: uv pip install --constraint requirements.txt --editable .[cicd]
       - name: Generate license information for dependencies
         run: |
           pip-licenses --format=confluence --with-urls > licenses.txt
