@@ -131,55 +131,35 @@ IQM does not provide an open source circuit transpilation library, so this will 
 by the quantum computing framework or a third party library.  To obtain the necessary information
 for circuit transpilation, :meth:`.IQMClient.get_dynamic_quantum_architecture` returns the names of the
 QPU components (qubits and computational resonators), and the native operations available
-in the given calibration set. This information should enable circuit transpilation for IQM quantum architectures.
+in the given calibration set. This information should enable circuit transpilation for the
+IQM Crystal quantum architectures.
 
-The notable exception is the transpilation of MOVE gates for IQM quantum computers with
-computational resonators, for which some specialized transpilation logic is provided.  The MOVE gate
-moves the state of a qubit to an empty computational resonator, and vice versa, so that the qubit
-can interact with other qubits connected to the resonator.  For this, we provide users with two
-transpilation functions: :func:`.transpile_insert_moves` and :func:`.transpile_remove_moves`.  These
-functions can be used to insert or remove MOVE gates from the circuit, respectively.
+The notable exception is the transpilation for the IQM Star quantum architectures, which have
+computational resonators in addition to qubits. Some specialized transpilation logic involving
+the MOVE gates specific to these architectures is provided, in the form of the fuctions
+:func:`.transpile_insert_moves` and :func:`.transpile_remove_moves`.
+See :mod:`iqm.iqm_client.transpile` for the details.
 
-:func:`.transpile_insert_moves` is a transpiler pass for inserting MOVE gates into a circuit for
-devices with a computational resonator.  It assumes that the circuit is already transpiled by third
-party software to an architecture where the computational resonator has been abstracted away.  To
-abstract away the computational resonator, the connectivity graph is modified such that all the
-qubits connected to a common resonator are instead connected directly to each other.  The function
-can take a ``qubit_mapping`` to rename the qubits in the circuit to match the physical qubit names.
-Additionally, the function can take the optional argument ``existing_moves`` to specify how this
-transpiler pass should handle the case where some MOVE gates are already present in the circuit. The
-options are specified by the enum :class:`.ExistingMoveHandlingOptions`.  By default the function
-warns the user if MOVE gates are already present in the circuit but the ``existing_moves`` argument
-is not given, before proceeding to remove the existing MOVE gates and inserting new ones.
-
-:func:`.transpile_remove_moves` is a helper function for :func:`.transpile_insert_moves` to remove
-existing MOVE gates from a quantum circuit.  It can be also used standalone to remove the MOVE gates
-from an existing circuit such that it can be used on a device without a computational resonator, or
-optimized by third party software that does not support the MOVE gate.  For example, a user might
-want to run a circuit that was originally transpiled for a device with a computational resonator on
-a device without a computational resonator.  This function allows the user to remove the MOVE gates
-from the circuit before transpiling it to another quantum architecture.
-
+A typical Star architecture use case would look something like this:
 
 .. code-block:: python
 
-    from iqm.iqm_client import Circuit, IQMClient, transpile_insert_moves, transpile_remove_moves
+    from iqm.iqm_client import Circuit, IQMClient, simplified_architecture, transpile_insert_moves, transpile_remove_moves
 
+    client = IQMClient(URL_TO_STAR_SERVER)
+    dqa = client.get_dynamic_quantum_architecture()
+    simplified_dqa = simplified_architecture(dqa)
+
+    # circuit valid for simplified_dqa
     circuit = Circuit(name="quantum_circuit", instructions=[...])
-    backend_with_resonator = IQMClient("url_to_backend_with_resonator")
-    backend_without_resonator = IQMClient("url_to_backend_without_resonator")
 
     # intended use
-    circuit_with_moves = transpile_insert_moves(circuit, backend_with_resonator.get_dynamic_quantum_architecture())
+    circuit_with_moves = transpile_insert_moves(circuit, dqa)
+    client.submit_circuits([circuit_with_moves])
+
+    # back to simplified dqa
     circuit_without_moves = transpile_remove_moves(circuit_with_moves)
-
-    backend_with_resonator.submit_circuits([circuit_with_moves])
-    backend_without_resonator.submit_circuits([circuit_without_moves])
-
-    # Using the transpile_insert_moves on a device that does not support MOVE gates does nothing.
-    assert circuit == transpile_insert_moves(circuit, backend_without_resonator.get_dynamic_quantum_architecture())
-    # Unless the circuit had MOVE gates, then it can remove them with the existing_moves argument.
-    alt_circuit_without_moves = transpile_insert_moves(circuit, backend_without_resonator.get_dynamic_quantum_architecture(), existing_moves=ExistingMoveHandlingOptions.REMOVE)
+    assert circuit == circuit_without_moves
 
 
 Note on qubit mapping
