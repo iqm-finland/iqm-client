@@ -1,5 +1,9 @@
 [build-system]
-requires = []  # See note in optional-dependencies "cicd"
+requires = [
+    # See note in `project`->`optional-dependencies`->`cicd`
+    "setuptools>=65.4.1",
+    "setuptools_scm[toml]>=7",
+]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -52,8 +56,9 @@ cicd = [
     "build == 1.0.3",
     "pip-licenses == 5.0.0",
 
-    # NOTE: Include build-system deps here as locking them is not yet directly supported by uv. With this, build is to
-    #       be done with `--no-build-isolation`. See https://github.com/astral-sh/uv/issues/5190.
+    # NOTE: Duplicate `build-system`->`requires` deps here as locking them is not yet directly supported by uv.
+    #       With this, in order to use locked build deps from requirements.txt, build is to be done with
+    #       `--no-build-isolation`. See https://github.com/astral-sh/uv/issues/5190.
     "setuptools>=65.4.1",
     "setuptools_scm[toml]>=7",
 ]

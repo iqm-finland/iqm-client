@@ -12,6 +12,12 @@ if __name__ == "__main__":
     dependencies += pyproject["project"]["optional-dependencies"]["docs"]
     dependencies += pyproject["project"]["optional-dependencies"]["cicd"]
 
+    if pyproject["project"]["optional-dependencies"]["cicd"] != pyproject["build-system"]["requires"]:
+        raise ValueError(
+            f'{pyproject["project"]["optional-dependencies"]["cicd"]=} must be equal to'
+            f'{pyproject["build-system"]["requires"]=}. See the note in pyproject.toml.'
+        )
+
     update_lines = [f"--upgrade-package={Requirement(dep).name}" for dep in dependencies]
     cmd = [
         "uv",
