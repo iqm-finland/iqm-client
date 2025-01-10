@@ -309,6 +309,8 @@ def simplified_architecture(arch: DynamicQuantumArchitecture) -> DynamicQuantumA
     """Converts the given IQM Star quantum architecture into the equivalent simplified quantum architecture.
 
     See :mod:`iqm.iqm_client.transpile` for the details.
+    Abstracts away the gate implementations, replacing them with a fake one.
+
     Does nothing if ``arch`` does not contain computational resonators.
 
     Args:
@@ -318,6 +320,9 @@ def simplified_architecture(arch: DynamicQuantumArchitecture) -> DynamicQuantumA
         equivalent simplified quantum architecture
     """
     # NOTE: assumes all qubit-resonator gates have the locus order (q, r)
+    if not arch.computational_resonators:
+        return arch
+
     op_loci = {gate_name: gate_info.loci for gate_name, gate_info in arch.gates.items()}
     r_set = frozenset(arch.computational_resonators)
     q_set = frozenset(arch.qubits)

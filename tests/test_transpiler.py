@@ -24,6 +24,7 @@ from iqm.iqm_client import (
     GateInfo,
     Instruction,
     IQMClient,
+    simplified_architecture,
     transpile_insert_moves,
     transpile_remove_moves,
 )
@@ -533,3 +534,23 @@ class TestResonatorStateTracker:
         status = ResonatorStateTracker.from_dynamic_architecture(sample_move_architecture)
         status.apply_move('QB3', 'COMP_R')
         assert status.map_resonators_in_locus(components) == ('QB3', 'COMP_R2', 'QB1', 'QB2', 'QB3')
+
+
+def test_simplified_architecture(sample_move_architecture):
+    """Resonators and MOVE gates are eliminated, q-r gates are replaced with q-q gates."""
+    simple = simplified_architecture(sample_move_architecture)
+
+    assert simple.qubits == sample_move_architecture.qubits
+    assert not simple.computational_resonators
+
+    assert len(simple.gates) == 3
+    assert 'move' not in simple.gates
+    assert simple.gates['measure'].loci == (('QB1',), ('QB2',), ('QB3',))
+    assert simple.gates['prx'].loci == (('QB1',), ('QB2',), ('QB3',))
+    assert simple.gates['cz'].loci == (('QB1', 'QB3'), ('QB2', 'QB3',))
+
+
+def test_simplified_architecture_no_resonators(sample_dynamic_architecture):
+    """Architectures with no resonators are not changed."""
+    simple = simplified_architecture(sample_dynamic_architecture)
+    assert simple == sample_dynamic_architecture
