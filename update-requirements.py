@@ -31,6 +31,8 @@ if __name__ == "__main__":
         "--no-emit-find-links",
         "--no-header",
         "--no-build-isolation",
+        "--no-cache",
+        "--python-platform=x86_64-manylinux_2_31",
         "--all-extras",
         "pyproject.toml",
         "--output-file=requirements.txt",
