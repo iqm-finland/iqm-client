@@ -9,7 +9,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
       - name: Fetch all history for all tags and branches
@@ -21,7 +20,7 @@ jobs:
       - name: Install dependencies
         env:
           UV_SYSTEM_PYTHON: 1
-        run: uv pip install --constraint requirements.txt --editable .[cicd]
+        run: uv pip install --system --no-build-isolation --constraint requirements.txt --editable .[cicd]
       - name: Build distribution
         run: uv build --no-build-isolation
       - name: Store distribution packages
@@ -39,7 +38,6 @@ jobs:
       url: https://pypi.org/p/iqm-client
     permissions:
       id-token: write
-
     steps:
       - name: Download distribution packages
         uses: actions/download-artifact@v4
@@ -50,25 +48,24 @@ jobs:
 
   publish_docs:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Install uv and set the python version
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: '3.12'
+          python-version: "3.12"
       - name: Checkout latest tagged commit
         run: |
           git checkout $(git describe --tags --abbrev=0)
       - name: Install dependencies
         run: |
-          uv pip install --constraint requirements.txt --editable .[docs]
+          uv pip install --system --no-build-isolation --constraint requirements.txt --editable .[cicd,docs]
           sudo apt-get install graphviz
       - name: Build docs
         run: |
-          tox -e docs
+          ./docbuild
           touch build/sphinx/html/.nojekyll  # allow underscores in URL path
           # remove unnecessary build files
           sudo rm -rf build/sphinx/html/.doctrees
@@ -81,7 +78,6 @@ jobs:
 
   gen_licenses_info:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
         with:
@@ -91,7 +87,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install dependencies
-        run: uv pip install --constraint requirements.txt --editable .[cicd]
+        run: uv pip install --system --no-build-isolation --constraint requirements.txt --editable .[cicd]
       - name: Generate license information for dependencies
         run: |
           pip-licenses --format=confluence --with-urls > licenses.txt
