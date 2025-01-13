@@ -2,6 +2,12 @@
 Changelog
 =========
 
+Version 20.12
+=============
+
+* Drop support for Python 3.9. `#159 <https://github.com/iqm-finland/iqm-client/pull/159>`_
+* Add optional security-scanned lockfile. `#159 <https://github.com/iqm-finland/iqm-client/pull/159>`_
+
 Version 20.11
 =============
 
