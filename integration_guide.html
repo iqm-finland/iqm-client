@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Integration Guide &#8212; IQM client 20.11 documentation</title>
+    <title>Integration Guide &#8212; IQM client 20.12 documentation</title>
   
   
   
@@ -30,7 +30,7 @@
   <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=384b581d" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=1c782b6f"></script>
+    <script src="_static/documentation_options.js?v=0b0cab09"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
@@ -52,8 +52,8 @@
     <link rel="prev" title="iqm.iqm_client.util.IQMJSONEncoder" href="api/iqm.iqm_client.util.IQMJSONEncoder.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="20.11" />
-    <meta name="docbuild:last-update" content="2025-01-03"/>
+  <meta name="docsearch:version" content="20.12" />
+    <meta name="docbuild:last-update" content="2025-01-13"/>
   </head>
   
   
@@ -132,8 +132,8 @@
       
     
     
-    <img src="_static/logo.png" class="logo__image only-light" alt="IQM client 20.11 documentation - Home"/>
-    <img src="_static/logo.png" class="logo__image only-dark pst-js-only" alt="IQM client 20.11 documentation - Home"/>
+    <img src="_static/logo.png" class="logo__image only-light" alt="IQM client 20.12 documentation - Home"/>
+    <img src="_static/logo.png" class="logo__image only-dark pst-js-only" alt="IQM client 20.12 documentation - Home"/>
   
   
 </a></div>
@@ -415,7 +415,7 @@ framework.</p>
 <h2>Code example<a class="headerlink" href="#code-example" title="Link to this heading">#</a></h2>
 <p>Initialising the IQM client is simple, and in case you perform authentication as described below,
 requires only the URL of the IQM quantum computer.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">iqm.iqm_client</span> <span class="kn">import</span> <span class="n">IQMClient</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">iqm.iqm_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">IQMClient</span>
 
 <span class="n">server_url</span> <span class="o">=</span> <span class="s2">&quot;https://IQM_SERVER_URL&quot;</span>
 
@@ -424,7 +424,7 @@ requires only the URL of the IQM quantum computer.</p>
 </div>
 <p>To submit a quantum circuit for execution, it has to be specified using the <a class="reference internal" href="api/iqm.iqm_client.models.Circuit.html#iqm.iqm_client.models.Circuit" title="iqm.iqm_client.models.Circuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Circuit</span></code></a> class.
 The available native instructions are documented in the <a class="reference internal" href="api/iqm.iqm_client.models.Instruction.html#iqm.iqm_client.models.Instruction" title="iqm.iqm_client.models.Instruction"><code class="xref py py-class docutils literal notranslate"><span class="pre">Instruction</span></code></a> class.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">iqm.iqm_client</span> <span class="kn">import</span> <span class="n">Circuit</span><span class="p">,</span> <span class="n">Instruction</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">iqm.iqm_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Circuit</span><span class="p">,</span> <span class="n">Instruction</span>
 
 <span class="n">instructions</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">Instruction</span><span class="p">(</span>
@@ -533,7 +533,7 @@ optimized by third party software that does not support the MOVE gate.  For exam
 want to run a circuit that was originally transpiled for a device with a computational resonator on
 a device without a computational resonator.  This function allows the user to remove the MOVE gates
 from the circuit before transpiling it to another quantum architecture.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">iqm.iqm_client</span> <span class="kn">import</span> <span class="n">Circuit</span><span class="p">,</span> <span class="n">IQMClient</span><span class="p">,</span> <span class="n">transpile_insert_moves</span><span class="p">,</span> <span class="n">transpile_remove_moves</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">iqm.iqm_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Circuit</span><span class="p">,</span> <span class="n">IQMClient</span><span class="p">,</span> <span class="n">transpile_insert_moves</span><span class="p">,</span> <span class="n">transpile_remove_moves</span>
 
 <span class="n">circuit</span> <span class="o">=</span> <span class="n">Circuit</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;quantum_circuit&quot;</span><span class="p">,</span> <span class="n">instructions</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">])</span>
 <span class="n">backend_with_resonator</span> <span class="o">=</span> <span class="n">IQMClient</span><span class="p">(</span><span class="s2">&quot;url_to_backend_with_resonator&quot;</span><span class="p">)</span>
@@ -689,7 +689,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2025-01-03.
+  Last updated on 2025-01-13.
   <br/>
 </p>
   </div>
