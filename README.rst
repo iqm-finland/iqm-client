@@ -24,9 +24,9 @@ If you want just this library, though, you can install it from the Python Packag
 
 .. note::
 
-    `uv <https://docs.astral.sh/uv/>`_ is highly recommended for practical python environment and package management.
+    `uv <https://docs.astral.sh/uv/>`_ is highly recommended for practical Python environment and package management.
 
-Supplied within the python package there is an additional `requirements.txt` file containing locked, security scanned
+Supplied within the Python package there is an additional `requirements.txt` file containing locked, security scanned
 dependencies. The file can be used to constrain installed dependencies either directly from the repo or by
 extracting it from the PyPI package.
 
@@ -49,9 +49,9 @@ Run the tests:
 
    $ ./test
 
-Update the requirements. This is necessary when you add a new dependency or update an existing one in pyproject.toml.
+Update the requirements. This is necessary when you add a new dependency or update an existing one in `pyproject.toml`.
 After this, any changes in the lockfile `requirements.txt` have to be committed.
-The script upgrades locked dependencies defined in pyproject.toml within the given version ranges. However, transitive
+The script upgrades locked dependencies defined in `pyproject.toml` within the given version ranges. However, transitive
 dependencies are deliberately not upgraded automatically.
 
 .. code-block:: bash
