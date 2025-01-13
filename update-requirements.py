@@ -24,7 +24,6 @@ if __name__ == "__main__":
         "--no-emit-index-url",
         "--no-emit-find-links",
         "--no-header",
-        "--no-build-isolation",
         "--no-cache",
         "--python-platform=x86_64-manylinux_2_31",
         "--all-extras",

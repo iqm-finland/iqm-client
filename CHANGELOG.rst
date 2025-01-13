@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 20.13
+=============
+
+* Fix package publishing from ci, no functional changes. `#160 <https://github.com/iqm-finland/iqm-client/pull/160>`_
+
 Version 20.12
 =============
 
