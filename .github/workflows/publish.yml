@@ -20,7 +20,7 @@ jobs:
       - name: Install dependencies
         run: uv pip install --constraint requirements.txt --editable .[cicd]
       - name: Build distribution
-        run: uv build --no-build-isolation
+        run: uv build
       - name: Store distribution packages
         uses: actions/upload-artifact@v4
         with:
