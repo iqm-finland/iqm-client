@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import re
 from uuid import UUID
 
 import pytest
@@ -431,6 +432,28 @@ class TestNaiveMoveTranspiler:
         )
         circuits = [transpile_insert_moves(c, arch=arch), transpile_insert_moves(c2, arch=arch)]
         IQMClient._validate_circuit_instructions(arch, circuits)
+
+    @pytest.mark.parametrize(
+        'loci', [(qb1, qb2) for qb1 in ['QB1', 'QB2', 'QB3'] for qb2 in ['QB1', 'QB2', 'QB3'] if qb1 != qb2]
+    )
+    def test_pass_always_picks_correct_move_gate(self, loci):
+        circuit = Circuit(
+            name='test',
+            instructions=(Instruction(name='cz', qubits=loci, args={}),),
+        )
+        if set(loci) == {'QB1', 'QB2'}:
+            # There is no MOVE gate available between this pair of qubits
+            with pytest.raises(
+                CircuitTranspilationError,
+                match=re.escape(
+                    f'Unable to insert MOVE gates because none of the qubits {loci} share a resonator. This can be '
+                    + 'resolved by routing the circuit first without resonators.'
+                ),
+            ):
+                transpile_insert_moves(circuit, self.arch)
+        else:
+            transpiled_circuit = transpile_insert_moves(circuit, self.arch)
+            IQMClient._validate_circuit_instructions(self.arch, [transpiled_circuit])
 
 
 class TestResonatorStateTracker:
