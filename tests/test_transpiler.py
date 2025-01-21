@@ -547,7 +547,13 @@ def test_simplified_architecture(sample_move_architecture):
     assert 'move' not in simple.gates
     assert simple.gates['measure'].loci == (('QB1',), ('QB2',), ('QB3',))
     assert simple.gates['prx'].loci == (('QB1',), ('QB2',), ('QB3',))
-    assert simple.gates['cz'].loci == (('QB1', 'QB3'), ('QB2', 'QB3',))
+    assert simple.gates['cz'].loci == (
+        ('QB1', 'QB3'),
+        (
+            'QB2',
+            'QB3',
+        ),
+    )
 
 
 def test_simplified_architecture_no_resonators(sample_dynamic_architecture):

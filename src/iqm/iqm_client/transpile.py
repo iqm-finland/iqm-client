@@ -319,6 +319,7 @@ def simplified_architecture(arch: DynamicQuantumArchitecture) -> DynamicQuantumA
     Returns:
         equivalent simplified quantum architecture
     """
+    # pylint: disable=too-many-nested-blocks
     # NOTE: assumes all qubit-resonator gates have the locus order (q, r)
     if not arch.computational_resonators:
         return arch
@@ -335,7 +336,7 @@ def simplified_architecture(arch: DynamicQuantumArchitecture) -> DynamicQuantumA
 
     new_gates = {}
     for op, loci in op_loci.items():
-        new_loci = []
+        new_loci: list[tuple[str, ...]] = []
         for locus in loci:
             if len(locus) == 2:
                 # two-component op
@@ -358,7 +359,7 @@ def simplified_architecture(arch: DynamicQuantumArchitecture) -> DynamicQuantumA
         # implementation info is lost in the simplification
         new_gates[op] = GateInfo(
             implementations={'__fake': GateImplementationInfo(loci=tuple(new_loci))},
-            default_implementation='',
+            default_implementation='__fake',
             override_default_implementation={},
         )
 
