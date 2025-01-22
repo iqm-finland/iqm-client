@@ -231,7 +231,10 @@ class TestNaiveMoveTranspiler:
         # no changes
         assert c1 == self.simple_circuit
         # MOVEs in the circuit cause an error
-        with pytest.raises(ValueError):
+        with pytest.raises(
+            ValueError,
+            match='Circuit contains MOVE instructions, but the device does not support them',
+        ):
             _ = transpile_insert_moves(self.safe_circuit, sample_dynamic_architecture, existing_moves=handling_option)
 
     def test_unspecified(self):
@@ -249,7 +252,10 @@ class TestNaiveMoveTranspiler:
         c1 = self.insert(self.simple_circuit, handling_option)
         self.assert_valid_circuit(c1)
         assert self.check_equiv_without_moves(c1, self.simple_circuit)
-        with pytest.raises(CircuitTranspilationError):
+        with pytest.raises(
+            CircuitTranspilationError,
+            match=re.escape("Unable to insert MOVE gates because none of the qubits ('QB1', 'QB2')"),
+        ):
             self.insert(sample_circuit, handling_option)  # untranspiled circuit
 
     def test_keep(self):
@@ -259,10 +265,10 @@ class TestNaiveMoveTranspiler:
         self.assert_valid_circuit(c1)
         assert self.check_moves_in_circuit(c1, moves)
 
-        with pytest.raises(CircuitTranspilationError):
+        with pytest.raises(CircuitTranspilationError, match=re.escape("Instruction prx acts on ('QB3',) while")):
             self.insert(self.unsafe_circuit, ExistingMoveHandlingOptions.KEEP)
 
-        with pytest.raises(CircuitTranspilationError):
+        with pytest.raises(CircuitTranspilationError, match=re.escape("Instruction cz acts on ('QB3', 'QB1') while")):
             self.insert(self.ambiguous_circuit, ExistingMoveHandlingOptions.KEEP)
 
     def test_remove(self):
@@ -350,7 +356,7 @@ class TestNaiveMoveTranspiler:
                 ),
             ),
         )
-        with pytest.raises(CircuitTranspilationError):
+        with pytest.raises(CircuitTranspilationError, match=re.escape("('QB5',) is not allowed as locus for 'prx'")):
             self.insert(c, qb_map={'QB5': 'QB5'})
 
     def test_unavailable_cz(self):
@@ -463,8 +469,9 @@ class TestResonatorStateTracker:
         # Check handling of an architecture without a resonator
         no_move_status = ResonatorStateTracker.from_dynamic_architecture(sample_dynamic_architecture)
         assert not no_move_status.supports_move
-        with pytest.raises(CircuitTranspilationError):
+        with pytest.raises(CircuitTranspilationError, match=re.escape("MOVE locus ('QB1', 'QB2') is not allowed")):
             no_move_status.apply_move('QB1', 'QB2')
+
         # Check handling of an architecture with resonator
         status = ResonatorStateTracker.from_dynamic_architecture(sample_move_architecture)
         assert status.supports_move
@@ -472,12 +479,12 @@ class TestResonatorStateTracker:
         assert status.res_state_owner['CR1'] == 'QB3'
         status.apply_move('QB3', 'CR1')
         assert status.res_state_owner['CR1'] == 'CR1'
-        with pytest.raises(CircuitTranspilationError):
+        with pytest.raises(CircuitTranspilationError, match=re.escape("MOVE locus ('QB1', 'CR1') is not allowed")):
             status.apply_move('QB1', 'CR1')
-        with pytest.raises(CircuitTranspilationError):
+        with pytest.raises(CircuitTranspilationError, match=re.escape("MOVE locus ('QB1', 'QB2') is not allowed")):
             status.apply_move('QB1', 'QB2')
         status.res_state_owner['CR1'] = 'QB1'
-        with pytest.raises(CircuitTranspilationError):
+        with pytest.raises(CircuitTranspilationError, match=re.escape("MOVE locus ('QB3', 'CR1') is not allowed")):
             status.apply_move('QB3', 'CR1')
 
     def test_create_move_instructions(self, sample_move_architecture):
@@ -536,7 +543,10 @@ class TestResonatorStateTracker:
 
     def test_choose_move_pair(self, sample_move_architecture):
         status = ResonatorStateTracker.from_dynamic_architecture(sample_move_architecture)
-        with pytest.raises(CircuitTranspilationError):
+        with pytest.raises(
+            CircuitTranspilationError,
+            match=re.escape("Unable to insert MOVE gates because none of the qubits ['QB1', 'QB2'] share a resonator"),
+        ):
             status.choose_move_pair(['QB1', 'QB2'], [])
         resonator_candidates = status.choose_move_pair(
             ['QB1', 'QB2', 'QB3'],
@@ -570,11 +580,27 @@ def test_simplified_architecture(sample_move_architecture):
     assert simple.gates['prx'].loci == (('QB1',), ('QB2',), ('QB3',))
     assert simple.gates['cz'].loci == (
         ('QB1', 'QB3'),
-        (
-            'QB2',
-            'QB3',
-        ),
+        ('QB2', 'QB3'),
     )
+
+
+@pytest.mark.parametrize('locus', [('QB1', 'QB2'), ('CR1', 'CR2'), ('CR1', 'QB1')])
+def test_simplified_architecture_bad_move_locus(locus):
+    """MOVE gate with a locus that isn't (qubit, resonator)."""
+    dqa = DynamicQuantumArchitecture(
+        calibration_set_id=UUID('26c5e70f-bea0-43af-bd37-6212ec7d04cb'),
+        qubits=['QB1', 'QB2'],
+        computational_resonators=['CR1', 'CR2'],
+        gates={
+            'move': GateInfo(
+                implementations={'tgss_crf': GateImplementationInfo(loci=(locus,))},
+                default_implementation='tgss_crf',
+                override_default_implementation={},
+            ),
+        },
+    )
+    with pytest.raises(ValueError, match=re.escape(f'MOVE locus {locus} is not of the form')):
+        simplified_architecture(dqa)
 
 
 def test_simplified_architecture_no_resonators(sample_dynamic_architecture):

@@ -461,7 +461,7 @@ class IQMClient:
             raise CircuitValidationError(
                 f"{instruction.qubits} = {tuple(mapped_qubits)} is not allowed as locus for '{instruction_name}'"
                 if qubit_mapping
-                else f"'{instruction.qubits} is not allowed as locus for '{instruction_name}'"
+                else f"{instruction.qubits} is not allowed as locus for '{instruction_name}'"
             )
 
     @staticmethod

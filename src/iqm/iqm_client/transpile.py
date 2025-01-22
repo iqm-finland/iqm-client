@@ -108,7 +108,7 @@ class _ResonatorStateTracker:
 
     def __init__(self, available_moves: dict[str, list[str]]) -> None:
         self.available_moves = available_moves
-        available_moves_inverse = {}
+        available_moves_inverse: dict[str, list[str]] = {}
         for r, qubits in available_moves.items():
             for q in qubits:
                 available_moves_inverse.setdefault(q, []).append(r)
@@ -125,10 +125,12 @@ class _ResonatorStateTracker:
         Args:
             arch: Architecture that determines the available MOVE gate loci.
         """
+        resonators = set(arch.computational_resonators)
         available_moves: dict[str, list[str]] = {}
         if gate_info := arch.gates.get(_ResonatorStateTracker.move_gate):
             for q, r in gate_info.loci:
-                # assume MOVE gate loci are always [qubit, resonator]
+                if q in resonators or r not in resonators:
+                    raise ValueError(f'MOVE locus {q, r} is not of the form (qubit, resonator)')
                 available_moves.setdefault(r, []).append(q)
         return _ResonatorStateTracker(available_moves)
 
@@ -188,7 +190,7 @@ class _ResonatorStateTracker:
         ):
             self.res_state_owner[resonator] = qubit if self.res_state_owner[resonator] == resonator else resonator
         else:
-            raise CircuitTranspilationError('Attempted MOVE is not allowed.')
+            raise CircuitTranspilationError(f'MOVE locus {qubit, resonator} is not allowed.')
 
     def create_move_instructions(
         self,
@@ -353,12 +355,12 @@ def simplified_architecture(arch: DynamicQuantumArchitecture) -> DynamicQuantumA
     moves: dict[str, set[str]] = {}  # maps resonator r to qubits q for which we have MOVE(q, r) available
     for q, r in op_loci.pop('move', []):
         if q not in q_set or r not in r_set:
-            raise ValueError(f"Unexpected 'move' locus: ({q}, {r})")
+            raise ValueError(f'MOVE locus {q, r} is not of the form (qubit, resonator)')
         moves.setdefault(r, set()).add(q)
 
     new_gates = {}
     for op, loci in op_loci.items():
-        new_loci: list[tuple[str, ...]] = []
+        new_loci: list[Locus] = []
         for locus in loci:
             if len(locus) == 2:
                 # two-component op
@@ -413,8 +415,6 @@ def transpile_insert_moves(
 
     The function does nothing if ``arch`` does not support MOVE gates.
 
-    Assumes that MOVE and CZ gates on the Star architecture act always on a (qubit, resonator) locus.
-
     Args:
         circuit: The circuit to convert.
         arch: Real Star architecture of the target device.
@@ -439,9 +439,8 @@ def transpile_insert_moves(
     # add missing QPU components to the mapping (mapped to themselves)
     if qubit_mapping is None:
         qubit_mapping = {}
-    for q in arch.components:
-        if q not in qubit_mapping.values():
-            qubit_mapping[q] = q
+    for c in set(arch.components) - set(qubit_mapping.values()):
+        qubit_mapping[c] = c
 
     if existing_moves == ExistingMoveHandlingOptions.KEEP:
         # convert to physical qubit names
@@ -452,7 +451,7 @@ def transpile_insert_moves(
                 Circuit(name=circuit.name, instructions=phys_instructions, metadata=circuit.metadata),
             )
         except CircuitValidationError as e:
-            raise CircuitTranspilationError(f'Unable to transpile the circuit after validation error: {e}') from e
+            raise CircuitTranspilationError(e) from e
     else:
         if circuit_has_moves and existing_moves == ExistingMoveHandlingOptions.REMOVE:
             # convert the circuit into a pure simplified architecture circuit
@@ -522,9 +521,7 @@ def _transpile_insert_moves(
                     tracker.apply_move(*locus)
             except CircuitValidationError as e:
                 if inst.name != 'cz':  # We can only fix CZ gates at this point
-                    raise CircuitTranspilationError(
-                        f'Unable to transpile the circuit after validation error: {e.args[0]}'
-                    ) from e
+                    raise CircuitTranspilationError(e) from e
                 # CZ: cannot be applied to this locus, one of the qubits needs to be moved into a resonator.
                 # Pick which qubit-resonator pair to apply this CZ to
                 # Pick from qubits already in a resonator or both targets if none off them are in a resonator
