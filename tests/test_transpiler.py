@@ -1,4 +1,4 @@
-# Copyright 2024 IQM client developers
+# Copyright 2024-2025 IQM client developers
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -33,7 +33,91 @@ from iqm.iqm_client import (
 from iqm.iqm_client.transpile import _ResonatorStateTracker as ResonatorStateTracker
 
 
-class TestNaiveMoveTranspiler:
+class MoveTranspilerBase:
+    """Base class for transpiler tests, containing some utility methods."""
+
+    def insert(
+        self,
+        circuit: Circuit,
+        existing_moves: Optional[ExistingMoveHandlingOptions] = None,
+        qb_map: Optional[dict[str, str]] = None,
+    ):
+        """Call transpile_insert_moves on the given circuit."""
+        kwargs = {} if existing_moves is None else {'existing_moves': existing_moves}
+        return transpile_insert_moves(circuit, arch=self.arch, qubit_mapping=qb_map, **kwargs)
+
+    def check_equiv_without_moves(self, c1: Circuit, c2: Circuit) -> bool:
+        """After removing MOVEs, True iff c1 and c2 are equivalent.
+        Symmetric gates may have been flipped FIXME not ok if implementation is not symmetric!
+        """
+        c1 = transpile_remove_moves(c1)
+        c2 = transpile_remove_moves(c2)
+        for i1, i2 in zip(c1.instructions, c2.instructions):
+            if i1.name != i2.name or i1.args != i2.args:
+                return False
+            if i1.qubits != i2.qubits:
+                if i1.name != 'cz':
+                    return False
+                if i1.qubits != i2.qubits[::-1]:
+                    return False
+        return True
+
+    def assert_valid_circuit(self, circuit: Circuit, qb_map=None) -> None:
+        """Raises an error if circuit is not valid."""
+        if qb_map:
+            for q in self.arch.qubits:
+                if q not in qb_map.values():
+                    qb_map[q] = q
+        IQMClient._validate_circuit_instructions(self.arch, [circuit], qubit_mapping=qb_map)
+
+    def check_moves_in_circuit(self, circuit: Circuit, moves: tuple[Instruction]) -> bool:
+        """True iff ``moves`` all appear in ``circuit`` in that order."""
+        idx = 0
+        for instr in circuit.instructions:
+            if idx < len(moves) and moves[idx] == instr:
+                idx += 1
+        return idx == len(moves)
+
+
+class TestMoveTranspiler_Hybrid(MoveTranspilerBase):
+    """A more complicated quantum architecture, involving both q-r and q-q loci."""
+
+    @pytest.fixture(autouse=True)
+    def init_arch(self, hybrid_move_architecture):
+        # pylint: disable=attribute-defined-outside-init
+        self.arch: DynamicQuantumArchitecture = hybrid_move_architecture
+
+    @pytest.mark.parametrize('handling_option', ExistingMoveHandlingOptions)
+    def test_normal_usage_no_moves_added(self, sample_circuit: Circuit, handling_option):
+        """No MOVE insertion required."""
+
+        circuit = Circuit(name='test', instructions=(
+            Instruction(name='prx', qubits=('QB1',), args={'phase_t': 0.3, 'angle_t': -0.2}),
+            Instruction(name='cz', qubits=('QB1', 'CR1'), args={}),
+            Instruction(name='cz', qubits=('QB3', 'CR1'), args={}),
+            Instruction(name='cz', qubits=('QB3', 'QB4'), args={}),
+        ))
+        c1 = self.insert(circuit, handling_option)
+        self.assert_valid_circuit(c1)
+        assert self.check_equiv_without_moves(c1, circuit)
+
+    @pytest.mark.parametrize('handling_option', ExistingMoveHandlingOptions)
+    def test_normal_usage(self, sample_circuit: Circuit, handling_option):
+        """Tests basic usage of the transpile method"""
+
+        circuit = Circuit(name='test', instructions=(
+            Instruction(name='prx', qubits=('QB1',), args={'phase_t': 0.3, 'angle_t': -0.2}),
+            Instruction(name='cz', qubits=('QB1', 'QB2'), args={}),
+            Instruction(name='cz', qubits=('QB3', 'QB2'), args={}),
+            Instruction(name='cz', qubits=('QB3', 'QB4'), args={}),
+        ))
+        c1 = self.insert(circuit, handling_option)
+        self.assert_valid_circuit(c1)
+        assert self.check_equiv_without_moves(c1, circuit)
+
+
+
+class TestMoveTranspiler(MoveTranspilerBase):
     # pylint: disable=too-many-public-methods
 
     @pytest.fixture(autouse=True)
@@ -186,43 +270,6 @@ class TestNaiveMoveTranspiler:
         )
         return Circuit(name='ambiguous', instructions=instructions)
 
-    def insert(
-        self,
-        circuit: Circuit,
-        existing_moves: Optional[ExistingMoveHandlingOptions] = None,
-        qb_map: Optional[dict[str, str]] = None,
-    ):
-        """Call transpile_insert_moves on the given circuit."""
-        kwargs = {} if existing_moves is None else {'existing_moves': existing_moves}
-        return transpile_insert_moves(circuit, arch=self.arch, qubit_mapping=qb_map, **kwargs)
-
-    def check_equiv_without_moves(self, c1: Circuit, c2: Circuit):
-        c1 = transpile_remove_moves(c1)
-        c2 = transpile_remove_moves(c2)
-        for i1, i2 in zip(c1.instructions, c2.instructions):
-            if i1.name != i2.name or i1.args != i2.args:
-                return False
-            if i1.qubits != i2.qubits:
-                if i1.name != 'cz':
-                    return False
-                if not all(q1 == q2 for q1, q2 in zip(i1.qubits, reversed(i2.qubits))):
-                    return False
-        return True
-
-    def assert_valid_circuit(self, circuit: Circuit, qb_map=None):
-        # pylint: disable=no-member
-        if qb_map:
-            for q in self.arch.qubits:
-                if q not in qb_map.values():
-                    qb_map[q] = q
-        IQMClient._validate_circuit_instructions(self.arch, [circuit], qubit_mapping=qb_map)
-
-    def check_moves_in_circuit(self, circuit: Circuit, moves: tuple[Instruction]):
-        idx = 0
-        for instr in circuit.instructions:
-            if idx < len(moves) and moves[idx] == instr:
-                idx += 1
-        return idx == len(moves)
 
     @pytest.mark.parametrize('handling_option', ExistingMoveHandlingOptions)
     def test_no_moves_supported(self, sample_dynamic_architecture, handling_option):
@@ -323,7 +370,7 @@ class TestNaiveMoveTranspiler:
                 Instruction(name='cz', qubits=('QB1', 'QB3'), args={}),
             ),
         )
-        with pytest.raises(CircuitTranspilationError, match='Unable to find a valid resonator-qubit pair'):
+        with pytest.raises(CircuitTranspilationError, match='Unable to find a valid qubit-resonator pair'):
             # CZ(QB1, QB2) is not possible
             # Create a new copy of the DQA to ensure the cached properties are computed only for this architecture.
             bad_architecture = sample_move_architecture.model_copy(deep=True)
@@ -454,8 +501,8 @@ class TestNaiveMoveTranspiler:
             with pytest.raises(
                 CircuitTranspilationError,
                 match=re.escape(
-                    f'Unable to insert MOVE gates because none of the qubits {loci} share a resonator. This can be '
-                    + 'resolved by routing the circuit first without resonators.'
+                    f'Unable to insert MOVE gates because none of the qubits {loci} can be moved into a resonator. '
+                    + 'This can be resolved by routing the circuit first without resonators.'
                 ),
             ):
                 transpile_insert_moves(circuit, self.arch)
@@ -545,7 +592,9 @@ class TestResonatorStateTracker:
         status = ResonatorStateTracker.from_dynamic_architecture(sample_move_architecture)
         with pytest.raises(
             CircuitTranspilationError,
-            match=re.escape("Unable to insert MOVE gates because none of the qubits ['QB1', 'QB2'] share a resonator"),
+            match=re.escape(
+                "Unable to insert MOVE gates because none of the qubits ['QB1', 'QB2'] can be moved into a resonator",
+            ),
         ):
             status.choose_move_pair(['QB1', 'QB2'], [])
         resonator_candidates = status.choose_move_pair(
@@ -556,9 +605,8 @@ class TestResonatorStateTracker:
                 Instruction(name='prx', qubits=('QB3',), args={'phase_t': 0.3, 'angle_t': -0.2}),
             ],
         )
-        r, q = resonator_candidates[0]
-        assert r == 'CR1'
-        assert q == 'QB3'
+        assert len(resonator_candidates) == 1
+        assert resonator_candidates[0] == ('QB3', 'CR1')
 
     def test_map_resonators_in_locus(self, sample_move_architecture):
         components = sample_move_architecture.components
@@ -582,6 +630,26 @@ def test_simplified_architecture(sample_move_architecture):
         ('QB1', 'QB3'),
         ('QB2', 'QB3'),
     )
+
+
+def test_simplified_architecture_hybrid(hybrid_move_architecture):
+    """Resonators and MOVE gates are eliminated, q-r gates are replaced with q-q gates."""
+    simple = simplified_architecture(hybrid_move_architecture)
+
+    assert simple.qubits == hybrid_move_architecture.qubits
+    assert not simple.computational_resonators
+    assert len(simple.gates) == 3
+    assert 'move' not in simple.gates
+    assert simple.gates['measure'].loci == (('QB1',), ('QB2',), ('QB3',), ('QB4',), ('QB5',))
+    assert simple.gates['prx'].loci == (('QB1',), ('QB2',), ('QB3',), ('QB4',), ('QB5',))
+    assert set(simple.gates['cz'].loci) == set([
+        ('QB1', 'QB2'),
+        ('QB1', 'QB3'),
+        ('QB3', 'QB2'),
+        ('QB3', 'QB4'),
+        ('QB5', 'QB2'),
+        ('QB5', 'QB3'),
+    ])
 
 
 @pytest.mark.parametrize('locus', [('QB1', 'QB2'), ('CR1', 'CR2'), ('CR1', 'QB1')])
