@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import re
+from typing import Optional
 from uuid import UUID
 
 import pytest
@@ -51,7 +52,7 @@ class TestNaiveMoveTranspiler:
             ),
             Instruction(
                 name='move',
-                qubits=('QB3', 'COMP_R'),
+                qubits=('QB3', 'CR1'),
                 args={},
             ),
             Instruction(
@@ -61,7 +62,7 @@ class TestNaiveMoveTranspiler:
             ),
             Instruction(
                 name='move',
-                qubits=('QB3', 'COMP_R'),
+                qubits=('QB3', 'CR1'),
                 args={},
             ),
         )
@@ -78,22 +79,22 @@ class TestNaiveMoveTranspiler:
             ),
             Instruction(
                 name='cz',
-                qubits=('QB1', 'COMP_R'),
+                qubits=('QB1', 'CR1'),
                 args={},
             ),
             Instruction(
                 name='move',
-                qubits=('QB3', 'COMP_R'),
+                qubits=('QB3', 'CR1'),
                 args={},
             ),
             Instruction(
                 name='cz',
-                qubits=('QB2', 'COMP_R'),
+                qubits=('QB2', 'CR1'),
                 args={},
             ),
             Instruction(
                 name='move',
-                qubits=('QB3', 'COMP_R'),
+                qubits=('QB3', 'CR1'),
                 args={},
             ),
             Instruction(
@@ -115,12 +116,12 @@ class TestNaiveMoveTranspiler:
             ),
             Instruction(
                 name='cz',
-                qubits=('QB1', 'COMP_R'),
+                qubits=('QB1', 'CR1'),
                 args={},
             ),
             Instruction(
                 name='cz',
-                qubits=('QB2', 'COMP_R'),
+                qubits=('QB2', 'CR1'),
                 args={},
             ),
             Instruction(
@@ -164,17 +165,17 @@ class TestNaiveMoveTranspiler:
             ),
             Instruction(
                 name='cz',
-                qubits=('QB1', 'COMP_R'),
+                qubits=('QB1', 'CR1'),
                 args={},
             ),
             Instruction(
                 name='move',
-                qubits=('QB3', 'COMP_R'),
+                qubits=('QB3', 'CR1'),
                 args={},
             ),
             Instruction(
                 name='cz',
-                qubits=('QB2', 'COMP_R'),
+                qubits=('QB2', 'CR1'),
                 args={},
             ),
             Instruction(
@@ -188,10 +189,11 @@ class TestNaiveMoveTranspiler:
     def insert(
         self,
         circuit: Circuit,
-        arg=None,
-        qb_map=None,
+        existing_moves: Optional[ExistingMoveHandlingOptions] = None,
+        qb_map: Optional[dict[str, str]] = None,
     ):
-        kwargs = {} if arg is None else {'existing_moves': arg}
+        """Call transpile_insert_moves on the given circuit."""
+        kwargs = {} if existing_moves is None else {'existing_moves': existing_moves}
         return transpile_insert_moves(circuit, arch=self.arch, qubit_mapping=qb_map, **kwargs)
 
     def check_equiv_without_moves(self, c1: Circuit, c2: Circuit):
@@ -304,7 +306,7 @@ class TestNaiveMoveTranspiler:
         """Test if multiple resonators works."""
         # add MOVE loci to the architecture
         default_move_impl = sample_move_architecture.gates['move'].default_implementation
-        sample_move_architecture.gates['move'].implementations[default_move_impl].loci += (('QB1', 'COMP_R2'),)
+        sample_move_architecture.gates['move'].implementations[default_move_impl].loci += (('QB1', 'CR2'),)
 
         # Test with bad architecture
         circuit = Circuit(
@@ -324,7 +326,7 @@ class TestNaiveMoveTranspiler:
         # Add the CZ loci to the architecture make it ok for this circuit.
         default_cz_impl = sample_move_architecture.gates['cz'].default_implementation
         sample_move_architecture.gates['cz'].implementations[default_cz_impl].loci += tuple(
-            (qb, 'COMP_R2') for qb in sample_move_architecture.components
+            (qb, 'CR2') for qb in sample_move_architecture.components
         )
 
         # Create a new copy of the DQA to ensure the cached properties are computed only for this architecture.
@@ -406,7 +408,7 @@ class TestNaiveMoveTranspiler:
         arch = DynamicQuantumArchitecture(
             calibration_set_id=UUID('0c5a5624-2faf-4885-888c-805af891479c'),
             qubits=['QB1', 'QB2'],
-            computational_resonators=['COMP_R'],
+            computational_resonators=['CR1'],
             gates={
                 'prx': GateInfo(
                     implementations={'drag_gaussian': GateImplementationInfo(loci=(('QB1',), ('QB2',)))},
@@ -414,12 +416,12 @@ class TestNaiveMoveTranspiler:
                     override_default_implementation={},
                 ),
                 'cz': GateInfo(
-                    implementations={'tgss': GateImplementationInfo(loci=(('QB2', 'COMP_R'),))},
+                    implementations={'tgss': GateImplementationInfo(loci=(('QB2', 'CR1'),))},
                     default_implementation='tgss',
                     override_default_implementation={},
                 ),
                 'move': GateInfo(
-                    implementations={'tgss_crf': GateImplementationInfo(loci=(('QB1', 'COMP_R'), ('QB2', 'COMP_R')))},
+                    implementations={'tgss_crf': GateImplementationInfo(loci=(('QB1', 'CR1'), ('QB2', 'CR1')))},
                     default_implementation='tgss_crf',
                     override_default_implementation={},
                 ),
@@ -466,39 +468,39 @@ class TestResonatorStateTracker:
         # Check handling of an architecture with resonator
         status = ResonatorStateTracker.from_dynamic_architecture(sample_move_architecture)
         assert status.supports_move
-        status.apply_move('QB3', 'COMP_R')
-        assert status.res_state_owner['COMP_R'] == 'QB3'
-        status.apply_move('QB3', 'COMP_R')
-        assert status.res_state_owner['COMP_R'] == 'COMP_R'
+        status.apply_move('QB3', 'CR1')
+        assert status.res_state_owner['CR1'] == 'QB3'
+        status.apply_move('QB3', 'CR1')
+        assert status.res_state_owner['CR1'] == 'CR1'
         with pytest.raises(CircuitTranspilationError):
-            status.apply_move('QB1', 'COMP_R')
+            status.apply_move('QB1', 'CR1')
         with pytest.raises(CircuitTranspilationError):
             status.apply_move('QB1', 'QB2')
-        status.res_state_owner['COMP_R'] = 'QB1'
+        status.res_state_owner['CR1'] = 'QB1'
         with pytest.raises(CircuitTranspilationError):
-            status.apply_move('QB3', 'COMP_R')
+            status.apply_move('QB3', 'CR1')
 
     def test_create_move_instructions(self, sample_move_architecture):
         default_move_impl = sample_move_architecture.gates['move'].default_implementation
-        sample_move_architecture.gates['move'].implementations[default_move_impl].loci += (('QB1', 'COMP_R'),)
+        sample_move_architecture.gates['move'].implementations[default_move_impl].loci += (('QB1', 'CR1'),)
         status = ResonatorStateTracker.from_dynamic_architecture(sample_move_architecture)
-        instr = Instruction(name='move', qubits=('QB3', 'COMP_R'), args={})
+        instr = Instruction(name='move', qubits=('QB3', 'CR1'), args={})
         # Check insertion
-        gen_instr = tuple(status.create_move_instructions('QB3', 'COMP_R'))
+        gen_instr = tuple(status.create_move_instructions('QB3', 'CR1'))
         assert len(gen_instr) == 1
         assert gen_instr[0] == instr
-        assert status.res_state_owner['COMP_R'] == 'QB3'
-        gen_instr = tuple(status.create_move_instructions('QB3', 'COMP_R'))
+        assert status.res_state_owner['CR1'] == 'QB3'
+        gen_instr = tuple(status.create_move_instructions('QB3', 'CR1'))
         assert len(gen_instr) == 1
         assert gen_instr[0] == instr
-        assert status.res_state_owner['COMP_R'] == 'COMP_R'
-        status.res_state_owner['COMP_R'] = 'QB1'
+        assert status.res_state_owner['CR1'] == 'CR1'
+        status.res_state_owner['CR1'] = 'QB1'
         # Check removal
-        gen_instr = tuple(status.create_move_instructions('QB3', 'COMP_R'))
+        gen_instr = tuple(status.create_move_instructions('QB3', 'CR1'))
         assert len(gen_instr) == 2
-        assert gen_instr[0] == Instruction(name='move', qubits=('QB1', 'COMP_R'), args={})
+        assert gen_instr[0] == Instruction(name='move', qubits=('QB1', 'CR1'), args={})
         assert gen_instr[1] == instr
-        assert status.res_state_owner['COMP_R'] == 'QB3'
+        assert status.res_state_owner['CR1'] == 'QB3'
 
     def test_reset_as_move_instructions(self, sample_move_architecture):
         status = ResonatorStateTracker.from_dynamic_architecture(sample_move_architecture)
@@ -506,35 +508,35 @@ class TestResonatorStateTracker:
         gen_instr = tuple(status.reset_as_move_instructions())
         assert len(gen_instr) == 0
         # Reset with argument
-        status.apply_move('QB3', 'COMP_R')
-        gen_instr = tuple(status.reset_as_move_instructions(['COMP_R']))
+        status.apply_move('QB3', 'CR1')
+        gen_instr = tuple(status.reset_as_move_instructions(['CR1']))
         assert len(gen_instr) == 1
-        assert gen_instr[0] == Instruction(name='move', qubits=('QB3', 'COMP_R'), args={})
-        assert status.res_state_owner['COMP_R'] == 'COMP_R'
+        assert gen_instr[0] == Instruction(name='move', qubits=('QB3', 'CR1'), args={})
+        assert status.res_state_owner['CR1'] == 'CR1'
         # Reset without arguments
-        status.apply_move('QB3', 'COMP_R')
+        status.apply_move('QB3', 'CR1')
         gen_instr = tuple(status.reset_as_move_instructions())
         assert len(gen_instr) == 1
-        assert gen_instr[0] == Instruction(name='move', qubits=('QB3', 'COMP_R'), args={})
-        assert status.res_state_owner['COMP_R'] == 'COMP_R'
+        assert gen_instr[0] == Instruction(name='move', qubits=('QB3', 'CR1'), args={})
+        assert status.res_state_owner['CR1'] == 'CR1'
 
     def test_available_resonators_to_move(self, sample_move_architecture):
         components = sample_move_architecture.components
         status = ResonatorStateTracker.from_dynamic_architecture(sample_move_architecture)
         assert status.available_resonators_to_move(components) == {
-            'COMP_R': [],
-            'COMP_R2': [],
+            'CR1': [],
+            'CR2': [],
             'QB1': [],
             'QB2': [],
-            'QB3': ['COMP_R'],
+            'QB3': ['CR1'],
         }
 
     def test_qubits_in_resonator(self, sample_move_architecture):
         components = sample_move_architecture.components
         status = ResonatorStateTracker.from_dynamic_architecture(sample_move_architecture)
         assert status.resonators_holding_qubits(components) == []
-        status.apply_move('QB3', 'COMP_R')
-        assert status.resonators_holding_qubits(components) == ['COMP_R']
+        status.apply_move('QB3', 'CR1')
+        assert status.resonators_holding_qubits(components) == ['CR1']
 
     def test_choose_move_pair(self, sample_move_architecture):
         status = ResonatorStateTracker.from_dynamic_architecture(sample_move_architecture)
@@ -549,14 +551,14 @@ class TestResonatorStateTracker:
             ],
         )
         r, q = resonator_candidates[0]
-        assert r == 'COMP_R'
+        assert r == 'CR1'
         assert q == 'QB3'
 
     def test_map_resonators_in_locus(self, sample_move_architecture):
         components = sample_move_architecture.components
         status = ResonatorStateTracker.from_dynamic_architecture(sample_move_architecture)
-        status.apply_move('QB3', 'COMP_R')
-        assert status.map_resonators_in_locus(components) == ('QB3', 'COMP_R2', 'QB1', 'QB2', 'QB3')
+        status.apply_move('QB3', 'CR1')
+        assert status.map_resonators_in_locus(components) == ('QB3', 'CR2', 'QB1', 'QB2', 'QB3')
 
 
 def test_simplified_architecture(sample_move_architecture):

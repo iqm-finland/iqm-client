@@ -494,7 +494,7 @@ def sample_move_architecture():
     return DynamicQuantumArchitecture(
         calibration_set_id=UUID('26c5e70f-bea0-43af-bd37-6212ec7d04cb'),
         qubits=['QB1', 'QB2', 'QB3'],
-        computational_resonators=['COMP_R', 'COMP_R2'],
+        computational_resonators=['CR1', 'CR2'],
         gates={
             'prx': GateInfo(
                 implementations={'drag_gaussian': GateImplementationInfo(loci=(('QB1',), ('QB2',), ('QB3',)))},
@@ -502,12 +502,12 @@ def sample_move_architecture():
                 override_default_implementation={},
             ),
             'cz': GateInfo(
-                implementations={'tgss': GateImplementationInfo(loci=(('QB1', 'COMP_R'), ('QB2', 'COMP_R')))},
+                implementations={'tgss': GateImplementationInfo(loci=(('QB1', 'CR1'), ('QB2', 'CR1')))},
                 default_implementation='tgss',
                 override_default_implementation={},
             ),
             'move': GateInfo(
-                implementations={'tgss_crf': GateImplementationInfo(loci=(('QB3', 'COMP_R'),))},
+                implementations={'tgss_crf': GateImplementationInfo(loci=(('QB3', 'CR1'),))},
                 default_implementation='tgss_crf',
                 override_default_implementation={},
             ),

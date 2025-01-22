@@ -63,26 +63,26 @@ def move_circuit():
         ),
         Instruction(
             name='move',
-            qubits=('QB3', 'COMP_R'),
+            qubits=('QB3', 'CR1'),
             args={},
         ),
         Instruction(
             name='cz',
-            qubits=('QB1', 'COMP_R'),
+            qubits=('QB1', 'CR1'),
             args={},
         ),
         Instruction(
             name='cz',
-            qubits=('QB2', 'COMP_R'),
+            qubits=('QB2', 'CR1'),
             args={},
         ),
         Instruction(
             name='move',
-            qubits=('QB3', 'COMP_R'),
+            qubits=('QB3', 'CR1'),
             args={},
         ),
     )
-    return Circuit(name='COMP_R circuit', instructions=instructions)
+    return Circuit(name='CR1 circuit', instructions=instructions)
 
 
 @pytest.fixture
@@ -95,7 +95,7 @@ def move_circuit_with_prx_in_the_sandwich():
         ),
         Instruction(
             name='move',
-            qubits=('QB3', 'COMP_R'),
+            qubits=('QB3', 'CR1'),
             args={},
         ),
         Instruction(
@@ -105,11 +105,11 @@ def move_circuit_with_prx_in_the_sandwich():
         ),
         Instruction(
             name='move',
-            qubits=('QB3', 'COMP_R'),
+            qubits=('QB3', 'CR1'),
             args={},
         ),
     )
-    return Circuit(name='COMP_R circuit with PRX in the sandwich', instructions=instructions)
+    return Circuit(name='CR1 circuit with PRX in the sandwich', instructions=instructions)
 
 
 def test_serialize_qubit_mapping():
