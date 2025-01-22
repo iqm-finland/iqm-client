@@ -15,8 +15,8 @@
 
 In the IQM Star architecture, computational resonators are connected to multiple qubits.
 A MOVE gate can be used to move the state of a qubit to a connected, empty computational resonator,
-and vice versa, so that the qubit can be made to interact with other qubits connected to the
-resonator. Additionally, two-qubit gates like CZ can be applied between a qubit
+and vice versa, so that effectively the qubit can be made to interact with other qubits connected
+to the resonator. Additionally, two-qubit gates like CZ can be applied between a qubit
 and a connected resonator. However, the resonator cannot be measured, and no single-qubit gates
 can be applied on it.
 
@@ -24,13 +24,13 @@ To enable third-party transpilers to work on the IQM Star architecture, we may a
 resonators and replace the real dynamic quantum architecture with a *simplified architecture*.
 Specifically, this happens by removing the resonators from the architecture, and for
 each resonator ``r``, for each pair of supported native qubit-resonator gates ``(G(q1, r), MOVE(q2, r))``
-adding the gate ``G(q1, q2)`` to the simplified architecture (since the latter can be implemented
-as the sequence ``MOVE(q2, r), G(q1, r), MOVE(q2, r)``).
+adding the fictional gate ``G(q1, q2)`` to the simplified architecture (since the latter can be
+implemented as the sequence ``MOVE(q2, r), G(q1, r), MOVE(q2, r)``).
 
 Before a circuit transpiled to a simplified architecture can be executed it must be further
 transpiled to the real Star architecture using :func:`transpile_insert_moves`, which will introduce
-the resonators, add MOVE gates as necessary to move the states, and convert the two-qubit gates into
-real native gates acting on qubit-resonator pairs.
+the resonators, add MOVE gates as necessary to move the states, and convert the fictional two-qubit
+gates into real native gates acting on qubit-resonator pairs.
 
 Likewise :func:`transpile_remove_moves` can be used to perform the opposite transformation,
 converting a circuit valid for the real Star architecture into an equivalent circuit for the
@@ -74,7 +74,15 @@ def _map_loci(
     qubit_mapping: dict[str, str],
     inverse: bool = False,
 ) -> list[Instruction]:
-    """Map the loci of the instructions in the circuit using the given qubit mapping, or its inverse."""
+    """Map the loci of the given instructions using the given qubit mapping, or its inverse.
+
+    Args:
+        instructions: Instructions whose loci are to be mapped.
+        qubit_mapping: Mapping from one set of qubit names to another. Assumed to be injective.
+        inverse: Invert ``qubit_mapping`` before using it.
+    Returns:
+        Copies of ``instructions`` with mapped loci.
+    """
     if inverse:
         qubit_mapping = {phys: log for log, phys in qubit_mapping.items()}
     return list(
@@ -85,17 +93,28 @@ def _map_loci(
 class _ResonatorStateTracker:
     r"""Tracks the qubit states stored in computational resonators on the QPU as they are moved with MOVE gates.
 
-    This is required because the MOVE gate is not defined when acting on a :math:`|11\rangle` state,
-    and involves an unknown phase.
+    Since the MOVE gate is not defined when acting on a :math:`|11\rangle` state,
+    and involves an unknown phase, it is not equivalent to a SWAP.
+    The state must always be moved back to its original qubit (this reverses the unknown phase),
+    and no gates may be applied on the qubit while its state is in a resonator (to avoid populating
+    the :math:`|11\rangle` state).
 
     Args:
         available_moves: Mapping from resonator to qubits with which it has a MOVE gate available.
     """
 
     move_gate = 'move'
+    """Name of the MOVE gate in the architecture."""
 
     def __init__(self, available_moves: dict[str, list[str]]) -> None:
         self.available_moves = available_moves
+        available_moves_inverse = {}
+        for r, qubits in available_moves.items():
+            for q in qubits:
+                available_moves_inverse.setdefault(q, []).append(r)
+        self.available_moves_inverse = available_moves_inverse
+        """Mapping from qubit to resonators it can be MOVEd into."""
+
         self.res_state_owner = {r: r for r in self.resonators}
         """Maps resonator to the QPU component whose state it currently holds."""
 
@@ -230,8 +249,9 @@ class _ResonatorStateTracker:
 
         Returns:
             Mapping from qubit to a list of resonators its state can be moved to.
+            If a qubit cannot be moved into a resonator, it does not appear in the mapping.
         """
-        return {q: [r for r in self.resonators if q in self.available_moves[r]] for q in qubits}
+        return {q: resonators for q in qubits if (resonators := self.available_moves_inverse.get(q))}
 
     def resonators_holding_qubits(self, qubits: Iterable[str]) -> list[str]:
         """Return the resonators that are holding the state of one of the given qubits.
@@ -240,9 +260,11 @@ class _ResonatorStateTracker:
             qubits: The qubits to check.
 
         Returns:
-            Resonators holding their states.
+            Resonators that hold the state of one of ``qubits``.
         """
-        return [r for r, q in self.res_state_owner.items() if q in qubits and q not in self.resonators]
+        # a resonator can only hold the state of a connected qubit, or its own state
+        # TODO needs to be made more efficient once we have lots of resonators
+        return [r for r, q in self.res_state_owner.items() if q != r and q in qubits]
 
     def choose_move_pair(
         self, qubits: Iterable[str], remaining_instructions: Iterable[Instruction]
@@ -379,7 +401,7 @@ def transpile_insert_moves(
     qubit_mapping: Optional[dict[str, str]] = None,
 ) -> Circuit:
     """Convert a simplified architecture circuit into an equivalent Star architecture circuit with
-    resonators and MOVE gates.
+    resonators and MOVE gates, if needed.
 
     In the typical use case ``circuit`` has been transpiled to a simplified architecture
     where the resonators have been abstracted away, and this function converts it into

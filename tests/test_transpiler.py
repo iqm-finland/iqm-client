@@ -224,15 +224,15 @@ class TestNaiveMoveTranspiler:
                 idx += 1
         return idx == len(moves)
 
-    @pytest.mark.parametrize('option', ExistingMoveHandlingOptions)
-    def test_no_moves_supported(self, sample_dynamic_architecture, option):
+    @pytest.mark.parametrize('handling_option', ExistingMoveHandlingOptions)
+    def test_no_moves_supported(self, sample_dynamic_architecture, handling_option):
         """Tests transpiler for architectures without a resonator"""
-        c1 = transpile_insert_moves(self.simple_circuit, sample_dynamic_architecture, existing_moves=option)
+        c1 = transpile_insert_moves(self.simple_circuit, sample_dynamic_architecture, existing_moves=handling_option)
         # no changes
         assert c1 == self.simple_circuit
         # MOVEs in the circuit cause an error
         with pytest.raises(ValueError):
-            _ = transpile_insert_moves(self.safe_circuit, sample_dynamic_architecture, existing_moves=option)
+            _ = transpile_insert_moves(self.safe_circuit, sample_dynamic_architecture, existing_moves=handling_option)
 
     def test_unspecified(self):
         """Tests transpiler in case the handling option is not specified."""
@@ -243,14 +243,14 @@ class TestNaiveMoveTranspiler:
         c2 = self.insert(self.safe_circuit)
         assert self.check_equiv_without_moves(c2, self.safe_circuit)
 
-    def test_normal_usage(self, sample_circuit: Circuit):
+    @pytest.mark.parametrize('handling_option', ExistingMoveHandlingOptions)
+    def test_normal_usage(self, sample_circuit: Circuit, handling_option):
         """Tests basic usage of the transpile method"""
-        for handling_option in ExistingMoveHandlingOptions:
-            c1 = self.insert(self.simple_circuit, handling_option)
-            self.assert_valid_circuit(c1)
-            assert self.check_equiv_without_moves(c1, self.simple_circuit)
-            with pytest.raises(CircuitTranspilationError):
-                self.insert(sample_circuit, handling_option)  # untranspiled circuit
+        c1 = self.insert(self.simple_circuit, handling_option)
+        self.assert_valid_circuit(c1)
+        assert self.check_equiv_without_moves(c1, self.simple_circuit)
+        with pytest.raises(CircuitTranspilationError):
+            self.insert(sample_circuit, handling_option)  # untranspiled circuit
 
     def test_keep(self):
         """Tests special cases for the KEEP option"""
@@ -294,13 +294,13 @@ class TestNaiveMoveTranspiler:
         self.assert_valid_circuit(c3)
         assert self.check_moves_in_circuit(c3, moves3)
 
-    def test_with_qubit_map(self):
+    @pytest.mark.parametrize('handling_option', ExistingMoveHandlingOptions)
+    def test_with_qubit_map(self, handling_option):
         """Test if qubit mapping works as intended"""
-        for handling_option in ExistingMoveHandlingOptions:
-            circuit, qb_map = self.mapped_circuit
-            c1 = self.insert(circuit, handling_option, qb_map)
-            self.assert_valid_circuit(c1, qb_map)
-            assert self.check_equiv_without_moves(c1, circuit)
+        circuit, qb_map = self.mapped_circuit
+        c1 = self.insert(circuit, handling_option, qb_map)
+        self.assert_valid_circuit(c1, qb_map)
+        assert self.check_equiv_without_moves(c1, circuit)
 
     def test_multiple_resonators(self, sample_move_architecture):
         """Test if multiple resonators works."""
@@ -524,10 +524,6 @@ class TestResonatorStateTracker:
         components = sample_move_architecture.components
         status = ResonatorStateTracker.from_dynamic_architecture(sample_move_architecture)
         assert status.available_resonators_to_move(components) == {
-            'CR1': [],
-            'CR2': [],
-            'QB1': [],
-            'QB2': [],
             'QB3': ['CR1'],
         }
 
