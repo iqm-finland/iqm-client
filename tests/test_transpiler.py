@@ -79,8 +79,8 @@ class MoveTranspilerBase:
         return idx == len(moves)
 
 
-class TestMoveTranspiler_Hybrid(MoveTranspilerBase):
-    """A more complicated quantum architecture, involving both q-r and q-q loci."""
+class TestMoveTranspilerHybrid(MoveTranspilerBase):
+    """A more complicated hybrid quantum architecture, involving both real q-r and real q-q loci."""
 
     @pytest.fixture(autouse=True)
     def init_arch(self, hybrid_move_architecture):
@@ -88,7 +88,7 @@ class TestMoveTranspiler_Hybrid(MoveTranspilerBase):
         self.arch: DynamicQuantumArchitecture = hybrid_move_architecture
 
     @pytest.mark.parametrize('handling_option', ExistingMoveHandlingOptions)
-    def test_normal_usage_no_moves_added(self, sample_circuit: Circuit, handling_option):
+    def test_normal_usage_no_moves_added(self, handling_option):
         """No MOVE insertion required."""
 
         circuit = Circuit(name='test', instructions=(
@@ -102,7 +102,7 @@ class TestMoveTranspiler_Hybrid(MoveTranspilerBase):
         assert self.check_equiv_without_moves(c1, circuit)
 
     @pytest.mark.parametrize('handling_option', ExistingMoveHandlingOptions)
-    def test_normal_usage(self, sample_circuit: Circuit, handling_option):
+    def test_normal_usage(self, handling_option):
         """Tests basic usage of the transpile method"""
 
         circuit = Circuit(name='test', instructions=(
@@ -115,23 +115,47 @@ class TestMoveTranspiler_Hybrid(MoveTranspilerBase):
         self.assert_valid_circuit(c1)
         assert self.check_equiv_without_moves(c1, circuit)
 
-    #@pytest.mark.skip
     @pytest.mark.parametrize('handling_option', ExistingMoveHandlingOptions)
-    def test_xxx(self, sample_circuit: Circuit, handling_option):
+    def test_close_sandwich_for_cz(self, handling_option):
         """Tests basic usage of the transpile method"""
 
-        # KEEP validates the circuit before inserting MOVEs, and finds the problem. TRUST fails, but is caught below in a_v_c
+        # all: cz fails because QB3 is not reset
         circuit = Circuit(name='test', instructions=(
-            Instruction(name='move', qubits=('QB2', 'CR1'), args={}),
             Instruction(name='move', qubits=('QB3', 'CR1'), args={}),
-            #Instruction(name='cz', qubits=('QB3', 'CR2'), args={}),
+            Instruction(name='cz', qubits=('QB3', 'CR2'), args={}),
         ))
         c1 = self.insert(circuit, handling_option)
 
         self.assert_valid_circuit(c1)
         assert self.check_equiv_without_moves(c1, circuit)
 
-        
+    @pytest.mark.parametrize('handling_option', ExistingMoveHandlingOptions)
+    def test_move_move(self, handling_option):
+        """MOVE sandwiches are automatically closed when a new one needs to start."""
+        circuit = Circuit(name='test', instructions=(
+            # without this prx transpiler_remove_moves would leave an empty, invalid circuit
+            Instruction(name='prx', qubits=('QB2',), args={'phase_t': 0.3, 'angle_t': -0.2}),
+            Instruction(name='move', qubits=('QB2', 'CR1'), args={}),  # opens a sandwich
+            Instruction(name='move', qubits=('QB2', 'CR2'), args={}),  # opens a new sandwich on the same qubit
+        ))
+        c1 = self.insert(circuit, handling_option)
+        self.assert_valid_circuit(c1)
+        assert self.check_equiv_without_moves(c1, circuit)
+
+
+    @pytest.mark.parametrize('handling_option', ExistingMoveHandlingOptions)
+    def test_move_heuristic(self, handling_option):
+        """Heuristic chooses the optimal MOVE locus with multiple resonators."""
+        circuit = Circuit(name='test', instructions=(
+            # without this prx transpiler_remove_moves would leave an empty, invalid circuit
+            Instruction(name='prx', qubits=('QB2',), args={'phase_t': 0.3, 'angle_t': -0.2}),
+            Instruction(name='cz', qubits=('QB3', 'QB2'), args={}),  # can happen via both CRs
+            Instruction(name='cz', qubits=('QB5', 'QB2'), args={}),  # requires QB2 state in CR2
+        ))
+        c1 = self.insert(circuit, handling_option)
+        self.assert_valid_circuit(c1)
+        assert self.check_equiv_without_moves(c1, circuit)
+        assert len(c1.instructions) == 4  # prx(QB2), move(QB2, CR2), cz(QB3, CR2), cz(QB5, CR2)
 
 
 class TestMoveTranspiler(MoveTranspilerBase):
@@ -306,7 +330,6 @@ class TestMoveTranspiler(MoveTranspilerBase):
         c1 = self.insert(self.simple_circuit)
         self.assert_valid_circuit(c1)
         assert self.check_equiv_without_moves(c1, self.simple_circuit)
-
         c2 = self.insert(self.safe_circuit)
         assert self.check_equiv_without_moves(c2, self.safe_circuit)
 
@@ -597,7 +620,7 @@ class TestResonatorStateTracker:
     def test_available_resonators_to_move(self, sample_move_architecture):
         components = sample_move_architecture.components
         status = ResonatorStateTracker.from_dynamic_architecture(sample_move_architecture)
-        assert status.available_resonators_to_move(components) == {
+        assert status.resonators_to_move_to(components) == {
             'QB3': ['CR1'],
         }
 
@@ -656,20 +679,32 @@ def test_simplified_architecture_hybrid(hybrid_move_architecture):
     """Resonators and MOVE gates are eliminated, q-r gates are replaced with q-q gates."""
     simple = simplified_architecture(hybrid_move_architecture)
 
+    qubit_loci = (('QB1',), ('QB2',), ('QB3',), ('QB4',), ('QB5',))
     assert simple.qubits == hybrid_move_architecture.qubits
     assert not simple.computational_resonators
-    assert len(simple.gates) == 3
+    assert len(simple.gates) == len(hybrid_move_architecture.gates) - 1
     assert 'move' not in simple.gates
-    assert simple.gates['measure'].loci == (('QB1',), ('QB2',), ('QB3',), ('QB4',), ('QB5',))
-    assert simple.gates['prx'].loci == (('QB1',), ('QB2',), ('QB3',), ('QB4',), ('QB5',))
-    assert set(simple.gates['cz'].loci) == set([
-        ('QB1', 'QB2'),
-        ('QB1', 'QB3'),
-        ('QB3', 'QB2'),
-        ('QB3', 'QB4'),
-        ('QB5', 'QB2'),
-        ('QB5', 'QB3'),
-    ])
+
+    # default implementations have not changed
+    for name, info in simple.gates.items():
+        orig_info = hybrid_move_architecture.gates[name]
+        assert orig_info.default_implementation == info.default_implementation
+        assert orig_info.override_default_implementation == info.override_default_implementation
+
+    # non-ficitional gates retain their implementations
+    impls = simple.gates['prx'].implementations
+    assert len(impls) == 1
+    assert impls['drag_gaussian'].loci == qubit_loci
+
+    impls = simple.gates['measure'].implementations
+    assert len(impls) == 1
+    assert impls['constant'].loci == qubit_loci
+
+    impls = simple.gates['cz'].implementations
+    assert len(impls) == 2
+    assert impls['tgss'].loci == (('QB3', 'QB4'),)
+    # fictional gates lose their implementation info
+    assert set(impls['__fictional'].loci) == {('QB1', 'QB2'), ('QB1', 'QB3'), ('QB3', 'QB2'), ('QB5', 'QB2'), ('QB5', 'QB3')}
 
 
 @pytest.mark.parametrize('locus', [('QB1', 'QB2'), ('CR1', 'CR2'), ('CR1', 'QB1')])

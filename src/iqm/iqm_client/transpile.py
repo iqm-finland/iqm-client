@@ -41,6 +41,7 @@ Given a :class:`DynamicQuantumArchitecture` for a Star architecture, the corresp
 version can be obtained using :func:`simplified_architecture`.
 """
 from __future__ import annotations
+from copy import deepcopy
 
 from collections.abc import Collection, Iterable
 from enum import Enum
@@ -55,6 +56,10 @@ from iqm.iqm_client import (
     IQMClient,
 )
 from iqm.iqm_client.models import GateImplementationInfo, GateInfo, Locus
+
+
+TRANSPILER_FIX: bool = True
+#TRANSPILER_FIX: bool = False
 
 
 class ExistingMoveHandlingOptions(str, Enum):
@@ -91,7 +96,8 @@ def _map_loci(
 
 
 class _ResonatorStateTracker:
-    r"""Tracks the qubit states stored in computational resonators on the QPU as they are moved with MOVE gates.
+    r"""Tracks the qubit states stored in computational resonators on a Star architecture QPU
+    as they are moved with MOVE gates.
 
     Since the MOVE gate is not defined when acting on a :math:`|11\rangle` state,
     and involves an unknown phase, it is not equivalent to a SWAP.
@@ -105,10 +111,10 @@ class _ResonatorStateTracker:
 
     move_gate = 'move'
     """Name of the MOVE gate in the architecture."""
-    resonator_gates = ['cz']
-    """Names of all other arity-2 gates that can be applied on a (qubit, resonator) locus.
-    Other arity-2 gates are assumed to require a (qubit, qubit) locus."""
-    # FIXME what if cz has both qr and qq loci?
+    qr_gates = ['cz']
+    """Names of all other arity-2 gates that can be applied on a (qubit, resonator) locus in the real
+    Star architecture. Other arity-2 gates in the real architecture are assumed to require a
+    (qubit, qubit) locus."""
 
     def __init__(self, available_moves: dict[str, list[str]]) -> None:
         self.available_moves = available_moves
@@ -185,8 +191,8 @@ class _ResonatorStateTracker:
 
         Raises:
             CircuitTranspilationError: MOVE is not allowed, either because the resonator does not exist,
-                the MOVE gate is not available between this qubit-resonator pair, or the resonator state
-                is currently held in a different qubit.
+                the MOVE gate is not available between this qubit-resonator pair, or the resonator is
+                currently holding the state of a different qubit.
         """
         if (
             resonator in self.resonators
@@ -202,22 +208,35 @@ class _ResonatorStateTracker:
         qubit: str,
         resonator: str,
     ) -> Iterable[Instruction]:
-        """MOVE instruction(s) to move the state of the given resonator into the
-        qubit that owns it if needed, and then move the state of the given qubit to the resonator.
+        """MOVE instruction(s) to move the state of the given qubit into the given resonator,
+        or back to the qubit.
+
+        If the resonator has the state of another qubit in it, or if qubit's state is in another resonator,
+        restore them first using additional MOVE instructions.
 
         Args:
             qubit: The qubit
             resonator: The resonator
 
         Yields:
-            The one or two MOVE instructions needed.
+            1, 2 or 3 MOVE instructions.
         """
+        # if the resonator has another qubit's state in it, restore it
         res_state_owner = self.res_state_owner[resonator]
         if res_state_owner not in [qubit, resonator]:
             locus = (res_state_owner, resonator)
             self.apply_move(*locus)
             yield Instruction(name=self.move_gate, qubits=locus, args={})
 
+        # if the qubit does not hold its own state, restore it, unless it's in the resonator
+        # find where the qubit state is (it can be in at most one resonator)
+        res = [r for r, q in self.res_state_owner.items() if q == qubit]  # TODO not efficient
+        if res and (qubit_state_holder := res[0]) != resonator:
+            locus = (qubit, qubit_state_holder)
+            self.apply_move(*locus)
+            yield Instruction(name=self.move_gate, qubits=locus, args={})
+
+        # move qubit state to resonator, or back to the qubit
         locus = (qubit, resonator)
         self.apply_move(*locus)
         yield Instruction(name=self.move_gate, qubits=locus, args={})
@@ -226,29 +245,32 @@ class _ResonatorStateTracker:
         self,
         resonators: Optional[Iterable[str]] = None,
     ) -> list[Instruction]:
-        """MOVE instructions that move all the states held in the given resonators back to their qubits.
+        """MOVE instructions that move the states held in the given resonators back to their qubits.
 
         Applies the returned MOVE instructions on the tracker state.
 
         Args:
-            resonators: Resonators that hold qubit states that should be moved back to the qubits.
-                If ``None``, the states in any resonators will be returned to the qubits.
+            resonators: Resonators that (may) hold qubit states that should be moved back to the qubits.
+                If ``None``, the states in all known resonators will be returned to the qubits.
 
         Returns:
-            Instructions needed to move all qubit states out of the resonators.
+            MOVE instructions needed to move the states out of ``resonators`` into
+            the qubits they belong to.
         """
         if resonators is None:
             resonators = self.resonators
 
         instructions: list[Instruction] = []
-        for r, q in self.res_state_owner.items():
-            if r != q and r in resonators:
+        for r in resonators:
+            q = self.res_state_owner[r]
+            # if the state in r does not belong to r, restore it to its owner
+            if q != r:
                 locus = (q, r)
                 instructions.append(Instruction(name=self.move_gate, qubits=locus, args={}))
                 self.apply_move(*locus)
         return instructions
 
-    def available_resonators_to_move(self, qubits: Iterable[str]) -> dict[str, list[str]]:
+    def resonators_to_move_to(self, qubits: Iterable[str]) -> dict[str, list[str]]:
         """Find out to which resonators the given qubits' states can be moved to.
 
         Args:
@@ -302,19 +324,19 @@ class _ResonatorStateTracker:
             Args:
                 locus: Possible MOVE gate locus, (qubit, resonator).
             Returns:
-                Number of resonator gates acting on the qubit until something else uses it.
+                Number of qubit-resonator gates acting on the qubit until something else uses it.
             """
             qb, _ = locus
             score: int = 0
             for instr in remaining_instructions:
                 if qb in instr.qubits:
-                    if instr.name not in self.resonator_gates:
+                    if instr.name not in self.qr_gates:
                         return score
                     score += 1
             return score
 
         # these MOVE loci are available
-        r_candidates = [(q, r) for q, rs in self.available_resonators_to_move(qubits).items() for r in rs]
+        r_candidates = [(q, r) for q, rs in self.resonators_to_move_to(qubits).items() for r in rs]
         if not r_candidates:
             raise CircuitTranspilationError(
                 f'Unable to insert MOVE gates because none of the qubits {qubits} can be moved into a resonator. '
@@ -349,80 +371,66 @@ class _ResonatorStateTracker:
         Inserts MOVE gates into the circuit and changes the existing instruction loci as needed,
         while updating the state of the tracker object.
 
+        Can also handle circuits that mix the simplified and real architectures.
+
         Args:
             instructions: The instructions in the circuit, using physical qubit names.
-            arch: Star quantum architecture we transpile to.
+            arch: Real Star quantum architecture we transpile to.
 
         Raises:
             CircuitTranspilationError: Raised when the circuit contains invalid gates that cannot be transpiled using this
                 method.
 
         Returns:
-            Star architecture equivalent of ``circuit`` with MOVEs and resonators added.
+            Real Star architecture equivalent of ``circuit`` with MOVEs and resonators added.
         """
-        resonator_gates_and_move = self.resonator_gates + [self.move_gate]
+        # This method can handle real single- and two-qubit gates, real q-r gates including MOVE,
+        # and fictional two-qubit gates which it decomposes into real q-r gates.
         new_instructions = []
 
-        # we must handle non-res instructions on qubits, res instructions + MOVE on (q,r), and res instructions on simplified (q,q)
-
         for idx, inst in enumerate(instructions):
-            # are some of the locus qubits' states currently in a resonator?
             locus = inst.qubits
-            res_match = self.resonators_holding_qubits(locus)
 
+            # key: Q=qubit holding its own state, q=qubit not holding its state, r=resonator
+            # possible loci: qq, Qq, qQ, QQ, qr, rq, Qr, rQ, rr, q, Q, r
             try:
                 IQMClient._validate_instruction(architecture=arch, instruction=inst)
-                # instruction could be applied as is on locus
-                if res_match:
-                    # locus: qq, qr, rq, q
-                    # Some locus qubits do not have their states.
-                    if inst.name not in resonator_gates_and_move:
-                        # Restore the qubits' states before applying the gate.
-                        # FIXME As a consequence, a barrier closes a MOVE sandwich?
-                        new_instructions += self.reset_as_move_instructions(res_match)
+                # inst can be applied as is on locus, but we may first need to use MOVEs to make
+                # sure the locus qubits contain their states
 
-                    # Non-MOVE resonator gates *expect* the resonator to hold a state.
-                    new_instructions.append(inst)
+                if inst.name == self.move_gate:
+                    # apply the requested MOVE, closing interfering MOVE sandwiches first
+                    new_instructions += self.create_move_instructions(*locus)
+                    continue
 
-                    if inst.name == self.move_gate:
-                        # MOVE(r->q): update the tracker
-                        self.apply_move(*locus)
-                else:
-                    # locus: QQ, Qr, rQ, rr, Q, r
-                    # locus qubits have their states (locus res may have another state)
-                    new_instructions.append(inst)
-                    if inst.name == self.move_gate:
-                        # MOVE(q->r): update the tracker
-                        self.apply_move(*locus)
+                # are some of the locus qubits' states currently in a resonator?
+                if res_match := self.resonators_holding_qubits(locus):
+                    # Some locus qubits do not hold their states, which need to be restored before applying the gate.
+                    # FIXME As a consequence, a barrier closes a MOVE sandwich?
+                    new_instructions += self.reset_as_move_instructions(res_match)
+                new_instructions.append(inst)
 
             except CircuitValidationError as e:
-                # gate can not be applied to this locus
-                if inst.name not in self.resonator_gates:
-                    # normal gates or MOVEs cannot be helped by adding MOVEs
+                # inst can not be applied to this locus as is
+                if inst.name not in self.qr_gates or any(c in self.resonators for c in locus):
                     raise CircuitTranspilationError(e) from e
 
-                # simple res_gate(q,q) can be helped, move the state of one q into a res r so that we have res_gate(other_q, r)
-                # res_gate(q,r)?
+                # Fictional qubit-qubit gates G can be made valid by decomposing them using MOVEs.
+                # We move the state of one qubit q1 into resonator r, and then apply G(q2, r).
+                # locus: qq, Qq, qQ, QQ
 
-                #if res_match:
-                # locus: qq, qr, rq
-                # qq: one of the qubits needs to be moved into a resonator
-                # Pick which qubit-resonator pair to apply this CZ to
-                # Pick from qubits already in a resonator or both targets if none of them are in a resonator
-                # else:
-                # locus: QQ, Qr, rQ
-                # Locus qubits already hold their states, no need to use MOVEs.
+                res_match = self.resonators_holding_qubits(locus)
 
-                # QQ can maybe helped, find move candidates for locus components, move one locus Q into a resonator for which we have resgate(Q, r).
-                # Pick which qubit-resonator pair to apply this CZ to
-                # Pick from qubits already in a resonator or both targets if none of them are in a resonator
+                # find the best MOVE(s) to enable the fictional gate to be implemented
+                # qq, qQ, Qq: only check the q qubits for moves
+                # QQ:  find move candidates for both locus components
+                # FIXME logic is broken, cannot handle the multiple resonator case
                 move_candidates = self.choose_move_pair(
                     [self.res_state_owner[res] for res in res_match] if res_match else locus,
                     instructions[idx:],
                 )
-                # find the best MOVE that produces a valid locus for the resonator gate
                 for q1, r in move_candidates:
-                    # the other CZ locus qubit is not moved
+                    # the other fictional gate locus qubit is not moved
                     q2 = [q for q in locus if q != q1][0]
                     new_inst = inst.model_copy(update={'qubits': (q2, r)})
                     try:
@@ -447,64 +455,75 @@ class _ResonatorStateTracker:
         return new_instructions
 
 
-    
+
 
 def simplified_architecture(arch: DynamicQuantumArchitecture) -> DynamicQuantumArchitecture:
     """Converts the given IQM Star quantum architecture into the equivalent simplified quantum architecture.
 
     See :mod:`iqm.iqm_client.transpile` for the details.
-    Abstracts away the gate implementations, replacing them with a fake one.
 
+    Abstracts away the gate implementations of fictional gates.
     Does nothing if ``arch`` does not contain computational resonators.
 
     Args:
         arch: quantum architecture to convert
 
     Returns:
-        equivalent simplified quantum architecture
+        equivalent simplified quantum architecture with fictional gates
     """
-    # pylint: disable=too-many-nested-blocks
+    # xpylint: disable=too-many-nested-blocks
     # NOTE: assumes all qubit-resonator gates have the locus order (q, r)
     if not arch.computational_resonators:
         return arch
 
-    op_loci = {gate_name: gate_info.loci for gate_name, gate_info in arch.gates.items()}
+    # we modify the contents, so make a copy
+    gates = deepcopy(arch.gates)
+
     r_set = frozenset(arch.computational_resonators)
     q_set = frozenset(arch.qubits)
 
     moves: dict[str, set[str]] = {}  # maps resonator r to qubits q for which we have MOVE(q, r) available
-    for q, r in op_loci.pop('move', []):
+    for q, r in gates.pop('move').loci if 'move' in gates else []:
         if q not in q_set or r not in r_set:
             raise ValueError(f'MOVE locus {q, r} is not of the form (qubit, resonator)')
         moves.setdefault(r, set()).add(q)
 
-    new_gates = {}
-    for op, loci in op_loci.items():
-        new_loci: list[Locus] = []
-        for locus in loci:
-            if len(locus) == 2:
-                # two-component op
-                q1, r = locus
-                if q1 not in q_set:
-                    raise ValueError(f"Unexpected '{op}' locus: {locus}")
+    # create fictional gates, remove real gate loci that involve a resonator
+    new_gates: dict[str, GateInfo] = {}
+    for gate_name, gate_info in gates.items():
+        new_loci: dict[str, list[Locus]] = {}  # mapping from implementation to its new loci
+        fictional_loci: set[Locus] = set()  # loci for new fictional gates
 
-                if r in r_set:
-                    # involves a resonator, for each G(q1, r), MOVE(q2, r) pair add G(q1, q2) to the simplified arch
-                    for q2 in moves.get(r, []):
-                        if q1 != q2:
-                            new_loci.append((q1, q2))
+        for impl_name, impl_info in gate_info.implementations.items():
+            kept_impl_loci: list[Locus] = []  # these real loci we keep for this implementation
+            for locus in impl_info.loci:
+                if len(locus) == 2:
+                    # two-component op
+                    q1, r = locus
+                    if q1 not in q_set:
+                        raise ValueError(f"Unexpected '{op}' locus: {locus}")
+
+                    if r in r_set:
+                        # involves a resonator, for each G(q1, r), MOVE(q2, r) pair add G(q1, q2) to the simplified arch
+                        for q2 in moves.get(r, []):
+                            if q1 != q2:
+                                # set because multiple resonators can produce the same fictional locus
+                                fictional_loci.add((q1, q2))
+                    else:
+                        # does not involve a resonator, keep
+                        kept_impl_loci.append(locus)
                 else:
-                    # does not involve a resonator, keep
-                    new_loci.append(locus)
-            else:
-                # other arities: keep as long as it does not involve a resonator
-                if not set(locus) & r_set:
-                    new_loci.append(locus)
+                    # other arities: keep as long as it does not involve a resonator
+                    if not set(locus) & r_set:
+                        kept_impl_loci.append(locus)
+            new_loci[impl_name] = tuple(kept_impl_loci)
+
         # implementation info is lost in the simplification
-        new_gates[op] = GateInfo(
-            implementations={'__fake': GateImplementationInfo(loci=tuple(new_loci))},
-            default_implementation='__fake',
-            override_default_implementation={},
+        if fictional_loci:
+            new_loci['__fictional'] = tuple(fictional_loci)
+
+        new_gates[gate_name] = gate_info.model_copy(
+            update={'implementations': {impl_name: GateImplementationInfo(loci=loci) for impl_name, loci in new_loci.items()}},
         )
 
     return DynamicQuantumArchitecture(
@@ -521,6 +540,7 @@ def transpile_insert_moves(
     *,
     existing_moves: ExistingMoveHandlingOptions = ExistingMoveHandlingOptions.KEEP,
     qubit_mapping: Optional[dict[str, str]] = None,
+    restore_states: bool = True,
 ) -> Circuit:
     """Convert a simplified architecture circuit into an equivalent Star architecture circuit with
     resonators and MOVE gates, if needed.
@@ -541,6 +561,9 @@ def transpile_insert_moves(
         existing_moves: Specifies how to deal with existing MOVE instructions in ``circuit``, if any.
         qubit_mapping: Mapping of logical qubit names to physical qubit names.
             Can be set to ``None`` if ``circuit`` already uses physical qubit names.
+        restore_states: Iff True, all qubit states held in resonators are returned to their qubits
+            at the end of the circuit (i.e. all MOVE sandwiches are closed), even when there
+            is no computational reason to do so.
 
     Returns:
         Equivalent Star architecture circuit with MOVEs and resonators added.
@@ -566,12 +589,12 @@ def transpile_insert_moves(
         # convert to physical qubit names
         phys_instructions = _map_loci(circuit.instructions, qubit_mapping)
         try:
-            # FIXME does transpilation even need to catch MOVE/PRX violations etc? it can maybe fix them, and when submitting a circuit it is validated!
-            #IQMClient._validate_circuit_moves(
-            #    arch,
-            #    Circuit(name=circuit.name, instructions=phys_instructions, metadata=circuit.metadata),
-            #)
-            pass
+            if not TRANSPILER_FIX:
+                IQMClient._validate_circuit_moves(
+                    arch,
+                    Circuit(name=circuit.name, instructions=phys_instructions, metadata=circuit.metadata),
+                )
+
         except CircuitValidationError as e:
             raise CircuitTranspilationError(e) from e
     else:
@@ -582,12 +605,105 @@ def transpile_insert_moves(
         # convert to physical qubit names
         phys_instructions = _map_loci(circuit.instructions, qubit_mapping)
 
-    new_instructions = tracker.insert_moves(phys_instructions, arch)
-    new_instructions += tracker.reset_as_move_instructions()
+    if TRANSPILER_FIX:
+        new_instructions = tracker.insert_moves(phys_instructions, arch)
+    else:
+        new_instructions = _transpile_insert_moves(phys_instructions, tracker, arch)
+
+    if restore_states:
+        new_instructions += tracker.reset_as_move_instructions()
 
     # convert back to logical qubit names
     new_instructions = _map_loci(new_instructions, qubit_mapping, inverse=True)
     return Circuit(name=circuit.name, instructions=new_instructions, metadata=circuit.metadata)
+
+
+def _transpile_insert_moves(
+    instructions: list[Instruction],
+    tracker: _ResonatorStateTracker,
+    arch: DynamicQuantumArchitecture,
+) -> list[Instruction]:
+    """Convert a simplified architecture circuit into a equivalent Star architecture circuit with
+    resonators and MOVE gates.
+
+    Inserts MOVE gates into the circuit and changes the existing instruction loci as needed.
+    Helper function for :func:`transpile_insert_moves`.
+
+    Assumes only CZ and MOVE gates can be executed on a resonator.
+
+    Args:
+        instructions: The instructions in the circuit, using physical qubit names.
+        tracker: Keeps track of the MOVE gate loci available, and the state stored in each resonator.
+            At the end of the function the tracker is adjusted to reflect the state at the end of
+            the returned instructions.
+        arch: Star quantum architecture we transpile to.
+
+    Raises:
+        CircuitTranspilationError: Raised when the circuit contains invalid gates that cannot be transpiled using this
+            method.
+
+    Returns:
+        Star architecture equivalent of ``circuit`` with MOVEs and resonators added.
+    """
+    new_instructions = []
+    for idx, inst in enumerate(instructions):
+        locus = inst.qubits
+
+        # are some of the locus qubits' states currently in a resonator?
+        res_match = tracker.resonators_holding_qubits(locus)
+        if res_match and inst.name not in ['cz', tracker.move_gate]:
+            # We have a gate on a qubit whose state is currently in a resonator, and that gate cannot
+            # be executed on the resonator (incl. barriers), so return the state to the qubit and then apply the gate.
+            new_instructions += tracker.reset_as_move_instructions(res_match)
+            new_instructions.append(inst)
+        else:
+            # Either the gate locus does not involve qubits whose states are in a resonator,
+            # or the gate is MOVE or CZ.
+            # Check if the instruction is valid, which raises an exception if not.
+            try:
+                IQMClient._validate_instruction(
+                    architecture=arch,
+                    instruction=inst,
+                )
+                new_instructions.append(inst)  # No adjustment needed
+                if inst.name == tracker.move_gate:
+                    # MOVE: update the tracker
+                    tracker.apply_move(*locus)
+            except CircuitValidationError as e:
+                if inst.name != 'cz':  # We can only fix CZ gates at this point
+                    raise CircuitTranspilationError(e) from e
+                # CZ: cannot be applied to this locus, one of the qubits needs to be moved into a resonator.
+                # Pick which qubit-resonator pair to apply this CZ to
+                # Pick from qubits already in a resonator or both targets if none off them are in a resonator
+                move_candidates = tracker.choose_move_pair(
+                    [tracker.res_state_owner[res] for res in res_match] if res_match else locus,
+                    instructions[idx:],
+                )
+                for q1, r in move_candidates:
+                    # the other CZ locus qubit is not moved
+                    q2 = [q for q in locus if q != q1][0]
+                    try:
+                        IQMClient._validate_instruction(
+                            architecture=arch,
+                            instruction=Instruction(name='cz', qubits=(q2, r), args={}),
+                        )
+                        break
+                    except CircuitValidationError:
+                        pass
+                else:
+                    # ran out of candidates, did not hit break
+                    raise CircuitTranspilationError(
+                        'Unable to find a valid qubit-resonator pair for a MOVE gate to enable this CZ gate.'
+                    ) from e
+
+                # remove the other qubit from the resonator if it was in
+                new_instructions += tracker.reset_as_move_instructions([res for res in res_match if res != r])
+
+                # move the qubit into the resonator if it was not yet in.
+                if not res_match:
+                    new_instructions += tracker.create_move_instructions(q1, r)
+                new_instructions.append(Instruction(name='cz', qubits=(q2, r), args={}))
+    return new_instructions
 
 
 def transpile_remove_moves(circuit: Circuit) -> Circuit:
