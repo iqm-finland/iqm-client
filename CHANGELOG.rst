@@ -5,9 +5,21 @@ Changelog
 Version 21.0
 ============
 
-* Simplify the transpilation code, make its details private, improve the docs. `#156 <https://github.com/iqm-finland/iqm-client/pull/156>`_
+* Simplify the transpilation code, make its details private, improve the docs.
+  `#156 <https://github.com/iqm-finland/iqm-client/pull/156>`_
 * By default :func:`.transpile_insert_moves` now keeps any existing MOVE gates in the circuit.
   `#156 <https://github.com/iqm-finland/iqm-client/pull/156>`_
+
+Version 20.13
+=============
+
+* Fix package publishing from ci, no functional changes. `#160 <https://github.com/iqm-finland/iqm-client/pull/160>`_
+
+Version 20.12
+=============
+
+* Drop support for Python 3.9. `#159 <https://github.com/iqm-finland/iqm-client/pull/159>`_
+* Add optional security-scanned lockfile. `#159 <https://github.com/iqm-finland/iqm-client/pull/159>`_
 
 Version 20.11
 =============
