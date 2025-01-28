@@ -887,6 +887,51 @@ class IQMClient:
 
         return dqa
 
+    def get_feedback_groups(self, *, timeout_secs: float = REQUESTS_TIMEOUT) -> tuple[frozenset[str], ...]:
+        """Retrieve groups of qubits that can receive real-time feedback signals from each other.
+
+        Real-time feedback enables conditional gates such as `cc_prx`.
+        Some hardware configurations support routing real-time feedback only between certain qubits.
+
+        This method is only supported for the API variant V2.
+
+        Returns:
+            Feedback groups. Within a group, any qubit can receive real-time feedback from any other qubit in
+                the same group. A qubit can belong to multiple groups.
+                If there is only one group, there are no restrictions regarding feedback routing.
+
+        Raises:
+            ClientAuthenticationError: if no valid authentication is provided
+            HTTPException: HTTP exceptions
+        """
+        result = requests.get(
+            self._api.url(APIEndpoint.CHANNEL_PROPERTIES),
+            headers=self._default_headers(),
+            timeout=timeout_secs,
+        )
+        self._check_authentication_errors(result)
+        result.raise_for_status()
+        try:
+            channel_properties = result.json()
+        except (json.decoder.JSONDecodeError, KeyError) as e:
+            raise HTTPError(f'Invalid response: {result.text}, {e}') from e
+
+        all_qubits = self.get_quantum_architecture().qubits
+        groups: dict[str, set[str]] = {}
+        # All qubits that can read from the same source belong to the same group.
+        # A qubit may belong to multiple groups.
+        for channel_name, properties in channel_properties.items():
+            # Relying on naming convention because we don't have proper mapping available:
+            qubit = channel_name.split("__")[0]
+            if qubit not in all_qubits:
+                continue
+            for source in properties.get("fast_feedback_sources", ()):
+                groups.setdefault(source, set()).add(qubit)
+        # Merge identical groups
+        unique_groups: set[frozenset[str]] = {frozenset(group) for group in groups.values()}
+        # Sort by group size
+        return tuple(sorted(unique_groups, key=len, reverse=True))
+
     def close_auth_session(self) -> bool:
         """Terminate session with authentication server if there was one created.
 
