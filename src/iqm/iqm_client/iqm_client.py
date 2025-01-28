@@ -87,7 +87,7 @@ class IQMClient:
             If ``auth_server_url`` is given also ``username`` and ``password`` must be given.
         username: Username to log in to authentication server.
         password: Password to log in to authentication server.
-        api_variant: API variant to use. Default is ``APIVariant.COCOS``.
+        api_variant: API variant to use. Default is ``APIVariant.V1``.
             Conviguable also by environment variable ``IQM_CLIENT_API_VARIANT``.
 
     Alternatively, the user authentication related keyword arguments can also be given in
