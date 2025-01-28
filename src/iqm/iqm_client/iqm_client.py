@@ -88,7 +88,7 @@ class IQMClient:
         username: Username to log in to authentication server.
         password: Password to log in to authentication server.
         api_variant: API variant to use. Default is ``APIVariant.V1``.
-            Conviguable also by environment variable ``IQM_CLIENT_API_VARIANT``.
+            Configurable also by environment variable ``IQM_CLIENT_API_VARIANT``.
 
     Alternatively, the user authentication related keyword arguments can also be given in
     environment variables :envvar:`IQM_TOKEN`, :envvar:`IQM_TOKENS_FILE`, :envvar:`IQM_AUTH_SERVER`,
