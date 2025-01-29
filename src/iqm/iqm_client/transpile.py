@@ -206,12 +206,6 @@ class _ResonatorStateTracker:
                 qr_gates.setdefault(i.name, {}).setdefault(r, set()).add(q)
         return cls(qr_gates)
 
-    def get_state(self):
-        return self.res_state_owner.copy()
-
-    def set_state(self, state) -> None:
-        self.res_state_owner = state
-
     @property
     def resonators(self) -> Collection[str]:
         """Computational resonators that are being tracked."""
@@ -225,7 +219,7 @@ class _ResonatorStateTracker:
     @property
     def qubit_state_holder(self) -> dict[str, str]:
         """Qubits not found in the dict hold their own states."""
-        # FIXME reverses res_state_owner, maybe this is the one we need to track instead?
+        # TODO reverses res_state_owner, maybe this is the one we need to track instead?
         resonators = self.resonators
         # qubits whose states are in resonators
         return {c: r for r, c in self.res_state_owner.items() if c not in resonators}
@@ -410,6 +404,51 @@ class _ResonatorStateTracker:
         """
         return tuple(self.res_state_owner.get(q, q) for q in locus)
 
+    def find_best_sequence(self, locus: Locus, gate_q2r: dict, lookahead: list[Instruction]) -> tuple[str, str, str, float]:
+        """Find the best way to implement a fictional qubit-qubit gate G(g, m)
+        using the available native qubit-resonator gates.
+
+        G(g, m) is implemented as G(g, r) for some resonator r, with additional MOVE gates
+        applied first to make sure the state of the qubit m is in r, and g is holding its own state.
+
+        Does not change the internal state of the tracker.
+
+        Args:
+            locus: Two-qubit locus (g, m), where the state of the second qubit will be MOVEd.
+            gate_q2r: Mapping from qubit q to resonators r between which there are G(q, r) available.
+            lookahead: upcoming instructions
+
+        Returns:
+            Best gate sequence implementing G(g, m) on the given locus, as the tuple
+            (g, m, r, badness). Badness is the number of gates in the sequence.
+            Iff no sequence could be found, r is an empty string.
+        """
+        # TODO use the lookahead to add fractional badness
+        g, m = locus
+        # Resonators r for which we have MOVE(m, r) and G(g, r) available.
+        resonators = gate_q2r.get(g, set()) & self.move_q2r.get(m, set())
+        options = []
+        for r in resonators:
+            badness = 1.0  # number of instructions we need to implement G via this resonator
+            g_holder = self.qubit_state_holder.get(g, g)
+            if g_holder != g:
+                badness += 1  # need to move the state back to g
+
+            m_holder = self.qubit_state_holder.get(m, m)
+            if m_holder == r:
+                pass  # already where it needs to be
+            else:
+                if self.res_state_owner[r] != r:
+                    badness += 1  # resonator has some other qubit's state in it, and must be reset
+                if m_holder == m:
+                    badness += 1  # need to move the state to r
+                else:
+                    badness += 2  # in another resonator, need 2 moves to get it to r
+            options.append((g, m, r, badness))
+
+        # return the best option
+        return min(options, default=(g, m, "", 1000), key=lambda x: x[-1])
+
     def insert_moves(
         self,
         instructions: list[Instruction],
@@ -440,9 +479,6 @@ class _ResonatorStateTracker:
 
         for idx, inst in enumerate(instructions):
             locus = inst.qubits
-
-            # key: Q=qubit holding its own state, q=qubit not holding its state, r=resonator
-            # possible loci: qq, Qq, qQ, QQ, qr, rq, Qr, rQ, rr, q, Q, r
             try:
                 IQMClient._validate_instruction(architecture=arch, instruction=inst)
                 # inst can be applied as is on locus, but we may first need to use MOVEs to make
@@ -466,94 +502,38 @@ class _ResonatorStateTracker:
                     raise CircuitTranspilationError(e) from e
 
                 # inst is a fictional qubit-qubit gate G. It can be made valid by decomposing it using MOVEs.
-                # We move the state of one qubit q1 into resonator r, and then apply G(q2, r).
-                # possible loci: qq, Qq, qQ, QQ
-
-                gate_q2r = self.qr_gates_q2r[inst.name]
-
-                # for given locus (order), find possible resonators and return all possible (G-qubit, move-qubit, r) triples, each with a goodness score.
-                # then find the best one, and implement it using MOVEs as necessary?
-
-                def possible_resonators(locus: Locus) -> set[str]:
-                    """Resonators r for which we have ``G(locus[0], r)`` and ``MOVE(locus[1], r)`` available,
-                    thus enabling the fictional ``G(*locus)``."""
-                    return gate_q2r.get(locus[0], set()) & self.move_q2r.get(locus[1], set())
-
                 # G is assumed symmetric, hence we may reverse the locus order for more options
-                r1 = possible_resonators(locus)
-                r2 = possible_resonators(locus[::-1])
-                union = r1 | r2
-                if not union:
+                gate_q2r = self.qr_gates_q2r[inst.name]
+                lookahead = instructions[idx:]
+                g, m, r, badness = min(
+                    self.find_best_sequence(locus, gate_q2r, lookahead),
+                    self.find_best_sequence(locus[::-1], gate_q2r, lookahead),
+                    key=lambda x: x[-1],
+                )
+                if not r:
                     raise CircuitTranspilationError(
                         f'Unable to insert MOVE gates because none of the qubits {locus} can be moved into a resonator. '
                         + 'This can be resolved by routing the circuit first without resonators.'
                     )
                 #raise CircuitTranspilationError(
-                #        f'Unable to find a resonator to enable {inst.name} at {locus}.'
-                #        ' Try routing the circuit without resonators first.'
+                #        f'Unable to find native gate sequence to enable fictional gate {inst.name} at {locus}.'
+                #        ' Try routing the circuit to the simplified architecture first.'
                 #    )
 
-                # First, we reset locus qubits whose state is in a resonator not in the union, since
-                # this is a necessary step no matter how we proceed. Order of the resets does not matter,
-                # they will be parallelized.
-                new_instructions += self.reset_as_move_instructions(
-                    [h for q in locus if (h := self.qubit_state_holder.get(q, q)) != q and h not in union]
-                )
-                # bad transpilation: pick the first option we can think of TODO fix
+                # implement G using the sequence
+                seq = []
+                #  does m state need to be moved to the resonator?
+                m_holder = self.qubit_state_holder.get(m, m)
+                if m_holder != r:
+                    seq += self.create_move_instructions(m, r)
+                # does g state need to be moved to g?
+                g_holder = self.qubit_state_holder.get(g, g)
+                if g_holder != g:
+                    seq += self.reset_as_move_instructions([g_holder])
 
-                def check_locus(locus: Locus, resonators: set[str]) -> list[Instruction]:
-                    """Return the instruction sequence that is the best alternative for this locus order."""
-                    if not resonators:
-                        return [], {}
-                    # save original locations
-                    old_locations = self.get_state()
-                    # Reset locus qubits whose state is not in resonators or the qubit itself.
-                    holders = [self.qubit_state_holder.get(q, q) for q in locus]
-                    add_instructions = self.reset_as_move_instructions(
-                        [h for q, h in zip(locus, holders) if h != q and h not in resonators]
-                    )
-                    # key: Q qubit holding its state, R qubit state in possible resonators
-                    # options for locus: QQ, QR, RQ, RR
-
-                    # happy path: QR, but instead we do this non-optimal thing:
-                    holders = [self.qubit_state_holder.get(q, q) for q in locus]
-                    if holders[1] in resonators:
-                        # QR, RR: if the MOVEd qubit is already in a possible resonator, we only need to restore the other and apply G
-                        if holders[0] != locus[0]:  # RR
-                            add_instructions += self.reset_as_move_instructions(holders[0])
-                        add_instructions.append(inst.model_copy(update={'qubits': (locus[0], holders[1])}))
-                        # restore original old_locations
-                        new_locations = self.get_state()
-                        self.set_state(old_locations)
-                        return add_instructions, new_locations
-
-                    # QQ, RQ
-                    if holders[0] in resonators:  # RQ
-                        add_instructions += self.reset_as_move_instructions(holders[0])
-                    # QQ
-                    # pick r at random TODO do better, some r's may contain a third qubit state that we need to move away, maybe wasting a move
-                    r = next(iter(resonators))
-                    add_instructions += self.create_move_instructions(locus[1], r)
-                    # QR
-                    add_instructions.append(inst.model_copy(update={'qubits': (locus[0], r)}))
-                    # restore original old_locations
-                    new_locations = self.get_state()
-                    self.set_state(old_locations)
-                    return add_instructions, new_locations
-
-                # pick the shorter non-empty sequence
-                def key(pair) -> int:
-                    if not pair[0]:
-                        return 1000  # a valid sequence has at most 5 or so instructions
-                    return len(pair[0])
-
-                best = min(
-                    check_locus(locus, r1),
-                    check_locus(locus[::-1], r2),
-                    key=key,
-                )
-                new_instructions += best[0]
-                self.set_state(best[1])
+                seq.append(inst.model_copy(update={'qubits': (g, r)}))
+                assert len(seq) == badness
+                new_instructions += seq
 
         return new_instructions
 

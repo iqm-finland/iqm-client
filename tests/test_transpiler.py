@@ -60,7 +60,7 @@ class MoveTranspilerBase:
 
     def check_equiv_without_moves(self, c1: Circuit, c2: Circuit) -> bool:
         """After removing MOVEs, True iff c1 and c2 are equivalent.
-        Symmetric gates may have been flipped FIXME not ok if implementation is not symmetric!
+        Symmetric gates may have been flipped.
         """
         c1 = transpile_remove_moves(c1)
         c2 = transpile_remove_moves(c2)
@@ -191,7 +191,7 @@ class TestMoveTranspiler(MoveTranspilerBase):
 
     @pytest.fixture
     def unsafe_circuit(self):
-        """A circuit with moves and an unsafe prx"""
+        """A circuit with a prx in the middle of a MOVE sandwich."""
         instructions = (
             I(
                 name='prx',
@@ -255,7 +255,7 @@ class TestMoveTranspiler(MoveTranspilerBase):
 
     @pytest.fixture
     def simple_circuit(self):
-        """An untranspiled circuit."""
+        """An untranspiled circuit in the simplified architecture."""
         instructions = (
             I(
                 name='prx',
@@ -349,30 +349,20 @@ class TestMoveTranspiler(MoveTranspilerBase):
         self.assert_valid_circuit(c1)
         assert self.check_equiv_without_moves(c1, simple_circuit)
 
-    @pytest.mark.parametrize('handling_option', ExistingMoveHandlingOptions)
-    def test_normal_usage2(self, sample_circuit, handling_option):
-        """???"""
-        with pytest.raises(
-            CircuitTranspilationError,
-            match=re.escape("Unable to insert MOVE gates because none of the qubits ('QB1', 'QB2')"),
-        ):
-            self.insert(sample_circuit, handling_option)
-
-    def test_keep(self, safe_circuit):
+    @pytest.mark.parametrize('circuit', [
+        'safe_circuit',
+        # Unsafe PRX is made safe since insert adds a MOVE that brings the qubit state back
+        # before the PRX is applied. If you want to use unsafe PRXs, do not use transpile_insert_moves.
+        'unsafe_circuit',
+        'ambiguous_circuit',  # ambiguous MOVE sandwich is automatically closed
+    ])
+    def test_keep(self, circuit, request):
         """Tests special cases for the KEEP option"""
-        moves = tuple(i for i in safe_circuit.instructions if i.name == 'move')
-        c1 = self.insert(safe_circuit, ExistingMoveHandlingOptions.KEEP)
+        c = request.getfixturevalue(circuit)
+        moves = tuple(i for i in c.instructions if i.name == 'move')
+        c1 = self.insert(c, ExistingMoveHandlingOptions.KEEP)
         self.assert_valid_circuit(c1)
         assert self.check_moves_in_circuit(c1, moves)
-
-        # FIXME unsafe PRX is made safe since the insert now adds a MOVE that brings qubit state back!
-        #c2 = self.insert(unsafe_circuit, ExistingMoveHandlingOptions.KEEP)
-
-        #with pytest.raises(CircuitTranspilationError, match=re.escape("Instruction prx acts on ('QB3',) while")):
-        #    self.assert_valid_circuit(c2)
-
-        #with pytest.raises(CircuitTranspilationError, match=re.escape("Instruction cz acts on ('QB3', 'QB1') while")):
-        #self.insert(ambiguous_circuit, ExistingMoveHandlingOptions.KEEP)
 
     @pytest.mark.parametrize('circuit', ['safe_circuit', 'unsafe_circuit', 'ambiguous_circuit'])
     def test_remove_moves(self, circuit, request):
