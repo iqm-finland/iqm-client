@@ -528,7 +528,7 @@ def hybrid_move_architecture() -> DynamicQuantumArchitecture:
         |
        CR1
       *  |*
-    QB2   QB3 -> QB4
+    QB2   QB3 - QB4
       *  |*
        CR2
         |*
