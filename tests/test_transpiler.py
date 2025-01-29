@@ -33,6 +33,9 @@ from iqm.iqm_client import (
 from iqm.iqm_client.transpile import _ResonatorStateTracker as ResonatorStateTracker
 
 
+I = Instruction  # shorthand
+
+
 class MoveTranspilerBase:
     """Base class for transpiler tests, containing some utility methods."""
 
@@ -41,10 +44,19 @@ class MoveTranspilerBase:
         circuit: Circuit,
         existing_moves: Optional[ExistingMoveHandlingOptions] = None,
         qb_map: Optional[dict[str, str]] = None,
+        restore_states: bool = True
     ):
         """Call transpile_insert_moves on the given circuit."""
-        kwargs = {} if existing_moves is None else {'existing_moves': existing_moves}
-        return transpile_insert_moves(circuit, arch=self.arch, qubit_mapping=qb_map, **kwargs)
+        kwargs = {}
+        if existing_moves is not None:
+            kwargs['existing_moves'] = existing_moves
+        return transpile_insert_moves(
+            circuit,
+            arch=self.arch,
+            qubit_mapping=qb_map,
+            restore_states=restore_states,
+            **kwargs,
+        )
 
     def check_equiv_without_moves(self, c1: Circuit, c2: Circuit) -> bool:
         """After removing MOVEs, True iff c1 and c2 are equivalent.
@@ -68,7 +80,7 @@ class MoveTranspilerBase:
             for q in self.arch.qubits:
                 if q not in qb_map.values():
                     qb_map[q] = q
-        IQMClient._validate_circuit_instructions(self.arch, [circuit], qubit_mapping=qb_map)
+        IQMClient._validate_circuit_instructions(self.arch, [circuit], qubit_mapping=qb_map, must_return_states=False)
 
     def check_moves_in_circuit(self, circuit: Circuit, moves: tuple[Instruction]) -> bool:
         """True iff ``moves`` all appear in ``circuit`` in that order."""
@@ -92,10 +104,10 @@ class TestMoveTranspilerHybrid(MoveTranspilerBase):
         """No MOVE insertion required."""
 
         circuit = Circuit(name='test', instructions=(
-            Instruction(name='prx', qubits=('QB1',), args={'phase_t': 0.3, 'angle_t': -0.2}),
-            Instruction(name='cz', qubits=('QB1', 'CR1'), args={}),
-            Instruction(name='cz', qubits=('QB3', 'CR1'), args={}),
-            Instruction(name='cz', qubits=('QB3', 'QB4'), args={}),
+            I(name='prx', qubits=('QB1',), args={'phase_t': 0.3, 'angle_t': -0.2}),
+            I(name='cz', qubits=('QB1', 'CR1'), args={}),
+            I(name='cz', qubits=('QB3', 'CR1'), args={}),
+            I(name='cz', qubits=('QB3', 'QB4'), args={}),
         ))
         c1 = self.insert(circuit, handling_option)
         self.assert_valid_circuit(c1)
@@ -106,10 +118,10 @@ class TestMoveTranspilerHybrid(MoveTranspilerBase):
         """Tests basic usage of the transpile method"""
 
         circuit = Circuit(name='test', instructions=(
-            Instruction(name='prx', qubits=('QB1',), args={'phase_t': 0.3, 'angle_t': -0.2}),
-            Instruction(name='cz', qubits=('QB1', 'QB2'), args={}),
-            Instruction(name='cz', qubits=('QB3', 'QB2'), args={}),
-            Instruction(name='cz', qubits=('QB3', 'QB4'), args={}),
+            I(name='prx', qubits=('QB1',), args={'phase_t': 0.3, 'angle_t': -0.2}),
+            I(name='cz', qubits=('QB1', 'QB2'), args={}),
+            I(name='cz', qubits=('QB3', 'QB2'), args={}),
+            I(name='cz', qubits=('QB3', 'QB4'), args={}),
         ))
         c1 = self.insert(circuit, handling_option)
         self.assert_valid_circuit(c1)
@@ -121,8 +133,8 @@ class TestMoveTranspilerHybrid(MoveTranspilerBase):
 
         # all: cz fails because QB3 is not reset
         circuit = Circuit(name='test', instructions=(
-            Instruction(name='move', qubits=('QB3', 'CR1'), args={}),
-            Instruction(name='cz', qubits=('QB3', 'CR2'), args={}),
+            I(name='move', qubits=('QB3', 'CR1'), args={}),
+            I(name='cz', qubits=('QB3', 'CR2'), args={}),
         ))
         c1 = self.insert(circuit, handling_option)
 
@@ -134,9 +146,9 @@ class TestMoveTranspilerHybrid(MoveTranspilerBase):
         """MOVE sandwiches are automatically closed when a new one needs to start."""
         circuit = Circuit(name='test', instructions=(
             # without this prx transpiler_remove_moves would leave an empty, invalid circuit
-            Instruction(name='prx', qubits=('QB2',), args={'phase_t': 0.3, 'angle_t': -0.2}),
-            Instruction(name='move', qubits=('QB2', 'CR1'), args={}),  # opens a sandwich
-            Instruction(name='move', qubits=('QB2', 'CR2'), args={}),  # opens a new sandwich on the same qubit
+            I(name='prx', qubits=('QB2',), args={'phase_t': 0.3, 'angle_t': -0.2}),
+            I(name='move', qubits=('QB2', 'CR1'), args={}),  # opens a sandwich
+            I(name='move', qubits=('QB2', 'CR2'), args={}),  # opens a new sandwich on the same qubit
         ))
         c1 = self.insert(circuit, handling_option)
         self.assert_valid_circuit(c1)
@@ -147,15 +159,26 @@ class TestMoveTranspilerHybrid(MoveTranspilerBase):
     def test_move_heuristic(self, handling_option):
         """Heuristic chooses the optimal MOVE locus with multiple resonators."""
         circuit = Circuit(name='test', instructions=(
-            # without this prx transpiler_remove_moves would leave an empty, invalid circuit
-            Instruction(name='prx', qubits=('QB2',), args={'phase_t': 0.3, 'angle_t': -0.2}),
-            Instruction(name='cz', qubits=('QB3', 'QB2'), args={}),  # can happen via both CRs
-            Instruction(name='cz', qubits=('QB5', 'QB2'), args={}),  # requires QB2 state in CR2
+            I(name='cz', qubits=('QB3', 'QB2'), args={}),  # can happen via both CRs
+            I(name='cz', qubits=('QB5', 'QB2'), args={}),  # requires QB2 state in CR2
         ))
         c1 = self.insert(circuit, handling_option)
         self.assert_valid_circuit(c1)
         assert self.check_equiv_without_moves(c1, circuit)
         assert len(c1.instructions) == 4  # prx(QB2), move(QB2, CR2), cz(QB3, CR2), cz(QB5, CR2)
+
+    @pytest.mark.parametrize('handling_option', ExistingMoveHandlingOptions)
+    def test_move_heuristic2(self, handling_option):
+        """Heuristic chooses the optimal MOVE locus with multiple resonators."""
+        circuit = Circuit(name='test', instructions=(
+            I(name='cz', qubits=('QB3', 'QB5'), args={}),  # both cz(QB3, QB5) and cz(QB5, QB3) are possible via CR2
+            I(name='cz', qubits=('QB3', 'QB1'), args={}),  # only cz(QB1, QB3) is possible via CR1
+        ))
+        c1 = self.insert(circuit, handling_option, restore_states=False)
+        self.assert_valid_circuit(c1)
+        assert self.check_equiv_without_moves(c1, circuit)
+        assert len(c1.instructions) == 4  # move(QB5, CR2), cz(QB3, CR2), move(QB3, CR1), cz(QB1, CR1)
+
 
 
 class TestMoveTranspiler(MoveTranspilerBase):
@@ -166,26 +189,26 @@ class TestMoveTranspiler(MoveTranspilerBase):
         # pylint: disable=attribute-defined-outside-init
         self.arch: DynamicQuantumArchitecture = sample_move_architecture
 
-    @property
+    @pytest.fixture
     def unsafe_circuit(self):
         """A circuit with moves and an unsafe prx"""
         instructions = (
-            Instruction(
+            I(
                 name='prx',
                 qubits=('QB1',),
                 args={'phase_t': 0.3, 'angle_t': -0.2},
             ),
-            Instruction(
+            I(
                 name='move',
                 qubits=('QB3', 'CR1'),
                 args={},
             ),
-            Instruction(
+            I(
                 name='prx',
                 qubits=('QB3',),
                 args={'phase_t': 0.3, 'angle_t': -0.2},
             ),
-            Instruction(
+            I(
                 name='move',
                 qubits=('QB3', 'CR1'),
                 args={},
@@ -193,36 +216,36 @@ class TestMoveTranspiler(MoveTranspilerBase):
         )
         return Circuit(name='unsafe', instructions=instructions)
 
-    @property
+    @pytest.fixture
     def safe_circuit(self):
         """A partially transpiled circuit."""
         instructions = (
-            Instruction(
+            I(
                 name='prx',
                 qubits=('QB1',),
                 args={'phase_t': 0.3, 'angle_t': -0.2},
             ),
-            Instruction(
+            I(
                 name='cz',
                 qubits=('QB1', 'CR1'),
                 args={},
             ),
-            Instruction(
+            I(
                 name='move',
                 qubits=('QB3', 'CR1'),
                 args={},
             ),
-            Instruction(
+            I(
                 name='cz',
                 qubits=('QB2', 'CR1'),
                 args={},
             ),
-            Instruction(
+            I(
                 name='move',
                 qubits=('QB3', 'CR1'),
                 args={},
             ),
-            Instruction(
+            I(
                 name='cz',
                 qubits=('QB3', 'QB1'),
                 args={},
@@ -230,31 +253,31 @@ class TestMoveTranspiler(MoveTranspilerBase):
         )
         return Circuit(name='safe', instructions=instructions)
 
-    @property
+    @pytest.fixture
     def simple_circuit(self):
         """An untranspiled circuit."""
         instructions = (
-            Instruction(
+            I(
                 name='prx',
                 qubits=('QB1',),
                 args={'phase_t': 0.3, 'angle_t': -0.2},
             ),
-            Instruction(
+            I(
                 name='cz',
                 qubits=('QB1', 'CR1'),
                 args={},
             ),
-            Instruction(
+            I(
                 name='cz',
                 qubits=('QB2', 'CR1'),
                 args={},
             ),
-            Instruction(
+            I(
                 name='cz',
                 qubits=('QB3', 'QB1'),
                 args={},
             ),
-            Instruction(
+            I(
                 name='prx',
                 qubits=('QB3',),
                 args={'phase_t': 0.3, 'angle_t': -0.2},
@@ -262,48 +285,31 @@ class TestMoveTranspiler(MoveTranspilerBase):
         )
         return Circuit(name='safe', instructions=instructions)
 
-    @property
-    def mapped_circuit(self):
-        """A circuit with different qubit names and a qubit mapping."""
-        instructions = (
-            Instruction(
-                name='prx',
-                qubits=('A',),
-                args={'phase_t': 0.3, 'angle_t': -0.2},
-            ),
-            Instruction(
-                name='cz',
-                qubits=('A', 'B'),
-                args={},
-            ),
-        )
-        return Circuit(name='mapped', instructions=instructions), {'A': 'QB3', 'B': 'QB1'}
-
-    @property
+    @pytest.fixture
     def ambiguous_circuit(self):
         """A circuit that is unclear how to compile it because there is only one move"""
         instructions = (
-            Instruction(
+            I(
                 name='prx',
                 qubits=('QB1',),
                 args={'phase_t': 0.3, 'angle_t': -0.2},
             ),
-            Instruction(
+            I(
                 name='cz',
                 qubits=('QB1', 'CR1'),
                 args={},
             ),
-            Instruction(
+            I(
                 name='move',
                 qubits=('QB3', 'CR1'),
                 args={},
             ),
-            Instruction(
+            I(
                 name='cz',
                 qubits=('QB2', 'CR1'),
                 args={},
             ),
-            Instruction(
+            I(
                 name='cz',
                 qubits=('QB3', 'QB1'),
                 args={},
@@ -313,87 +319,101 @@ class TestMoveTranspiler(MoveTranspilerBase):
 
 
     @pytest.mark.parametrize('handling_option', ExistingMoveHandlingOptions)
-    def test_no_moves_supported(self, sample_dynamic_architecture, handling_option):
+    def test_no_moves_supported(self, sample_dynamic_architecture, handling_option, simple_circuit):
         """Tests transpiler for architectures without a resonator"""
-        c1 = transpile_insert_moves(self.simple_circuit, sample_dynamic_architecture, existing_moves=handling_option)
+        c1 = transpile_insert_moves(simple_circuit, sample_dynamic_architecture, existing_moves=handling_option)
         # no changes
-        assert c1 == self.simple_circuit
-        # MOVEs in the circuit cause an error
-        with pytest.raises(
-            ValueError,
-            match='Circuit contains MOVE instructions, but the device does not support them',
-        ):
-            _ = transpile_insert_moves(self.safe_circuit, sample_dynamic_architecture, existing_moves=handling_option)
-
-    def test_unspecified(self):
-        """Tests transpiler in case the handling option is not specified."""
-        c1 = self.insert(self.simple_circuit)
-        self.assert_valid_circuit(c1)
-        assert self.check_equiv_without_moves(c1, self.simple_circuit)
-        c2 = self.insert(self.safe_circuit)
-        assert self.check_equiv_without_moves(c2, self.safe_circuit)
+        assert c1 == simple_circuit
 
     @pytest.mark.parametrize('handling_option', ExistingMoveHandlingOptions)
-    def test_normal_usage(self, sample_circuit: Circuit, handling_option):
-        """Tests basic usage of the transpile method"""
-        c1 = self.insert(self.simple_circuit, handling_option)
+    def test_no_moves_supported(self, sample_dynamic_architecture, handling_option, safe_circuit):
+        """MOVEs in the circuit cause an error if architecture does not support them."""
+        with pytest.raises(
+            ValueError,
+            match='Circuit contains MOVE instructions, but the architecture does not support them',
+        ):
+            transpile_insert_moves(safe_circuit, sample_dynamic_architecture, existing_moves=handling_option)
+
+    @pytest.mark.parametrize('circuit', ['simple_circuit', 'safe_circuit'])
+    def test_no_handling_option(self, circuit, request):
+        """Tests transpiler in case the handling option is not specified."""
+        circuit = request.getfixturevalue(circuit)
+        c1 = self.insert(circuit)
         self.assert_valid_circuit(c1)
-        assert self.check_equiv_without_moves(c1, self.simple_circuit)
+        assert self.check_equiv_without_moves(c1, circuit)
+
+    @pytest.mark.parametrize('handling_option', ExistingMoveHandlingOptions)
+    def test_normal_usage(self, simple_circuit, handling_option):
+        """Tests basic usage of the transpile method"""
+        c1 = self.insert(simple_circuit, handling_option)
+        self.assert_valid_circuit(c1)
+        assert self.check_equiv_without_moves(c1, simple_circuit)
+
+    @pytest.mark.parametrize('handling_option', ExistingMoveHandlingOptions)
+    def test_normal_usage2(self, sample_circuit, handling_option):
+        """???"""
         with pytest.raises(
             CircuitTranspilationError,
             match=re.escape("Unable to insert MOVE gates because none of the qubits ('QB1', 'QB2')"),
         ):
-            self.insert(sample_circuit, handling_option)  # untranspiled circuit
+            self.insert(sample_circuit, handling_option)
 
-    def test_keep(self):
+    def test_keep(self, safe_circuit):
         """Tests special cases for the KEEP option"""
-        moves = tuple(i for i in self.safe_circuit.instructions if i.name == 'move')
-        c1 = self.insert(self.safe_circuit, ExistingMoveHandlingOptions.KEEP)
+        moves = tuple(i for i in safe_circuit.instructions if i.name == 'move')
+        c1 = self.insert(safe_circuit, ExistingMoveHandlingOptions.KEEP)
         self.assert_valid_circuit(c1)
         assert self.check_moves_in_circuit(c1, moves)
 
         # FIXME unsafe PRX is made safe since the insert now adds a MOVE that brings qubit state back!
-        #c2 = self.insert(self.unsafe_circuit, ExistingMoveHandlingOptions.KEEP)
+        #c2 = self.insert(unsafe_circuit, ExistingMoveHandlingOptions.KEEP)
 
         #with pytest.raises(CircuitTranspilationError, match=re.escape("Instruction prx acts on ('QB3',) while")):
         #    self.assert_valid_circuit(c2)
 
         #with pytest.raises(CircuitTranspilationError, match=re.escape("Instruction cz acts on ('QB3', 'QB1') while")):
-        #self.insert(self.ambiguous_circuit, ExistingMoveHandlingOptions.KEEP)
+        #self.insert(ambiguous_circuit, ExistingMoveHandlingOptions.KEEP)
 
-    def test_remove(self):
-        """Tests if removing works as intended."""
-        for c in [self.safe_circuit, self.unsafe_circuit, self.ambiguous_circuit]:
-            moves = tuple(i for i in c.instructions if i.name == 'move')
-            c1 = transpile_remove_moves(c)
-            assert not self.check_moves_in_circuit(c1, moves)
-            c1_with = self.insert(c1, ExistingMoveHandlingOptions.REMOVE)
-            c1_direct = self.insert(c, ExistingMoveHandlingOptions.REMOVE)
-            assert c1_with == c1_direct
-            assert self.check_equiv_without_moves(c1, c1_with)
-            assert self.check_equiv_without_moves(c1, c1_direct)
+    @pytest.mark.parametrize('circuit', ['safe_circuit', 'unsafe_circuit', 'ambiguous_circuit'])
+    def test_remove_moves(self, circuit, request):
+        """Tests if removing MOVEs works as intended."""
+        c = request.getfixturevalue(circuit)
+        moves = tuple(i for i in c.instructions if i.name == 'move')
+        c1 = transpile_remove_moves(c)
+        assert not self.check_moves_in_circuit(c1, moves)
+        c1_with = self.insert(c1, ExistingMoveHandlingOptions.REMOVE)
+        c1_direct = self.insert(c, ExistingMoveHandlingOptions.REMOVE)
+        assert c1_with == c1_direct
+        assert self.check_equiv_without_moves(c1, c1_with)
+        assert self.check_equiv_without_moves(c1, c1_direct)
 
-    def test_trust(self):
-        """Tests if trust works as intended"""
-        moves = tuple(i for i in self.safe_circuit.instructions if i.name == 'move')
-        c1 = self.insert(self.safe_circuit, ExistingMoveHandlingOptions.TRUST)
+    @pytest.mark.parametrize('circuit', ['safe_circuit', 'unsafe_circuit', 'ambiguous_circuit'])
+    def test_trust(self, circuit, request):
+        """Tests if the TRUST option works as intended"""
+        c = request.getfixturevalue(circuit)
+        moves = tuple(i for i in c.instructions if i.name == 'move')
+        c1 = self.insert(c, ExistingMoveHandlingOptions.TRUST)
         self.assert_valid_circuit(c1)
         assert self.check_moves_in_circuit(c1, moves)
-
-        moves2 = tuple(i for i in self.unsafe_circuit.instructions if i.name == 'move')
-        c2 = self.insert(self.unsafe_circuit, ExistingMoveHandlingOptions.TRUST)
-        self.assert_valid_circuit(c2)
-        assert self.check_moves_in_circuit(c2, moves2)
-
-        moves3 = tuple(i for i in self.ambiguous_circuit.instructions if i.name == 'move')
-        c3 = self.insert(self.ambiguous_circuit, ExistingMoveHandlingOptions.TRUST)
-        self.assert_valid_circuit(c3)
-        assert self.check_moves_in_circuit(c3, moves3)
 
     @pytest.mark.parametrize('handling_option', ExistingMoveHandlingOptions)
     def test_with_qubit_map(self, handling_option):
         """Test if qubit mapping works as intended"""
-        circuit, qb_map = self.mapped_circuit
+
+        circuit = Circuit(name='mapped', instructions=(
+            I(
+                name='prx',
+                qubits=('A',),
+                args={'phase_t': 0.3, 'angle_t': -0.2},
+            ),
+            I(
+                name='cz',
+                qubits=('A', 'B'),
+                args={},
+            ),
+        ))
+        qb_map = {'A': 'QB3', 'B': 'QB1'}
+
         c1 = self.insert(circuit, handling_option, qb_map)
         self.assert_valid_circuit(c1, qb_map)
         assert self.check_equiv_without_moves(c1, circuit)
@@ -408,30 +428,27 @@ class TestMoveTranspiler(MoveTranspilerBase):
         circuit = Circuit(
             name='multi resonators',
             instructions=(
-                Instruction(name='cz', qubits=('QB1', 'QB2'), args={}),
-                Instruction(name='cz', qubits=('QB2', 'QB3'), args={}),
-                Instruction(name='cz', qubits=('QB1', 'QB3'), args={}),
+                I(name='cz', qubits=('QB1', 'QB2'), args={}),
+                I(name='cz', qubits=('QB2', 'QB3'), args={}),
+                I(name='cz', qubits=('QB1', 'QB3'), args={}),
             ),
         )
-        with pytest.raises(CircuitTranspilationError, match='Unable to find a valid qubit-resonator pair'):
+        bad_architecture = sample_move_architecture.model_copy(deep=True)
+        with pytest.raises(CircuitTranspilationError, match='Unable to insert MOVE gates because none'):
             # CZ(QB1, QB2) is not possible
             # Create a new copy of the DQA to ensure the cached properties are computed only for this architecture.
-            bad_architecture = sample_move_architecture.model_copy(deep=True)
             transpiled_circuit = transpile_insert_moves(circuit, bad_architecture)
 
         # Add the CZ loci to the architecture make it ok for this circuit.
         default_cz_impl = sample_move_architecture.gates['cz'].default_implementation
         sample_move_architecture.gates['cz'].implementations[default_cz_impl].loci += tuple(
-            (qb, 'CR2') for qb in sample_move_architecture.components
+            (qb, 'CR2') for qb in sample_move_architecture.qubits
         )
 
         # Create a new copy of the DQA to ensure the cached properties are computed only for this architecture.
         good_architecture = sample_move_architecture.model_copy(deep=True)
         transpiled_circuit = transpile_insert_moves(circuit, good_architecture)
         IQMClient._validate_circuit_instructions(good_architecture, [transpiled_circuit])
-
-        print(transpiled_circuit)
-
         assert self.check_equiv_without_moves(circuit, transpiled_circuit)
 
     def test_circuit_on_nonexisting_qubits(self):
@@ -439,7 +456,7 @@ class TestMoveTranspiler(MoveTranspilerBase):
         c = Circuit(
             name='QB5 does not exist',
             instructions=(
-                Instruction(
+                I(
                     name='prx',
                     qubits=('QB5',),
                     args={'phase_t': 0.3, 'angle_t': -0.2},
@@ -449,58 +466,61 @@ class TestMoveTranspiler(MoveTranspilerBase):
         with pytest.raises(CircuitTranspilationError, match=re.escape("('QB5',) is not allowed as locus for 'prx'")):
             self.insert(c, qb_map={'QB5': 'QB5'})
 
-    def test_unavailable_cz(self):
-        """Test for unavailable CZ gates. This test reproduces the bug COMP-1485."""
-        c = Circuit(
+    @pytest.mark.parametrize('circuit', [
+        Circuit(
             name='bell',
             instructions=(  # prx uses wrong values for the H gate, but that's not the point of this test
-                Instruction(
+                I(
                     name='prx',
                     qubits=('QB1',),
                     args={'phase_t': 0.3, 'angle_t': -0.2},
                 ),
-                Instruction(
+                I(
                     name='prx',
                     qubits=('QB2',),
                     args={'phase_t': 0.3, 'angle_t': -0.2},
                 ),
-                Instruction(
+                I(
                     name='cz',
                     qubits=('QB1', 'QB2'),
                     args={},
                 ),
-                Instruction(
+                I(
                     name='prx',
                     qubits=('QB2',),
                     args={'phase_t': 0.3, 'angle_t': -0.2},
                 ),
             ),
-        )
-        c2 = Circuit(
+        ),
+        Circuit(
             name='bell',
             instructions=(  # prx uses wrong values for the H gate, but that's not the point of this test
-                Instruction(
+                I(
                     name='prx',
                     qubits=('QB1',),
                     args={'phase_t': 0.3, 'angle_t': -0.2},
                 ),
-                Instruction(
+                I(
                     name='prx',
                     qubits=('QB2',),
                     args={'phase_t': 0.3, 'angle_t': -0.2},
                 ),
-                Instruction(
+                I(
                     name='cz',
                     qubits=('QB2', 'QB1'),  # Swapped qubits
                     args={},
                 ),
-                Instruction(
+                I(
                     name='prx',
                     qubits=('QB2',),
                     args={'phase_t': 0.3, 'angle_t': -0.2},
                 ),
             ),
         )
+    ])
+    def test_can_reverse_cz_locus(self, circuit):
+        """Circuit requires unavailable CZ locus, but the reversed locus is available in the DQA,
+        and CZ is symmetric. This test reproduces the bug COMP-1485."""
         arch = DynamicQuantumArchitecture(
             calibration_set_id=UUID('0c5a5624-2faf-4885-888c-805af891479c'),
             qubits=['QB1', 'QB2'],
@@ -528,8 +548,8 @@ class TestMoveTranspiler(MoveTranspilerBase):
                 ),
             },
         )
-        circuits = [transpile_insert_moves(c, arch=arch), transpile_insert_moves(c2, arch=arch)]
-        IQMClient._validate_circuit_instructions(arch, circuits)
+        c1 = transpile_insert_moves(circuit, arch=arch)
+        IQMClient._validate_circuit_instructions(arch, [c1])
 
     @pytest.mark.parametrize(
         'loci', [(qb1, qb2) for qb1 in ['QB1', 'QB2', 'QB3'] for qb2 in ['QB1', 'QB2', 'QB3'] if qb1 != qb2]
@@ -537,7 +557,7 @@ class TestMoveTranspiler(MoveTranspilerBase):
     def test_pass_always_picks_correct_move_gate(self, loci):
         circuit = Circuit(
             name='test',
-            instructions=(Instruction(name='cz', qubits=loci, args={}),),
+            instructions=(I(name='cz', qubits=loci, args={}),),
         )
         if set(loci) == {'QB1', 'QB2'}:
             # There is no MOVE gate available between this pair of qubits
@@ -555,13 +575,14 @@ class TestMoveTranspiler(MoveTranspilerBase):
 
 
 class TestResonatorStateTracker:
-    def test_apply_move(self, sample_dynamic_architecture, sample_move_architecture):
+    def test_apply_move_no_resonators(self, sample_dynamic_architecture):
         # Check handling of an architecture without a resonator
         no_move_status = ResonatorStateTracker.from_dynamic_architecture(sample_dynamic_architecture)
         assert not no_move_status.supports_move
         with pytest.raises(CircuitTranspilationError, match=re.escape("MOVE locus ('QB1', 'QB2') is not allowed")):
             no_move_status.apply_move('QB1', 'QB2')
 
+    def test_apply_move(self, sample_move_architecture):
         # Check handling of an architecture with resonator
         status = ResonatorStateTracker.from_dynamic_architecture(sample_move_architecture)
         assert status.supports_move
@@ -581,7 +602,7 @@ class TestResonatorStateTracker:
         default_move_impl = sample_move_architecture.gates['move'].default_implementation
         sample_move_architecture.gates['move'].implementations[default_move_impl].loci += (('QB1', 'CR1'),)
         status = ResonatorStateTracker.from_dynamic_architecture(sample_move_architecture)
-        instr = Instruction(name='move', qubits=('QB3', 'CR1'), args={})
+        instr = I(name='move', qubits=('QB3', 'CR1'), args={})
         # Check insertion
         gen_instr = tuple(status.create_move_instructions('QB3', 'CR1'))
         assert len(gen_instr) == 1
@@ -595,7 +616,7 @@ class TestResonatorStateTracker:
         # Check removal
         gen_instr = tuple(status.create_move_instructions('QB3', 'CR1'))
         assert len(gen_instr) == 2
-        assert gen_instr[0] == Instruction(name='move', qubits=('QB1', 'CR1'), args={})
+        assert gen_instr[0] == I(name='move', qubits=('QB1', 'CR1'), args={})
         assert gen_instr[1] == instr
         assert status.res_state_owner['CR1'] == 'QB3'
 
@@ -608,20 +629,20 @@ class TestResonatorStateTracker:
         status.apply_move('QB3', 'CR1')
         gen_instr = tuple(status.reset_as_move_instructions(['CR1']))
         assert len(gen_instr) == 1
-        assert gen_instr[0] == Instruction(name='move', qubits=('QB3', 'CR1'), args={})
+        assert gen_instr[0] == I(name='move', qubits=('QB3', 'CR1'), args={})
         assert status.res_state_owner['CR1'] == 'CR1'
         # Reset without arguments
         status.apply_move('QB3', 'CR1')
         gen_instr = tuple(status.reset_as_move_instructions())
         assert len(gen_instr) == 1
-        assert gen_instr[0] == Instruction(name='move', qubits=('QB3', 'CR1'), args={})
+        assert gen_instr[0] == I(name='move', qubits=('QB3', 'CR1'), args={})
         assert status.res_state_owner['CR1'] == 'CR1'
 
     def test_available_resonators_to_move(self, sample_move_architecture):
         components = sample_move_architecture.components
-        status = ResonatorStateTracker.from_dynamic_architecture(sample_move_architecture)
-        assert status.resonators_to_move_to(components) == {
-            'QB3': ['CR1'],
+        tracker = ResonatorStateTracker.from_dynamic_architecture(sample_move_architecture)
+        assert tracker.resonators_to_move_to(components) == {
+            'QB3': {'CR1'},
         }
 
     def test_qubits_in_resonator(self, sample_move_architecture):
@@ -643,9 +664,9 @@ class TestResonatorStateTracker:
         resonator_candidates = status.choose_move_pair(
             ['QB1', 'QB2', 'QB3'],
             [
-                Instruction(name='cz', qubits=('QB2', 'QB3'), args={}),
-                Instruction(name='prx', qubits=('QB2',), args={'phase_t': 0.3, 'angle_t': -0.2}),
-                Instruction(name='prx', qubits=('QB3',), args={'phase_t': 0.3, 'angle_t': -0.2}),
+                I(name='cz', qubits=('QB2', 'QB3'), args={}),
+                I(name='prx', qubits=('QB2',), args={'phase_t': 0.3, 'angle_t': -0.2}),
+                I(name='prx', qubits=('QB3',), args={'phase_t': 0.3, 'angle_t': -0.2}),
             ],
         )
         assert len(resonator_candidates) == 1
@@ -704,7 +725,9 @@ def test_simplified_architecture_hybrid(hybrid_move_architecture):
     assert len(impls) == 2
     assert impls['tgss'].loci == (('QB3', 'QB4'),)
     # fictional gates lose their implementation info
-    assert set(impls['__fictional'].loci) == {('QB1', 'QB2'), ('QB1', 'QB3'), ('QB3', 'QB2'), ('QB5', 'QB2'), ('QB5', 'QB3')}
+    assert set(impls['__fictional'].loci) == {
+        ('QB1', 'QB2'), ('QB1', 'QB3'), ('QB3', 'QB2'), ('QB5', 'QB2'), ('QB5', 'QB2'), ('QB5', 'QB3'), ('QB3', 'QB5'),
+    }
 
 
 @pytest.mark.parametrize('locus', [('QB1', 'QB2'), ('CR1', 'CR2'), ('CR1', 'QB1')])

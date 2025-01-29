@@ -531,7 +531,7 @@ def hybrid_move_architecture() -> DynamicQuantumArchitecture:
     QB2   QB3 -> QB4
       *  |*
        CR2
-        |
+        |*
        QB5
 
     Here, | signifies a CZ connection and * a MOVE connection.
@@ -573,6 +573,7 @@ def hybrid_move_architecture() -> DynamicQuantumArchitecture:
                             ('QB2', 'CR2'),
                             ('QB3', 'CR1'),
                             ('QB3', 'CR2'),
+                            ('QB5', 'CR2'),
                         ),
                     )
                 },
