@@ -41,9 +41,9 @@ Given a :class:`DynamicQuantumArchitecture` for a Star architecture, the corresp
 version can be obtained using :func:`simplified_architecture`.
 """
 from __future__ import annotations
-from copy import deepcopy
 
 from collections.abc import Collection, Iterable
+from copy import deepcopy
 from enum import Enum
 from typing import Optional
 
@@ -55,8 +55,7 @@ from iqm.iqm_client import (
     Instruction,
     IQMClient,
 )
-from iqm.iqm_client.models import _op_is_symmetric, GateImplementationInfo, GateInfo, Locus
-
+from iqm.iqm_client.models import GateImplementationInfo, GateInfo, Locus, _op_is_symmetric
 
 TRANSPILER_FIX: bool = True
 # TRANSPILER_FIX: bool = False
@@ -128,7 +127,7 @@ class _ResonatorStateTracker:
             if op != self.move_gate and not _op_is_symmetric(op):
                 raise ValueError(f'QR gate {op} is not symmetric.')
 
-        def invert_locus_mapping(mapping: dict[str, Iterable[str]]) -> dict[str, set[str]]:
+        def invert_locus_mapping(mapping: dict[str, set[str]]) -> dict[str, set[str]]:
             """Invert the give mapping of resonators to a list of connected qubits, returning
             a mapping of qubits to connected resonators."""
             inverse: dict[str, set[str]] = {}
@@ -477,7 +476,7 @@ class _ResonatorStateTracker:
         """
         # This method can handle real single- and two-qubit gates, real q-r gates including MOVE,
         # and fictional two-qubit gates which it decomposes into real q-r gates.
-        new_instructions = []
+        new_instructions: list[Instruction] = []
 
         for idx, inst in enumerate(instructions):
             locus = inst.qubits
@@ -523,7 +522,7 @@ class _ResonatorStateTracker:
                 #    )
 
                 # implement G using the sequence
-                seq = []
+                seq: list[Instruction] = []
                 #  does m state need to be moved to the resonator?
                 m_holder = self.qubit_state_holder.get(m, m)
                 if m_holder != r:
@@ -561,7 +560,6 @@ def simplified_architecture(arch: DynamicQuantumArchitecture) -> DynamicQuantumA
 
     # we modify the contents, so make a copy
     gates = deepcopy(arch.gates)
-
     r_set = frozenset(arch.computational_resonators)
     q_set = frozenset(arch.qubits)
 
@@ -574,7 +572,7 @@ def simplified_architecture(arch: DynamicQuantumArchitecture) -> DynamicQuantumA
     # create fictional gates, remove real gate loci that involve a resonator
     new_gates: dict[str, GateInfo] = {}
     for gate_name, gate_info in gates.items():
-        new_loci: dict[str, list[Locus]] = {}  # mapping from implementation to its new loci
+        new_loci: dict[str, tuple[Locus, ...]] = {}  # mapping from implementation to its new loci
         fictional_loci: set[Locus] = set()  # loci for new fictional gates
 
         for impl_name, impl_info in gate_info.implementations.items():
@@ -584,7 +582,7 @@ def simplified_architecture(arch: DynamicQuantumArchitecture) -> DynamicQuantumA
                     # two-component op
                     q1, r = locus
                     if q1 not in q_set:
-                        raise ValueError(f"Unexpected '{op}' locus: {locus}")
+                        raise ValueError(f"Unexpected '{gate_name}' locus: {locus}")
 
                     if r in r_set:
                         # involves a resonator, for each G(q1, r), MOVE(q2, r) pair add G(q1, q2) to the simplified arch

@@ -32,12 +32,13 @@ from iqm.iqm_client import (
 )
 from iqm.iqm_client.transpile import _ResonatorStateTracker as ResonatorStateTracker
 
-
 I = Instruction  # shorthand
 
 
 class MoveTranspilerBase:
     """Base class for transpiler tests, containing some utility methods."""
+
+    arch: DynamicQuantumArchitecture
 
     def insert(
         self,
@@ -334,14 +335,14 @@ class TestMoveTranspiler(MoveTranspilerBase):
         return Circuit(name='ambiguous', instructions=instructions)
 
     @pytest.mark.parametrize('handling_option', ExistingMoveHandlingOptions)
-    def test_no_moves_supported(self, sample_dynamic_architecture, handling_option, simple_circuit):
+    def test_simple_architecture_simple_circuit(self, sample_dynamic_architecture, handling_option, simple_circuit):
         """Tests transpiler for architectures without a resonator"""
         c1 = transpile_insert_moves(simple_circuit, sample_dynamic_architecture, existing_moves=handling_option)
         # no changes
         assert c1 == simple_circuit
 
     @pytest.mark.parametrize('handling_option', ExistingMoveHandlingOptions)
-    def test_no_moves_supported(self, sample_dynamic_architecture, handling_option, safe_circuit):
+    def test_simple_architecture_moves_in_circuit(self, sample_dynamic_architecture, handling_option, safe_circuit):
         """MOVEs in the circuit cause an error if architecture does not support them."""
         with pytest.raises(
             ValueError,
