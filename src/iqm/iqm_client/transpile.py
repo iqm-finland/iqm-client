@@ -59,7 +59,7 @@ from iqm.iqm_client.models import _op_is_symmetric, GateImplementationInfo, Gate
 
 
 TRANSPILER_FIX: bool = True
-#TRANSPILER_FIX: bool = False
+# TRANSPILER_FIX: bool = False
 
 
 class ExistingMoveHandlingOptions(str, Enum):
@@ -404,7 +404,9 @@ class _ResonatorStateTracker:
         """
         return tuple(self.res_state_owner.get(q, q) for q in locus)
 
-    def find_best_sequence(self, locus: Locus, gate_q2r: dict, lookahead: list[Instruction]) -> tuple[str, str, str, float]:
+    def find_best_sequence(
+        self, locus: Locus, gate_q2r: dict, lookahead: list[Instruction]
+    ) -> tuple[str, str, str, float]:
         """Find the best way to implement a fictional qubit-qubit gate G(g, m)
         using the available native qubit-resonator gates.
 
@@ -515,7 +517,7 @@ class _ResonatorStateTracker:
                         f'Unable to insert MOVE gates because none of the qubits {locus} can be moved into a resonator. '
                         + 'This can be resolved by routing the circuit first without resonators.'
                     )
-                #raise CircuitTranspilationError(
+                # raise CircuitTranspilationError(
                 #        f'Unable to find native gate sequence to enable fictional gate {inst.name} at {locus}.'
                 #        ' Try routing the circuit to the simplified architecture first.'
                 #    )
@@ -536,8 +538,6 @@ class _ResonatorStateTracker:
                 new_instructions += seq
 
         return new_instructions
-
-
 
 
 def simplified_architecture(arch: DynamicQuantumArchitecture) -> DynamicQuantumArchitecture:
@@ -606,7 +606,11 @@ def simplified_architecture(arch: DynamicQuantumArchitecture) -> DynamicQuantumA
             new_loci['__fictional'] = tuple(fictional_loci)
 
         new_gates[gate_name] = gate_info.model_copy(
-            update={'implementations': {impl_name: GateImplementationInfo(loci=loci) for impl_name, loci in new_loci.items()}},
+            update={
+                'implementations': {
+                    impl_name: GateImplementationInfo(loci=loci) for impl_name, loci in new_loci.items()
+                }
+            },
         )
 
     return DynamicQuantumArchitecture(

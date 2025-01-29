@@ -543,9 +543,7 @@ def hybrid_move_architecture() -> DynamicQuantumArchitecture:
         gates={
             'prx': GateInfo(
                 implementations={
-                    'drag_gaussian': GateImplementationInfo(
-                        loci=(('QB1',), ('QB2',), ('QB3',), ('QB4',), ('QB5',))
-                    ),
+                    'drag_gaussian': GateImplementationInfo(loci=(('QB1',), ('QB2',), ('QB3',), ('QB4',), ('QB5',))),
                 },
                 default_implementation='drag_gaussian',
                 override_default_implementation={},

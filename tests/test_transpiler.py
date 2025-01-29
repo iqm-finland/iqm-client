@@ -44,7 +44,7 @@ class MoveTranspilerBase:
         circuit: Circuit,
         existing_moves: Optional[ExistingMoveHandlingOptions] = None,
         qb_map: Optional[dict[str, str]] = None,
-        restore_states: bool = True
+        restore_states: bool = True,
     ):
         """Call transpile_insert_moves on the given circuit."""
         kwargs = {}
@@ -103,12 +103,15 @@ class TestMoveTranspilerHybrid(MoveTranspilerBase):
     def test_normal_usage_no_moves_added(self, handling_option):
         """No MOVE insertion required."""
 
-        circuit = Circuit(name='test', instructions=(
-            I(name='prx', qubits=('QB1',), args={'phase_t': 0.3, 'angle_t': -0.2}),
-            I(name='cz', qubits=('QB1', 'CR1'), args={}),
-            I(name='cz', qubits=('QB3', 'CR1'), args={}),
-            I(name='cz', qubits=('QB3', 'QB4'), args={}),
-        ))
+        circuit = Circuit(
+            name='test',
+            instructions=(
+                I(name='prx', qubits=('QB1',), args={'phase_t': 0.3, 'angle_t': -0.2}),
+                I(name='cz', qubits=('QB1', 'CR1'), args={}),
+                I(name='cz', qubits=('QB3', 'CR1'), args={}),
+                I(name='cz', qubits=('QB3', 'QB4'), args={}),
+            ),
+        )
         c1 = self.insert(circuit, handling_option)
         self.assert_valid_circuit(c1)
         assert self.check_equiv_without_moves(c1, circuit)
@@ -117,12 +120,15 @@ class TestMoveTranspilerHybrid(MoveTranspilerBase):
     def test_normal_usage(self, handling_option):
         """Tests basic usage of the transpile method"""
 
-        circuit = Circuit(name='test', instructions=(
-            I(name='prx', qubits=('QB1',), args={'phase_t': 0.3, 'angle_t': -0.2}),
-            I(name='cz', qubits=('QB1', 'QB2'), args={}),
-            I(name='cz', qubits=('QB3', 'QB2'), args={}),
-            I(name='cz', qubits=('QB3', 'QB4'), args={}),
-        ))
+        circuit = Circuit(
+            name='test',
+            instructions=(
+                I(name='prx', qubits=('QB1',), args={'phase_t': 0.3, 'angle_t': -0.2}),
+                I(name='cz', qubits=('QB1', 'QB2'), args={}),
+                I(name='cz', qubits=('QB3', 'QB2'), args={}),
+                I(name='cz', qubits=('QB3', 'QB4'), args={}),
+            ),
+        )
         c1 = self.insert(circuit, handling_option)
         self.assert_valid_circuit(c1)
         assert self.check_equiv_without_moves(c1, circuit)
@@ -132,10 +138,13 @@ class TestMoveTranspilerHybrid(MoveTranspilerBase):
         """Tests basic usage of the transpile method"""
 
         # all: cz fails because QB3 is not reset
-        circuit = Circuit(name='test', instructions=(
-            I(name='move', qubits=('QB3', 'CR1'), args={}),
-            I(name='cz', qubits=('QB3', 'CR2'), args={}),
-        ))
+        circuit = Circuit(
+            name='test',
+            instructions=(
+                I(name='move', qubits=('QB3', 'CR1'), args={}),
+                I(name='cz', qubits=('QB3', 'CR2'), args={}),
+            ),
+        )
         c1 = self.insert(circuit, handling_option)
 
         self.assert_valid_circuit(c1)
@@ -144,24 +153,29 @@ class TestMoveTranspilerHybrid(MoveTranspilerBase):
     @pytest.mark.parametrize('handling_option', ExistingMoveHandlingOptions)
     def test_move_move(self, handling_option):
         """MOVE sandwiches are automatically closed when a new one needs to start."""
-        circuit = Circuit(name='test', instructions=(
-            # without this prx transpiler_remove_moves would leave an empty, invalid circuit
-            I(name='prx', qubits=('QB2',), args={'phase_t': 0.3, 'angle_t': -0.2}),
-            I(name='move', qubits=('QB2', 'CR1'), args={}),  # opens a sandwich
-            I(name='move', qubits=('QB2', 'CR2'), args={}),  # opens a new sandwich on the same qubit
-        ))
+        circuit = Circuit(
+            name='test',
+            instructions=(
+                # without this prx transpiler_remove_moves would leave an empty, invalid circuit
+                I(name='prx', qubits=('QB2',), args={'phase_t': 0.3, 'angle_t': -0.2}),
+                I(name='move', qubits=('QB2', 'CR1'), args={}),  # opens a sandwich
+                I(name='move', qubits=('QB2', 'CR2'), args={}),  # opens a new sandwich on the same qubit
+            ),
+        )
         c1 = self.insert(circuit, handling_option)
         self.assert_valid_circuit(c1)
         assert self.check_equiv_without_moves(c1, circuit)
 
-
     @pytest.mark.parametrize('handling_option', ExistingMoveHandlingOptions)
     def test_move_heuristic(self, handling_option):
         """Heuristic chooses the optimal MOVE locus with multiple resonators."""
-        circuit = Circuit(name='test', instructions=(
-            I(name='cz', qubits=('QB3', 'QB2'), args={}),  # can happen via both CRs
-            I(name='cz', qubits=('QB5', 'QB2'), args={}),  # requires QB2 state in CR2
-        ))
+        circuit = Circuit(
+            name='test',
+            instructions=(
+                I(name='cz', qubits=('QB3', 'QB2'), args={}),  # can happen via both CRs
+                I(name='cz', qubits=('QB5', 'QB2'), args={}),  # requires QB2 state in CR2
+            ),
+        )
         c1 = self.insert(circuit, handling_option)
         self.assert_valid_circuit(c1)
         assert self.check_equiv_without_moves(c1, circuit)
@@ -170,15 +184,17 @@ class TestMoveTranspilerHybrid(MoveTranspilerBase):
     @pytest.mark.parametrize('handling_option', ExistingMoveHandlingOptions)
     def test_move_heuristic2(self, handling_option):
         """Heuristic chooses the optimal MOVE locus with multiple resonators."""
-        circuit = Circuit(name='test', instructions=(
-            I(name='cz', qubits=('QB3', 'QB5'), args={}),  # both cz(QB3, QB5) and cz(QB5, QB3) are possible via CR2
-            I(name='cz', qubits=('QB3', 'QB1'), args={}),  # only cz(QB1, QB3) is possible via CR1
-        ))
+        circuit = Circuit(
+            name='test',
+            instructions=(
+                I(name='cz', qubits=('QB3', 'QB5'), args={}),  # both cz(QB3, QB5) and cz(QB5, QB3) are possible via CR2
+                I(name='cz', qubits=('QB3', 'QB1'), args={}),  # only cz(QB1, QB3) is possible via CR1
+            ),
+        )
         c1 = self.insert(circuit, handling_option, restore_states=False)
         self.assert_valid_circuit(c1)
         assert self.check_equiv_without_moves(c1, circuit)
         assert len(c1.instructions) == 4  # move(QB5, CR2), cz(QB3, CR2), move(QB3, CR1), cz(QB1, CR1)
-
 
 
 class TestMoveTranspiler(MoveTranspilerBase):
@@ -317,7 +333,6 @@ class TestMoveTranspiler(MoveTranspilerBase):
         )
         return Circuit(name='ambiguous', instructions=instructions)
 
-
     @pytest.mark.parametrize('handling_option', ExistingMoveHandlingOptions)
     def test_no_moves_supported(self, sample_dynamic_architecture, handling_option, simple_circuit):
         """Tests transpiler for architectures without a resonator"""
@@ -349,13 +364,16 @@ class TestMoveTranspiler(MoveTranspilerBase):
         self.assert_valid_circuit(c1)
         assert self.check_equiv_without_moves(c1, simple_circuit)
 
-    @pytest.mark.parametrize('circuit', [
-        'safe_circuit',
-        # Unsafe PRX is made safe since insert adds a MOVE that brings the qubit state back
-        # before the PRX is applied. If you want to use unsafe PRXs, do not use transpile_insert_moves.
-        'unsafe_circuit',
-        'ambiguous_circuit',  # ambiguous MOVE sandwich is automatically closed
-    ])
+    @pytest.mark.parametrize(
+        'circuit',
+        [
+            'safe_circuit',
+            # Unsafe PRX is made safe since insert adds a MOVE that brings the qubit state back
+            # before the PRX is applied. If you want to use unsafe PRXs, do not use transpile_insert_moves.
+            'unsafe_circuit',
+            'ambiguous_circuit',  # ambiguous MOVE sandwich is automatically closed
+        ],
+    )
     def test_keep(self, circuit, request):
         """Tests special cases for the KEEP option"""
         c = request.getfixturevalue(circuit)
@@ -390,18 +408,21 @@ class TestMoveTranspiler(MoveTranspilerBase):
     def test_with_qubit_map(self, handling_option):
         """Test if qubit mapping works as intended"""
 
-        circuit = Circuit(name='mapped', instructions=(
-            I(
-                name='prx',
-                qubits=('A',),
-                args={'phase_t': 0.3, 'angle_t': -0.2},
+        circuit = Circuit(
+            name='mapped',
+            instructions=(
+                I(
+                    name='prx',
+                    qubits=('A',),
+                    args={'phase_t': 0.3, 'angle_t': -0.2},
+                ),
+                I(
+                    name='cz',
+                    qubits=('A', 'B'),
+                    args={},
+                ),
             ),
-            I(
-                name='cz',
-                qubits=('A', 'B'),
-                args={},
-            ),
-        ))
+        )
         qb_map = {'A': 'QB3', 'B': 'QB1'}
 
         c1 = self.insert(circuit, handling_option, qb_map)
@@ -456,58 +477,61 @@ class TestMoveTranspiler(MoveTranspilerBase):
         with pytest.raises(CircuitTranspilationError, match=re.escape("('QB5',) is not allowed as locus for 'prx'")):
             self.insert(c, qb_map={'QB5': 'QB5'})
 
-    @pytest.mark.parametrize('circuit', [
-        Circuit(
-            name='bell',
-            instructions=(  # prx uses wrong values for the H gate, but that's not the point of this test
-                I(
-                    name='prx',
-                    qubits=('QB1',),
-                    args={'phase_t': 0.3, 'angle_t': -0.2},
-                ),
-                I(
-                    name='prx',
-                    qubits=('QB2',),
-                    args={'phase_t': 0.3, 'angle_t': -0.2},
-                ),
-                I(
-                    name='cz',
-                    qubits=('QB1', 'QB2'),
-                    args={},
-                ),
-                I(
-                    name='prx',
-                    qubits=('QB2',),
-                    args={'phase_t': 0.3, 'angle_t': -0.2},
-                ),
-            ),
-        ),
-        Circuit(
-            name='bell',
-            instructions=(  # prx uses wrong values for the H gate, but that's not the point of this test
-                I(
-                    name='prx',
-                    qubits=('QB1',),
-                    args={'phase_t': 0.3, 'angle_t': -0.2},
-                ),
-                I(
-                    name='prx',
-                    qubits=('QB2',),
-                    args={'phase_t': 0.3, 'angle_t': -0.2},
-                ),
-                I(
-                    name='cz',
-                    qubits=('QB2', 'QB1'),  # Swapped qubits
-                    args={},
-                ),
-                I(
-                    name='prx',
-                    qubits=('QB2',),
-                    args={'phase_t': 0.3, 'angle_t': -0.2},
+    @pytest.mark.parametrize(
+        'circuit',
+        [
+            Circuit(
+                name='bell',
+                instructions=(  # prx uses wrong values for the H gate, but that's not the point of this test
+                    I(
+                        name='prx',
+                        qubits=('QB1',),
+                        args={'phase_t': 0.3, 'angle_t': -0.2},
+                    ),
+                    I(
+                        name='prx',
+                        qubits=('QB2',),
+                        args={'phase_t': 0.3, 'angle_t': -0.2},
+                    ),
+                    I(
+                        name='cz',
+                        qubits=('QB1', 'QB2'),
+                        args={},
+                    ),
+                    I(
+                        name='prx',
+                        qubits=('QB2',),
+                        args={'phase_t': 0.3, 'angle_t': -0.2},
+                    ),
                 ),
             ),
-        )
-    ])
+            Circuit(
+                name='bell',
+                instructions=(  # prx uses wrong values for the H gate, but that's not the point of this test
+                    I(
+                        name='prx',
+                        qubits=('QB1',),
+                        args={'phase_t': 0.3, 'angle_t': -0.2},
+                    ),
+                    I(
+                        name='prx',
+                        qubits=('QB2',),
+                        args={'phase_t': 0.3, 'angle_t': -0.2},
+                    ),
+                    I(
+                        name='cz',
+                        qubits=('QB2', 'QB1'),  # Swapped qubits
+                        args={},
+                    ),
+                    I(
+                        name='prx',
+                        qubits=('QB2',),
+                        args={'phase_t': 0.3, 'angle_t': -0.2},
+                    ),
+                ),
+            ),
+        ],
+    )
     def test_can_reverse_cz_locus(self, circuit):
         """Circuit requires unavailable CZ locus, but the reversed locus is available in the DQA,
         and CZ is symmetric. This test reproduces the bug COMP-1485."""
@@ -716,7 +740,13 @@ def test_simplified_architecture_hybrid(hybrid_move_architecture):
     assert impls['tgss'].loci == (('QB3', 'QB4'),)
     # fictional gates lose their implementation info
     assert set(impls['__fictional'].loci) == {
-        ('QB1', 'QB2'), ('QB1', 'QB3'), ('QB3', 'QB2'), ('QB5', 'QB2'), ('QB5', 'QB2'), ('QB5', 'QB3'), ('QB3', 'QB5'),
+        ('QB1', 'QB2'),
+        ('QB1', 'QB3'),
+        ('QB3', 'QB2'),
+        ('QB5', 'QB2'),
+        ('QB5', 'QB2'),
+        ('QB5', 'QB3'),
+        ('QB3', 'QB5'),
     }
 
 
