@@ -9,6 +9,7 @@ Version 21.0
   `#156 <https://github.com/iqm-finland/iqm-client/pull/156>`_
 * By default :func:`.transpile_insert_moves` now keeps any existing MOVE gates in the circuit.
   `#156 <https://github.com/iqm-finland/iqm-client/pull/156>`_
+* Add the ``delay`` operation.  `#156 <https://github.com/iqm-finland/iqm-client/pull/156>`_
 
 Version 20.13
 =============

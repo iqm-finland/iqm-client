@@ -60,6 +60,7 @@ _SUPPORTED_OPERATIONS: dict[str, NativeOperation] = {
     op.name: op
     for op in [
         NativeOperation('barrier', 0, symmetric=True, no_calibration_needed=True),
+        NativeOperation('delay', 0, {'duration': (float, int)}, symmetric=True, no_calibration_needed=True),
         NativeOperation('measure', 0, {'key': (str,)}, {'feedback_key': (str,)}, factorizable=True),
         NativeOperation(
             'prx',
@@ -224,6 +225,38 @@ class Instruction(BaseModel):
        One-qubit barriers will not have any effect on circuit's compilation and execution. Higher layers
        that sit on top of IQM Client can make actual use of one-qubit barriers (e.g. during circuit optimization),
        therefore having them is allowed.
+
+    Delay
+    -----
+
+    Forces a delay between the preceding and following circuit operations.
+    It can be applied to any number of qubits. Takes one argument, ``duration``, which is the minimum
+    duration of the delay in seconds. It will be rounded up to the nearest possible duration the
+    hardware can handle.
+
+    .. code-block:: python
+        :caption: Example
+
+        Instruction(name='delay', qubits=('alice', 'bob'), args={'duration': 80e-9})
+
+
+    .. note::
+
+       We can only guarantee that the delay is *at least* of the requested duration, due to hardware
+       constraints, but could be much more depending on the other operations in the circuit.
+       To see why, consider e.g. the circuit
+
+       .. code-block:: python
+
+          [
+              Instruction(name='cz', qubits=('alice', 'bob'), args={}),
+              Instruction(name='delay', qubits=('alice',), args={'duration': 1e-9}),
+              Instruction(name='delay', qubits=('bob',), args={'duration': 100e-9}),
+              Instruction(name='cz', qubits=('alice', 'bob'), args={}),
+          ]
+
+       In this case the actual delay between the two CZ gates will be 100 ns rounded up to
+       hardware granularity, even though only 1 ns was requested for `alice`.
     """
 
     name: str = Field(..., examples=['measure'])

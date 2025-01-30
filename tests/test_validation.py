@@ -34,6 +34,9 @@ reverse_qb_mapping = {value: key for key, value in sample_qb_mapping.items()}
         Instruction(name='barrier', qubits=['QB1'], args={}),
         Instruction(name='barrier', qubits=['QB1', 'QB2'], args={}),
         Instruction(name='barrier', qubits=['QB2', 'QB1'], args={}),  # barrier can use any loci
+        Instruction(name='delay', qubits=['QB1'], args={'duration': 80e-9}),
+        Instruction(name='delay', qubits=['QB1', 'QB2'], args={'duration': 40e-9}),
+        Instruction(name='delay', qubits=['QB2', 'QB1'], args={'duration': 100e-9}), # delay can use any loci
         Instruction(name='prx', qubits=['QB1'], args={'phase_t': 0.3, 'angle_t': -0.2}),
         Instruction(name='cz', qubits=['QB1', 'QB2'], args={}),
         Instruction(name='cz', qubits=['QB2', 'QB1'], args={}),  # CZ is symmetric
@@ -51,6 +54,7 @@ def test_valid_instruction(sample_dynamic_architecture, instruction):
     'instruction,match',
     [
         [Instruction(name='barrier', qubits=['QB1', 'QB2', 'XXX'], args={}), 'does not exist'],
+        [Instruction(name='delay', qubits=['YYY'], args={'duration': 40e-9}), 'does not exist'],
         [
             Instruction(name='prx', qubits=['QB4'], args={'phase_t': 0.3, 'angle_t': -0.2}),
             "not allowed as locus for 'prx'",
