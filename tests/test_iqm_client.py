@@ -590,19 +590,18 @@ def test_get_quantum_architecture(
 
 
 def test_get_feedback_groups(
-    channel_properties_url, channel_properties_success, static_architecture_success
+    base_url, channel_properties_url, channel_properties_success, static_architecture_success
 ):
     """Test retrieving the feedback groups."""
-    base_url = "https://example.com"
-    when(requests).get(f"{base_url}/info/client-libraries", headers=ANY, timeout=ANY).thenReturn(
+    when(requests).get(f'{base_url}/info/client-libraries', headers=ANY, timeout=ANY).thenReturn(
         mock_supported_client_libraries_response()
     )
-    expect(requests, times=1).get(f"{base_url}/cocos/quantum-architecture", ...).thenReturn(
+    expect(requests, times=1).get(f'{base_url}/cocos/quantum-architecture', ...).thenReturn(
         static_architecture_success)
     iqm_client = IQMClient(base_url, api_variant=APIVariant.V2)
     expect(requests, times=1).get(channel_properties_url, ...).thenReturn(channel_properties_success)
 
-    assert iqm_client.get_feedback_groups() == (frozenset({"QB1", "QB2"}), frozenset({"QB3"}))
+    assert iqm_client.get_feedback_groups() == (frozenset({'QB1', 'QB2'}), frozenset({'QB3'}))
 
     verifyNoUnwantedInteractions()
     unstub()

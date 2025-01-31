@@ -610,12 +610,12 @@ def dynamic_architecture_success(sample_dynamic_architecture) -> MockJsonRespons
 @pytest.fixture()
 def channel_properties_success() -> MockJsonResponse:
     content = {
-        "QB1__flux.awg": {"fast_feedback_sources": []},
-        "QB1__drive.awg": {"fast_feedback_sources": ["PL-1__readout"]},
-        "QB2__drive.awg": {"fast_feedback_sources": ["PL-1__readout"]},
-        "QB3__drive.awg": {"fast_feedback_sources": ["PL-2__readout"]},
-        "PL-1__readout": {},
-        "PL-2__readout": {},
+        'QB1__flux.awg': {'fast_feedback_sources': []},
+        'QB1__drive.awg': {'fast_feedback_sources': ['PL-1__readout']},
+        'QB2__drive.awg': {'fast_feedback_sources': ['PL-1__readout']},
+        'QB3__drive.awg': {'fast_feedback_sources': ['PL-2__readout']},
+        'PL-1__readout': {},
+        'PL-2__readout': {},
     }
     return MockJsonResponse(200, content)
 

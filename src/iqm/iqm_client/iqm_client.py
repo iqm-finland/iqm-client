@@ -909,6 +909,7 @@ class IQMClient:
             headers=self._default_headers(),
             timeout=timeout_secs,
         )
+        self._check_not_found_error(result)
         self._check_authentication_errors(result)
         result.raise_for_status()
         try:
@@ -922,10 +923,10 @@ class IQMClient:
         # A qubit may belong to multiple groups.
         for channel_name, properties in channel_properties.items():
             # Relying on naming convention because we don't have proper mapping available:
-            qubit = channel_name.split("__")[0]
+            qubit = channel_name.split('__')[0]
             if qubit not in all_qubits:
                 continue
-            for source in properties.get("fast_feedback_sources", ()):
+            for source in properties.get('fast_feedback_sources', ()):
                 groups.setdefault(source, set()).add(qubit)
         # Merge identical groups
         unique_groups: set[frozenset[str]] = {frozenset(group) for group in groups.values()}
