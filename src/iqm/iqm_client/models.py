@@ -60,7 +60,7 @@ _SUPPORTED_OPERATIONS: dict[str, NativeOperation] = {
     op.name: op
     for op in [
         NativeOperation('barrier', 0, symmetric=True, no_calibration_needed=True),
-        NativeOperation('delay', 0, {'duration': (float, int)}, symmetric=True, no_calibration_needed=True),
+        NativeOperation('delay', 0, {'duration': (float,)}, symmetric=True, no_calibration_needed=True),
         NativeOperation('measure', 0, {'key': (str,)}, {'feedback_key': (str,)}, factorizable=True),
         NativeOperation(
             'prx',
@@ -242,9 +242,9 @@ class Instruction(BaseModel):
 
     .. note::
 
-       We can only guarantee that the delay is *at least* of the requested duration, due to hardware
-       constraints, but could be much more depending on the other operations in the circuit.
-       To see why, consider e.g. the circuit
+       We can only guarantee that the delay is *at least* of the requested duration, due to both
+       hardware and practical constraints, but could be much more depending on the other operations
+       in the circuit. To see why, consider e.g. the circuit
 
        .. code-block:: python
 
