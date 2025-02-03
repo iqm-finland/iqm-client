@@ -11,8 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Client-side library for connecting to and executing quantum circuits on IQM quantum computers.
-"""
+"""Client-side library for connecting to and executing quantum circuits on IQM quantum computers."""
 from importlib.metadata import PackageNotFoundError, version
 import sys
 import warnings

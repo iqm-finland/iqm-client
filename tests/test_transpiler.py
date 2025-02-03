@@ -471,7 +471,10 @@ class TestMoveTranspiler(MoveTranspilerBase):
             ),
         )
         bad_architecture = sample_move_architecture.model_copy(deep=True)
-        with pytest.raises(CircuitTranspilationError, match='Unable to insert MOVE gates because none'):
+        with pytest.raises(
+            CircuitTranspilationError,
+            match=re.escape("Unable to find native gate sequence to enable fictional gate cz at ('QB1', 'QB2')"),
+        ):
             # CZ(QB1, QB2) is not possible
             # Create a new copy of the DQA to ensure the cached properties are computed only for this architecture.
             transpiled_circuit = transpile_insert_moves(circuit, bad_architecture)
@@ -592,21 +595,18 @@ class TestMoveTranspiler(MoveTranspilerBase):
         IQMClient._validate_circuit_instructions(arch, [c1])
 
     @pytest.mark.parametrize(
-        'loci', [(qb1, qb2) for qb1 in ['QB1', 'QB2', 'QB3'] for qb2 in ['QB1', 'QB2', 'QB3'] if qb1 != qb2]
+        'locus', [(qb1, qb2) for qb1 in ['QB1', 'QB2', 'QB3'] for qb2 in ['QB1', 'QB2', 'QB3'] if qb1 != qb2]
     )
-    def test_pass_always_picks_correct_move_gate(self, loci):
+    def test_pass_always_picks_correct_move_gate(self, locus):
         circuit = Circuit(
             name='test',
-            instructions=(I(name='cz', qubits=loci, args={}),),
+            instructions=(I(name='cz', qubits=locus, args={}),),
         )
-        if set(loci) == {'QB1', 'QB2'}:
+        if set(locus) == {'QB1', 'QB2'}:
             # There is no MOVE gate available between this pair of qubits
             with pytest.raises(
                 CircuitTranspilationError,
-                match=re.escape(
-                    f'Unable to insert MOVE gates because none of the qubits {loci} can be moved into a resonator. '
-                    + 'This can be resolved by routing the circuit first without resonators.'
-                ),
+                match=re.escape(f"Unable to find native gate sequence to enable fictional gate cz at {locus}"),
             ):
                 transpile_insert_moves(circuit, self.arch)
         else:
@@ -618,14 +618,12 @@ class TestResonatorStateTracker:
     def test_apply_move_no_resonators(self, sample_dynamic_architecture):
         # Check handling of an architecture without a resonator
         no_move_status = ResonatorStateTracker.from_dynamic_architecture(sample_dynamic_architecture)
-        assert not no_move_status.supports_move
         with pytest.raises(CircuitTranspilationError, match=re.escape("MOVE locus ('QB1', 'QB2') is not allowed")):
             no_move_status.apply_move('QB1', 'QB2')
 
     def test_apply_move(self, sample_move_architecture):
         # Check handling of an architecture with resonator
         status = ResonatorStateTracker.from_dynamic_architecture(sample_move_architecture)
-        assert status.supports_move
         status.apply_move('QB3', 'CR1')
         assert status.res_state_owner['CR1'] == 'QB3'
         status.apply_move('QB3', 'CR1')
@@ -678,39 +676,12 @@ class TestResonatorStateTracker:
         assert gen_instr[0] == I(name='move', qubits=('QB3', 'CR1'), args={})
         assert status.res_state_owner['CR1'] == 'CR1'
 
-    def test_available_resonators_to_move(self, sample_move_architecture):
-        components = sample_move_architecture.components
-        tracker = ResonatorStateTracker.from_dynamic_architecture(sample_move_architecture)
-        assert tracker.resonators_to_move_to(components) == {
-            'QB3': {'CR1'},
-        }
-
     def test_qubits_in_resonator(self, sample_move_architecture):
         components = sample_move_architecture.components
         status = ResonatorStateTracker.from_dynamic_architecture(sample_move_architecture)
         assert status.resonators_holding_qubits(components) == []
         status.apply_move('QB3', 'CR1')
         assert status.resonators_holding_qubits(components) == ['CR1']
-
-    def test_choose_move_pair(self, sample_move_architecture):
-        status = ResonatorStateTracker.from_dynamic_architecture(sample_move_architecture)
-        with pytest.raises(
-            CircuitTranspilationError,
-            match=re.escape(
-                "Unable to insert MOVE gates because none of the qubits ['QB1', 'QB2'] can be moved into a resonator",
-            ),
-        ):
-            status.choose_move_pair(['QB1', 'QB2'], [])
-        resonator_candidates = status.choose_move_pair(
-            ['QB1', 'QB2', 'QB3'],
-            [
-                I(name='cz', qubits=('QB2', 'QB3'), args={}),
-                I(name='prx', qubits=('QB2',), args={'phase_t': 0.3, 'angle_t': -0.2}),
-                I(name='prx', qubits=('QB3',), args={'phase_t': 0.3, 'angle_t': -0.2}),
-            ],
-        )
-        assert len(resonator_candidates) == 1
-        assert resonator_candidates[0] == ('QB3', 'CR1')
 
     def test_map_resonators_in_locus(self, sample_move_architecture):
         components = sample_move_architecture.components
