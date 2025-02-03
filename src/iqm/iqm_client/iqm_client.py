@@ -247,7 +247,7 @@ class IQMClient:
             circuits,
             qubit_mapping,
             validate_moves=options.move_gate_validation,
-            must_return_states=False,
+            must_close_sandwiches=False,
         )
         return RunRequest(
             qubit_mapping=serialized_qubit_mapping,
@@ -361,7 +361,7 @@ class IQMClient:
         qubit_mapping: Optional[dict[str, str]] = None,
         validate_moves: MoveGateValidationMode = MoveGateValidationMode.STRICT,
         *,
-        must_return_states: bool = True,
+        must_close_sandwiches: bool = True,
     ) -> None:
         """Validate the given circuits against the given quantum architecture.
 
@@ -372,7 +372,7 @@ class IQMClient:
               Can be set to ``None`` if all ``circuits`` already use physical qubit names.
               Note that the ``qubit_mapping`` is used for all ``circuits``.
           validate_moves: determines how MOVE gate validation works
-          must_return_states: Iff True, MOVE sandwiches cannot be left open when the circuit ends.
+          must_close_sandwiches: Iff True, MOVE sandwiches cannot be left open when the circuit ends.
 
         Raises:
             CircuitValidationError: validation failed
@@ -392,7 +392,7 @@ class IQMClient:
                 circuit,
                 qubit_mapping,
                 validate_moves=validate_moves,
-                must_return_states=must_return_states,
+                must_close_sandwiches=must_close_sandwiches,
             )
 
     @staticmethod
@@ -484,7 +484,7 @@ class IQMClient:
         qubit_mapping: Optional[dict[str, str]] = None,
         validate_moves: MoveGateValidationMode = MoveGateValidationMode.STRICT,
         *,
-        must_return_states: bool = True,
+        must_close_sandwiches: bool = True,
     ) -> None:
         """Raises an error if the MOVE gates in the circuit are not valid in the given architecture.
 
@@ -494,7 +494,7 @@ class IQMClient:
             qubit_mapping: Mapping of logical qubit names to physical qubit names.
                 Can be set to ``None`` if the ``circuit`` already uses physical qubit names.
             validate_moves: Option for bypassing full or partial MOVE gate validation.
-            must_return_states: Iff True, MOVE sandwiches cannot be left open when the circuit ends.
+            must_close_sandwiches: Iff True, MOVE sandwiches cannot be left open when the circuit ends.
         Raises:
             CircuitValidationError: validation failed
         """
@@ -560,7 +560,7 @@ class IQMClient:
                         )
 
         # Finally validate that all MOVE sandwiches have been ended before the circuit ends
-        if must_return_states and resonator_occupations:
+        if must_close_sandwiches and resonator_occupations:
             raise CircuitValidationError(
                 f'Circuit ends while qubit state(s) are still in a resonator: {resonator_occupations}.'
             )

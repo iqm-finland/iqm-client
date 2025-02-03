@@ -114,7 +114,8 @@ class _ResonatorStateTracker:
     """Name of the MOVE gate in the architecture."""
     qr_gate_names = frozenset(('move', 'cz'))
     """Names of all arity-2 gates that *can* (in principle) be applied on a (qubit, resonator) locus
-    in the real Star architecture. They are also allowed to have (qubit, qubit) loci.
+    in the real Star architecture. They *may* also have (qubit, qubit) loci available if the architecture
+    allows it.
     Other arity-2 gates in the real architecture are assumed to *require* a (qubit, qubit) locus."""
 
     def __init__(self, qr_gates: dict[str, dict[str, set[str]]]) -> None:
