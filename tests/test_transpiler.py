@@ -26,7 +26,7 @@ from iqm.iqm_client import (
     GateInfo,
     Instruction,
     IQMClient,
-    simplified_architecture,
+    simplify_architecture,
     transpile_insert_moves,
     transpile_remove_moves,
 )
@@ -697,9 +697,9 @@ class TestResonatorStateTracker:
         assert status.map_resonators_in_locus(components) == ('QB3', 'CR2', 'QB1', 'QB2', 'QB3')
 
 
-def test_simplified_architecture(sample_move_architecture):
+def test_simplify_architecture(sample_move_architecture):
     """Resonators and MOVE gates are eliminated, q-r gates are replaced with q-q gates."""
-    simple = simplified_architecture(sample_move_architecture)
+    simple = simplify_architecture(sample_move_architecture)
 
     assert simple.qubits == sample_move_architecture.qubits
     assert not simple.computational_resonators
@@ -714,9 +714,9 @@ def test_simplified_architecture(sample_move_architecture):
     )
 
 
-def test_simplified_architecture_hybrid(hybrid_move_architecture):
+def test_simplify_architecture_hybrid(hybrid_move_architecture):
     """Resonators and MOVE gates are eliminated, q-r gates are replaced with q-q gates."""
-    simple = simplified_architecture(hybrid_move_architecture)
+    simple = simplify_architecture(hybrid_move_architecture)
 
     qubit_loci = (('QB1',), ('QB2',), ('QB3',), ('QB4',), ('QB5',))
     assert simple.qubits == hybrid_move_architecture.qubits
@@ -755,7 +755,7 @@ def test_simplified_architecture_hybrid(hybrid_move_architecture):
 
 
 @pytest.mark.parametrize('locus', [('QB1', 'QB2'), ('CR1', 'CR2'), ('CR1', 'QB1')])
-def test_simplified_architecture_bad_move_locus(locus):
+def test_simplify_architecture_bad_move_locus(locus):
     """MOVE gate with a locus that isn't (qubit, resonator)."""
     dqa = DynamicQuantumArchitecture(
         calibration_set_id=UUID('26c5e70f-bea0-43af-bd37-6212ec7d04cb'),
@@ -770,10 +770,10 @@ def test_simplified_architecture_bad_move_locus(locus):
         },
     )
     with pytest.raises(ValueError, match=re.escape(f'MOVE locus {locus} is not of the form')):
-        simplified_architecture(dqa)
+        simplify_architecture(dqa)
 
 
-def test_simplified_architecture_no_resonators(sample_dynamic_architecture):
+def test_simplify_architecture_no_resonators(sample_dynamic_architecture):
     """Architectures with no resonators are not changed."""
-    simple = simplified_architecture(sample_dynamic_architecture)
+    simple = simplify_architecture(sample_dynamic_architecture)
     assert simple == sample_dynamic_architecture

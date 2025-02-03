@@ -38,12 +38,11 @@ corresponding simplified architecture, e.g. so that the circuit can be retranspi
 using third-party tools that do not support the MOVE gate.
 
 Given a :class:`DynamicQuantumArchitecture` for a Star architecture, the corresponding simplified
-version can be obtained using :func:`simplified_architecture`.
+version can be obtained using :func:`simplify_architecture`.
 """
 from __future__ import annotations
 
 from collections.abc import Collection, Iterable
-from copy import deepcopy
 from enum import Enum
 from typing import Optional
 
@@ -425,6 +424,7 @@ class _ResonatorStateTracker:
             Iff no sequence could be found, r is an empty string.
         """
         # TODO use the lookahead to add fractional badness
+        # We could sequence n ops of lookahead using recursion and use sequence len as badness, but that would scale exponentially in n.
         g, m = locus
         # Resonators r for which we have MOVE(m, r) and G(g, r) available.
         resonators = gate_q2r.get(g, set()) & self.move_q2r.get(m, set())
@@ -539,7 +539,7 @@ class _ResonatorStateTracker:
         return new_instructions
 
 
-def simplified_architecture(arch: DynamicQuantumArchitecture) -> DynamicQuantumArchitecture:
+def simplify_architecture(arch: DynamicQuantumArchitecture) -> DynamicQuantumArchitecture:
     """Converts the given IQM Star quantum architecture into the equivalent simplified quantum architecture.
 
     See :mod:`iqm.iqm_client.transpile` for the details.
@@ -553,25 +553,24 @@ def simplified_architecture(arch: DynamicQuantumArchitecture) -> DynamicQuantumA
     Returns:
         equivalent simplified quantum architecture with fictional gates
     """
-    # xpylint: disable=too-many-nested-blocks
     # NOTE: assumes all qubit-resonator gates have the locus order (q, r)
     if not arch.computational_resonators:
         return arch
 
-    # we modify the contents, so make a copy
-    gates = deepcopy(arch.gates)
     r_set = frozenset(arch.computational_resonators)
     q_set = frozenset(arch.qubits)
 
     moves: dict[str, set[str]] = {}  # maps resonator r to qubits q for which we have MOVE(q, r) available
-    for q, r in gates.pop('move').loci if 'move' in gates else []:
+    for q, r in arch.gates['move'].loci if 'move' in arch.gates else []:
         if q not in q_set or r not in r_set:
             raise ValueError(f'MOVE locus {q, r} is not of the form (qubit, resonator)')
         moves.setdefault(r, set()).add(q)
 
     # create fictional gates, remove real gate loci that involve a resonator
     new_gates: dict[str, GateInfo] = {}
-    for gate_name, gate_info in gates.items():
+    for gate_name, gate_info in arch.gates.items():
+        if gate_name == 'move':
+            continue
         new_loci: dict[str, tuple[Locus, ...]] = {}  # mapping from implementation to its new loci
         fictional_loci: set[Locus] = set()  # loci for new fictional gates
 
@@ -603,11 +602,15 @@ def simplified_architecture(arch: DynamicQuantumArchitecture) -> DynamicQuantumA
         if fictional_loci:
             new_loci['__fictional'] = tuple(fictional_loci)
 
-        new_gates[gate_name] = gate_info.model_copy(
-            update={
-                'implementations': {
-                    impl_name: GateImplementationInfo(loci=loci) for impl_name, loci in new_loci.items()
-                }
+        new_gates[gate_name] = GateInfo(
+            implementations={
+                impl_name: GateImplementationInfo(loci=loci) for impl_name, loci in new_loci.items()
+            },
+            default_implementation=gate_info.default_implementation,
+            override_default_implementation={
+                locus: impl_name
+                for locus, impl_name in gate_info.override_default_implementation.items()
+                if all(c not in r_set for c in locus)
             },
         )
 
