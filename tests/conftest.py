@@ -120,6 +120,12 @@ def dynamic_architecture_url(base_url) -> str:
     return f'{base_url}/api/v1/calibration/default/gates'
 
 
+@pytest.fixture()
+def channel_properties_url(base_url) -> str:
+    # Only in API V2
+    return f'{base_url}/station/channel-properties'
+
+
 @pytest.fixture
 def settings_dict():
     """
@@ -445,12 +451,12 @@ def sample_static_architecture():
     return {
         'quantum_architecture': {
             'name': 'hercules',
-            'qubits': ['QB1', 'QB2'],
+            'qubits': ['QB1', 'QB2', 'QB3'],
             'qubit_connectivity': [['QB1', 'QB2']],
             'operations': {
-                'prx': [['QB1'], ['QB2']],
+                'prx': [['QB1'], ['QB2'], ['QB3']],
                 'cz': [['QB1', 'QB2']],
-                'measure': [['QB1'], ['QB2']],
+                'measure': [['QB1'], ['QB2'], ['QB3']],
                 'barrier': [],
             },
         }
@@ -599,6 +605,19 @@ def static_architecture_success(sample_static_architecture) -> MockJsonResponse:
 @pytest.fixture()
 def dynamic_architecture_success(sample_dynamic_architecture) -> MockJsonResponse:
     return MockJsonResponse(200, sample_dynamic_architecture.model_dump())
+
+
+@pytest.fixture()
+def channel_properties_success() -> MockJsonResponse:
+    content = {
+        'QB1__flux.awg': {'fast_feedback_sources': []},
+        'QB1__drive.awg': {'fast_feedback_sources': ['PL-1__readout']},
+        'QB2__drive.awg': {'fast_feedback_sources': ['PL-1__readout']},
+        'QB3__drive.awg': {'fast_feedback_sources': ['PL-2__readout']},
+        'PL-1__readout': {},
+        'PL-2__readout': {},
+    }
+    return MockJsonResponse(200, content)
 
 
 @pytest.fixture()

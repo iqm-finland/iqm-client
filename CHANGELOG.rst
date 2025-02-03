@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 20.14
+=============
+
+* Add ``IQMClient::get_feedback_groups`` method. `#162 <https://github.com/iqm-finland/iqm-client/pull/162>`_
+
 Version 20.13
 =============
 
