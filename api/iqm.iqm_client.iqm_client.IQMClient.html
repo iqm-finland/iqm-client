@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>iqm.iqm_client.iqm_client.IQMClient &#8212; IQM client 20.13 documentation</title>
+    <title>iqm.iqm_client.iqm_client.IQMClient &#8212; IQM client 20.14 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=b0f02914"></script>
+    <script src="../_static/documentation_options.js?v=25e5abc5"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
@@ -52,8 +52,8 @@
     <link rel="prev" title="iqm.iqm_client.iqm_client" href="iqm.iqm_client.iqm_client.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="20.13" />
-    <meta name="docbuild:last-update" content="2025-01-13"/>
+  <meta name="docsearch:version" content="20.14" />
+    <meta name="docbuild:last-update" content="2025-02-03"/>
   </head>
   
   
@@ -132,8 +132,8 @@
       
     
     
-    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 20.13 documentation - Home"/>
-    <img src="../_static/logo.png" class="logo__image only-dark pst-js-only" alt="IQM client 20.13 documentation - Home"/>
+    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 20.14 documentation - Home"/>
+    <img src="../_static/logo.png" class="logo__image only-dark pst-js-only" alt="IQM client 20.14 documentation - Home"/>
   
   
 </a></div>
@@ -393,6 +393,7 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.IQMClient.abort_job"><code class="docutils literal notranslate"><span class="pre">IQMClient.abort_job()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.IQMClient.get_quantum_architecture"><code class="docutils literal notranslate"><span class="pre">IQMClient.get_quantum_architecture()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.IQMClient.get_dynamic_quantum_architecture"><code class="docutils literal notranslate"><span class="pre">IQMClient.get_dynamic_quantum_architecture()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.IQMClient.get_feedback_groups"><code class="docutils literal notranslate"><span class="pre">IQMClient.get_feedback_groups()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.IQMClient.close_auth_session"><code class="docutils literal notranslate"><span class="pre">IQMClient.close_auth_session()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.IQMClient.get_run_counts"><code class="docutils literal notranslate"><span class="pre">IQMClient.get_run_counts()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.IQMClient.get_supported_client_libraries"><code class="docutils literal notranslate"><span class="pre">IQMClient.get_supported_client_libraries()</span></code></a></li>
@@ -432,8 +433,8 @@ If <code class="docutils literal notranslate"><span class="pre">tokens_file</spa
 If <code class="docutils literal notranslate"><span class="pre">auth_server_url</span></code> is given also <code class="docutils literal notranslate"><span class="pre">username</span></code> and <code class="docutils literal notranslate"><span class="pre">password</span></code> must be given.</p></li>
 <li><p><strong>username</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>]</em>) – Username to log in to authentication server.</p></li>
 <li><p><strong>password</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>]</em>) – Password to log in to authentication server.</p></li>
-<li><p><strong>api_variant</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="iqm.iqm_client.api.APIVariant.html#iqm.iqm_client.api.APIVariant" title="iqm.iqm_client.api.APIVariant"><em>APIVariant</em></a><em>]</em>) – API variant to use. Default is <code class="docutils literal notranslate"><span class="pre">APIVariant.COCOS</span></code>.
-Conviguable also by environment variable <code class="docutils literal notranslate"><span class="pre">IQM_CLIENT_API_VARIANT</span></code>.</p></li>
+<li><p><strong>api_variant</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="iqm.iqm_client.api.APIVariant.html#iqm.iqm_client.api.APIVariant" title="iqm.iqm_client.api.APIVariant"><em>APIVariant</em></a><em>]</em>) – API variant to use. Default is <code class="docutils literal notranslate"><span class="pre">APIVariant.V1</span></code>.
+Configurable also by environment variable <code class="docutils literal notranslate"><span class="pre">IQM_CLIENT_API_VARIANT</span></code>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -493,31 +494,34 @@ for values given as environment variables as for keyword arguments.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.IQMClient.get_dynamic_quantum_architecture" title="iqm.iqm_client.iqm_client.IQMClient.get_dynamic_quantum_architecture"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_dynamic_quantum_architecture</span></code></a>([...])</p></td>
 <td><p>Retrieve dynamic quantum architecture (DQA) for the given calibration set from server.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.IQMClient.get_quantum_architecture" title="iqm.iqm_client.iqm_client.IQMClient.get_quantum_architecture"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_quantum_architecture</span></code></a>(*[, timeout_secs])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.IQMClient.get_feedback_groups" title="iqm.iqm_client.iqm_client.IQMClient.get_feedback_groups"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_feedback_groups</span></code></a>(*[, timeout_secs])</p></td>
+<td><p>Retrieve groups of qubits that can receive real-time feedback signals from each other.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.IQMClient.get_quantum_architecture" title="iqm.iqm_client.iqm_client.IQMClient.get_quantum_architecture"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_quantum_architecture</span></code></a>(*[, timeout_secs])</p></td>
 <td><p>Retrieve quantum architecture from server.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.IQMClient.get_run" title="iqm.iqm_client.iqm_client.IQMClient.get_run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_run</span></code></a>(job_id, *[, timeout_secs])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.IQMClient.get_run" title="iqm.iqm_client.iqm_client.IQMClient.get_run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_run</span></code></a>(job_id, *[, timeout_secs])</p></td>
 <td><p>Query the status and results of a submitted job.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.IQMClient.get_run_counts" title="iqm.iqm_client.iqm_client.IQMClient.get_run_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_run_counts</span></code></a>(job_id, *[, timeout_secs])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.IQMClient.get_run_counts" title="iqm.iqm_client.iqm_client.IQMClient.get_run_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_run_counts</span></code></a>(job_id, *[, timeout_secs])</p></td>
 <td><p>Query the counts of an executed job.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.IQMClient.get_run_status" title="iqm.iqm_client.iqm_client.IQMClient.get_run_status"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_run_status</span></code></a>(job_id, *[, timeout_secs])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.IQMClient.get_run_status" title="iqm.iqm_client.iqm_client.IQMClient.get_run_status"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_run_status</span></code></a>(job_id, *[, timeout_secs])</p></td>
 <td><p>Query the status of a submitted job.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.IQMClient.get_supported_client_libraries" title="iqm.iqm_client.iqm_client.IQMClient.get_supported_client_libraries"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_supported_client_libraries</span></code></a>([timeout_secs])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.IQMClient.get_supported_client_libraries" title="iqm.iqm_client.iqm_client.IQMClient.get_supported_client_libraries"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_supported_client_libraries</span></code></a>([timeout_secs])</p></td>
 <td><p>Retrieves information about supported client libraries from the server.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.IQMClient.submit_circuits" title="iqm.iqm_client.iqm_client.IQMClient.submit_circuits"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit_circuits</span></code></a>(circuits, *[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.IQMClient.submit_circuits" title="iqm.iqm_client.iqm_client.IQMClient.submit_circuits"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit_circuits</span></code></a>(circuits, *[, ...])</p></td>
 <td><p>Submits a batch of quantum circuits for execution on a quantum computer.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.IQMClient.submit_run_request" title="iqm.iqm_client.iqm_client.IQMClient.submit_run_request"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit_run_request</span></code></a>(run_request)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.IQMClient.submit_run_request" title="iqm.iqm_client.iqm_client.IQMClient.submit_run_request"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit_run_request</span></code></a>(run_request)</p></td>
 <td><p>Submits a run request for execution on a quantum computer.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.IQMClient.wait_for_compilation" title="iqm.iqm_client.iqm_client.IQMClient.wait_for_compilation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait_for_compilation</span></code></a>(job_id[, timeout_secs])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.IQMClient.wait_for_compilation" title="iqm.iqm_client.iqm_client.IQMClient.wait_for_compilation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait_for_compilation</span></code></a>(job_id[, timeout_secs])</p></td>
 <td><p>Poll results until a job is either pending execution, ready, failed, aborted, or timed out.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.IQMClient.wait_for_results" title="iqm.iqm_client.iqm_client.IQMClient.wait_for_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait_for_results</span></code></a>(job_id[, timeout_secs])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#iqm.iqm_client.iqm_client.IQMClient.wait_for_results" title="iqm.iqm_client.iqm_client.IQMClient.wait_for_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait_for_results</span></code></a>(job_id[, timeout_secs])</p></td>
 <td><p>Poll results until a job is either ready, failed, aborted, or timed out.</p></td>
 </tr>
 </tbody>
@@ -778,6 +782,37 @@ If <code class="docutils literal notranslate"><span class="pre">None</span></cod
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.IQMClient.get_feedback_groups">
+<span class="sig-name descname"><span class="pre">get_feedback_groups</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout_secs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.12/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">60.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#tuple" title="(in Python v3.12)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#frozenset" title="(in Python v3.12)"><span class="pre">frozenset</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#iqm.iqm_client.iqm_client.IQMClient.get_feedback_groups" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve groups of qubits that can receive real-time feedback signals from each other.</p>
+<p>Real-time feedback enables conditional gates such as <cite>cc_prx</cite>.
+Some hardware configurations support routing real-time feedback only between certain qubits.</p>
+<p>This method is only supported for the API variant V2.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>Feedback groups. Within a group, any qubit can receive real-time feedback from any other qubit in</dt><dd><p>the same group. A qubit can belong to multiple groups.
+If there is only one group, there are no restrictions regarding feedback routing.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="iqm.iqm_client.errors.ClientAuthenticationError.html#iqm.iqm_client.errors.ClientAuthenticationError" title="iqm.iqm_client.errors.ClientAuthenticationError"><strong>ClientAuthenticationError</strong></a> – if no valid authentication is provided</p></li>
+<li><p><strong>HTTPException</strong> – HTTP exceptions</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>timeout_secs</strong> (<a class="reference external" href="https://docs.python.org/3.12/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#tuple" title="(in Python v3.12)">tuple</a>[<a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#frozenset" title="(in Python v3.12)">frozenset</a>[<a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)">str</a>], …]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="iqm.iqm_client.iqm_client.IQMClient.close_auth_session">
 <span class="sig-name descname"><span class="pre">close_auth_session</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.12/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#iqm.iqm_client.iqm_client.IQMClient.close_auth_session" title="Link to this definition">#</a></dt>
 <dd><p>Terminate session with authentication server if there was one created.</p>
@@ -907,6 +942,7 @@ If <code class="docutils literal notranslate"><span class="pre">None</span></cod
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.IQMClient.abort_job"><code class="docutils literal notranslate"><span class="pre">IQMClient.abort_job()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.IQMClient.get_quantum_architecture"><code class="docutils literal notranslate"><span class="pre">IQMClient.get_quantum_architecture()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.IQMClient.get_dynamic_quantum_architecture"><code class="docutils literal notranslate"><span class="pre">IQMClient.get_dynamic_quantum_architecture()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.IQMClient.get_feedback_groups"><code class="docutils literal notranslate"><span class="pre">IQMClient.get_feedback_groups()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.IQMClient.close_auth_session"><code class="docutils literal notranslate"><span class="pre">IQMClient.close_auth_session()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.IQMClient.get_run_counts"><code class="docutils literal notranslate"><span class="pre">IQMClient.get_run_counts()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.iqm_client.IQMClient.get_supported_client_libraries"><code class="docutils literal notranslate"><span class="pre">IQMClient.get_supported_client_libraries()</span></code></a></li>
@@ -945,7 +981,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2025-01-13.
+  Last updated on 2025-02-03.
   <br/>
 </p>
   </div>

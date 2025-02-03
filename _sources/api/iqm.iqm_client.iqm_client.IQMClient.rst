@@ -34,6 +34,7 @@ iqm.iqm\_client.iqm\_client.IQMClient
       ~IQMClient.close_auth_session
       ~IQMClient.create_run_request
       ~IQMClient.get_dynamic_quantum_architecture
+      ~IQMClient.get_feedback_groups
       ~IQMClient.get_quantum_architecture
       ~IQMClient.get_run
       ~IQMClient.get_run_counts
