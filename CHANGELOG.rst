@@ -2,6 +2,12 @@
 Changelog
 =========
 
+
+Version 20.15
+=============
+
+* Relax version ranges of `numpy`, `packaging`. `#165 <https://github.com/iqm-finland/iqm-client/pull/165>`_
+
 Version 20.14
 =============
 
