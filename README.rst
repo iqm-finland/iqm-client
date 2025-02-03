@@ -49,14 +49,15 @@ Run the tests:
 
    $ ./test
 
-Update the requirements. This is necessary when you add a new dependency or update an existing one in `pyproject.toml`.
-After this, any changes in the lockfile `requirements.txt` have to be committed.
-The script upgrades locked dependencies defined in `pyproject.toml` within the given version ranges. However, transitive
-dependencies are deliberately not upgraded automatically.
+Update the requirements:
 
 .. code-block:: bash
 
    $ python update-requirements.py
+
+After this, any changes in the lockfile `requirements.txt` have to be committed.
+The script upgrades locked dependencies defined in `pyproject.toml` within the given version ranges. However, transitive
+dependencies are deliberately not upgraded automatically.
 
 Documentation
 =============

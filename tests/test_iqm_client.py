@@ -25,6 +25,7 @@ from requests import HTTPError
 
 from iqm.iqm_client import (
     APIEndpoint,
+    APIVariant,
     ArchitectureRetrievalError,
     Circuit,
     CircuitCompilationOptions,
@@ -582,6 +583,24 @@ def test_get_quantum_architecture(
     assert sample_client.get_quantum_architecture() == QuantumArchitectureSpecification(
         **sample_static_architecture['quantum_architecture']
     )
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_get_feedback_groups(
+    base_url, channel_properties_url, channel_properties_success, static_architecture_success
+):
+    """Test retrieving the feedback groups."""
+    when(requests).get(f'{base_url}/info/client-libraries', headers=ANY, timeout=ANY).thenReturn(
+        mock_supported_client_libraries_response()
+    )
+    expect(requests, times=1).get(f'{base_url}/cocos/quantum-architecture', ...).thenReturn(
+        static_architecture_success)
+    iqm_client = IQMClient(base_url, api_variant=APIVariant.V2)
+    expect(requests, times=1).get(channel_properties_url, ...).thenReturn(channel_properties_success)
+
+    assert iqm_client.get_feedback_groups() == (frozenset({'QB1', 'QB2'}), frozenset({'QB3'}))
 
     verifyNoUnwantedInteractions()
     unstub()

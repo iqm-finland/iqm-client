@@ -2,6 +2,7 @@
 Changelog
 =========
 
+
 Version 21.0
 ============
 
@@ -10,6 +11,16 @@ Version 21.0
 * By default :func:`.transpile_insert_moves` now keeps any existing MOVE gates in the circuit.
   `#156 <https://github.com/iqm-finland/iqm-client/pull/156>`_
 * Add the ``delay`` operation.  `#156 <https://github.com/iqm-finland/iqm-client/pull/156>`_
+
+Version 20.15
+=============
+
+* Relax version ranges of ``numpy``, ``packaging``. `#165 <https://github.com/iqm-finland/iqm-client/pull/165>`_
+
+Version 20.14
+=============
+
+* Add ``IQMClient::get_feedback_groups`` method. `#162 <https://github.com/iqm-finland/iqm-client/pull/162>`_
 
 Version 20.13
 =============
