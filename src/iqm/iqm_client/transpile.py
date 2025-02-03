@@ -65,10 +65,11 @@ class ExistingMoveHandlingOptions(str, Enum):
 
     KEEP = 'keep'
     """Keep existing MOVE instructions, check if they are correct, and add more as needed."""
+    # TODO rename to STRICT, validates incoming circuit
     TRUST = 'trust'
     """Keep existing MOVE instructions without checking if they are correct, and add more as needed."""
-    # TODO TRUST is essentially removed by the new transpiler, KEEP tries to fix any issues with existing MOVEs.
-    # Anything it cannot fix we cannot execute.
+    # TODO rename to HELPFUL, tries to fix any issues with existing MOVEs.
+    # Anything it cannot fix we cannot execute, so in those cases we raise an error.
     REMOVE = 'remove'
     """Remove existing MOVE instructions using :func:`transpile_remove_moves`, and
     then add new ones as needed. This may produce a more optimized end result."""
@@ -679,11 +680,10 @@ def transpile_insert_moves(
         # convert to physical qubit names
         phys_instructions = _map_loci(circuit.instructions, qubit_mapping)
         try:
-            if not TRANSPILER_FIX:
-                IQMClient._validate_circuit_moves(
-                    arch,
-                    Circuit(name=circuit.name, instructions=phys_instructions, metadata=circuit.metadata),
-                )
+            IQMClient._validate_circuit_moves(
+                arch,
+                Circuit(name=circuit.name, instructions=phys_instructions, metadata=circuit.metadata),
+            )
 
         except CircuitValidationError as e:
             raise CircuitTranspilationError(e) from e

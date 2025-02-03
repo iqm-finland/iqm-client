@@ -11,8 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tests for circuit validation.
-"""
+"""Tests for circuit validation."""
 import pytest
 
 from iqm.iqm_client import (
@@ -36,7 +35,7 @@ reverse_qb_mapping = {value: key for key, value in sample_qb_mapping.items()}
         Instruction(name='barrier', qubits=['QB2', 'QB1'], args={}),  # barrier can use any loci
         Instruction(name='delay', qubits=['QB1'], args={'duration': 80e-9}),
         Instruction(name='delay', qubits=['QB1', 'QB2'], args={'duration': 40e-9}),
-        Instruction(name='delay', qubits=['QB2', 'QB1'], args={'duration': 100e-9}), # delay can use any loci
+        Instruction(name='delay', qubits=['QB2', 'QB1'], args={'duration': 100e-9}),  # delay can use any loci
         Instruction(name='prx', qubits=['QB1'], args={'phase_t': 0.3, 'angle_t': -0.2}),
         Instruction(name='cz', qubits=['QB1', 'QB2'], args={}),
         Instruction(name='cz', qubits=['QB2', 'QB1'], args={}),  # CZ is symmetric
