@@ -6,7 +6,7 @@ Changelog
 Version 21.0
 ============
 
-* Simplify the transpilation code, make its details private, improve the docs.
+* Refactor the transpilation code, make its details private, improve the docs.
   `#156 <https://github.com/iqm-finland/iqm-client/pull/156>`_
 * By default :func:`.transpile_insert_moves` now keeps any existing MOVE gates in the circuit.
   `#156 <https://github.com/iqm-finland/iqm-client/pull/156>`_
