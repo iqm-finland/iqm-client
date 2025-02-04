@@ -486,19 +486,24 @@ class _ResonatorStateTracker:
         return new_instructions
 
 
-def simplify_architecture(arch: DynamicQuantumArchitecture) -> DynamicQuantumArchitecture:
+def simplify_architecture(
+    arch: DynamicQuantumArchitecture,
+    *,
+    remove_resonators: bool = True,
+) -> DynamicQuantumArchitecture:
     """Converts the given IQM Star quantum architecture into the equivalent simplified quantum architecture.
 
     See :mod:`iqm.iqm_client.transpile` for the details.
 
-    Abstracts away the gate implementations of fictional gates.
-    Returns ``arch`` itself if it does not contain computational resonators.
+    Adds fictional gates, abstracts away their gate implementations.
+    Returns ``arch`` itself if it does not contain computational resonators (in which case nothing will change).
 
     Args:
         arch: quantum architecture to convert
+        remove_resonators: iff False, return the union of the simplified and real architectures
 
     Returns:
-        equivalent simplified quantum architecture with fictional gates
+        equivalent quantum architecture with fictional gates
     """
     # NOTE: assumes all qubit-resonator gates have the locus order (q, r)
     if not arch.computational_resonators:
@@ -518,7 +523,8 @@ def simplify_architecture(arch: DynamicQuantumArchitecture) -> DynamicQuantumArc
         # pylint: disable=too-many-nested-blocks
 
         new_loci: dict[str, tuple[Locus, ...]] = {}  # mapping from implementation to its new loci
-        fictional_loci: set[Locus] = set()  # loci for new fictional gates
+        # loci for fictional gates, a set because multiple resonators can produce the same fictional locus
+        fictional_loci: set[Locus] = set()
 
         for impl_name, impl_info in gate_info.implementations.items():
             kept_impl_loci: list[Locus] = []  # these real loci we keep for this implementation
@@ -530,10 +536,11 @@ def simplify_architecture(arch: DynamicQuantumArchitecture) -> DynamicQuantumArc
                         raise ValueError(f"Unexpected '{gate_name}' locus: {locus}")
 
                     if r in r_set:
+                        if not remove_resonators:
+                            kept_impl_loci.append(locus)
                         # involves a resonator, for each G(q1, r), MOVE(q2, r) pair add G(q1, q2) to the simplified arch
                         for q2 in moves.get(r, []):
                             if q1 != q2:
-                                # set because multiple resonators can produce the same fictional locus
                                 fictional_loci.add((q1, q2))
                     else:
                         # does not involve a resonator, keep
@@ -562,13 +569,17 @@ def simplify_architecture(arch: DynamicQuantumArchitecture) -> DynamicQuantumArc
     new_gates: dict[str, GateInfo] = {}
     for gate_name, gate_info in arch.gates.items():
         if gate_name == 'move':
+            # MOVE gates do not have fictional versions
+            if not remove_resonators:
+                # keep the gate_info as is
+                new_gates[gate_name] = gate_info
             continue
         new_gates[gate_name] = simplify_gate(gate_name, gate_info)
 
     return DynamicQuantumArchitecture(
         calibration_set_id=arch.calibration_set_id,
         qubits=arch.qubits,
-        computational_resonators=[],
+        computational_resonators=[] if remove_resonators else arch.computational_resonators,
         gates=new_gates,
     )
 
