@@ -588,15 +588,12 @@ def test_get_quantum_architecture(
     unstub()
 
 
-def test_get_feedback_groups(
-    base_url, channel_properties_url, channel_properties_success, static_architecture_success
-):
+def test_get_feedback_groups(base_url, channel_properties_url, channel_properties_success, static_architecture_success):
     """Test retrieving the feedback groups."""
     when(requests).get(f'{base_url}/info/client-libraries', headers=ANY, timeout=ANY).thenReturn(
         mock_supported_client_libraries_response()
     )
-    expect(requests, times=1).get(f'{base_url}/cocos/quantum-architecture', ...).thenReturn(
-        static_architecture_success)
+    expect(requests, times=1).get(f'{base_url}/cocos/quantum-architecture', ...).thenReturn(static_architecture_success)
     iqm_client = IQMClient(base_url, api_variant=APIVariant.V2)
     expect(requests, times=1).get(channel_properties_url, ...).thenReturn(channel_properties_success)
 

@@ -81,7 +81,9 @@ class MoveTranspilerBase:
             for q in self.arch.qubits:
                 if q not in qb_map.values():
                     qb_map[q] = q
-        IQMClient._validate_circuit_instructions(self.arch, [circuit], qubit_mapping=qb_map, must_return_states=False)
+        IQMClient._validate_circuit_instructions(
+            self.arch, [circuit], qubit_mapping=qb_map, must_close_sandwiches=False
+        )
 
     def check_moves_in_circuit(self, circuit: Circuit, moves: tuple[Instruction]) -> bool:
         """True iff ``moves`` all appear in ``circuit`` in that order."""

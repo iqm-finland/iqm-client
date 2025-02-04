@@ -11,8 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# pylint: disable=too-many-lines
 """This module contains the data models used by IQMClient."""
+# pylint: disable=too-many-lines, no-member
+# no-member: see https://github.com/pylint-dev/pylint/issues/8759
 
 from __future__ import annotations
 

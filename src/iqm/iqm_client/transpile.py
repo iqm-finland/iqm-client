@@ -356,8 +356,10 @@ class _ResonatorStateTracker:
             (g, m, r, badness). Badness is the number of gates in the sequence.
             Iff no sequence could be found, r is an empty string.
         """
+        # pylint: disable=unused-argument
         # TODO use the lookahead to add fractional badness
-        # We could sequence n ops of lookahead using recursion and use sequence len as badness, but that would scale exponentially in n.
+        # We could sequence n ops of lookahead using recursion and use sequence len as badness,
+        # but that would scale exponentially in n.
         g, m = locus
         # Resonators r for which we have MOVE(m, r) and G(g, r) available.
         resonators = gate_q2r.get(g, set()) & self.move_q2r.get(m, set())
@@ -381,7 +383,34 @@ class _ResonatorStateTracker:
             options.append((g, m, r, badness))
 
         # return the best option
-        return min(options, default=(g, m, "", 1000), key=lambda x: x[-1])
+        return min(options, default=(g, m, '', 1000), key=lambda x: x[-1])
+
+    def get_sequence(self, g: str, m: str, r: str, inst: Instruction) -> list[Instruction]:
+        """Apply a fictional two-qubit gate G(g, m) using native qubit-resonator gates.
+
+        G(g, m) is implemented as G(g, r), with additional MOVE gates
+        applied first to make sure the state of the qubit m is in r, and g is holding its own state.
+
+        Args:
+            g: first qubit
+            m: moved qubit
+            r: resonator
+            inst: G as an instruction
+        Returns:
+            sequence of real qubit-resonator gates implementing G(g, m)
+        """
+        seq: list[Instruction] = []
+        #  does m state need to be moved to the resonator?
+        m_holder = self.qubit_state_holder.get(m, m)
+        if m_holder != r:
+            seq += self.create_move_instructions(m, r)
+        # does g state need to be moved to g?
+        g_holder = self.qubit_state_holder.get(g, g)
+        if g_holder != g:
+            seq += self.reset_as_move_instructions([g_holder])
+        # apply G(g, r)
+        seq.append(inst.model_copy(update={'qubits': (g, r)}))
+        return seq
 
     def insert_moves(
         self,
@@ -401,12 +430,13 @@ class _ResonatorStateTracker:
             arch: Real Star quantum architecture we transpile to.
 
         Raises:
-            CircuitTranspilationError: Raised when the circuit contains invalid gates that cannot be transpiled using this
-                method.
+            CircuitTranspilationError: Raised when the circuit contains invalid gates that cannot be
+                transpiled using this method.
 
         Returns:
             Real Star architecture equivalent of ``circuit`` with MOVEs and resonators added.
         """
+        # pylint: disable=too-many-locals
         # This method can handle real single- and two-qubit gates, real q-r gates including MOVE,
         # and fictional two-qubit gates which it decomposes into real q-r gates.
         new_instructions: list[Instruction] = []
@@ -448,22 +478,10 @@ class _ResonatorStateTracker:
                     raise CircuitTranspilationError(
                         f'Unable to find native gate sequence to enable fictional gate {inst.name} at {locus}.'
                         ' Try routing the circuit to the simplified architecture first.'
-                    )
+                    ) from e
 
                 # implement G using the sequence
-                seq: list[Instruction] = []
-                #  does m state need to be moved to the resonator?
-                m_holder = self.qubit_state_holder.get(m, m)
-                if m_holder != r:
-                    seq += self.create_move_instructions(m, r)
-                # does g state need to be moved to g?
-                g_holder = self.qubit_state_holder.get(g, g)
-                if g_holder != g:
-                    seq += self.reset_as_move_instructions([g_holder])
-
-                seq.append(inst.model_copy(update={'qubits': (g, r)}))
-                assert len(seq) == badness
-                new_instructions += seq
+                new_instructions += self.get_sequence(g, m, r, inst)
 
         return new_instructions
 
@@ -495,11 +513,10 @@ def simplify_architecture(arch: DynamicQuantumArchitecture) -> DynamicQuantumArc
             raise ValueError(f'MOVE locus {q, r} is not of the form (qubit, resonator)')
         moves.setdefault(r, set()).add(q)
 
-    # create fictional gates, remove real gate loci that involve a resonator
-    new_gates: dict[str, GateInfo] = {}
-    for gate_name, gate_info in arch.gates.items():
-        if gate_name == 'move':
-            continue
+    def simplify_gate(gate_name: str, gate_info: GateInfo) -> GateInfo:
+        """Convert the loci of the given gate"""
+        # pylint: disable=too-many-nested-blocks
+
         new_loci: dict[str, tuple[Locus, ...]] = {}  # mapping from implementation to its new loci
         fictional_loci: set[Locus] = set()  # loci for new fictional gates
 
@@ -531,7 +548,7 @@ def simplify_architecture(arch: DynamicQuantumArchitecture) -> DynamicQuantumArc
         if fictional_loci:
             new_loci['__fictional'] = tuple(fictional_loci)
 
-        new_gates[gate_name] = GateInfo(
+        return GateInfo(
             implementations={impl_name: GateImplementationInfo(loci=loci) for impl_name, loci in new_loci.items()},
             default_implementation=gate_info.default_implementation,
             override_default_implementation={
@@ -540,6 +557,13 @@ def simplify_architecture(arch: DynamicQuantumArchitecture) -> DynamicQuantumArc
                 if all(c not in r_set for c in locus)
             },
         )
+
+    # create fictional gates, remove real gate loci that involve a resonator
+    new_gates: dict[str, GateInfo] = {}
+    for gate_name, gate_info in arch.gates.items():
+        if gate_name == 'move':
+            continue
+        new_gates[gate_name] = simplify_gate(gate_name, gate_info)
 
     return DynamicQuantumArchitecture(
         calibration_set_id=arch.calibration_set_id,
