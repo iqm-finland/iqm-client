@@ -23,7 +23,7 @@ and no single-qubit gates can be applied on them.
 To enable third-party transpilers to work on the IQM Star architecture, we may abstract away the
 resonators and replace the real dynamic quantum architecture with a *simplified architecture*.
 Specifically, this happens by removing the resonators from the architecture, and for
-each resonator ``r``, for each pair of supported native qubit-resonator gates ``(G(q1, r), MOVE(q2, r))``
+each resonator ``r``, and for each pair of supported native qubit-resonator gates ``(G(q1, r), MOVE(q2, r))``
 adding the fictional gate ``G(q1, q2)`` to the simplified architecture (since the latter can be
 implemented as the sequence ``MOVE(q2, r), G(q1, r), MOVE(q2, r)``).
 
@@ -58,18 +58,19 @@ from iqm.iqm_client.models import GateImplementationInfo, GateInfo, Locus, _op_i
 
 
 class ExistingMoveHandlingOptions(str, Enum):
-    """Options for how :func:`transpile_insert_moves` should handle existing MOVE instructions."""
+    """Options for how :func:`transpile_insert_moves` should handle existing MOVE instructions
+    in the circuit."""
 
     KEEP = 'keep'
-    """Keep existing MOVE instructions, check if they are correct, and add more as needed."""
-    # TODO rename to STRICT, validates incoming circuit
+    """Strict mode. The circuit, including existing MOVE instructions in it, is validated first.
+    Then, any fictional two-qubit gates in the circuit are implemented with qubit-resonator gates."""
     TRUST = 'trust'
-    """Keep existing MOVE instructions without checking if they are correct, and add more as needed."""
-    # TODO rename to HELPFUL, tries to fix any issues with existing MOVEs.
-    # Anything it cannot fix we cannot execute, so in those cases we raise an error.
+    """Lenient mode. Same as KEEP, but does not validate the circuit first.
+    Will attempt to fix any apparent user errors in the circuit by adding extra MOVE gates.
+    """
     REMOVE = 'remove'
-    """Remove existing MOVE instructions using :func:`transpile_remove_moves`, and
-    then add new ones as needed. This may produce a more optimized end result."""
+    """Removes existing MOVE instructions from the circuit using :func:`transpile_remove_moves`, and
+    then does the same as TRUST. This may produce a more optimized end result."""
 
 
 def _map_loci(
@@ -473,7 +474,7 @@ def simplify_architecture(arch: DynamicQuantumArchitecture) -> DynamicQuantumArc
     See :mod:`iqm.iqm_client.transpile` for the details.
 
     Abstracts away the gate implementations of fictional gates.
-    Does nothing if ``arch`` does not contain computational resonators.
+    Returns ``arch`` itself if it does not contain computational resonators.
 
     Args:
         arch: quantum architecture to convert
