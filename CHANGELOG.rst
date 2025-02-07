@@ -3,7 +3,7 @@ Changelog
 =========
 
 Version 20.16
-============
+=============
 
 * Define ``DDStrategy`` as Pydantic ``BaseModel`` `#153 <https://github.com/iqm-finland/iqm-client/pull/153>`_
 * Add unit tests to test ``RunRequest`` with dynamical decoupling `#153 <https://github.com/iqm-finland/iqm-client/pull/153>`_
