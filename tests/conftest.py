@@ -79,11 +79,8 @@ def missing_run_id() -> UUID:
 
 @pytest.fixture()
 def sample_client(base_url) -> IQMClient:
-    client_version = parse(version('iqm-client'))
     when(requests).get(f'{base_url}/info/client-libraries', headers=ANY, timeout=ANY).thenReturn(
-        MockJsonResponse(
-            200, {'iqm-client': {'min': f'{client_version.major}.0', 'max': f'{client_version.major + 1}.0'}}
-        )
+        mock_supported_client_libraries_response()
     )
     client = IQMClient(url=base_url)
     client._token_manager = None  # Do not use authentication
@@ -92,6 +89,9 @@ def sample_client(base_url) -> IQMClient:
 
 @pytest.fixture()
 def client_with_signature(base_url) -> IQMClient:
+    when(requests).get(f'{base_url}/info/client-libraries', headers=ANY, timeout=ANY).thenReturn(
+        mock_supported_client_libraries_response()
+    )
     client = IQMClient(url=base_url, client_signature='some-signature')
     client._token_manager = None  # Do not use authentication
     return client
@@ -120,6 +120,12 @@ def quantum_architecture_url(base_url) -> str:
 @pytest.fixture()
 def dynamic_architecture_url(base_url) -> str:
     return f'{base_url}/api/v1/calibration/default/gates'
+
+
+@pytest.fixture()
+def channel_properties_url(base_url) -> str:
+    # Only in API V2
+    return f'{base_url}/station/channel-properties'
 
 
 @pytest.fixture
@@ -457,12 +463,12 @@ def sample_static_architecture():
     return {
         'quantum_architecture': {
             'name': 'hercules',
-            'qubits': ['QB1', 'QB2'],
+            'qubits': ['QB1', 'QB2', 'QB3'],
             'qubit_connectivity': [['QB1', 'QB2']],
             'operations': {
-                'prx': [['QB1'], ['QB2']],
+                'prx': [['QB1'], ['QB2'], ['QB3']],
                 'cz': [['QB1', 'QB2']],
-                'measure': [['QB1'], ['QB2']],
+                'measure': [['QB1'], ['QB2'], ['QB3']],
                 'barrier': [],
             },
         }
@@ -570,6 +576,24 @@ class MockJsonResponse:
             raise HTTPError(f'{self.status_code}', response=self)
 
 
+def mock_supported_client_libraries_response(
+    iqm_client_name: str = 'iqm-client', max_version: Optional[str] = None, min_version: Optional[str] = None
+) -> MockJsonResponse:
+    client_version = parse(version('iqm-client'))
+    min_version = f'{client_version.major}.0' if min_version is None else min_version
+    max_version = f'{client_version.major + 1}.0' if max_version is None else max_version
+    return MockJsonResponse(
+        200,
+        {
+            iqm_client_name: {
+                'name': iqm_client_name,
+                'min': min_version,
+                'max': max_version,
+            }
+        },
+    )
+
+
 @pytest.fixture()
 def not_valid_client_configuration_response() -> MockJsonResponse:
     return MockJsonResponse(400, {'detail': 'not a valid client configuration'})
@@ -593,6 +617,19 @@ def static_architecture_success(sample_static_architecture) -> MockJsonResponse:
 @pytest.fixture()
 def dynamic_architecture_success(sample_dynamic_architecture) -> MockJsonResponse:
     return MockJsonResponse(200, sample_dynamic_architecture.model_dump())
+
+
+@pytest.fixture()
+def channel_properties_success() -> MockJsonResponse:
+    content = {
+        'QB1__flux.awg': {'fast_feedback_sources': []},
+        'QB1__drive.awg': {'fast_feedback_sources': ['PL-1__readout']},
+        'QB2__drive.awg': {'fast_feedback_sources': ['PL-1__readout']},
+        'QB3__drive.awg': {'fast_feedback_sources': ['PL-2__readout']},
+        'PL-1__readout': {},
+        'PL-2__readout': {},
+    }
+    return MockJsonResponse(200, content)
 
 
 @pytest.fixture()

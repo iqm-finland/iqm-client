@@ -2,11 +2,51 @@
 Changelog
 =========
 
-Version 20.9
+Version 20.16
 ============
 
 * Define ``DDStrategy`` as Pydantic ``BaseModel`` `#153 <https://github.com/iqm-finland/iqm-client/pull/153>`_
 * Add unit tests to test ``RunRequest`` with dynamical decoupling `#153 <https://github.com/iqm-finland/iqm-client/pull/153>`_
+
+Version 20.15
+=============
+
+* Relax version ranges of `numpy`, `packaging`. `#165 <https://github.com/iqm-finland/iqm-client/pull/165>`_
+
+Version 20.14
+=============
+
+* Add ``IQMClient::get_feedback_groups`` method. `#162 <https://github.com/iqm-finland/iqm-client/pull/162>`_
+
+Version 20.13
+=============
+
+* Fix package publishing from ci, no functional changes. `#160 <https://github.com/iqm-finland/iqm-client/pull/160>`_
+
+Version 20.12
+=============
+
+* Drop support for Python 3.9. `#159 <https://github.com/iqm-finland/iqm-client/pull/159>`_
+* Add optional security-scanned lockfile. `#159 <https://github.com/iqm-finland/iqm-client/pull/159>`_
+
+Version 20.11
+=============
+
+* Add ``RESONANCE_COCOS_V1`` API variant option for Resonance Cocos API v1. `#158 <https://github.com/iqm-finland/iqm-client/pull/158>`_
+* Add ``IQMClient::get_run_counts`` method. `#158 <https://github.com/iqm-finland/iqm-client/pull/158>`_
+* Add ``IQMClient::get_supported_client_libraries`` method. `#158 <https://github.com/iqm-finland/iqm-client/pull/158>`_
+
+Version 20.10
+=============
+
+* Fix Sphinx documentation build warnings `#155 <https://github.com/iqm-finland/iqm-client/pull/155>`_
+* Enable Sphinx documentation build option to treat warnings as errors `#155 <https://github.com/iqm-finland/iqm-client/pull/155>`_
+
+Version 20.9
+============
+
+* Added Python 3.12 support `#154 <https://github.com/iqm-finland/iqm-client/pull/154>`_
+* Python 3.9 support is deprecated and will be removed in the future
 
 Version 20.8
 ============
@@ -62,7 +102,7 @@ Version 19.0
 * Allow mid-circuit measurements and classically controlled PRX gates.
   `#136 <https://github.com/iqm-finland/iqm-client/pull/136>`_
 * Deprecated native operations names ``phased_rx`` and ``measurement`` removed,
-   use ``prx`` and ``measure`` instead.
+  use ``prx`` and ``measure`` instead.
   `#136 <https://github.com/iqm-finland/iqm-client/pull/136>`_
 
 Version 18.8

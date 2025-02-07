@@ -12,10 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Tests for the IQM client API."""
+from mockito import ANY, when
 import pytest
+import requests
 
 from iqm.iqm_client.api import APIConfig, APIEndpoint, APIVariant
 from iqm.iqm_client.iqm_client import IQMClient
+from tests.conftest import mock_supported_client_libraries_response
 
 
 @pytest.fixture
@@ -30,10 +33,14 @@ def test_api_config_initialization(sample_api_config):
     assert isinstance(sample_api_config.urls, dict)
 
 
-@pytest.mark.parametrize("variant", [None, APIVariant.V1, APIVariant.V2])
+@pytest.mark.parametrize("variant", [None, APIVariant.V1, APIVariant.V2, APIVariant.RESONANCE_COCOS_V1])
 def test_api_config_is_v1_by_default(variant):
     """Test that APIConfig is V1 by default for backward compatibility."""
-    iqm_client = IQMClient("https://example.com", api_variant=variant)
+    base_url = "https://example.com"
+    when(requests).get(f"{base_url}/info/client-libraries", headers=ANY, timeout=ANY).thenReturn(
+        mock_supported_client_libraries_response()
+    )
+    iqm_client = IQMClient(base_url, api_variant=variant)
     assert iqm_client._api.variant == variant if variant is not None else APIVariant.V1
 
 
@@ -43,7 +50,7 @@ def test_api_config_get_api_urls_invalid_variant():
         APIConfig("INVALID", "https://example.com")._get_api_urls()
 
 
-@pytest.mark.parametrize("variant", [APIVariant.V1, APIVariant.V2])
+@pytest.mark.parametrize("variant", [APIVariant.V1, APIVariant.V2, APIVariant.RESONANCE_COCOS_V1])
 def test_api_config_is_supported(variant):
     """Test that is_supported returns correct values"""
     api_config = APIConfig(variant, "https://example.com")

@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# pylint: disable=too-many-lines
 r"""
 Client for connecting to the IQM quantum computer server interface.
 """
@@ -49,11 +50,13 @@ from iqm.iqm_client.models import (
     Circuit,
     CircuitBatch,
     CircuitCompilationOptions,
+    ClientLibrary,
     DynamicQuantumArchitecture,
     Instruction,
     MoveGateValidationMode,
     QuantumArchitecture,
     QuantumArchitectureSpecification,
+    RunCounts,
     RunRequest,
     RunResult,
     RunStatus,
@@ -84,8 +87,8 @@ class IQMClient:
             If ``auth_server_url`` is given also ``username`` and ``password`` must be given.
         username: Username to log in to authentication server.
         password: Password to log in to authentication server.
-        api_variant: API variant to use. Default is ``APIVariant.COCOS``.
-            Conviguable also by environment variable ``IQM_CLIENT_API_VARIANT``.
+        api_variant: API variant to use. Default is ``APIVariant.V1``.
+            Configurable also by environment variable ``IQM_CLIENT_API_VARIANT``.
 
     Alternatively, the user authentication related keyword arguments can also be given in
     environment variables :envvar:`IQM_TOKEN`, :envvar:`IQM_TOKENS_FILE`, :envvar:`IQM_AUTH_SERVER`,
@@ -115,9 +118,10 @@ class IQMClient:
             username,
             password,
         )
+        version_string = 'iqm-client'
         self._signature = f'{platform.platform(terse=True)}'
         self._signature += f', python {platform.python_version()}'
-        self._signature += f', iqm-client {version("iqm-client")}'
+        self._signature += f', iqm-client {version(version_string)}'
         if client_signature:
             self._signature += f', {client_signature}'
         self._architecture: QuantumArchitectureSpecification | None = None
@@ -648,15 +652,17 @@ class IQMClient:
                 'metadata': {
                     '`': calibration_set_id,
                     'circuits_batch': circuits_batch,
-                    'parameters': None
-                    if result.status_code == 404
-                    else {
-                        'shots': request_parameters['shots'],
-                        'max_circuit_duration_over_t2': request_parameters['max_circuit_duration_over_t2'],
-                        'heralding_mode': request_parameters['heralding_mode'],
-                        'move_validation_mode': request_parameters['move_validation_mode'],
-                        'move_gate_frame_tracking_mode': request_parameters['move_gate_frame_tracking_mode'],
-                    },
+                    'parameters': (
+                        None
+                        if result.status_code == 404
+                        else {
+                            'shots': request_parameters['shots'],
+                            'max_circuit_duration_over_t2': request_parameters['max_circuit_duration_over_t2'],
+                            'heralding_mode': request_parameters['heralding_mode'],
+                            'move_validation_mode': request_parameters['move_validation_mode'],
+                            'move_gate_frame_tracking_mode': request_parameters['move_gate_frame_tracking_mode'],
+                        }
+                    ),
                     'timestamps': {datapoint['stage']: datapoint['timestamp'] for datapoint in timeline},
                 },
             }
@@ -881,6 +887,52 @@ class IQMClient:
 
         return dqa
 
+    def get_feedback_groups(self, *, timeout_secs: float = REQUESTS_TIMEOUT) -> tuple[frozenset[str], ...]:
+        """Retrieve groups of qubits that can receive real-time feedback signals from each other.
+
+        Real-time feedback enables conditional gates such as `cc_prx`.
+        Some hardware configurations support routing real-time feedback only between certain qubits.
+
+        This method is only supported for the API variant V2.
+
+        Returns:
+            Feedback groups. Within a group, any qubit can receive real-time feedback from any other qubit in
+                the same group. A qubit can belong to multiple groups.
+                If there is only one group, there are no restrictions regarding feedback routing.
+
+        Raises:
+            ClientAuthenticationError: if no valid authentication is provided
+            HTTPException: HTTP exceptions
+        """
+        result = requests.get(
+            self._api.url(APIEndpoint.CHANNEL_PROPERTIES),
+            headers=self._default_headers(),
+            timeout=timeout_secs,
+        )
+        self._check_not_found_error(result)
+        self._check_authentication_errors(result)
+        result.raise_for_status()
+        try:
+            channel_properties = result.json()
+        except (json.decoder.JSONDecodeError, KeyError) as e:
+            raise HTTPError(f'Invalid response: {result.text}, {e}') from e
+
+        all_qubits = self.get_quantum_architecture().qubits
+        groups: dict[str, set[str]] = {}
+        # All qubits that can read from the same source belong to the same group.
+        # A qubit may belong to multiple groups.
+        for channel_name, properties in channel_properties.items():
+            # Relying on naming convention because we don't have proper mapping available:
+            qubit = channel_name.split('__')[0]
+            if qubit not in all_qubits:
+                continue
+            for source in properties.get('fast_feedback_sources', ()):
+                groups.setdefault(source, set()).add(qubit)
+        # Merge identical groups
+        unique_groups: set[frozenset[str]] = {frozenset(group) for group in groups.values()}
+        # Sort by group size
+        return tuple(sorted(unique_groups, key=len, reverse=True))
+
     def close_auth_session(self) -> bool:
         """Terminate session with authentication server if there was one created.
 
@@ -933,25 +985,80 @@ class IQMClient:
             compatibility could not be confirmed, None if they are compatible.
         """
         try:
-            versions_response = requests.get(
-                self._api.url(APIEndpoint.CLIENT_LIBRARIES),
-                headers=self._default_headers(),
-                timeout=REQUESTS_TIMEOUT,
+            libraries = self.get_supported_client_libraries()
+            compatible_iqm_client = libraries.get(
+                'iqm-client',
+                libraries.get('iqm_client'),
             )
-            if versions_response.status_code == 200:
-                libraries = versions_response.json()
-                compatible_versions = libraries.get('iqm-client', libraries.get('iqm_client'))
-                min_version = parse(compatible_versions['min'])
-                max_version = parse(compatible_versions['max'])
-                client_version = parse(version('iqm-client'))
-                if client_version < min_version or client_version >= max_version:
-                    return (
-                        f'Your IQM Client version {client_version} was built for a different version of IQM Server. '
-                        f'You might encounter issues. For the best experience, consider using a version '
-                        f'of IQM Client that satisfies {min_version} <= iqm-client < {max_version}.'
-                    )
-                return None
-        except Exception:  # pylint: disable=broad-except
+            if compatible_iqm_client is None:
+                return 'Could not verify IQM Client compatibility with the server. You might encounter issues.'
+            min_version = parse(compatible_iqm_client.min)
+            max_version = parse(compatible_iqm_client.max)
+            client_version = parse(version('iqm-client'))
+            if client_version < min_version or client_version >= max_version:
+                return (
+                    f'Your IQM Client version {client_version} was built for a different version of IQM Server. '
+                    f'You might encounter issues. For the best experience, consider using a version '
+                    f'of IQM Client that satisfies {min_version} <= iqm-client < {max_version}.'
+                )
+            return None
+        except Exception as e:  # pylint: disable=broad-except
             # we don't want the version check to prevent usage of IQMClient in any situation
-            pass
-        return 'Could not verify IQM Client compatibility with the server. You might encounter issues.'
+            check_error = e
+        return f'Could not verify IQM Client compatibility with the server. You might encounter issues. {check_error}'
+
+    def get_run_counts(self, job_id: UUID, *, timeout_secs: float = REQUESTS_TIMEOUT) -> RunCounts:
+        """Query the counts of an executed job.
+
+        Args:
+            job_id: id of the job to query
+            timeout_secs: network request timeout
+
+        Returns:
+            counts strings dictionary
+
+        Raises:
+            CircuitExecutionError: IQM server specific exceptions
+            HTTPException: HTTP exceptions
+        """
+        result = self._retry_request_on_error(
+            lambda: requests.get(
+                self._api.url(APIEndpoint.GET_JOB_COUNTS, str(job_id)),
+                headers=self._default_headers(),
+                timeout=timeout_secs,
+            )
+        )
+
+        self._check_not_found_error(result)
+        result.raise_for_status()
+        try:
+            run_counts = RunCounts.from_dict(result.json())
+        except (json.decoder.JSONDecodeError, KeyError) as e:
+            raise CircuitExecutionError(f'Invalid response: {result.text}, {e}') from e
+
+        return run_counts
+
+    def get_supported_client_libraries(self, timeout_secs: float = REQUESTS_TIMEOUT) -> dict[str, ClientLibrary]:
+        """Retrieves information about supported client libraries from the server.
+
+        Args:
+            timeout_secs: network request timeout in seconds
+
+        Returns:
+            Dictionary mapping library identifiers to their metadata
+
+        Raises:
+            HTTPError: HTTP exceptions
+            ClientAuthenticationError: if authentication fails
+        """
+        result = requests.get(
+            self._api.url(APIEndpoint.CLIENT_LIBRARIES),
+            headers=self._default_headers(),
+            timeout=timeout_secs,
+        )
+
+        self._check_not_found_error(result)
+        self._check_authentication_errors(result)
+        result.raise_for_status()
+
+        return {key: ClientLibrary.model_validate(value) for key, value in result.json().items()}

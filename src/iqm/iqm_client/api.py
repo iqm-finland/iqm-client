@@ -39,6 +39,7 @@ class APIEndpoint(Enum):
     # Calibration and Calibration Service endpoints
     CALIBRATION_SERVICE_CONFIGURATION = auto()
     QUANTUM_ARCHITECTURE = auto()
+    CHANNEL_PROPERTIES = auto()
     QUALITY_METRICS_LATEST = auto()
     QUALITY_METRICS_MONITORING = auto()
     CALIBRATED_GATES = auto()
@@ -58,8 +59,9 @@ class APIVariant(Enum):
     Use with caution, as future updates may introduce breaking changes or remove functionality entirely.
     """
 
-    V1 = "V1"  # IQM Resonance and Cocos-based circuits execution
+    V1 = "V1"  # QCCSW Cocos-based circuits execution
     V2 = "V2"  # Station-Control-based circuits execution
+    RESONANCE_COCOS_V1 = "RESONANCE_COCOS_V1"  # IQM Resonance Cocos API
 
 
 class APIConfig:
@@ -82,6 +84,17 @@ class APIConfig:
         Returns:
             Relative URLs for each supported API endpoints.
         """
+        if self.variant == APIVariant.RESONANCE_COCOS_V1:
+            return {
+                APIEndpoint.SUBMIT_JOB: "jobs",
+                APIEndpoint.GET_JOB_RESULT: "jobs/%s",
+                APIEndpoint.GET_JOB_STATUS: "jobs/%s/status",
+                APIEndpoint.GET_JOB_COUNTS: "jobs/%s/counts",
+                APIEndpoint.ABORT_JOB: "jobs/%s/abort",
+                APIEndpoint.QUANTUM_ARCHITECTURE: "quantum-architecture",
+                APIEndpoint.CALIBRATED_GATES: "api/v1/calibration/%s/gates",
+                APIEndpoint.CLIENT_LIBRARIES: "info/client-libraries",
+            }
         if self.variant == APIVariant.V1:
             return {
                 APIEndpoint.CONFIGURATION: "configuration",
@@ -121,6 +134,7 @@ class APIConfig:
                 APIEndpoint.ABORT_CALIBRATION_JOB: "cocos/jobs/%s/abort",
                 APIEndpoint.DELETE_JOB: "station/circuits/%s",
                 APIEndpoint.QUANTUM_ARCHITECTURE: "cocos/quantum-architecture",
+                APIEndpoint.CHANNEL_PROPERTIES: "station/channel-properties",
                 APIEndpoint.CALIBRATED_GATES: "cocos/api/v1/calibration/%s/gates",
                 APIEndpoint.QUALITY_METRICS_MONITORING: "cocos/api/v1/monitor/calibration/metrics",
                 APIEndpoint.HEALTH: "cocos/health",
