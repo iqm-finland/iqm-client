@@ -79,7 +79,7 @@ class IQMClient:
             it sends to the server. The signature is appended to IQMClients own version
             information and is intended to carry additional version information,
             for example the version information of the caller.
-        token: Long-lived IQM token in plain text format.
+        token: Long-lived authentication token in plain text format. Used by IQM Resonance.
             If ``token`` is given no other user authentication parameters should be given.
         tokens_file: Path to a tokens file used for authentication.
             If ``tokens_file`` is given no other user authentication parameters should be given.
