@@ -2,11 +2,6 @@
 Changelog
 =========
 
-Version 20.16
-=============
-
-* Define ``DDStrategy`` as Pydantic ``BaseModel`` `#153 <https://github.com/iqm-finland/iqm-client/pull/153>`_
-* Add unit tests to test ``RunRequest`` with dynamical decoupling `#153 <https://github.com/iqm-finland/iqm-client/pull/153>`_
 
 Version 21.0
 ============
@@ -16,6 +11,12 @@ Version 21.0
 * By default :func:`.transpile_insert_moves` now keeps any existing MOVE gates in the circuit.
   `#156 <https://github.com/iqm-finland/iqm-client/pull/156>`_
 * Add the ``delay`` operation.  `#156 <https://github.com/iqm-finland/iqm-client/pull/156>`_
+
+Version 20.16
+=============
+
+* Define ``DDStrategy`` as Pydantic ``BaseModel`` `#153 <https://github.com/iqm-finland/iqm-client/pull/153>`_
+* Add unit tests to test ``RunRequest`` with dynamical decoupling `#153 <https://github.com/iqm-finland/iqm-client/pull/153>`_
 
 Version 20.15
 =============
