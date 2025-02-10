@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Tests for the IQM client models."""
+import json
 from uuid import UUID
 
 import pytest
@@ -106,3 +107,28 @@ def test_dqa_components():
         gates={},
     )
     assert dqa.components == ('COMPR1', 'COMPR2', 'QB1', 'QB2', 'QB3', 'QB10', 'QB11', 'QB20')
+
+
+def test_dqa_deserialization():
+    dqa = DynamicQuantumArchitecture(
+        calibration_set_id=UUID('59478539-dcef-4b2e-80c8-122d7ec3fc89'),
+        qubits=['QB1', 'QB2'],
+        computational_resonators=['COMP_R'],
+        gates={
+            'cz': GateInfo(
+                implementations={
+                    'tgss': GateImplementationInfo(
+                        loci=(('QB1', 'QB2'), ('QB1', 'COMP_R')),
+                    ),
+                    'crf': GateImplementationInfo(loci=(('QB2', 'COMPR'),)),
+                },
+                default_implementation='tgss',
+                override_default_implementation={('QB2', 'COMPR'): 'crf'},
+            ),
+        },
+    )
+
+    dqa_json = dqa.model_dump_json()
+    dqa_reconstructed = DynamicQuantumArchitecture(**json.loads(dqa_json))
+
+    assert dqa_reconstructed == dqa
