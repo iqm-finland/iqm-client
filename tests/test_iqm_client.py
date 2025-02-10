@@ -32,6 +32,8 @@ from iqm.iqm_client import (
     CircuitExecutionError,
     CircuitValidationError,
     ClientConfigurationError,
+    DDMode,
+    DDStrategy,
     Counts,
     DynamicQuantumArchitecture,
     HeraldingMode,
@@ -245,6 +247,25 @@ def test_submit_circuits_does_not_activate_heralding_by_default(
     unstub()
 
 
+def test_submit_circuits_does_not_activate_dd_by_default(
+    sample_client, jobs_url, minimal_run_request, submit_success, dynamic_architecture_url, dynamic_architecture_success
+):
+    """
+    Test submitting run request without dynamical decoupling
+    """
+    # Expect request to have dynamical decoupling mode DISABLED by default
+    assert post_jobs_args(minimal_run_request)['json']['dd_mode'] == DDMode.DISABLED.value
+
+    expect(requests, times=1).post(jobs_url, **post_jobs_args(minimal_run_request)).thenReturn(submit_success)
+    when(requests).get(dynamic_architecture_url, ...).thenReturn(dynamic_architecture_success)
+
+    # Specify no dynamical decoupling mode in submit_circuits
+    sample_client.submit_circuits(circuits=minimal_run_request.circuits, shots=minimal_run_request.shots)
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
 def test_submit_circuits_raises_with_invalid_shots(sample_client, minimal_run_request):
     """
     Test that submitting run request with invalid number of shots raises ValueError
@@ -274,6 +295,34 @@ def test_submit_circuits_sets_heralding_mode_in_run_request(
 
     assert submit_circuits_args(run_request_with_heralding)['options'].heralding_mode == expected_heralding_mode
     sample_client.submit_circuits(**submit_circuits_args(run_request_with_heralding))
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_submit_circuits_sets_dd_mode_in_run_request(
+    sample_client,
+    jobs_url,
+    run_request_with_dd,
+    submit_success,
+    dynamic_architecture_url,
+    dynamic_architecture_success,
+):
+    """
+    Test submitting run request with dynamical decoupling
+    """
+    # Expect dynamical decoupling mode to be the same as in run request
+    expected_dd_mode = run_request_with_dd.dd_mode.value
+    expected_dd_strategy = run_request_with_dd.dd_strategy
+
+    assert post_jobs_args(run_request_with_dd)['json']['dd_mode'] == expected_dd_mode
+    assert DDStrategy(**post_jobs_args(run_request_with_dd)['json']['dd_strategy']) == expected_dd_strategy
+    expect(requests, times=1).post(jobs_url, **post_jobs_args(run_request_with_dd)).thenReturn(submit_success)
+    expect(requests, times=1).get(dynamic_architecture_url, ...).thenReturn(dynamic_architecture_success)
+
+    assert submit_circuits_args(run_request_with_dd)['options'].dd_mode == expected_dd_mode
+    assert submit_circuits_args(run_request_with_dd)['options'].dd_strategy == expected_dd_strategy
+    sample_client.submit_circuits(**submit_circuits_args(run_request_with_dd))
 
     verifyNoUnwantedInteractions()
     unstub()

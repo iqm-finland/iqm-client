@@ -18,6 +18,7 @@ import pytest
 
 from iqm.iqm_client.models import (
     CircuitBatch,
+    DDMode,
     DynamicQuantumArchitecture,
     GateImplementationInfo,
     GateInfo,
@@ -43,25 +44,38 @@ def heralding_mode():
     return HeraldingMode.ZEROS
 
 
+@pytest.fixture
+def dd_mode():
+    return DDMode.ENABLED
+
+
 @pytest.mark.parametrize(
     'metadata_factory',
     [
         # V1 and RESONANCE_V1
-        lambda shots, circuits_batch, heralding_mode: Metadata(
-            request=RunRequest(circuits=circuits_batch, shots=shots, heralding_mode=heralding_mode)
+        lambda shots, circuits_batch, heralding_mode, dd_mode: Metadata(
+            request=RunRequest(
+                circuits=circuits_batch,
+                shots=shots,
+                heralding_mode=heralding_mode,
+                dd_mode=dd_mode,
+            )
         ),
         # V2
-        lambda shots, circuits_batch, heralding_mode: Metadata(
-            parameters=JobParameters(shots=shots, heralding_mode=heralding_mode), circuits_batch=circuits_batch
+        lambda shots, circuits_batch, heralding_mode, dd_mode: Metadata(
+            parameters=JobParameters(shots=shots, heralding_mode=heralding_mode, dd_mode=dd_mode),
+            circuits_batch=circuits_batch,
         ),
     ],
 )
-def test_metadata(metadata_factory, shots, circuits_batch, heralding_mode):
+def test_metadata(metadata_factory, shots, circuits_batch, heralding_mode, dd_mode):
     """Tests different modes of Metadata class initialization."""
-    metadata = metadata_factory(shots, circuits_batch, heralding_mode)
+    metadata = metadata_factory(shots, circuits_batch, heralding_mode, dd_mode)
     assert metadata.shots == shots
     assert metadata.circuits == circuits_batch
     assert metadata.heralding_mode == heralding_mode
+    assert metadata.dd_mode == dd_mode
+    assert metadata.dd_strategy is None
 
 
 def test_gate_info_loci():

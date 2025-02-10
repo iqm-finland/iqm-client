@@ -36,6 +36,8 @@ from iqm.iqm_client import (
     REQUESTS_TIMEOUT,
     Circuit,
     CircuitCompilationOptions,
+    DDMode,
+    DDStrategy,
     DynamicQuantumArchitecture,
     GateImplementationInfo,
     GateInfo,
@@ -233,6 +235,16 @@ def run_request_with_heralding(sample_circuit) -> RunRequest:
         circuits=[sample_circuit],
         shots=10,
         heralding_mode=HeraldingMode.ZEROS,
+    )
+
+
+@pytest.fixture()
+def run_request_with_dd(sample_circuit) -> RunRequest:
+    return RunRequest(
+        circuits=[sample_circuit],
+        shots=10,
+        dd_mode=DDMode.ENABLED,
+        dd_strategy=DDStrategy(gate_sequences=[(9, 'XYXYYXYX', 'asap'), (5, 'YXYX', 'asap'), (2, 'XX', 'center')]),
     )
 
 
@@ -774,5 +786,7 @@ def submit_circuits_args(run_request: RunRequest) -> dict[str, Any]:
             heralding_mode=run_request.heralding_mode,
             move_gate_validation=run_request.move_validation_mode,
             move_gate_frame_tracking=run_request.move_gate_frame_tracking_mode,
+            dd_mode=run_request.dd_mode,
+            dd_strategy=run_request.dd_strategy,
         ),
     }

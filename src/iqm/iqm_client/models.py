@@ -687,8 +687,7 @@ PRXSequence = list[tuple[float, float]]
 respectively."""
 
 
-@dataclass
-class DDStrategy:
+class DDStrategy(BaseModel):
     """Describes a particular dynamical decoupling strategy.
 
     The current standard DD stategy can be found in :attr:`.STANDARD_DD_STRATEGY`,
@@ -697,19 +696,19 @@ class DDStrategy:
     See Ezzell et al., Phys. Rev. Appl. 20, 064027 (2022) for information on DD sequences.
     """
 
-    merge_contiguous_waits: bool = True
+    merge_contiguous_waits: bool = Field(True)
     """Merge contiguous ``Wait`` instructions into one if they are separated only by ``Block`` instructions."""
 
-    target_qubits: Optional[frozenset[str]] = None
+    target_qubits: Optional[frozenset[str]] = Field(None)
     """Qubits on which dynamical decoupling should be applied. If ``None``, all qubits are targeted."""
 
-    skip_leading_wait: bool = True
+    skip_leading_wait: bool = Field(True)
     """Skip processing leading ``Wait`` instructions."""
 
-    skip_trailing_wait: bool = True
+    skip_trailing_wait: bool = Field(True)
     """Skip processing trailing ``Wait`` instructions."""
 
-    gate_sequences: list[tuple[int, Union[str, PRXSequence], str]] = field(default_factory=list)
+    gate_sequences: list[tuple[int, Union[str, PRXSequence], str]] = Field(default_factory=list)
     """Available decoupling gate sequences to chose from in this strategy.
 
     Each sequence is defined by a tuple of ``(ratio, gate pattern, align)``:
