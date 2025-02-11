@@ -3,7 +3,7 @@ Changelog
 =========
 
 
-Version 21.0
+Version 22.0
 ============
 
 * Refactor the transpilation code, make its details private, improve the docs.
@@ -11,6 +11,12 @@ Version 21.0
 * By default :func:`.transpile_insert_moves` now keeps any existing MOVE gates in the circuit.
   `#156 <https://github.com/iqm-finland/iqm-client/pull/156>`_
 * Add the ``delay`` operation.  `#156 <https://github.com/iqm-finland/iqm-client/pull/156>`_
+
+Version 20.17
+=============
+
+* Fix DQA deserialization when ``override_default_implementations`` is not empty.
+  `#166 <https://github.com/iqm-finland/iqm-client/pull/166>`_
 
 Version 20.16
 =============
