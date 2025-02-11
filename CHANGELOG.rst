@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 20.17
+=============
+
+* Fix DQA deserialization when ``override_default_implementations`` is not empty. `#166 <https://github.com/iqm-finland/iqm-client/pull/166>`_
+
 Version 20.16
 =============
 
