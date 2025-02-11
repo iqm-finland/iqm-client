@@ -217,6 +217,33 @@ class TestMoveTranspilerHybrid(MoveTranspilerBase):
         assert 4 <= len(c1.instructions) <= 6
 
 
+    def test_simplify_architecture_with_insert_moves(self):
+        """Conversions between simplified architecture circuits and corresponding full arch circuits."""
+
+        simple_arch = simplify_architecture(self.arch)
+        qc_simple = Circuit(
+            name='simple',
+            instructions=(
+                tuple(I(name='prx', qubits=(q,), args={'phase_t': 0.3, 'angle_t': -0.2}) for q in self.arch.qubits)
+                + (
+                    # fictional cz is available both ways, since it is symmetric
+                    I(name='cz', qubits=('QB1', 'QB2'), args={}),
+                    I(name='cz', qubits=('QB2', 'QB1'), args={}),
+                    I(name='cz', qubits=('QB3', 'QB2'), args={}),
+                    I(name='cz', qubits=('QB3', 'QB4'), args={}),
+                    I(name='cz', qubits=('QB3', 'QB5'), args={}),
+                )
+            ),
+        )
+        IQMClient._validate_circuit_instructions(simple_arch, [qc_simple])
+
+        qc_with_moves = transpile_insert_moves(qc_simple, self.arch)
+        IQMClient._validate_circuit_instructions(self.arch, [qc_with_moves])
+
+        qc = transpile_remove_moves(qc_with_moves)
+        IQMClient._validate_circuit_instructions(simple_arch, [qc])
+
+
 class TestMoveTranspiler(MoveTranspilerBase):
     # pylint: disable=too-many-public-methods
 
