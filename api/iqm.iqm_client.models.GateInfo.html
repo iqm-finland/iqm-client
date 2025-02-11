@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>iqm.iqm_client.models.GateInfo &#8212; IQM client 20.16 documentation</title>
+    <title>iqm.iqm_client.models.GateInfo &#8212; IQM client 20.17 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=896da9be"></script>
+    <script src="../_static/documentation_options.js?v=32912ba3"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
@@ -52,8 +52,8 @@
     <link rel="prev" title="iqm.iqm_client.models.GateImplementationInfo" href="iqm.iqm_client.models.GateImplementationInfo.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="20.16" />
-    <meta name="docbuild:last-update" content="2025-02-07"/>
+  <meta name="docsearch:version" content="20.17" />
+    <meta name="docbuild:last-update" content="2025-02-11"/>
   </head>
   
   
@@ -132,8 +132,8 @@
       
     
     
-    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 20.16 documentation - Home"/>
-    <img src="../_static/logo.png" class="logo__image only-dark pst-js-only" alt="IQM client 20.16 documentation - Home"/>
+    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 20.17 documentation - Home"/>
+    <img src="../_static/logo.png" class="logo__image only-dark pst-js-only" alt="IQM client 20.17 documentation - Home"/>
   
   
 </a></div>
@@ -386,6 +386,7 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.GateInfo.implementations"><code class="docutils literal notranslate"><span class="pre">GateInfo.implementations</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.GateInfo.default_implementation"><code class="docutils literal notranslate"><span class="pre">GateInfo.default_implementation</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.GateInfo.override_default_implementation"><code class="docutils literal notranslate"><span class="pre">GateInfo.override_default_implementation</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.GateInfo.override_default_implementation_validator"><code class="docutils literal notranslate"><span class="pre">GateInfo.override_default_implementation_validator()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.GateInfo.loci"><code class="docutils literal notranslate"><span class="pre">GateInfo.loci</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.GateInfo.model_config"><code class="docutils literal notranslate"><span class="pre">GateInfo.model_config</span></code></a></li>
 </ul>
@@ -432,6 +433,9 @@
 <p class="rubric">Methods</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#iqm.iqm_client.models.GateInfo.override_default_implementation_validator" title="iqm.iqm_client.models.GateInfo.override_default_implementation_validator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">override_default_implementation_validator</span></code></a>(value)</p></td>
+<td><p>Converts locus keys to tuples if they are encoded as strings.</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -462,6 +466,20 @@ or unless the user requests a specific implementation for a particular gate in t
 <dt class="sig sig-object py" id="iqm.iqm_client.models.GateInfo.override_default_implementation">
 <span class="sig-name descname"><span class="pre">override_default_implementation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Locus</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#iqm.iqm_client.models.GateInfo.override_default_implementation" title="Link to this definition">#</a></dt>
 <dd><p>mapping of loci to implementation names that override <code class="docutils literal notranslate"><span class="pre">default_implementation</span></code> for those loci</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="iqm.iqm_client.models.GateInfo.override_default_implementation_validator">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">override_default_implementation_validator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.12/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#tuple" title="(in Python v3.12)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#iqm.iqm_client.models.GateInfo.override_default_implementation_validator" title="Link to this definition">#</a></dt>
+<dd><p>Converts locus keys to tuples if they are encoded as strings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3.12/library/typing.html#typing.Any" title="(in Python v3.12)"><em>Any</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#dict" title="(in Python v3.12)">dict</a>[<a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#tuple" title="(in Python v3.12)">tuple</a>[<a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)">str</a>, …], <a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)">str</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
@@ -543,6 +561,7 @@ An example of loci sorted this way would be:</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.GateInfo.implementations"><code class="docutils literal notranslate"><span class="pre">GateInfo.implementations</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.GateInfo.default_implementation"><code class="docutils literal notranslate"><span class="pre">GateInfo.default_implementation</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.GateInfo.override_default_implementation"><code class="docutils literal notranslate"><span class="pre">GateInfo.override_default_implementation</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.GateInfo.override_default_implementation_validator"><code class="docutils literal notranslate"><span class="pre">GateInfo.override_default_implementation_validator()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.GateInfo.loci"><code class="docutils literal notranslate"><span class="pre">GateInfo.loci</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.models.GateInfo.model_config"><code class="docutils literal notranslate"><span class="pre">GateInfo.model_config</span></code></a></li>
 </ul>
@@ -580,7 +599,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2025-02-07.
+  Last updated on 2025-02-11.
   <br/>
 </p>
   </div>
