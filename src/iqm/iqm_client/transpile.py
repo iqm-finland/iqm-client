@@ -469,7 +469,7 @@ class _ResonatorStateTracker:
                 # G is assumed symmetric, hence we may reverse the locus order for more options
                 gate_q2r = self.qr_gates_q2r[inst.name]
                 lookahead = instructions[idx:]
-                g, m, r, badness = min(
+                g, m, r, _ = min(
                     self.find_best_sequence(locus, gate_q2r, lookahead),
                     self.find_best_sequence(locus[::-1], gate_q2r, lookahead),
                     key=lambda x: x[-1],

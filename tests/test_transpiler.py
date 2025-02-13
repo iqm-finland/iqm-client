@@ -635,7 +635,7 @@ class TestMoveTranspiler(MoveTranspilerBase):
             # There is no MOVE gate available between this pair of qubits
             with pytest.raises(
                 CircuitTranspilationError,
-                match=re.escape(f"Unable to find native gate sequence to enable fictional gate cz at {locus}"),
+                match=re.escape(f'Unable to find native gate sequence to enable fictional gate cz at {locus}'),
             ):
                 transpile_insert_moves(circuit, self.arch)
         else:
