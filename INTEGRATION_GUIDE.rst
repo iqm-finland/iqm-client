@@ -144,11 +144,11 @@ A typical Star architecture use case would look something like this:
 
 .. code-block:: python
 
-    from iqm.iqm_client import Circuit, IQMClient, simplified_architecture, transpile_insert_moves, transpile_remove_moves
+    from iqm.iqm_client import Circuit, IQMClient, simplify_architecture, transpile_insert_moves, transpile_remove_moves
 
     client = IQMClient(URL_TO_STAR_SERVER)
     dqa = client.get_dynamic_quantum_architecture()
-    simplified_dqa = simplified_architecture(dqa)
+    simplified_dqa = simplify_architecture(dqa)
 
     # circuit valid for simplified_dqa
     circuit = Circuit(name="quantum_circuit", instructions=[...])
