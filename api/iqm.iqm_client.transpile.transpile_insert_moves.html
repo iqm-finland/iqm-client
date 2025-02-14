@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>iqm.iqm_client.transpile.transpile_insert_moves &#8212; IQM client 20.17 documentation</title>
+    <title>iqm.iqm_client.transpile.transpile_insert_moves &#8212; IQM client 22.0 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=32912ba3"></script>
+    <script src="../_static/documentation_options.js?v=bde49613"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
@@ -49,11 +49,11 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="iqm.iqm_client.transpile.transpile_remove_moves" href="iqm.iqm_client.transpile.transpile_remove_moves.html" />
-    <link rel="prev" title="iqm.iqm_client.transpile" href="iqm.iqm_client.transpile.html" />
+    <link rel="prev" title="iqm.iqm_client.transpile.simplify_architecture" href="iqm.iqm_client.transpile.simplify_architecture.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="20.17" />
-    <meta name="docbuild:last-update" content="2025-02-11"/>
+  <meta name="docsearch:version" content="22.0" />
+    <meta name="docbuild:last-update" content="2025-02-14"/>
   </head>
   
   
@@ -132,8 +132,8 @@
       
     
     
-    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 20.17 documentation - Home"/>
-    <img src="../_static/logo.png" class="logo__image only-dark pst-js-only" alt="IQM client 20.17 documentation - Home"/>
+    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 22.0 documentation - Home"/>
+    <img src="../_static/logo.png" class="logo__image only-dark pst-js-only" alt="IQM client 22.0 documentation - Home"/>
   
   
 </a></div>
@@ -216,10 +216,10 @@
 </ul>
 </details></li>
 <li class="toctree-l3 current active has-children"><a class="reference internal" href="iqm.iqm_client.transpile.html">iqm.iqm_client.transpile</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.transpile.simplify_architecture.html">iqm.iqm_client.transpile.simplify_architecture</a></li>
 <li class="toctree-l4 current active"><a class="current reference internal" href="#">iqm.iqm_client.transpile.transpile_insert_moves</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.transpile.transpile_remove_moves.html">iqm.iqm_client.transpile.transpile_remove_moves</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.transpile.ExistingMoveHandlingOptions.html">iqm.iqm_client.transpile.ExistingMoveHandlingOptions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.transpile.ResonatorStateTracker.html">iqm.iqm_client.transpile.ResonatorStateTracker</a></li>
 </ul>
 </details></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="iqm.iqm_client.util.html">iqm.iqm_client.util</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -398,26 +398,34 @@
 <h1>iqm.iqm_client.transpile.transpile_insert_moves<a class="headerlink" href="#iqm-iqm-client-transpile-transpile-insert-moves" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="iqm.iqm_client.transpile.transpile_insert_moves">
-<span class="sig-prename descclassname"><span class="pre">iqm.iqm_client.transpile.</span></span><span class="sig-name descname"><span class="pre">transpile_insert_moves</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">circuit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="iqm.iqm_client.models.Circuit.html#iqm.iqm_client.models.Circuit" title="iqm.iqm_client.models.Circuit"><span class="pre">Circuit</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="iqm.iqm_client.models.DynamicQuantumArchitecture.html#iqm.iqm_client.models.DynamicQuantumArchitecture" title="iqm.iqm_client.models.DynamicQuantumArchitecture"><span class="pre">DynamicQuantumArchitecture</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">existing_moves</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="iqm.iqm_client.transpile.ExistingMoveHandlingOptions.html#iqm.iqm_client.transpile.ExistingMoveHandlingOptions" title="iqm.iqm_client.transpile.ExistingMoveHandlingOptions"><span class="pre">ExistingMoveHandlingOptions</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.12/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit_mapping</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.12/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="iqm.iqm_client.models.Circuit.html#iqm.iqm_client.models.Circuit" title="iqm.iqm_client.models.Circuit"><span class="pre">Circuit</span></a></span></span><a class="headerlink" href="#iqm.iqm_client.transpile.transpile_insert_moves" title="Link to this definition">#</a></dt>
-<dd><p>Inserts MOVEs to the circuit according to a given architecture specification.</p>
-<p>The function does nothing if the given architecture specification does not support MOVE gates.
-Note that this method assumes that the circuit is already transpiled to a coupling map/architecture where the
-resonator has been abstracted away, i.e. the edges of the coupling map that contain resonators are replaced by
-edges between the other qubit and all qubits that can be moved to that resonator.</p>
+<span class="sig-prename descclassname"><span class="pre">iqm.iqm_client.transpile.</span></span><span class="sig-name descname"><span class="pre">transpile_insert_moves</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">circuit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="iqm.iqm_client.models.Circuit.html#iqm.iqm_client.models.Circuit" title="iqm.iqm_client.models.Circuit"><span class="pre">Circuit</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="iqm.iqm_client.models.DynamicQuantumArchitecture.html#iqm.iqm_client.models.DynamicQuantumArchitecture" title="iqm.iqm_client.models.DynamicQuantumArchitecture"><span class="pre">DynamicQuantumArchitecture</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">existing_moves</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="iqm.iqm_client.transpile.ExistingMoveHandlingOptions.html#iqm.iqm_client.transpile.ExistingMoveHandlingOptions" title="iqm.iqm_client.transpile.ExistingMoveHandlingOptions"><span class="pre">ExistingMoveHandlingOptions</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">ExistingMoveHandlingOptions.KEEP</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit_mapping</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.12/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">restore_states</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.12/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="iqm.iqm_client.models.Circuit.html#iqm.iqm_client.models.Circuit" title="iqm.iqm_client.models.Circuit"><span class="pre">Circuit</span></a></span></span><a class="headerlink" href="#iqm.iqm_client.transpile.transpile_insert_moves" title="Link to this definition">#</a></dt>
+<dd><p>Convert a simplified architecture circuit into an equivalent Star architecture circuit with
+resonators and MOVE gates, if needed.</p>
+<p>In the typical use case <code class="docutils literal notranslate"><span class="pre">circuit</span></code> has been transpiled to a simplified architecture
+where the resonators have been abstracted away, and this function converts it into
+the corresponding Star architecture circuit.</p>
+<p>It can also handle the case where <code class="docutils literal notranslate"><span class="pre">circuit</span></code> already contains MOVE gates and resonators,
+which are treated according to <code class="docutils literal notranslate"><span class="pre">existing_moves</span></code>, followed by the conversion
+of the two-qubit gates that are not supported by the Star architecture.</p>
+<p>The function does nothing if <code class="docutils literal notranslate"><span class="pre">arch</span></code> does not support MOVE gates.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>circuit</strong> (<a class="reference internal" href="iqm.iqm_client.models.Circuit.html#iqm.iqm_client.models.Circuit" title="iqm.iqm_client.models.Circuit"><em>Circuit</em></a>) – The circuit to add MOVE instructions to.</p></li>
-<li><p><strong>arch</strong> (<a class="reference internal" href="iqm.iqm_client.models.DynamicQuantumArchitecture.html#iqm.iqm_client.models.DynamicQuantumArchitecture" title="iqm.iqm_client.models.DynamicQuantumArchitecture"><em>DynamicQuantumArchitecture</em></a>) – Restrictions of the target device</p></li>
-<li><p><strong>existing_moves</strong> (<a class="reference internal" href="iqm.iqm_client.transpile.ExistingMoveHandlingOptions.html#iqm.iqm_client.transpile.ExistingMoveHandlingOptions" title="iqm.iqm_client.transpile.ExistingMoveHandlingOptions"><em>ExistingMoveHandlingOptions</em></a><em> | </em><em>None</em>) – Specifies how to deal with existing MOVE instruction,
-If None, the function will use ExistingMoveHandlingOptions.REMOVE with a user warning if there are move
-instructions in the circuit.</p></li>
+<li><p><strong>circuit</strong> (<a class="reference internal" href="iqm.iqm_client.models.Circuit.html#iqm.iqm_client.models.Circuit" title="iqm.iqm_client.models.Circuit"><em>Circuit</em></a>) – The circuit to convert.</p></li>
+<li><p><strong>arch</strong> (<a class="reference internal" href="iqm.iqm_client.models.DynamicQuantumArchitecture.html#iqm.iqm_client.models.DynamicQuantumArchitecture" title="iqm.iqm_client.models.DynamicQuantumArchitecture"><em>DynamicQuantumArchitecture</em></a>) – Real Star architecture of the target device.</p></li>
+<li><p><strong>existing_moves</strong> (<a class="reference internal" href="iqm.iqm_client.transpile.ExistingMoveHandlingOptions.html#iqm.iqm_client.transpile.ExistingMoveHandlingOptions" title="iqm.iqm_client.transpile.ExistingMoveHandlingOptions"><em>ExistingMoveHandlingOptions</em></a>) – Specifies how to deal with existing MOVE instructions in <code class="docutils literal notranslate"><span class="pre">circuit</span></code>, if any.</p></li>
 <li><p><strong>qubit_mapping</strong> (<a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3.12/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>] </em><em>| </em><em>None</em>) – Mapping of logical qubit names to physical qubit names.
-Can be set to <code class="docutils literal notranslate"><span class="pre">None</span></code> if all <code class="docutils literal notranslate"><span class="pre">circuits</span></code> already use physical qubit names.</p></li>
+Can be set to <code class="docutils literal notranslate"><span class="pre">None</span></code> if <code class="docutils literal notranslate"><span class="pre">circuit</span></code> already uses physical qubit names.</p></li>
+<li><p><strong>restore_states</strong> (<a class="reference external" href="https://docs.python.org/3.12/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – Iff True, all qubit states held in resonators are returned to their qubits
+at the end of the circuit (i.e. all MOVE sandwiches are closed), even when there
+is no computational reason to do so.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="iqm.iqm_client.models.Circuit.html#iqm.iqm_client.models.Circuit" title="iqm.iqm_client.models.Circuit"><em>Circuit</em></a></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Equivalent Star architecture circuit with MOVEs and resonators added.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="iqm.iqm_client.models.Circuit.html#iqm.iqm_client.models.Circuit" title="iqm.iqm_client.models.Circuit"><em>Circuit</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -436,12 +444,12 @@ Can be set to <code class="docutils literal notranslate"><span class="pre">None<
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="iqm.iqm_client.transpile.html"
+       href="iqm.iqm_client.transpile.simplify_architecture.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">iqm.iqm_client.transpile</p>
+        <p class="prev-next-title">iqm.iqm_client.transpile.simplify_architecture</p>
       </div>
     </a>
     <a class="right-next"
@@ -504,7 +512,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2025-02-11.
+  Last updated on 2025-02-14.
   <br/>
 </p>
   </div>

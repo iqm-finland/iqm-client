@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>iqm.iqm_client.api.APIVariant &#8212; IQM client 22.0 documentation</title>
+    <title>iqm.iqm_client.transpile.simplify_architecture &#8212; IQM client 22.0 documentation</title>
   
   
   
@@ -44,12 +44,12 @@
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'api/iqm.iqm_client.api.APIVariant';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/iqm.iqm_client.transpile.simplify_architecture';</script>
     <link rel="icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="iqm.iqm_client.authentication" href="iqm.iqm_client.authentication.html" />
-    <link rel="prev" title="iqm.iqm_client.api.APIEndpoint" href="iqm.iqm_client.api.APIEndpoint.html" />
+    <link rel="next" title="iqm.iqm_client.transpile.transpile_insert_moves" href="iqm.iqm_client.transpile.transpile_insert_moves.html" />
+    <link rel="prev" title="iqm.iqm_client.transpile" href="iqm.iqm_client.transpile.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="22.0" />
@@ -150,10 +150,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../readme.html">IQM Client</a></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../API.html">API Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="iqm.iqm_client.html">iqm.iqm_client</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l3 current active has-children"><a class="reference internal" href="iqm.iqm_client.api.html">iqm.iqm_client.api</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3 has-children"><a class="reference internal" href="iqm.iqm_client.api.html">iqm.iqm_client.api</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.api.APIConfig.html">iqm.iqm_client.api.APIConfig</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.api.APIEndpoint.html">iqm.iqm_client.api.APIEndpoint</a></li>
-<li class="toctree-l4 current active"><a class="current reference internal" href="#">iqm.iqm_client.api.APIVariant</a></li>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.api.APIVariant.html">iqm.iqm_client.api.APIVariant</a></li>
 </ul>
 </details></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="iqm.iqm_client.authentication.html">iqm.iqm_client.authentication</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -215,8 +215,8 @@
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.models.Status.html">iqm.iqm_client.models.Status</a></li>
 </ul>
 </details></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="iqm.iqm_client.transpile.html">iqm.iqm_client.transpile</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.transpile.simplify_architecture.html">iqm.iqm_client.transpile.simplify_architecture</a></li>
+<li class="toctree-l3 current active has-children"><a class="reference internal" href="iqm.iqm_client.transpile.html">iqm.iqm_client.transpile</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l4 current active"><a class="current reference internal" href="#">iqm.iqm_client.transpile.simplify_architecture</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.transpile.transpile_insert_moves.html">iqm.iqm_client.transpile.transpile_insert_moves</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.transpile.transpile_remove_moves.html">iqm.iqm_client.transpile.transpile_remove_moves</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.transpile.ExistingMoveHandlingOptions.html">iqm.iqm_client.transpile.ExistingMoveHandlingOptions</a></li>
@@ -296,7 +296,7 @@
       
       
       
-      <li><a href="../_sources/api/iqm.iqm_client.api.APIVariant.rst" target="_blank"
+      <li><a href="../_sources/api/iqm.iqm_client.transpile.simplify_architecture.rst" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -372,7 +372,7 @@
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>iqm.iqm_client.api.APIVariant</h1>
+    <h1>iqm.iqm_client.transpile.simplify_architecture</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -382,7 +382,7 @@
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.api.APIVariant"><code class="docutils literal notranslate"><span class="pre">APIVariant</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.transpile.simplify_architecture"><code class="docutils literal notranslate"><span class="pre">simplify_architecture()</span></code></a></li>
 </ul>
             </nav>
         </div>
@@ -394,38 +394,29 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="iqm-iqm-client-api-apivariant">
-<h1>iqm.iqm_client.api.APIVariant<a class="headerlink" href="#iqm-iqm-client-api-apivariant" title="Link to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="iqm.iqm_client.api.APIVariant">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">iqm.iqm_client.api.</span></span><span class="sig-name descname"><span class="pre">APIVariant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names=&lt;not</span> <span class="pre">given&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#iqm.iqm_client.api.APIVariant" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.12/library/enum.html#enum.Enum" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
-<p>Supported API versions and variants.</p>
-<p>WARNING:
-Only .V1 is considered stable. The .V2 API is experimental and
-is subject to change without notice, even in minor or patch releases.
-Use with caution, as future updates may introduce breaking changes or remove functionality entirely.</p>
-<p class="rubric">Attributes</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">V1</span></code></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">V2</span></code></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">RESONANCE_COCOS_V1</span></code></p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p class="rubric">Methods</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-</tbody>
-</table>
-</div>
+  <section id="iqm-iqm-client-transpile-simplify-architecture">
+<h1>iqm.iqm_client.transpile.simplify_architecture<a class="headerlink" href="#iqm-iqm-client-transpile-simplify-architecture" title="Link to this heading">#</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="iqm.iqm_client.transpile.simplify_architecture">
+<span class="sig-prename descclassname"><span class="pre">iqm.iqm_client.transpile.</span></span><span class="sig-name descname"><span class="pre">simplify_architecture</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="iqm.iqm_client.models.DynamicQuantumArchitecture.html#iqm.iqm_client.models.DynamicQuantumArchitecture" title="iqm.iqm_client.models.DynamicQuantumArchitecture"><span class="pre">DynamicQuantumArchitecture</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_resonators</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.12/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="iqm.iqm_client.models.DynamicQuantumArchitecture.html#iqm.iqm_client.models.DynamicQuantumArchitecture" title="iqm.iqm_client.models.DynamicQuantumArchitecture"><span class="pre">DynamicQuantumArchitecture</span></a></span></span><a class="headerlink" href="#iqm.iqm_client.transpile.simplify_architecture" title="Link to this definition">#</a></dt>
+<dd><p>Converts the given IQM Star quantum architecture into the equivalent simplified quantum architecture.</p>
+<p>See <a class="reference internal" href="iqm.iqm_client.transpile.html#module-iqm.iqm_client.transpile" title="iqm.iqm_client.transpile"><code class="xref py py-mod docutils literal notranslate"><span class="pre">iqm.iqm_client.transpile</span></code></a> for the details.</p>
+<p>Adds fictional gates, abstracts away their gate implementations.
+Returns <code class="docutils literal notranslate"><span class="pre">arch</span></code> itself if it does not contain computational resonators (in which case nothing will change).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>arch</strong> (<a class="reference internal" href="iqm.iqm_client.models.DynamicQuantumArchitecture.html#iqm.iqm_client.models.DynamicQuantumArchitecture" title="iqm.iqm_client.models.DynamicQuantumArchitecture"><em>DynamicQuantumArchitecture</em></a>) – quantum architecture to convert</p></li>
+<li><p><strong>remove_resonators</strong> (<a class="reference external" href="https://docs.python.org/3.12/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – iff False, return the union of the simplified and real architectures</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>equivalent quantum architecture with fictional gates</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="iqm.iqm_client.models.DynamicQuantumArchitecture.html#iqm.iqm_client.models.DynamicQuantumArchitecture" title="iqm.iqm_client.models.DynamicQuantumArchitecture"><em>DynamicQuantumArchitecture</em></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -442,20 +433,20 @@ Use with caution, as future updates may introduce breaking changes or remove fun
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="iqm.iqm_client.api.APIEndpoint.html"
+       href="iqm.iqm_client.transpile.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">iqm.iqm_client.api.APIEndpoint</p>
+        <p class="prev-next-title">iqm.iqm_client.transpile</p>
       </div>
     </a>
     <a class="right-next"
-       href="iqm.iqm_client.authentication.html"
+       href="iqm.iqm_client.transpile.transpile_insert_moves.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">iqm.iqm_client.authentication</p>
+        <p class="prev-next-title">iqm.iqm_client.transpile.transpile_insert_moves</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -476,7 +467,7 @@ Use with caution, as future updates may introduce breaking changes or remove fun
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.api.APIVariant"><code class="docutils literal notranslate"><span class="pre">APIVariant</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#iqm.iqm_client.transpile.simplify_architecture"><code class="docutils literal notranslate"><span class="pre">simplify_architecture()</span></code></a></li>
 </ul>
   </nav></div>
 

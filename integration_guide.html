@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Integration Guide &#8212; IQM client 20.17 documentation</title>
+    <title>Integration Guide &#8212; IQM client 22.0 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=32912ba3"></script>
+    <script src="_static/documentation_options.js?v=bde49613"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
@@ -52,8 +52,8 @@
     <link rel="prev" title="iqm.iqm_client.util.IQMJSONEncoder" href="api/iqm.iqm_client.util.IQMJSONEncoder.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="20.17" />
-    <meta name="docbuild:last-update" content="2025-02-11"/>
+  <meta name="docsearch:version" content="22.0" />
+    <meta name="docbuild:last-update" content="2025-02-14"/>
   </head>
   
   
@@ -132,8 +132,8 @@
       
     
     
-    <img src="_static/logo.png" class="logo__image only-light" alt="IQM client 20.17 documentation - Home"/>
-    <img src="_static/logo.png" class="logo__image only-dark pst-js-only" alt="IQM client 20.17 documentation - Home"/>
+    <img src="_static/logo.png" class="logo__image only-light" alt="IQM client 22.0 documentation - Home"/>
+    <img src="_static/logo.png" class="logo__image only-dark pst-js-only" alt="IQM client 22.0 documentation - Home"/>
   
   
 </a></div>
@@ -216,10 +216,10 @@
 </ul>
 </details></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="api/iqm.iqm_client.transpile.html">iqm.iqm_client.transpile</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.transpile.simplify_architecture.html">iqm.iqm_client.transpile.simplify_architecture</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.transpile.transpile_insert_moves.html">iqm.iqm_client.transpile.transpile_insert_moves</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.transpile.transpile_remove_moves.html">iqm.iqm_client.transpile.transpile_remove_moves</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.transpile.ExistingMoveHandlingOptions.html">iqm.iqm_client.transpile.ExistingMoveHandlingOptions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.transpile.ResonatorStateTracker.html">iqm.iqm_client.transpile.ResonatorStateTracker</a></li>
 </ul>
 </details></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="api/iqm.iqm_client.util.html">iqm.iqm_client.util</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -480,27 +480,29 @@ This step produces timestamps <code class="docutils literal notranslate"><span c
 <p>IQM uses bearer token authentication to manage access to quantum computers.
 Currently, there are three mutually exclusive ways of providing an authentication
 token to IQM client:</p>
-<p>1. The recommended way is to use <a class="reference external" href="https://github.com/iqm-finland/cortex-cli">Cortex CLI</a>
+<ol class="arabic simple">
+<li><p>The recommended way is to use <a class="reference external" href="https://github.com/iqm-finland/cortex-cli">Cortex CLI</a>
 to manage the authentication tokens and store them into a file. IQM client can then read
 the token from the file and use it for authentication. The file path can be provided to
-IQM client in environment variable <code class="docutils literal notranslate"><span class="pre">IQM_TOKENS_FILE</span></code>.
+IQM client in environment variable <span class="target" id="index-0"></span><code class="xref std std-envvar docutils literal notranslate"><span class="pre">IQM_TOKENS_FILE</span></code>.
 Alternatively, the tokens file path can be provided as argument <code class="docutils literal notranslate"><span class="pre">tokens_file</span></code> to
-<a class="reference internal" href="api/iqm.iqm_client.iqm_client.IQMClient.html#iqm.iqm_client.iqm_client.IQMClient" title="iqm.iqm_client.iqm_client.IQMClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">IQMClient</span></code></a> constructor.</p>
-<p>2. It is also possible to use plaintext token obtained from a server dashboard. These
+<a class="reference internal" href="api/iqm.iqm_client.iqm_client.IQMClient.html#iqm.iqm_client.iqm_client.IQMClient" title="iqm.iqm_client.iqm_client.IQMClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">IQMClient</span></code></a> constructor.</p></li>
+<li><p>It is also possible to use plaintext token obtained from a server dashboard. These
 tokens may have longer lifespan than access tokens generated by Cortex CLI, and thus
 IQM client won’t attempt to refresh them. The generated token can be provided to IQM
-client in environment variable <code class="docutils literal notranslate"><span class="pre">IQM_TOKEN</span></code>.
+client in environment variable <span class="target" id="index-1"></span><code class="xref std std-envvar docutils literal notranslate"><span class="pre">IQM_TOKEN</span></code>.
 Alternatively, the token can be provided as argument <code class="docutils literal notranslate"><span class="pre">token</span></code> to <a class="reference internal" href="api/iqm.iqm_client.iqm_client.IQMClient.html#iqm.iqm_client.iqm_client.IQMClient" title="iqm.iqm_client.iqm_client.IQMClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">IQMClient</span></code></a>
-constructor.</p>
-<p>3. The third way is to provide server URL, username and password for obtaining the
+constructor.</p></li>
+<li><p>The third way is to provide server URL, username and password for obtaining the
 token from an authentication server. IQM client will maintain a login session with
 the authentication server and read and refresh the token as needed. The server URL,
 username and password can be provided to IQM client in environment variables
-<code class="docutils literal notranslate"><span class="pre">IQM_AUTH_SERVER</span></code>, <code class="docutils literal notranslate"><span class="pre">IQM_AUTH_USERNAME</span></code> and <code class="docutils literal notranslate"><span class="pre">IQM_AUTH_PASSWORD</span></code>.
+<span class="target" id="index-2"></span><code class="xref std std-envvar docutils literal notranslate"><span class="pre">IQM_AUTH_SERVER</span></code>, <span class="target" id="index-3"></span><code class="xref std std-envvar docutils literal notranslate"><span class="pre">IQM_AUTH_USERNAME</span></code> and <span class="target" id="index-4"></span><code class="xref std std-envvar docutils literal notranslate"><span class="pre">IQM_AUTH_PASSWORD</span></code>.
 Alternatively, the values can be provided as arguments <code class="docutils literal notranslate"><span class="pre">auth_server_url</span></code>,
 <code class="docutils literal notranslate"><span class="pre">username</span></code> and <code class="docutils literal notranslate"><span class="pre">password</span></code> to <a class="reference internal" href="api/iqm.iqm_client.iqm_client.IQMClient.html#iqm.iqm_client.iqm_client.IQMClient" title="iqm.iqm_client.iqm_client.IQMClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">IQMClient</span></code></a> constructor.
 Note, that all the values must be provided as either environment variables or
-as constructor arguments, not mixed.</p>
+as constructor arguments, not mixed.</p></li>
+</ol>
 </section>
 <section id="circuit-transpilation">
 <h2>Circuit transpilation<a class="headerlink" href="#circuit-transpilation" title="Link to this heading">#</a></h2>
@@ -508,48 +510,30 @@ as constructor arguments, not mixed.</p>
 by the quantum computing framework or a third party library.  To obtain the necessary information
 for circuit transpilation, <a class="reference internal" href="api/iqm.iqm_client.iqm_client.IQMClient.html#iqm.iqm_client.iqm_client.IQMClient.get_dynamic_quantum_architecture" title="iqm.iqm_client.iqm_client.IQMClient.get_dynamic_quantum_architecture"><code class="xref py py-meth docutils literal notranslate"><span class="pre">IQMClient.get_dynamic_quantum_architecture()</span></code></a> returns the names of the
 QPU components (qubits and computational resonators), and the native operations available
-in the given calibration set. This information should enable circuit transpilation for IQM quantum architectures.</p>
-<p>The notable exception is the transpilation of MOVE gates for IQM quantum computers with
-computational resonators, for which some specialized transpilation logic is provided.  The MOVE gate
-moves the state of a qubit to an empty computational resonator, and vice versa, so that the qubit
-can interact with other qubits connected to the resonator.  For this, we provide users with two
-transpilation functions: <a class="reference internal" href="api/iqm.iqm_client.transpile.transpile_insert_moves.html#iqm.iqm_client.transpile.transpile_insert_moves" title="iqm.iqm_client.transpile.transpile_insert_moves"><code class="xref py py-func docutils literal notranslate"><span class="pre">transpile_insert_moves()</span></code></a> and <a class="reference internal" href="api/iqm.iqm_client.transpile.transpile_remove_moves.html#iqm.iqm_client.transpile.transpile_remove_moves" title="iqm.iqm_client.transpile.transpile_remove_moves"><code class="xref py py-func docutils literal notranslate"><span class="pre">transpile_remove_moves()</span></code></a>.  These
-functions can be used to insert or remove MOVE gates from the circuit, respectively.</p>
-<p><a class="reference internal" href="api/iqm.iqm_client.transpile.transpile_insert_moves.html#iqm.iqm_client.transpile.transpile_insert_moves" title="iqm.iqm_client.transpile.transpile_insert_moves"><code class="xref py py-func docutils literal notranslate"><span class="pre">transpile_insert_moves()</span></code></a> is a transpiler pass for inserting MOVE gates into a circuit for
-devices with a computational resonator.  It assumes that the circuit is already transpiled by third
-party software to an architecture where the computational resonator has been abstracted away.  To
-abstract away the computational resonator, the connectivity graph is modified such that all the
-qubits connected to a common resonator are instead connected directly to each other.  The function
-can take a <code class="docutils literal notranslate"><span class="pre">qubit_mapping</span></code> to rename the qubits in the circuit to match the physical qubit names.
-Additionally, the function can take the optional argument <code class="docutils literal notranslate"><span class="pre">existing_moves</span></code> to specify how this
-transpiler pass should handle the case where some MOVE gates are already present in the circuit. The
-options are specified by the enum <a class="reference internal" href="api/iqm.iqm_client.transpile.ExistingMoveHandlingOptions.html#iqm.iqm_client.transpile.ExistingMoveHandlingOptions" title="iqm.iqm_client.transpile.ExistingMoveHandlingOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExistingMoveHandlingOptions</span></code></a>.  By default the function
-warns the user if MOVE gates are already present in the circuit but the <code class="docutils literal notranslate"><span class="pre">existing_moves</span></code> argument
-is not given, before proceeding to remove the existing MOVE gates and inserting new ones.</p>
-<p><a class="reference internal" href="api/iqm.iqm_client.transpile.transpile_remove_moves.html#iqm.iqm_client.transpile.transpile_remove_moves" title="iqm.iqm_client.transpile.transpile_remove_moves"><code class="xref py py-func docutils literal notranslate"><span class="pre">transpile_remove_moves()</span></code></a> is a helper function for <a class="reference internal" href="api/iqm.iqm_client.transpile.transpile_insert_moves.html#iqm.iqm_client.transpile.transpile_insert_moves" title="iqm.iqm_client.transpile.transpile_insert_moves"><code class="xref py py-func docutils literal notranslate"><span class="pre">transpile_insert_moves()</span></code></a> to remove
-existing MOVE gates from a quantum circuit.  It can be also used standalone to remove the MOVE gates
-from an existing circuit such that it can be used on a device without a computational resonator, or
-optimized by third party software that does not support the MOVE gate.  For example, a user might
-want to run a circuit that was originally transpiled for a device with a computational resonator on
-a device without a computational resonator.  This function allows the user to remove the MOVE gates
-from the circuit before transpiling it to another quantum architecture.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">iqm.iqm_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Circuit</span><span class="p">,</span> <span class="n">IQMClient</span><span class="p">,</span> <span class="n">transpile_insert_moves</span><span class="p">,</span> <span class="n">transpile_remove_moves</span>
+in the given calibration set. This information should enable circuit transpilation for the
+IQM Crystal quantum architectures.</p>
+<p>The notable exception is the transpilation for the IQM Star quantum architectures, which have
+computational resonators in addition to qubits. Some specialized transpilation logic involving
+the MOVE gates specific to these architectures is provided, in the form of the fuctions
+<a class="reference internal" href="api/iqm.iqm_client.transpile.transpile_insert_moves.html#iqm.iqm_client.transpile.transpile_insert_moves" title="iqm.iqm_client.transpile.transpile_insert_moves"><code class="xref py py-func docutils literal notranslate"><span class="pre">transpile_insert_moves()</span></code></a> and <a class="reference internal" href="api/iqm.iqm_client.transpile.transpile_remove_moves.html#iqm.iqm_client.transpile.transpile_remove_moves" title="iqm.iqm_client.transpile.transpile_remove_moves"><code class="xref py py-func docutils literal notranslate"><span class="pre">transpile_remove_moves()</span></code></a>.
+See <a class="reference internal" href="api/iqm.iqm_client.transpile.html#module-iqm.iqm_client.transpile" title="iqm.iqm_client.transpile"><code class="xref py py-mod docutils literal notranslate"><span class="pre">iqm.iqm_client.transpile</span></code></a> for the details.</p>
+<p>A typical Star architecture use case would look something like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">iqm.iqm_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Circuit</span><span class="p">,</span> <span class="n">IQMClient</span><span class="p">,</span> <span class="n">simplify_architecture</span><span class="p">,</span> <span class="n">transpile_insert_moves</span><span class="p">,</span> <span class="n">transpile_remove_moves</span>
 
+<span class="n">client</span> <span class="o">=</span> <span class="n">IQMClient</span><span class="p">(</span><span class="n">URL_TO_STAR_SERVER</span><span class="p">)</span>
+<span class="n">dqa</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_dynamic_quantum_architecture</span><span class="p">()</span>
+<span class="n">simplified_dqa</span> <span class="o">=</span> <span class="n">simplify_architecture</span><span class="p">(</span><span class="n">dqa</span><span class="p">)</span>
+
+<span class="c1"># circuit valid for simplified_dqa</span>
 <span class="n">circuit</span> <span class="o">=</span> <span class="n">Circuit</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;quantum_circuit&quot;</span><span class="p">,</span> <span class="n">instructions</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">])</span>
-<span class="n">backend_with_resonator</span> <span class="o">=</span> <span class="n">IQMClient</span><span class="p">(</span><span class="s2">&quot;url_to_backend_with_resonator&quot;</span><span class="p">)</span>
-<span class="n">backend_without_resonator</span> <span class="o">=</span> <span class="n">IQMClient</span><span class="p">(</span><span class="s2">&quot;url_to_backend_without_resonator&quot;</span><span class="p">)</span>
 
 <span class="c1"># intended use</span>
-<span class="n">circuit_with_moves</span> <span class="o">=</span> <span class="n">transpile_insert_moves</span><span class="p">(</span><span class="n">circuit</span><span class="p">,</span> <span class="n">backend_with_resonator</span><span class="o">.</span><span class="n">get_dynamic_quantum_architecture</span><span class="p">())</span>
+<span class="n">circuit_with_moves</span> <span class="o">=</span> <span class="n">transpile_insert_moves</span><span class="p">(</span><span class="n">circuit</span><span class="p">,</span> <span class="n">dqa</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">submit_circuits</span><span class="p">([</span><span class="n">circuit_with_moves</span><span class="p">])</span>
+
+<span class="c1"># back to simplified dqa</span>
 <span class="n">circuit_without_moves</span> <span class="o">=</span> <span class="n">transpile_remove_moves</span><span class="p">(</span><span class="n">circuit_with_moves</span><span class="p">)</span>
-
-<span class="n">backend_with_resonator</span><span class="o">.</span><span class="n">submit_circuits</span><span class="p">([</span><span class="n">circuit_with_moves</span><span class="p">])</span>
-<span class="n">backend_without_resonator</span><span class="o">.</span><span class="n">submit_circuits</span><span class="p">([</span><span class="n">circuit_without_moves</span><span class="p">])</span>
-
-<span class="c1"># Using the transpile_insert_moves on a device that does not support MOVE gates does nothing.</span>
-<span class="k">assert</span> <span class="n">circuit</span> <span class="o">==</span> <span class="n">transpile_insert_moves</span><span class="p">(</span><span class="n">circuit</span><span class="p">,</span> <span class="n">backend_without_resonator</span><span class="o">.</span><span class="n">get_dynamic_quantum_architecture</span><span class="p">())</span>
-<span class="c1"># Unless the circuit had MOVE gates, then it can remove them with the existing_moves argument.</span>
-<span class="n">alt_circuit_without_moves</span> <span class="o">=</span> <span class="n">transpile_insert_moves</span><span class="p">(</span><span class="n">circuit</span><span class="p">,</span> <span class="n">backend_without_resonator</span><span class="o">.</span><span class="n">get_dynamic_quantum_architecture</span><span class="p">(),</span> <span class="n">existing_moves</span><span class="o">=</span><span class="n">ExistingMoveHandlingOptions</span><span class="o">.</span><span class="n">REMOVE</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">circuit</span> <span class="o">==</span> <span class="n">circuit_without_moves</span>
 </pre></div>
 </div>
 </section>
@@ -575,7 +559,7 @@ and then passing the options to <a class="reference internal" href="api/iqm.iqm_
 </section>
 <section id="note-on-environment-variables">
 <h2>Note on environment variables<a class="headerlink" href="#note-on-environment-variables" title="Link to this heading">#</a></h2>
-<p>Set <span class="target" id="index-0"></span><code class="xref std std-envvar docutils literal notranslate"><span class="pre">IQM_CLIENT_REQUESTS_TIMEOUT</span></code> environment variable to override the network requests default
+<p>Set <span class="target" id="index-5"></span><code class="xref std std-envvar docutils literal notranslate"><span class="pre">IQM_CLIENT_REQUESTS_TIMEOUT</span></code> environment variable to override the network requests default
 timeout value. The default value is 60 seconds and might not be sufficient when fetching run results
 of larger circuits via slow network connections.</p>
 <p>On Linux:</p>
@@ -588,10 +572,10 @@ of larger circuits via slow network connections.</p>
 </div>
 <p>Once set, this environment variable will control network request timeouts for <a class="reference internal" href="api/iqm.iqm_client.iqm_client.IQMClient.html#iqm.iqm_client.iqm_client.IQMClient" title="iqm.iqm_client.iqm_client.IQMClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">IQMClient</span></code></a> methods
 <code class="docutils literal notranslate"><span class="pre">abort_job</span></code>, <code class="docutils literal notranslate"><span class="pre">get_quantum_architecture</span></code>, <code class="docutils literal notranslate"><span class="pre">get_dynamic_quantum_architecture</span></code>, <code class="docutils literal notranslate"><span class="pre">get_run</span></code>, and <code class="docutils literal notranslate"><span class="pre">get_run_status</span></code>.</p>
-<p>Set <span class="target" id="index-1"></span><code class="xref std std-envvar docutils literal notranslate"><span class="pre">IQM_CLIENT_SECONDS_BETWEEN_CALLS</span></code> to control the polling frequency when waiting for
+<p>Set <span class="target" id="index-6"></span><code class="xref std std-envvar docutils literal notranslate"><span class="pre">IQM_CLIENT_SECONDS_BETWEEN_CALLS</span></code> to control the polling frequency when waiting for
 compilation and run results with the <a class="reference internal" href="api/iqm.iqm_client.iqm_client.IQMClient.html#iqm.iqm_client.iqm_client.IQMClient.wait_for_compilation" title="iqm.iqm_client.iqm_client.IQMClient.wait_for_compilation"><code class="xref py py-meth docutils literal notranslate"><span class="pre">IQMClient.wait_for_compilation()</span></code></a> and
 <a class="reference internal" href="api/iqm.iqm_client.iqm_client.IQMClient.html#iqm.iqm_client.iqm_client.IQMClient.wait_for_results" title="iqm.iqm_client.iqm_client.IQMClient.wait_for_results"><code class="xref py py-meth docutils literal notranslate"><span class="pre">IQMClient.wait_for_results()</span></code></a> methods. The default value is set to 1 second.</p>
-<p>Set <span class="target" id="index-2"></span><code class="xref std std-envvar docutils literal notranslate"><span class="pre">IQM_CLIENT_DEBUG=1</span></code> to print the run request when it is submitted for execution in
+<p>Set <span class="target" id="index-7"></span><code class="xref std std-envvar docutils literal notranslate"><span class="pre">IQM_CLIENT_DEBUG=1</span></code> to print the run request when it is submitted for execution in
 <a class="reference internal" href="api/iqm.iqm_client.iqm_client.IQMClient.html#iqm.iqm_client.iqm_client.IQMClient.submit_circuits" title="iqm.iqm_client.iqm_client.IQMClient.submit_circuits"><code class="xref py py-meth docutils literal notranslate"><span class="pre">IQMClient.submit_circuits()</span></code></a> or <a class="reference internal" href="api/iqm.iqm_client.iqm_client.IQMClient.html#iqm.iqm_client.iqm_client.IQMClient.submit_run_request" title="iqm.iqm_client.iqm_client.IQMClient.submit_run_request"><code class="xref py py-meth docutils literal notranslate"><span class="pre">IQMClient.submit_run_request()</span></code></a>. To inspect the run request without sending
 it for execution, use <a class="reference internal" href="api/iqm.iqm_client.iqm_client.IQMClient.html#iqm.iqm_client.iqm_client.IQMClient.create_run_request" title="iqm.iqm_client.iqm_client.IQMClient.create_run_request"><code class="xref py py-meth docutils literal notranslate"><span class="pre">IQMClient.create_run_request()</span></code></a>.</p>
 </section>
@@ -689,7 +673,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2025-02-11.
+  Last updated on 2025-02-14.
   <br/>
 </p>
   </div>

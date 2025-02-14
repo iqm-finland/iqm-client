@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>iqm.iqm_client.models.Instruction &#8212; IQM client 20.17 documentation</title>
+    <title>iqm.iqm_client.models.Instruction &#8212; IQM client 22.0 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=32912ba3"></script>
+    <script src="../_static/documentation_options.js?v=bde49613"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
@@ -54,8 +54,8 @@
     <link rel="prev" title="iqm.iqm_client.models.HeraldingMode" href="iqm.iqm_client.models.HeraldingMode.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="20.17" />
-    <meta name="docbuild:last-update" content="2025-02-11"/>
+  <meta name="docsearch:version" content="22.0" />
+    <meta name="docbuild:last-update" content="2025-02-14"/>
   </head>
   
   
@@ -134,8 +134,8 @@
       
     
     
-    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 20.17 documentation - Home"/>
-    <img src="../_static/logo.png" class="logo__image only-dark pst-js-only" alt="IQM client 20.17 documentation - Home"/>
+    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 22.0 documentation - Home"/>
+    <img src="../_static/logo.png" class="logo__image only-dark pst-js-only" alt="IQM client 22.0 documentation - Home"/>
   
   
 </a></div>
@@ -218,10 +218,10 @@
 </ul>
 </details></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="iqm.iqm_client.transpile.html">iqm.iqm_client.transpile</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.transpile.simplify_architecture.html">iqm.iqm_client.transpile.simplify_architecture</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.transpile.transpile_insert_moves.html">iqm.iqm_client.transpile.transpile_insert_moves</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.transpile.transpile_remove_moves.html">iqm.iqm_client.transpile.transpile_remove_moves</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.transpile.ExistingMoveHandlingOptions.html">iqm.iqm_client.transpile.ExistingMoveHandlingOptions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.transpile.ResonatorStateTracker.html">iqm.iqm_client.transpile.ResonatorStateTracker</a></li>
 </ul>
 </details></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="iqm.iqm_client.util.html">iqm.iqm_client.util</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -570,6 +570,35 @@ It takes no arguments, and has no other effect.</p>
 that sit on top of IQM Client can make actual use of one-qubit barriers (e.g. during circuit optimization),
 therefore having them is allowed.</p>
 </div>
+</section>
+<section id="delay">
+<h2>Delay<a class="headerlink" href="#delay" title="Link to this heading">#</a></h2>
+<p>Forces a delay between the preceding and following circuit operations.
+It can be applied to any number of qubits. Takes one argument, <code class="docutils literal notranslate"><span class="pre">duration</span></code>, which is the minimum
+duration of the delay in seconds. It will be rounded up to the nearest possible duration the
+hardware can handle.</p>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">Example</span><a class="headerlink" href="#id6" title="Link to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Instruction</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;delay&#39;</span><span class="p">,</span> <span class="n">qubits</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;alice&#39;</span><span class="p">,</span> <span class="s1">&#39;bob&#39;</span><span class="p">),</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="mf">80e-9</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We can only guarantee that the delay is <em>at least</em> of the requested duration, due to both
+hardware and practical constraints, but could be much more depending on the other operations
+in the circuit. To see why, consider e.g. the circuit</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
+    <span class="n">Instruction</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;cz&#39;</span><span class="p">,</span> <span class="n">qubits</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;alice&#39;</span><span class="p">,</span> <span class="s1">&#39;bob&#39;</span><span class="p">),</span> <span class="n">args</span><span class="o">=</span><span class="p">{}),</span>
+    <span class="n">Instruction</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;delay&#39;</span><span class="p">,</span> <span class="n">qubits</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;alice&#39;</span><span class="p">,),</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="mf">1e-9</span><span class="p">}),</span>
+    <span class="n">Instruction</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;delay&#39;</span><span class="p">,</span> <span class="n">qubits</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;bob&#39;</span><span class="p">,),</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="mf">100e-9</span><span class="p">}),</span>
+    <span class="n">Instruction</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;cz&#39;</span><span class="p">,</span> <span class="n">qubits</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;alice&#39;</span><span class="p">,</span> <span class="s1">&#39;bob&#39;</span><span class="p">),</span> <span class="n">args</span><span class="o">=</span><span class="p">{}),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>In this case the actual delay between the two CZ gates will be 100 ns rounded up to
+hardware granularity, even though only 1 ns was requested for <cite>alice</cite>.</p>
+</div>
 <p class="rubric">Attributes</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
@@ -779,7 +808,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2025-02-11.
+  Last updated on 2025-02-14.
   <br/>
 </p>
   </div>

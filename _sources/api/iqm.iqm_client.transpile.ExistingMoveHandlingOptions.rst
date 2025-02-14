@@ -14,8 +14,8 @@ iqm.iqm\_client.transpile.ExistingMoveHandlingOptions
    .. autosummary::
    
       ~ExistingMoveHandlingOptions.KEEP
-      ~ExistingMoveHandlingOptions.REMOVE
       ~ExistingMoveHandlingOptions.TRUST
+      ~ExistingMoveHandlingOptions.REMOVE
    
    
 

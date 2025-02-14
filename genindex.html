@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Index &#8212; IQM client 20.17 documentation</title>
+    <title>Index &#8212; IQM client 22.0 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=32912ba3"></script>
+    <script src="_static/documentation_options.js?v=bde49613"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
@@ -49,8 +49,8 @@
     <link rel="search" title="Search" href="search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="20.17" />
-    <meta name="docbuild:last-update" content="2025-02-11"/>
+  <meta name="docsearch:version" content="22.0" />
+    <meta name="docbuild:last-update" content="2025-02-14"/>
   </head>
   
   
@@ -131,8 +131,8 @@
       
     
     
-    <img src="_static/logo.png" class="logo__image only-light" alt="IQM client 20.17 documentation - Home"/>
-    <img src="_static/logo.png" class="logo__image only-dark pst-js-only" alt="IQM client 20.17 documentation - Home"/>
+    <img src="_static/logo.png" class="logo__image only-light" alt="IQM client 22.0 documentation - Home"/>
+    <img src="_static/logo.png" class="logo__image only-dark pst-js-only" alt="IQM client 22.0 documentation - Home"/>
   
   
 </a></div>
@@ -215,10 +215,10 @@
 </ul>
 </details></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="api/iqm.iqm_client.transpile.html">iqm.iqm_client.transpile</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.transpile.simplify_architecture.html">iqm.iqm_client.transpile.simplify_architecture</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.transpile.transpile_insert_moves.html">iqm.iqm_client.transpile.transpile_insert_moves</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.transpile.transpile_remove_moves.html">iqm.iqm_client.transpile.transpile_remove_moves</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.transpile.ExistingMoveHandlingOptions.html">iqm.iqm_client.transpile.ExistingMoveHandlingOptions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="api/iqm.iqm_client.transpile.ResonatorStateTracker.html">iqm.iqm_client.transpile.ResonatorStateTracker</a></li>
 </ul>
 </details></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="api/iqm.iqm_client.util.html">iqm.iqm_client.util</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -383,13 +383,11 @@
 </li>
       <li><a href="api/iqm.iqm_client.api.APIEndpoint.html#iqm.iqm_client.api.APIEndpoint">APIEndpoint (class in iqm.iqm_client.api)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.errors.APITimeoutError.html#iqm.iqm_client.errors.APITimeoutError">APITimeoutError</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/iqm.iqm_client.api.APIVariant.html#iqm.iqm_client.api.APIVariant">APIVariant (class in iqm.iqm_client.api)</a>
+      <li><a href="api/iqm.iqm_client.errors.APITimeoutError.html#iqm.iqm_client.errors.APITimeoutError">APITimeoutError</a>
 </li>
-      <li><a href="api/iqm.iqm_client.transpile.ResonatorStateTracker.html#iqm.iqm_client.transpile.ResonatorStateTracker.apply_move">apply_move() (iqm.iqm_client.transpile.ResonatorStateTracker method)</a>
+      <li><a href="api/iqm.iqm_client.api.APIVariant.html#iqm.iqm_client.api.APIVariant">APIVariant (class in iqm.iqm_client.api)</a>
 </li>
       <li><a href="api/iqm.iqm_client.errors.ArchitectureRetrievalError.html#iqm.iqm_client.errors.ArchitectureRetrievalError">ArchitectureRetrievalError</a>
 </li>
@@ -402,8 +400,6 @@
       <li><a href="api/iqm.iqm_client.models.Instruction.html#iqm.iqm_client.models.Instruction.args_validator">args_validator() (iqm.iqm_client.models.Instruction class method)</a>
 </li>
       <li><a href="api/iqm.iqm_client.models.NativeOperation.html#iqm.iqm_client.models.NativeOperation.arity">arity (iqm.iqm_client.models.NativeOperation attribute)</a>
-</li>
-      <li><a href="api/iqm.iqm_client.transpile.ResonatorStateTracker.html#iqm.iqm_client.transpile.ResonatorStateTracker.available_resonators_to_move">available_resonators_to_move() (iqm.iqm_client.transpile.ResonatorStateTracker method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -419,8 +415,6 @@
         <li><a href="api/iqm.iqm_client.models.RunRequest.html#iqm.iqm_client.models.RunRequest.calibration_set_id">(iqm.iqm_client.models.RunRequest attribute)</a>
 </li>
       </ul></li>
-      <li><a href="api/iqm.iqm_client.transpile.ResonatorStateTracker.html#iqm.iqm_client.transpile.ResonatorStateTracker.choose_move_pair">choose_move_pair() (iqm.iqm_client.transpile.ResonatorStateTracker method)</a>
-</li>
       <li><a href="api/iqm.iqm_client.models.Circuit.html#iqm.iqm_client.models.Circuit">Circuit (class in iqm.iqm_client.models)</a>
 </li>
       <li><a href="api/iqm.iqm_client.models.CircuitBatch.html#iqm.iqm_client.models.CircuitBatch">CircuitBatch (in module iqm.iqm_client.models)</a>
@@ -479,8 +473,6 @@
 </li>
       <li><a href="api/iqm.iqm_client.models.Counts.html#iqm.iqm_client.models.Counts.counts">counts (iqm.iqm_client.models.Counts attribute)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.transpile.ResonatorStateTracker.html#iqm.iqm_client.transpile.ResonatorStateTracker.create_move_instructions">create_move_instructions() (iqm.iqm_client.transpile.ResonatorStateTracker method)</a>
-</li>
       <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#iqm.iqm_client.iqm_client.IQMClient.create_run_request">create_run_request() (iqm.iqm_client.iqm_client.IQMClient method)</a>
 </li>
       <li><a href="api/iqm.iqm_client.models.RunRequest.html#iqm.iqm_client.models.RunRequest.custom_settings">custom_settings (iqm.iqm_client.models.RunRequest attribute)</a>
@@ -533,21 +525,21 @@
     environment variable
 
       <ul>
-        <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#index-4">IQM_AUTH_PASSWORD</a>
+        <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#index-4">IQM_AUTH_PASSWORD</a>, <a href="integration_guide.html#index-4">[1]</a>
 </li>
-        <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#index-2">IQM_AUTH_SERVER</a>
+        <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#index-2">IQM_AUTH_SERVER</a>, <a href="integration_guide.html#index-2">[1]</a>
 </li>
-        <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#index-3">IQM_AUTH_USERNAME</a>
+        <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#index-3">IQM_AUTH_USERNAME</a>, <a href="integration_guide.html#index-3">[1]</a>
 </li>
-        <li><a href="integration_guide.html#index-2">IQM_CLIENT_DEBUG=1</a>
+        <li><a href="integration_guide.html#index-7">IQM_CLIENT_DEBUG=1</a>
 </li>
-        <li><a href="integration_guide.html#index-0">IQM_CLIENT_REQUESTS_TIMEOUT</a>
+        <li><a href="integration_guide.html#index-5">IQM_CLIENT_REQUESTS_TIMEOUT</a>
 </li>
-        <li><a href="integration_guide.html#index-1">IQM_CLIENT_SECONDS_BETWEEN_CALLS</a>
+        <li><a href="integration_guide.html#index-6">IQM_CLIENT_SECONDS_BETWEEN_CALLS</a>
 </li>
-        <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#index-0">IQM_TOKEN</a>
+        <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#index-0">IQM_TOKEN</a>, <a href="integration_guide.html#index-1">[1]</a>
 </li>
-        <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#index-1">IQM_TOKENS_FILE</a>
+        <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#index-1">IQM_TOKENS_FILE</a>, <a href="integration_guide.html#index-0">[1]</a>
 </li>
       </ul></li>
   </ul></td>
@@ -564,8 +556,6 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/iqm.iqm_client.models.NativeOperation.html#iqm.iqm_client.models.NativeOperation.factorizable">factorizable (iqm.iqm_client.models.NativeOperation attribute)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.transpile.ResonatorStateTracker.html#iqm.iqm_client.transpile.ResonatorStateTracker.from_circuit">from_circuit() (iqm.iqm_client.transpile.ResonatorStateTracker static method)</a>
-</li>
       <li><a href="api/iqm.iqm_client.models.RunCounts.html#iqm.iqm_client.models.RunCounts.from_dict">from_dict() (iqm.iqm_client.models.RunCounts static method)</a>
 
       <ul>
@@ -576,10 +566,6 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/iqm.iqm_client.transpile.ResonatorStateTracker.html#iqm.iqm_client.transpile.ResonatorStateTracker.from_dynamic_architecture">from_dynamic_architecture() (iqm.iqm_client.transpile.ResonatorStateTracker static method)</a>
-</li>
-      <li><a href="api/iqm.iqm_client.transpile.ResonatorStateTracker.html#iqm.iqm_client.transpile.ResonatorStateTracker.from_instructions">from_instructions() (iqm.iqm_client.transpile.ResonatorStateTracker static method)</a>
-</li>
       <li><a href="api/iqm.iqm_client.models.MoveGateFrameTrackingMode.html#iqm.iqm_client.models.MoveGateFrameTrackingMode.FULL">FULL (iqm.iqm_client.models.MoveGateFrameTrackingMode attribute)</a>
 </li>
   </ul></td>
@@ -720,21 +706,21 @@
         <li><a href="api/iqm.iqm_client.util.html#module-iqm.iqm_client.util">module</a>
 </li>
       </ul></li>
-      <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#index-4">IQM_AUTH_PASSWORD</a>
+      <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#index-4">IQM_AUTH_PASSWORD</a>, <a href="integration_guide.html#index-4">[1]</a>
 </li>
-      <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#index-2">IQM_AUTH_SERVER</a>
+      <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#index-2">IQM_AUTH_SERVER</a>, <a href="integration_guide.html#index-2">[1]</a>
 </li>
-      <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#index-3">IQM_AUTH_USERNAME</a>
+      <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#index-3">IQM_AUTH_USERNAME</a>, <a href="integration_guide.html#index-3">[1]</a>
 </li>
-      <li><a href="integration_guide.html#index-2">IQM_CLIENT_DEBUG=1</a>
+      <li><a href="integration_guide.html#index-7">IQM_CLIENT_DEBUG=1</a>
 </li>
-      <li><a href="integration_guide.html#index-0">IQM_CLIENT_REQUESTS_TIMEOUT</a>
+      <li><a href="integration_guide.html#index-5">IQM_CLIENT_REQUESTS_TIMEOUT</a>
 </li>
-      <li><a href="integration_guide.html#index-1">IQM_CLIENT_SECONDS_BETWEEN_CALLS</a>
+      <li><a href="integration_guide.html#index-6">IQM_CLIENT_SECONDS_BETWEEN_CALLS</a>
 </li>
-      <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#index-0">IQM_TOKEN</a>
+      <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#index-0">IQM_TOKEN</a>, <a href="integration_guide.html#index-1">[1]</a>
 </li>
-      <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#index-1">IQM_TOKENS_FILE</a>
+      <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#index-1">IQM_TOKENS_FILE</a>, <a href="integration_guide.html#index-0">[1]</a>
 </li>
       <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#iqm.iqm_client.iqm_client.IQMClient">IQMClient (class in iqm.iqm_client.iqm_client)</a>
 </li>
@@ -991,16 +977,8 @@
 </li>
       <li><a href="api/iqm.iqm_client.models.Metadata.html#iqm.iqm_client.models.Metadata.request">request (iqm.iqm_client.models.Metadata attribute)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.transpile.ResonatorStateTracker.html#iqm.iqm_client.transpile.ResonatorStateTracker.reset_as_move_instructions">reset_as_move_instructions() (iqm.iqm_client.transpile.ResonatorStateTracker method)</a>
-</li>
-      <li><a href="api/iqm.iqm_client.transpile.ResonatorStateTracker.html#iqm.iqm_client.transpile.ResonatorStateTracker.resonators">resonators (iqm.iqm_client.transpile.ResonatorStateTracker property)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/iqm.iqm_client.transpile.ResonatorStateTracker.html#iqm.iqm_client.transpile.ResonatorStateTracker.resonators_holding_qubits">resonators_holding_qubits() (iqm.iqm_client.transpile.ResonatorStateTracker method)</a>
-</li>
-      <li><a href="api/iqm.iqm_client.transpile.ResonatorStateTracker.html#iqm.iqm_client.transpile.ResonatorStateTracker">ResonatorStateTracker (class in iqm.iqm_client.transpile)</a>
-</li>
       <li><a href="api/iqm.iqm_client.models.RunCounts.html#iqm.iqm_client.models.RunCounts">RunCounts (class in iqm.iqm_client.models)</a>
 </li>
       <li><a href="api/iqm.iqm_client.models.RunRequest.html#iqm.iqm_client.models.RunRequest">RunRequest (class in iqm.iqm_client.models)</a>
@@ -1023,6 +1001,8 @@
         <li><a href="api/iqm.iqm_client.models.RunRequest.html#iqm.iqm_client.models.RunRequest.shots">(iqm.iqm_client.models.RunRequest attribute)</a>
 </li>
       </ul></li>
+      <li><a href="api/iqm.iqm_client.transpile.simplify_architecture.html#iqm.iqm_client.transpile.simplify_architecture">simplify_architecture() (in module iqm.iqm_client.transpile)</a>
+</li>
       <li><a href="api/iqm.iqm_client.models.SingleQubitMapping.html#iqm.iqm_client.models.SingleQubitMapping">SingleQubitMapping (class in iqm.iqm_client.models)</a>
 </li>
       <li><a href="api/iqm.iqm_client.models.DDStrategy.html#iqm.iqm_client.models.DDStrategy.skip_leading_wait">skip_leading_wait (iqm.iqm_client.models.DDStrategy attribute)</a>
@@ -1031,10 +1011,10 @@
 </li>
       <li><a href="api/iqm.iqm_client.models.STANDARD_DD_STRATEGY.html#iqm.iqm_client.models.STANDARD_DD_STRATEGY">STANDARD_DD_STRATEGY (in module iqm.iqm_client.models)</a>
 </li>
-      <li><a href="api/iqm.iqm_client.models.Status.html#iqm.iqm_client.models.Status">Status (class in iqm.iqm_client.models)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/iqm.iqm_client.models.Status.html#iqm.iqm_client.models.Status">Status (class in iqm.iqm_client.models)</a>
+</li>
       <li><a href="api/iqm.iqm_client.models.RunCounts.html#iqm.iqm_client.models.RunCounts.status">status (iqm.iqm_client.models.RunCounts attribute)</a>
 
       <ul>
@@ -1048,8 +1028,6 @@
       <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#iqm.iqm_client.iqm_client.IQMClient.submit_circuits">submit_circuits() (iqm.iqm_client.iqm_client.IQMClient method)</a>
 </li>
       <li><a href="api/iqm.iqm_client.iqm_client.IQMClient.html#iqm.iqm_client.iqm_client.IQMClient.submit_run_request">submit_run_request() (iqm.iqm_client.iqm_client.IQMClient method)</a>
-</li>
-      <li><a href="api/iqm.iqm_client.transpile.ResonatorStateTracker.html#iqm.iqm_client.transpile.ResonatorStateTracker.supports_move">supports_move (iqm.iqm_client.transpile.ResonatorStateTracker property)</a>
 </li>
       <li><a href="api/iqm.iqm_client.models.NativeOperation.html#iqm.iqm_client.models.NativeOperation.symmetric">symmetric (iqm.iqm_client.models.NativeOperation attribute)</a>
 </li>
@@ -1088,10 +1066,6 @@
 
 <h2 id="U">U</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/iqm.iqm_client.transpile.ResonatorStateTracker.html#iqm.iqm_client.transpile.ResonatorStateTracker.update_qubits_in_resonator">update_qubits_in_resonator() (iqm.iqm_client.transpile.ResonatorStateTracker method)</a>
-</li>
-  </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/iqm.iqm_client.api.APIConfig.html#iqm.iqm_client.api.APIConfig.url">url() (iqm.iqm_client.api.APIConfig method)</a>
 </li>
@@ -1179,7 +1153,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2025-02-11.
+  Last updated on 2025-02-14.
   <br/>
 </p>
   </div>

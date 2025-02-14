@@ -14,6 +14,7 @@ iqm.iqm\_client.transpile
    .. autosummary::
       :toctree:
    
+      simplify_architecture
       transpile_insert_moves
       transpile_remove_moves
    
@@ -28,7 +29,6 @@ iqm.iqm\_client.transpile
       :template: autosummary-class-template.rst
    
       ExistingMoveHandlingOptions
-      ResonatorStateTracker
    
    
 
