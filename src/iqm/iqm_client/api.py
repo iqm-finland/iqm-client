@@ -15,6 +15,7 @@
 
 from enum import Enum, auto
 from posixpath import join
+import warnings
 
 
 class APIEndpoint(Enum):
@@ -76,6 +77,15 @@ class APIConfig:
                             or https://test.qc.iqm.fi for .V2
         """
         self.variant = variant
+
+        # V1 API is deprecated and will be removed in a future release.
+        # V2 API is supported by the QCCSW starting with version 3.3.0.
+        if self.variant == APIVariant.V1:
+            warnings.warn(
+                "The V1 API is deprecated and will be removed in a future release. Please use the V2 API instead.",
+                DeprecationWarning,
+            )
+
         self.iqm_server_url = iqm_server_url
         self.urls = self._get_api_urls()
 

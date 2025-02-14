@@ -1122,7 +1122,7 @@ def test_check_versions_success(base_url, iqm_client_name, server_version_diff, 
         )
     )
     if server_version_diff == 0:
-        IQMClient(base_url)
+        IQMClient(base_url, api_variant=APIVariant.V2)
         assert len(recwarn) == 0
     else:
         with pytest.warns(
@@ -1241,4 +1241,16 @@ def test_get_supported_client_libraries(base_url, sample_client):
     assert iqm_client.max == '15.0.0'
 
     verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_check_api_version_deprecation_warning(base_url):
+    """Test that deprecation warning is raised when API version is deprecated."""
+    with pytest.warns(
+        DeprecationWarning,
+        match=re.escape(
+            'The V1 API is deprecated and will be removed in a future release. Please use the V2 API instead.'
+        ),
+    ):
+        IQMClient(base_url, api_variant=APIVariant.V1)
     unstub()
