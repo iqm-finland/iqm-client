@@ -79,7 +79,7 @@ class IQMClient:
             it sends to the server. The signature is appended to IQMClients own version
             information and is intended to carry additional version information,
             for example the version information of the caller.
-        token: Long-lived IQM token in plain text format.
+        token: Long-lived authentication token in plain text format. Used by IQM Resonance.
             If ``token`` is given no other user authentication parameters should be given.
         tokens_file: Path to a tokens file used for authentication.
             If ``tokens_file`` is given no other user authentication parameters should be given.
@@ -243,7 +243,11 @@ class IQMClient:
 
         # validate the circuit against the calibration-dependent dynamic quantum architecture
         self._validate_circuit_instructions(
-            architecture, circuits, qubit_mapping, validate_moves=options.move_gate_validation
+            architecture,
+            circuits,
+            qubit_mapping,
+            validate_moves=options.move_gate_validation,
+            must_close_sandwiches=False,
         )
         return RunRequest(
             qubit_mapping=serialized_qubit_mapping,
@@ -356,6 +360,8 @@ class IQMClient:
         circuits: CircuitBatch,
         qubit_mapping: Optional[dict[str, str]] = None,
         validate_moves: MoveGateValidationMode = MoveGateValidationMode.STRICT,
+        *,
+        must_close_sandwiches: bool = True,
     ) -> None:
         """Validate the given circuits against the given quantum architecture.
 
@@ -366,6 +372,7 @@ class IQMClient:
               Can be set to ``None`` if all ``circuits`` already use physical qubit names.
               Note that the ``qubit_mapping`` is used for all ``circuits``.
           validate_moves: determines how MOVE gate validation works
+          must_close_sandwiches: Iff True, MOVE sandwiches cannot be left open when the circuit ends.
 
         Raises:
             CircuitValidationError: validation failed
@@ -380,7 +387,13 @@ class IQMClient:
                     if key in measurement_keys:
                         raise CircuitValidationError(f'Circuit {index}: {instr!r} has a non-unique measurement key.')
                     measurement_keys.add(key)
-            IQMClient._validate_circuit_moves(architecture, circuit, qubit_mapping, validate_moves=validate_moves)
+            IQMClient._validate_circuit_moves(
+                architecture,
+                circuit,
+                qubit_mapping,
+                validate_moves=validate_moves,
+                must_close_sandwiches=must_close_sandwiches,
+            )
 
     @staticmethod
     def _validate_instruction(
@@ -461,7 +474,7 @@ class IQMClient:
             raise CircuitValidationError(
                 f"{instruction.qubits} = {tuple(mapped_qubits)} is not allowed as locus for '{instruction_name}'"
                 if qubit_mapping
-                else f"'{instruction.qubits} is not allowed as locus for '{instruction_name}'"
+                else f"{instruction.qubits} is not allowed as locus for '{instruction_name}'"
             )
 
     @staticmethod
@@ -470,6 +483,8 @@ class IQMClient:
         circuit: Circuit,
         qubit_mapping: Optional[dict[str, str]] = None,
         validate_moves: MoveGateValidationMode = MoveGateValidationMode.STRICT,
+        *,
+        must_close_sandwiches: bool = True,
     ) -> None:
         """Raises an error if the MOVE gates in the circuit are not valid in the given architecture.
 
@@ -479,6 +494,7 @@ class IQMClient:
             qubit_mapping: Mapping of logical qubit names to physical qubit names.
                 Can be set to ``None`` if the ``circuit`` already uses physical qubit names.
             validate_moves: Option for bypassing full or partial MOVE gate validation.
+            must_close_sandwiches: Iff True, MOVE sandwiches cannot be left open when the circuit ends.
         Raises:
             CircuitValidationError: validation failed
         """
@@ -543,8 +559,8 @@ class IQMClient:
                             f'are in a resonator. Current resonator occupation: {resonator_occupations}.'
                         )
 
-        # Finally validate that all moves have been ended before the circuit ends
-        if resonator_occupations:
+        # Finally validate that all MOVE sandwiches have been ended before the circuit ends
+        if must_close_sandwiches and resonator_occupations:
             raise CircuitValidationError(
                 f'Circuit ends while qubit state(s) are still in a resonator: {resonator_occupations}.'
             )

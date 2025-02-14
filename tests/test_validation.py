@@ -11,8 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tests for circuit validation.
-"""
+"""Tests for circuit validation."""
 import pytest
 
 from iqm.iqm_client import (
@@ -24,7 +23,7 @@ from iqm.iqm_client import (
     MoveGateValidationMode,
 )
 
-sample_qb_mapping = {'0': 'COMP_R', '1': 'QB1', '2': 'QB2', '3': 'QB3', '100': 'COMP_R2'}
+sample_qb_mapping = {'0': 'CR1', '1': 'QB1', '2': 'QB2', '3': 'QB3', '100': 'CR2'}
 reverse_qb_mapping = {value: key for key, value in sample_qb_mapping.items()}
 
 
@@ -34,6 +33,9 @@ reverse_qb_mapping = {value: key for key, value in sample_qb_mapping.items()}
         Instruction(name='barrier', qubits=['QB1'], args={}),
         Instruction(name='barrier', qubits=['QB1', 'QB2'], args={}),
         Instruction(name='barrier', qubits=['QB2', 'QB1'], args={}),  # barrier can use any loci
+        Instruction(name='delay', qubits=['QB1'], args={'duration': 80e-9}),
+        Instruction(name='delay', qubits=['QB1', 'QB2'], args={'duration': 40e-9}),
+        Instruction(name='delay', qubits=['QB2', 'QB1'], args={'duration': 100e-9}),  # delay can use any loci
         Instruction(name='prx', qubits=['QB1'], args={'phase_t': 0.3, 'angle_t': -0.2}),
         Instruction(name='cz', qubits=['QB1', 'QB2'], args={}),
         Instruction(name='cz', qubits=['QB2', 'QB1'], args={}),  # CZ is symmetric
@@ -51,6 +53,7 @@ def test_valid_instruction(sample_dynamic_architecture, instruction):
     'instruction,match',
     [
         [Instruction(name='barrier', qubits=['QB1', 'QB2', 'XXX'], args={}), 'does not exist'],
+        [Instruction(name='delay', qubits=['YYY'], args={'duration': 40e-9}), 'does not exist'],
         [
             Instruction(name='prx', qubits=['QB4'], args={'phase_t': 0.3, 'angle_t': -0.2}),
             "not allowed as locus for 'prx'",
@@ -75,7 +78,7 @@ def test_invalid_instruction(sample_dynamic_architecture, instruction, match):
 
 
 @pytest.mark.parametrize('qubit_mapping', [None, sample_qb_mapping])
-@pytest.mark.parametrize('qubits', [['QB1', 'COMP_R'], ['COMP_R', 'QB1'], ['COMP_R', 'QB2']])
+@pytest.mark.parametrize('qubits', [['QB1', 'CR1'], ['CR1', 'QB1'], ['CR1', 'QB2']])
 def test_allowed_cz_qubits(sample_move_architecture, qubits, qubit_mapping):
     """
     Tests that instruction validation passes for allowed CZ loci
@@ -91,7 +94,7 @@ def test_allowed_cz_qubits(sample_move_architecture, qubits, qubit_mapping):
 
 @pytest.mark.parametrize('qubit_mapping', [None, sample_qb_mapping])
 @pytest.mark.parametrize(
-    'qubits', [['QB1', 'QB2'], ['QB2', 'QB1'], ['QB1', 'QB1'], ['QB3', 'QB1'], ['COMP_R', 'COMP_R'], ['COMP_R', 'QB3']]
+    'qubits', [['QB1', 'QB2'], ['QB2', 'QB1'], ['QB1', 'QB1'], ['QB3', 'QB1'], ['CR1', 'CR1'], ['CR1', 'QB3']]
 )
 def test_disallowed_cz_qubits(sample_move_architecture, qubits, qubit_mapping):
     """
@@ -108,7 +111,7 @@ def test_disallowed_cz_qubits(sample_move_architecture, qubits, qubit_mapping):
 
 
 @pytest.mark.parametrize('qubit_mapping', [None, sample_qb_mapping])
-@pytest.mark.parametrize('qubits', [['QB3', 'COMP_R']])
+@pytest.mark.parametrize('qubits', [['QB3', 'CR1']])
 def test_allowed_move_qubits(sample_move_architecture, qubits, qubit_mapping):
     """
     Tests that instruction validation passes for allowed MOVE loci
@@ -126,7 +129,7 @@ def test_allowed_move_qubits(sample_move_architecture, qubits, qubit_mapping):
 @pytest.mark.parametrize('qubit_mapping', [None, sample_qb_mapping])
 @pytest.mark.parametrize(
     'qubits',
-    [['QB1', 'QB2'], ['QB2', 'QB1'], ['QB1', 'QB1'], ['QB1', 'COMP_R'], ['COMP_R', 'COMP_R'], ['COMP_R', 'QB3']],
+    [['QB1', 'QB2'], ['QB2', 'QB1'], ['QB1', 'QB1'], ['QB1', 'CR1'], ['CR1', 'CR1'], ['CR1', 'QB3']],
 )
 def test_disallowed_move_qubits(sample_move_architecture, qubits, qubit_mapping):
     """
@@ -155,7 +158,7 @@ def test_allowed_measure_qubits(sample_move_architecture, qubits):
     )
 
 
-@pytest.mark.parametrize('qubits', [['QB1', 'COMP_R'], ['COMP_R'], ['QB1', 'QB2', 'QB4'], ['QB4']])
+@pytest.mark.parametrize('qubits', [['QB1', 'CR1'], ['CR1'], ['QB1', 'QB2', 'QB4'], ['QB4']])
 def test_disallowed_measure_qubits(sample_move_architecture, qubits):
     """
     Tests that instruction validation fails for loci containing any qubits that are not valid measure qubits
@@ -213,9 +216,9 @@ def test_same_measurement_key_in_different_circuits(sample_move_architecture):
 @pytest.mark.parametrize(
     'qubits',
     [
-        ['COMP_R', 'QB1', 'QB2', 'QB3'],
-        ['QB1', 'COMP_R', 'QB2', 'QB3'],
-        ['QB1', 'COMP_R', 'QB2'],
+        ['CR1', 'QB1', 'QB2', 'QB3'],
+        ['QB1', 'CR1', 'QB2', 'QB3'],
+        ['QB1', 'CR1', 'QB2'],
     ],
 )
 def test_barrier(sample_move_architecture, qubits):
@@ -252,8 +255,8 @@ class TestMoveValidation:
     @pytest.mark.parametrize(
         'instructions',
         [
-            (Instruction(name='move', qubits=['QB3', 'COMP_R'], args={}),),
-            (Instruction(name='move', qubits=['QB3', 'COMP_R'], args={}),) * 3,
+            (Instruction(name='move', qubits=['QB3', 'CR1'], args={}),),
+            (Instruction(name='move', qubits=['QB3', 'CR1'], args={}),) * 3,
         ],
     )
     def test_non_sandwich_move(self, sample_move_architecture, validate_moves, instructions):
@@ -267,18 +270,18 @@ class TestMoveValidation:
     @pytest.mark.parametrize('validate_moves', list(MoveGateValidationMode))
     def test_move_sandwich(self, sample_move_architecture, validate_moves):
         """Valid pair of MOVEs."""
-        move = Instruction(name='move', qubits=['QB3', 'COMP_R'], args={})
+        move = Instruction(name='move', qubits=['QB3', 'CR1'], args={})
         TestMoveValidation.make_circuit_and_check((move, move), sample_move_architecture, validate_moves)
 
     @pytest.mark.parametrize('validate_moves', list(MoveGateValidationMode))
     def test_bad_move_occupied_resonator(self, sample_move_architecture, validate_moves):
         """Moving a qubit state into an occupied resonator."""
-        move = Instruction(name='move', qubits=['QB3', 'COMP_R'], args={})
+        move = Instruction(name='move', qubits=['QB3', 'CR1'], args={})
         invalid_sandwich_circuit = Circuit(
             name='Move validation circuit',
             instructions=(
                 move,
-                Instruction(name='move', qubits=['QB2', 'COMP_R'], args={}),
+                Instruction(name='move', qubits=['QB2', 'CR1'], args={}),
             ),  # this MOVE locus is not in the architecture, but only checking MOVE validation
         )
         if validate_moves != MoveGateValidationMode.NONE:
@@ -298,12 +301,12 @@ class TestMoveValidation:
     @pytest.mark.parametrize('validate_moves', list(MoveGateValidationMode))
     def test_bad_move_qubit_already_moved(self, sample_move_architecture, validate_moves):
         """Moving the state of a qubit which is already moved to another resonator."""
-        move = Instruction(name='move', qubits=['QB3', 'COMP_R'], args={})
+        move = Instruction(name='move', qubits=['QB3', 'CR1'], args={})
         invalid_sandwich_circuit = Circuit(
             name='Move validation circuit',
             instructions=(
                 move,
-                Instruction(name='move', qubits=['QB3', 'COMP_R2'], args={}),
+                Instruction(name='move', qubits=['QB3', 'CR2'], args={}),
             ),  # this MOVE locus is not in the architecture, but only checking MOVE validation
         )
         if validate_moves != MoveGateValidationMode.NONE:
@@ -330,7 +333,7 @@ class TestMoveValidation:
                 (MoveGateValidationMode.STRICT,),
             ),
             (
-                Instruction(name='cz', qubits=['QB2', 'COMP_R'], args={}),
+                Instruction(name='cz', qubits=['QB2', 'CR1'], args={}),
                 (MoveGateValidationMode.STRICT, MoveGateValidationMode.ALLOW_PRX, MoveGateValidationMode.NONE),
                 (),
             ),
@@ -341,7 +344,7 @@ class TestMoveValidation:
     ):
         """Only some gates can be applied on the qubit or resonator inside a MOVE sandwich."""
         # pylint: disable=too-many-arguments
-        move = Instruction(name='move', qubits=['QB3', 'COMP_R'], args={})
+        move = Instruction(name='move', qubits=['QB3', 'CR1'], args={})
         instructions = (move, gate, move)
         if validation_mode in disallowed_modes:
             with pytest.raises(CircuitValidationError, match=r'while the state\(s\) of (.+) are in a resonator'):
@@ -362,7 +365,7 @@ class TestMoveValidation:
     @pytest.mark.parametrize('validation_mode', list(MoveGateValidationMode))
     def test_device_without_resonator(self, sample_dynamic_architecture, sample_circuit, validation_mode):
         """MOVEs cannot be used on a device that does not support them."""
-        move = Instruction(name='move', qubits=['QB3', 'COMP_R'], args={})
+        move = Instruction(name='move', qubits=['QB3', 'CR1'], args={})
         with pytest.raises(CircuitValidationError, match="'move' is not supported"):
             TestMoveValidation.make_circuit_and_check((move,), sample_dynamic_architecture, validation_mode)
         # But validation passes if there are no MOVE gates
@@ -373,11 +376,11 @@ class TestMoveValidation:
     @pytest.mark.parametrize('validation_mode', list(MoveGateValidationMode))
     def test_qubit_mapping(self, sample_move_architecture, validation_mode):
         """Test that MOVE circuit validation works with an explicit qubit mapping given."""
-        move = Instruction(name='move', qubits=[reverse_qb_mapping[qb] for qb in ['QB3', 'COMP_R']], args={})
+        move = Instruction(name='move', qubits=[reverse_qb_mapping[qb] for qb in ['QB3', 'CR1']], args={})
         prx = Instruction(
             name='prx', qubits=[reverse_qb_mapping[qb] for qb in ['QB3']], args={'phase_t': 0.3, 'angle_t': -0.2}
         )
-        cz = Instruction(name='cz', qubits=[reverse_qb_mapping[qb] for qb in ['QB2', 'COMP_R']], args={})
+        cz = Instruction(name='cz', qubits=[reverse_qb_mapping[qb] for qb in ['QB2', 'CR1']], args={})
         TestMoveValidation.make_circuit_and_check(
             (move, move), sample_move_architecture, validation_mode, sample_qb_mapping
         )
@@ -385,7 +388,7 @@ class TestMoveValidation:
             (prx, move, cz, move), sample_move_architecture, validation_mode, sample_qb_mapping
         )
         # qubit mapping without all qubits/resonators in the architecture
-        partial_qb_mapping = {k: v for k, v in sample_qb_mapping.items() if v in ['QB2', 'QB3', 'COMP_R']}
+        partial_qb_mapping = {k: v for k, v in sample_qb_mapping.items() if v in ['QB2', 'QB3', 'CR1']}
         TestMoveValidation.make_circuit_and_check(
             (move, move), sample_move_architecture, validation_mode, partial_qb_mapping
         )

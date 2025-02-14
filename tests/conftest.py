@@ -476,7 +476,7 @@ def sample_static_architecture():
 
 
 @pytest.fixture
-def sample_dynamic_architecture():
+def sample_dynamic_architecture() -> DynamicQuantumArchitecture:
     return DynamicQuantumArchitecture(
         calibration_set_id=UUID('26c5e70f-bea0-43af-bd37-6212ec7d04cb'),
         qubits=['QB1', 'QB2', 'QB3'],
@@ -508,11 +508,11 @@ def sample_dynamic_architecture():
 
 
 @pytest.fixture
-def sample_move_architecture():
+def sample_move_architecture() -> DynamicQuantumArchitecture:
     return DynamicQuantumArchitecture(
         calibration_set_id=UUID('26c5e70f-bea0-43af-bd37-6212ec7d04cb'),
         qubits=['QB1', 'QB2', 'QB3'],
-        computational_resonators=['COMP_R', 'COMP_R2'],
+        computational_resonators=['CR1', 'CR2'],
         gates={
             'prx': GateInfo(
                 implementations={'drag_gaussian': GateImplementationInfo(loci=(('QB1',), ('QB2',), ('QB3',)))},
@@ -520,17 +520,88 @@ def sample_move_architecture():
                 override_default_implementation={},
             ),
             'cz': GateInfo(
-                implementations={'tgss': GateImplementationInfo(loci=(('QB1', 'COMP_R'), ('QB2', 'COMP_R')))},
+                implementations={'tgss': GateImplementationInfo(loci=(('QB1', 'CR1'), ('QB2', 'CR1')))},
                 default_implementation='tgss',
                 override_default_implementation={},
             ),
             'move': GateInfo(
-                implementations={'tgss_crf': GateImplementationInfo(loci=(('QB3', 'COMP_R'),))},
+                implementations={'tgss_crf': GateImplementationInfo(loci=(('QB3', 'CR1'),))},
                 default_implementation='tgss_crf',
                 override_default_implementation={},
             ),
             'measure': GateInfo(
                 implementations={'constant': GateImplementationInfo(loci=(('QB1',), ('QB2',), ('QB3',)))},
+                default_implementation='constant',
+                override_default_implementation={},
+            ),
+        },
+    )
+
+
+@pytest.fixture
+def hybrid_move_architecture() -> DynamicQuantumArchitecture:
+    """Contains both q-r and q-q gate loci.
+
+       QB1
+        |
+       CR1
+      *  |*
+    QB2   QB3 - QB4
+      *  |*
+       CR2
+        |*
+       QB5
+
+    Here, | signifies a CZ connection and * a MOVE connection.
+    """
+    return DynamicQuantumArchitecture(
+        calibration_set_id=UUID('26c5e70f-bea0-43af-bd37-6212ec7d04cb'),
+        qubits=['QB1', 'QB2', 'QB3', 'QB4', 'QB5'],
+        computational_resonators=['CR1', 'CR2'],
+        gates={
+            'prx': GateInfo(
+                implementations={
+                    'drag_gaussian': GateImplementationInfo(loci=(('QB1',), ('QB2',), ('QB3',), ('QB4',), ('QB5',))),
+                },
+                default_implementation='drag_gaussian',
+                override_default_implementation={},
+            ),
+            'cz': GateInfo(
+                implementations={
+                    'tgss': GateImplementationInfo(
+                        loci=(
+                            ('QB1', 'CR1'),
+                            ('QB3', 'CR1'),
+                            ('QB3', 'QB4'),
+                            ('QB3', 'CR2'),
+                            ('QB5', 'CR2'),
+                        )
+                    ),
+                },
+                default_implementation='tgss',
+                override_default_implementation={},
+            ),
+            'move': GateInfo(
+                implementations={
+                    'tgss_crf': GateImplementationInfo(
+                        loci=(
+                            ('QB2', 'CR1'),
+                            ('QB2', 'CR2'),
+                            ('QB3', 'CR1'),
+                            ('QB3', 'CR2'),
+                            ('QB5', 'CR2'),
+                        ),
+                    )
+                },
+                default_implementation='tgss_crf',
+                override_default_implementation={},
+            ),
+            'measure': GateInfo(
+                implementations={
+                    'constant': GateImplementationInfo(
+                        loci=(('QB1',), ('QB2',), ('QB3',), ('QB4',), ('QB5',)),
+                    )
+                },
                 default_implementation='constant',
                 override_default_implementation={},
             ),

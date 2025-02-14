@@ -11,8 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tests for user authentication and token management in IQM client.
-"""
+"""Tests for user authentication and token management in IQM client."""
 # pylint: disable=too-many-arguments
 import json
 from uuid import UUID, uuid4

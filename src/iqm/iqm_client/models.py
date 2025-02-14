@@ -11,8 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# pylint: disable=too-many-lines
 """This module contains the data models used by IQMClient."""
+# pylint: disable=too-many-lines, no-member
+# no-member: see https://github.com/pylint-dev/pylint/issues/8759
 
 from __future__ import annotations
 
@@ -20,7 +21,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from functools import cached_property
 import re
-from typing import Any, Final, Optional, Union
+from typing import Any, Optional, Union
 from uuid import UUID
 
 from pydantic import BaseModel, Field, StrictStr, field_validator
@@ -60,6 +61,7 @@ _SUPPORTED_OPERATIONS: dict[str, NativeOperation] = {
     op.name: op
     for op in [
         NativeOperation('barrier', 0, symmetric=True, no_calibration_needed=True),
+        NativeOperation('delay', 0, {'duration': (float,)}, symmetric=True, no_calibration_needed=True),
         NativeOperation('measure', 0, {'key': (str,)}, {'feedback_key': (str,)}, factorizable=True),
         NativeOperation(
             'prx',
@@ -224,6 +226,38 @@ class Instruction(BaseModel):
        One-qubit barriers will not have any effect on circuit's compilation and execution. Higher layers
        that sit on top of IQM Client can make actual use of one-qubit barriers (e.g. during circuit optimization),
        therefore having them is allowed.
+
+    Delay
+    -----
+
+    Forces a delay between the preceding and following circuit operations.
+    It can be applied to any number of qubits. Takes one argument, ``duration``, which is the minimum
+    duration of the delay in seconds. It will be rounded up to the nearest possible duration the
+    hardware can handle.
+
+    .. code-block:: python
+        :caption: Example
+
+        Instruction(name='delay', qubits=('alice', 'bob'), args={'duration': 80e-9})
+
+
+    .. note::
+
+       We can only guarantee that the delay is *at least* of the requested duration, due to both
+       hardware and practical constraints, but could be much more depending on the other operations
+       in the circuit. To see why, consider e.g. the circuit
+
+       .. code-block:: python
+
+          [
+              Instruction(name='cz', qubits=('alice', 'bob'), args={}),
+              Instruction(name='delay', qubits=('alice',), args={'duration': 1e-9}),
+              Instruction(name='delay', qubits=('bob',), args={'duration': 100e-9}),
+              Instruction(name='cz', qubits=('alice', 'bob'), args={}),
+          ]
+
+       In this case the actual delay between the two CZ gates will be 100 ns rounded up to
+       hardware granularity, even though only 1 ns was requested for `alice`.
     """
 
     name: str = Field(..., examples=['measure'])
@@ -611,7 +645,7 @@ class DynamicQuantumArchitecture(BaseModel):
 
     @cached_property
     def components(self) -> tuple[str, ...]:
-        """Returns all locus components (qubits and computational resonators) sorted.
+        """All locus components (qubits and computational resonators) sorted.
 
         The components are first sorted alphabetically based on their non-numeric part, and then
         components with the same non-numeric part are sorted numerically. An example of components
@@ -638,33 +672,33 @@ class HeraldingMode(str, Enum):
 class MoveGateValidationMode(str, Enum):
     """MOVE gate validation mode for circuit compilation. This options is meant for advanced users."""
 
-    STRICT: Final[str] = 'strict'
+    STRICT = 'strict'
     """Perform standard MOVE gate validation: MOVE gates must only appear in sandwiches, with no gates acting on the
     MOVE qubit inside the sandwich."""
-    ALLOW_PRX: Final[str] = 'allow_prx'
+    ALLOW_PRX = 'allow_prx'
     """Allow PRX gates on the MOVE qubit inside MOVE sandwiches during validation."""
-    NONE: Final[str] = 'none'
+    NONE = 'none'
     """Do not perform any MOVE gate validation."""
 
 
 class MoveGateFrameTrackingMode(str, Enum):
     """MOVE gate frame tracking mode for circuit compilation. This option is meant for advanced users."""
 
-    FULL: Final[str] = 'full'
+    FULL = 'full'
     """Perform complete MOVE gate frame tracking."""
-    NO_DETUNING_CORRECTION: Final[str] = 'no_detuning_correction'
+    NO_DETUNING_CORRECTION = 'no_detuning_correction'
     """Do not add the phase detuning corrections to the pulse schedule for the MOVE gate. The user is expected to do
     these manually."""
-    NONE: Final[str] = 'none'
+    NONE = 'none'
     """Do not perform any MOVE gate frame tracking. The user is expected to do these manually."""
 
 
 class DDMode(str, Enum):
     """Dynamical Decoupling (DD) mode for circuit execution."""
 
-    DISABLED: Final[str] = 'disabled'
+    DISABLED = 'disabled'
     """Do not apply dynamical decoupling."""
-    ENABLED: Final[str] = 'enabled'
+    ENABLED = 'enabled'
     """Apply dynamical decoupling."""
 
 
