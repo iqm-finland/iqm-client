@@ -113,6 +113,7 @@ class Instruction(BaseModel):
                                                                          at least one of the components is
                                                                          in the :math:`|0\rangle` state.
     barrier          >= 1                                                Execution barrier.
+    delay            >= 1        ``duration: float``                     Force a delay between circuit operations.
     ================ =========== ======================================= ===========
 
     For each Instruction you may also optionally specify :attr:`~Instruction.implementation`,
@@ -209,7 +210,7 @@ class Instruction(BaseModel):
     Barrier
     -------
 
-    A barrier instruction affects the physical execution order of the instructions elsewhere in the
+    Affects the physical execution order of the instructions elsewhere in the
     circuit that act on qubits spanned by the barrier.
     It ensures that any such instructions that succeed the barrier are only executed after
     all such instructions that precede the barrier have been completed.

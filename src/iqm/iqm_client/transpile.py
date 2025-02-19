@@ -15,7 +15,7 @@
 
 In the IQM Star architecture, computational resonators are connected to multiple qubits.
 A MOVE gate can be used to move the state of a qubit to a connected, empty computational resonator,
-and back *to the same qubit*. Additionally, two-qubit gates like CZ can be applied
+and back *to the same qubit*. Additionally, two-component gates like CZ can be applied
 between a qubit and a connected resonator, so that effectively the qubit can be made to interact
 with other qubits connected to the resonator. However, the resonators cannot be measured,
 and no single-qubit gates can be applied on them.
@@ -23,9 +23,23 @@ and no single-qubit gates can be applied on them.
 To enable third-party transpilers to work on the IQM Star architecture, we may abstract away the
 resonators and replace the real dynamic quantum architecture with a *simplified architecture*.
 Specifically, this happens by removing the resonators from the architecture, and for
-each resonator ``r``, and for each pair of supported native qubit-resonator gates ``(G(q1, r), MOVE(q2, r))``
-adding the fictional gate ``G(q1, q2)`` to the simplified architecture (since the latter can be
-implemented as the sequence ``MOVE(q2, r), G(q1, r), MOVE(q2, r)``).
+each resonator ``r``, and for each pair of supported native qubit-resonator (QR) gates
+``(G(q1, r), MOVE(q2, r))`` adding the *fictional* gate ``G(q1, q2)`` to the simplified architecture.
+This works since the fictional gate can be implemented as the QR gate sequence
+
+::
+
+    G(q1, q2) = [MOVE(q2, r), G(q1, r), MOVE(q2, r)].
+
+This sequence is called a *resolution* of ``G(q1, q2)``.
+Currently  we assume all the QR gates (other than MOVE) are symmetric in the sense that
+
+::
+
+    [MOVE(q2, r), G(q1, r), MOVE(q2, r)] = G(q1, q2) = G(q2, q1) = [MOVE(q1, r), G(q2, r), MOVE(q1, r)]
+
+holds. This has the effect of doubling the number of possible resolutions for ``G(q1, q2)`` since
+you can reverse the roles of the qubits.
 
 Before a circuit transpiled to a simplified architecture can be executed it must be further
 transpiled to the real Star architecture using :func:`transpile_insert_moves`, which will introduce
@@ -55,6 +69,10 @@ from iqm.iqm_client import (
     IQMClient,
 )
 from iqm.iqm_client.models import GateImplementationInfo, GateInfo, Locus, _op_is_symmetric
+
+Resolution = tuple[str, str, str]
+"""A (gate qubit, move qubit, resonator) triple that represents a resolution of a fictional
+ qubit-qubit gate."""
 
 
 class ExistingMoveHandlingOptions(str, Enum):
@@ -335,72 +353,169 @@ class _ResonatorStateTracker:
         """
         return tuple(self.res_state_owner.get(q, q) for q in locus)
 
-    def find_best_sequence(
-        self, locus: Locus, gate_q2r: dict, lookahead: list[Instruction]
-    ) -> tuple[str, str, str, float]:
-        """Find the best way to implement a fictional qubit-qubit gate G(g, m)
+    def find_resolutions(self, inst: Instruction) -> list[Resolution]:
+        """Find all the possible resolutions for the given fictional qubit-qubit gate.
+
+        Given a fictional gate G acting on qubits (a, b), finds all resonators r for which the current DQA
+        has either G(a, r) and MOVE(b, r), or G(b, r) and MOVE(a, r) available. See :mod:`~iqm.iqm_client.transpile`.
+
+        Args:
+            inst: Circuit instruction applying the fictional qubit-qubit gate G.
+
+        Returns:
+            All (gate qubit, move qubit, resonator) triples that can be used to implement ``inst``
+            as shown above.
+        """
+        gate_q2r = self.qr_gates_q2r[inst.name]
+
+        def get_resonators(g: str, m: str) -> set[str]:
+            """Resonators r for which we have G(g, r) and MOVE(m, r) available."""
+            return gate_q2r.get(g, set()) & self.move_q2r.get(m, set())
+
+        # G is assumed symmetric, hence we may reverse the locus order for more resolutions
+        a, b = inst.qubits
+        return [(a, b, r) for r in get_resonators(a, b)] + [(b, a, r) for r in get_resonators(b, a)]
+
+    def find_best_resolution(self, inst: Instruction, lookahead: Iterable[Instruction]) -> Resolution | None:
+        """Find the best resolution for the fictional qubit-qubit gate ``inst``
         using the available native qubit-resonator gates.
 
-        G(g, m) is implemented as G(g, r) for some resonator r, with additional MOVE gates
-        applied first to make sure the state of the qubit m is in r, and g is holding its own state.
+        Given a resolution (g, m, r) for ``inst``, it can be implemented as G(g, r) with
+        additional MOVE gates applied first to make sure the state of the qubit m is in r,
+        and g is holding its own state.
 
         Does not change the internal state of the tracker.
 
         Args:
-            locus: Two-qubit locus (g, m), where the state of the second qubit will be MOVEd.
-            gate_q2r: Mapping from qubit q to resonators r between which there are G(q, r) available.
-            lookahead: upcoming instructions
+            inst: instruction to implement
+            lookahead: upcoming instructions, to be taken into consideration
 
         Returns:
-            Best gate sequence implementing G(g, m) on the given locus, as the tuple
-            (g, m, r, badness). Badness is the number of gates in the sequence.
-            Iff no sequence could be found, r is an empty string.
+            Best resolution for implementing ``inst``, or None iff no resolution could be found.
         """
-        # pylint: disable=unused-argument
-        # TODO use the lookahead to add fractional badness
-        # We could sequence n ops of lookahead using recursion and use sequence len as badness,
-        # but that would scale exponentially in n.
-        g, m = locus
-        # Resonators r for which we have MOVE(m, r) and G(g, r) available.
-        resonators = gate_q2r.get(g, set()) & self.move_q2r.get(m, set())
-        options = []
-        for r in resonators:
-            badness = 1.0  # number of instructions we need to implement G via this resonator
-            g_holder = self.qubit_state_holder.get(g, g)
-            if g_holder != g:
-                badness += 1  # need to move the state back to g
+        # pylint: disable=too-many-locals,too-many-branches,too-many-statements
+        resolutions = self.find_resolutions(inst)
+        if not resolutions:
+            return None
 
-            m_holder = self.qubit_state_holder.get(m, m)
+        # We could sequence n ops of lookahead using recursion and use sequence lenght as badness,
+        # but that would scale exponentially in n. Instead we do some heuristics:
+        # Look ahead until we find the instructions that target the locus qubits next, and include
+        # their costs in the badness calculation.
+        followers: dict[str, Instruction] = {}
+        for follower in lookahead:
+            if len(followers) == 2:
+                break  # found a follower for both locus qubits
+            for q in follower.qubits:
+                if q in inst.qubits:
+                    followers.setdefault(q, follower)
+
+        def get_badness(res: Resolution) -> int:
+            """Badness of the given resolution for implementing a fictional qubit-qubit gate.
+
+            ``g_holder``, ``m_holder`` and ``r_owner`` represent the current QPU state.
+            """
+            g, m, r = res
+            badness = 0
+            if g_holder != g:
+                badness += 1  # need to move the state back to g from a resonator
             if m_holder == r:
-                pass  # already where it needs to be
+                pass  # m qubit state already in r
             else:
-                if self.res_state_owner[r] != r:
+                if r_owner != r:
                     badness += 1  # resonator has some other qubit's state in it, and must be reset
                 if m_holder == m:
-                    badness += 1  # need to move the state to r
+                    badness += 1  # need to move the m state to r
                 else:
-                    badness += 2  # in another resonator, need 2 moves to get it to r
-            options.append((g, m, r, badness))
+                    badness += 2  # m state is in another resonator, need 2 moves to get it to r
+            return badness
+
+        options = []
+        for res in resolutions:
+            g, m, r = res
+            # current situation
+            g_holder = self.qubit_state_holder.get(g, g)
+            m_holder = self.qubit_state_holder.get(m, m)
+            r_owner = self.res_state_owner[r]
+
+            # badness is the number of extra native instructions we need to implement ``inst``
+            # and its followers using this resolution.
+            badness: int = get_badness(res)  # implementing the gate itself
+
+            # situation after implementing the gate
+            g_holder = g
+            m_holder = r
+            r_owner = m
+            # calling get_badness(res) now would return 0
+
+            # implementing the gate's followers
+            g_follower = followers.get(g)
+            m_follower = followers.get(m)
+            if g_follower == m_follower and g_follower is not None:
+                # 2q gate, same or reversed locus (does not matter since QR gates are assumed symmetric!)
+                if g_follower.name == inst.name:
+                    # same gate => same resolution works, free
+                    pass
+                else:
+                    # different gate
+                    follower_resolutions = self.find_resolutions(g_follower)
+                    if res in follower_resolutions:
+                        # same resolution works, free
+                        pass
+                    else:
+                        # same resolution not ok, find the cheapest one
+                        badness += min(get_badness(f_res) for f_res in follower_resolutions)
+            else:
+                if g_follower:
+                    if g_follower.name in self.qr_gates_r2q:
+                        # 2q gate sharing g only
+                        follower_resolutions = self.find_resolutions(g_follower)
+                        if any(f_res[2] != r for f_res in follower_resolutions):
+                            # follower can be implemented using a different resonator
+                            pass
+                        else:
+                            # follower needs to use same resonator but different move qubit
+                            badness += 2
+                    else:
+                        # 1q gate on g, state already there
+                        pass
+                if m_follower:
+                    if m_follower.name in self.qr_gates_r2q:
+                        # 2q gate sharing m only
+                        follower_resolutions = self.find_resolutions(m_follower)
+                        if any(f_res[1:] == (m, r) for f_res in follower_resolutions):
+                            # follower can be implemented using m as the move qubit and r as the resonator
+                            pass
+                        elif any(f_res[2] != r for f_res in follower_resolutions):
+                            # follower can be implemented using a different resonator, m state must be reset
+                            badness += 1
+                        else:
+                            # follower needs to use same resonator but different move qubit
+                            badness += 2
+                    else:
+                        # 1q gate on m, state must be restored
+                        badness += 1
+
+            options.append((res, badness))
 
         # return the best option
-        return min(options, default=(g, m, '', 1000), key=lambda x: x[-1])
+        return min(options, key=lambda x: x[1])[0]
 
-    def get_sequence(self, g: str, m: str, r: str, inst: Instruction) -> list[Instruction]:
+    def get_sequence(self, resolution: Resolution, inst: Instruction) -> list[Instruction]:
         """Apply a fictional two-qubit gate G(g, m) using native qubit-resonator gates.
 
         G(g, m) is implemented as G(g, r), with additional MOVE gates
         applied first to make sure the state of the qubit m is in r, and g is holding its own state.
 
         Args:
-            g: first qubit
-            m: moved qubit
-            r: resonator
+            resolution: implementation for G(a, b)
             inst: G as an instruction
         Returns:
             sequence of real qubit-resonator gates implementing G(g, m)
         """
+        g, m, r = resolution
         seq: list[Instruction] = []
-        #  does m state need to be moved to the resonator?
+        # does m state need to be moved to the resonator?
         m_holder = self.qubit_state_holder.get(m, m)
         if m_holder != r:
             seq += self.create_move_instructions(m, r)
@@ -465,23 +580,15 @@ class _ResonatorStateTracker:
                 if inst.name not in self.qr_gates_r2q or any(c in self.resonators for c in locus):
                     raise CircuitTranspilationError(e) from e
 
-                # inst is a fictional qubit-qubit gate G. It can be made valid by decomposing it using MOVEs.
-                # G is assumed symmetric, hence we may reverse the locus order for more options
-                gate_q2r = self.qr_gates_q2r[inst.name]
-                lookahead = instructions[idx:]
-                g, m, r, _ = min(
-                    self.find_best_sequence(locus, gate_q2r, lookahead),
-                    self.find_best_sequence(locus[::-1], gate_q2r, lookahead),
-                    key=lambda x: x[-1],
-                )
-                if not r:
+                resolution = self.find_best_resolution(inst, instructions[idx + 1 :])
+                if resolution is None:
                     raise CircuitTranspilationError(
                         f'Unable to find native gate sequence to enable fictional gate {inst.name} at {locus}.'
                         ' Try routing the circuit to the simplified architecture first.'
                     ) from e
 
                 # implement G using the sequence
-                new_instructions += self.get_sequence(g, m, r, inst)
+                new_instructions += self.get_sequence(resolution, inst)
 
         return new_instructions
 

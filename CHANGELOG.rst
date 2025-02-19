@@ -2,11 +2,16 @@
 Changelog
 =========
 
+Version 22.2
+============
+
+* Improve the documentation of the ``delay`` operation.
+* Improve the performance of :func:`.transpile_insert_moves`.
+
 Version 22.1
 =============
 
 * The V1 API is deprecated and will be removed in a future release. Please use the V2 API instead. `#167 <https://github.com/iqm-finland/iqm-client/pull/167>`_
-
 
 Version 22.0
 ============
