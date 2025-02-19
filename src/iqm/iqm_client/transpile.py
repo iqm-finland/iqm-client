@@ -407,7 +407,7 @@ class _ResonatorStateTracker:
                 if q in inst.qubits:
                     followers.setdefault(q, follower)
 
-        def get_badness(res: Resolution) -> int:
+        def get_badness(res: Resolution, g_holder: str, m_holder: str, r_owner: str) -> int:
             """Badness of the given resolution for implementing a fictional qubit-qubit gate.
 
             ``g_holder``, ``m_holder`` and ``r_owner`` represent the current QPU state.
@@ -430,22 +430,17 @@ class _ResonatorStateTracker:
         options = []
         for res in resolutions:
             g, m, r = res
-            # current situation
-            g_holder = self.qubit_state_holder.get(g, g)
-            m_holder = self.qubit_state_holder.get(m, m)
-            r_owner = self.res_state_owner[r]
-
             # badness is the number of extra native instructions we need to implement ``inst``
             # and its followers using this resolution.
-            badness: int = get_badness(res)  # implementing the gate itself
+            # implementing the gate itself, starting from the current tracker state
+            badness: int = get_badness(
+                res,
+                self.qubit_state_holder.get(g, g),
+                self.qubit_state_holder.get(m, m),
+                self.res_state_owner[r],
+            )
 
-            # situation after implementing the gate
-            g_holder = g
-            m_holder = r
-            r_owner = m
-            # calling get_badness(res) now would return 0
-
-            # implementing the gate's followers
+            # implementing the gate's followers, starting from the situation after implementing the gate itself
             g_follower = followers.get(g)
             m_follower = followers.get(m)
             if g_follower == m_follower and g_follower is not None:
@@ -461,7 +456,7 @@ class _ResonatorStateTracker:
                         pass
                     else:
                         # same resolution not ok, find the cheapest one
-                        badness += min(get_badness(f_res) for f_res in follower_resolutions)
+                        badness += min(get_badness(f_res, g, r, m) for f_res in follower_resolutions)
             else:
                 if g_follower:
                     if g_follower.name in self.qr_gates_q2r:
