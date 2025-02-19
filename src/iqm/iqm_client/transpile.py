@@ -125,7 +125,7 @@ class _ResonatorStateTracker:
     Also contains information on available qubit-resonator gate loci.
 
     Args:
-        qr_gates: Mapping from qubit-resonator gate name to mapping from resonator to qubits with
+        qr_gates: Mapping from qubit-resonator gate name to mapping from qubit to resonators with
             which it has the gate available.
     """
 
@@ -146,20 +146,18 @@ class _ResonatorStateTracker:
 
         def invert_locus_mapping(mapping: dict[str, set[str]]) -> dict[str, set[str]]:
             """Invert the give mapping of resonators to a list of connected qubits, returning
-            a mapping of qubits to connected resonators."""
+            a mapping of qubits to connected resonators (or vice versa)."""
             inverse: dict[str, set[str]] = {}
             for r, qubits in mapping.items():
                 for q in qubits:
                     inverse.setdefault(q, set()).add(r)
             return inverse
 
-        self.move_r2q = qr_gates.pop(self.move_gate, {})
-        """Mapping from resonator to qubits whose state can be MOVEd into it."""
-        self.move_q2r = invert_locus_mapping(self.move_r2q)
+        self.move_q2r = qr_gates.pop(self.move_gate, {})
         """Mapping from qubit to resonators it can be MOVEd into."""
-        self.qr_gates_r2q = qr_gates
-        """Mapping from QR gate name to mapping from resonator to qubits with which it has the gate available."""
-        self.qr_gates_q2r = {gate_name: invert_locus_mapping(mapping) for gate_name, mapping in qr_gates.items()}
+        self.move_r2q = invert_locus_mapping(self.move_q2r)
+        """Mapping from resonator to qubits whose state can be MOVEd into it."""
+        self.qr_gates_q2r = qr_gates
         """Mapping from QR gate name to mapping from qubit to resonators with which it has the gate available."""
 
         self.res_state_owner = {r: r for r in self.resonators}
@@ -187,7 +185,7 @@ class _ResonatorStateTracker:
                     elif q in resonators:
                         # Other QR gates
                         raise ValueError(f'Gate {gate_name} locus {q, r} is not of the form (qubit, *)')
-                    qr_loci.setdefault(r, set()).add(q)
+                    qr_loci.setdefault(q, set()).add(r)
                 qr_gates[gate_name] = qr_loci
         return cls(qr_gates)
 
@@ -219,7 +217,7 @@ class _ResonatorStateTracker:
         for i in instructions:
             if i.name in cls.qr_gate_names:
                 q, r = i.qubits
-                qr_gates.setdefault(i.name, {}).setdefault(r, set()).add(q)
+                qr_gates.setdefault(i.name, {}).setdefault(q, set()).add(r)
         return cls(qr_gates)
 
     @property
@@ -285,7 +283,7 @@ class _ResonatorStateTracker:
 
         # if the qubit does not hold its own state, restore it, unless it's in the resonator
         # find where the qubit state is (it can be in at most one resonator)
-        res = [r for r, q in self.res_state_owner.items() if q == qubit]  # TODO not efficient
+        res = [r for r, c in self.res_state_owner.items() if c == qubit]  # TODO not efficient
         if res and (holder := res[0]) != resonator:
             locus = (qubit, holder)
             self.apply_move(*locus)
@@ -363,8 +361,7 @@ class _ResonatorStateTracker:
             inst: Circuit instruction applying the fictional qubit-qubit gate G.
 
         Returns:
-            All (gate qubit, move qubit, resonator) triples that can be used to implement ``inst``
-            as shown above.
+            All (gate qubit, move qubit, resonator) triples that can be used to implement ``inst``.
         """
         gate_q2r = self.qr_gates_q2r[inst.name]
 
@@ -467,7 +464,7 @@ class _ResonatorStateTracker:
                         badness += min(get_badness(f_res) for f_res in follower_resolutions)
             else:
                 if g_follower:
-                    if g_follower.name in self.qr_gates_r2q:
+                    if g_follower.name in self.qr_gates_q2r:
                         # 2q gate sharing g only
                         follower_resolutions = self.find_resolutions(g_follower)
                         if any(f_res[2] != r for f_res in follower_resolutions):
@@ -480,7 +477,7 @@ class _ResonatorStateTracker:
                         # 1q gate on g, state already there
                         pass
                 if m_follower:
-                    if m_follower.name in self.qr_gates_r2q:
+                    if m_follower.name in self.qr_gates_q2r:
                         # 2q gate sharing m only
                         follower_resolutions = self.find_resolutions(m_follower)
                         if any(f_res[1:] == (m, r) for f_res in follower_resolutions):
@@ -502,16 +499,19 @@ class _ResonatorStateTracker:
         return min(options, key=lambda x: x[1])[0]
 
     def get_sequence(self, resolution: Resolution, inst: Instruction) -> list[Instruction]:
-        """Apply a fictional two-qubit gate G(g, m) using native qubit-resonator gates.
+        """Apply a fictional two-qubit gate using a sequence of native qubit-resonator gates.
 
-        G(g, m) is implemented as G(g, r), with additional MOVE gates
+        See :mod:`~iqm.iqm_client.transpile`.
+        Given the resolution (g, m, r), the gate is implemented as G(g, r), with additional MOVE gates
         applied first to make sure the state of the qubit m is in r, and g is holding its own state.
 
+        Modifies the tracker state to reflect the returned sequence.
+
         Args:
-            resolution: implementation for G(a, b)
-            inst: G as an instruction
+            resolution: Defines a native gate sequence for implementing ``inst``.
+            inst: Fictional qubit-qubit gate as an instruction.
         Returns:
-            sequence of real qubit-resonator gates implementing G(g, m)
+            Sequence of real qubit-resonator gates implementing ``inst``.
         """
         g, m, r = resolution
         seq: list[Instruction] = []
@@ -577,7 +577,7 @@ class _ResonatorStateTracker:
 
             except CircuitValidationError as e:
                 # inst can not be applied to this locus as is
-                if inst.name not in self.qr_gates_r2q or any(c in self.resonators for c in locus):
+                if inst.name not in self.qr_gates_q2r or any(c in self.resonators for c in locus):
                     raise CircuitTranspilationError(e) from e
 
                 resolution = self.find_best_resolution(inst, instructions[idx + 1 :])
