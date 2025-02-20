@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>iqm.iqm_client.transpile &#8212; IQM client 22.1 documentation</title>
+    <title>iqm.iqm_client.transpile &#8212; IQM client 22.2 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=0618140e"></script>
+    <script src="../_static/documentation_options.js?v=116c9468"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
@@ -48,12 +48,12 @@
     <link rel="icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="iqm.iqm_client.transpile.simplify_architecture" href="iqm.iqm_client.transpile.simplify_architecture.html" />
+    <link rel="next" title="iqm.iqm_client.transpile.Resolution" href="iqm.iqm_client.transpile.Resolution.html" />
     <link rel="prev" title="iqm.iqm_client.models.Status" href="iqm.iqm_client.models.Status.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="22.1" />
-    <meta name="docbuild:last-update" content="2025-02-18"/>
+  <meta name="docsearch:version" content="22.2" />
+    <meta name="docbuild:last-update" content="2025-02-20"/>
   </head>
   
   
@@ -132,8 +132,8 @@
       
     
     
-    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 22.1 documentation - Home"/>
-    <img src="../_static/logo.png" class="logo__image only-dark pst-js-only" alt="IQM client 22.1 documentation - Home"/>
+    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 22.2 documentation - Home"/>
+    <img src="../_static/logo.png" class="logo__image only-dark pst-js-only" alt="IQM client 22.2 documentation - Home"/>
   
   
 </a></div>
@@ -216,6 +216,7 @@
 </ul>
 </details></li>
 <li class="toctree-l3 current active has-children"><a class="current reference internal" href="#">iqm.iqm_client.transpile</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.transpile.Resolution.html">iqm.iqm_client.transpile.Resolution</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.transpile.simplify_architecture.html">iqm.iqm_client.transpile.simplify_architecture</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.transpile.transpile_insert_moves.html">iqm.iqm_client.transpile.transpile_insert_moves</a></li>
 <li class="toctree-l4"><a class="reference internal" href="iqm.iqm_client.transpile.transpile_remove_moves.html">iqm.iqm_client.transpile.transpile_remove_moves</a></li>
@@ -389,16 +390,26 @@
 <p>Transpiling circuits to IQM devices involving computational resonators.</p>
 <p>In the IQM Star architecture, computational resonators are connected to multiple qubits.
 A MOVE gate can be used to move the state of a qubit to a connected, empty computational resonator,
-and back <em>to the same qubit</em>. Additionally, two-qubit gates like CZ can be applied
+and back <em>to the same qubit</em>. Additionally, two-component gates like CZ can be applied
 between a qubit and a connected resonator, so that effectively the qubit can be made to interact
 with other qubits connected to the resonator. However, the resonators cannot be measured,
 and no single-qubit gates can be applied on them.</p>
 <p>To enable third-party transpilers to work on the IQM Star architecture, we may abstract away the
 resonators and replace the real dynamic quantum architecture with a <em>simplified architecture</em>.
 Specifically, this happens by removing the resonators from the architecture, and for
-each resonator <code class="docutils literal notranslate"><span class="pre">r</span></code>, and for each pair of supported native qubit-resonator gates <code class="docutils literal notranslate"><span class="pre">(G(q1,</span> <span class="pre">r),</span> <span class="pre">MOVE(q2,</span> <span class="pre">r))</span></code>
-adding the fictional gate <code class="docutils literal notranslate"><span class="pre">G(q1,</span> <span class="pre">q2)</span></code> to the simplified architecture (since the latter can be
-implemented as the sequence <code class="docutils literal notranslate"><span class="pre">MOVE(q2,</span> <span class="pre">r),</span> <span class="pre">G(q1,</span> <span class="pre">r),</span> <span class="pre">MOVE(q2,</span> <span class="pre">r)</span></code>).</p>
+each resonator <code class="docutils literal notranslate"><span class="pre">r</span></code>, and for each pair of supported native qubit-resonator (QR) gates
+<code class="docutils literal notranslate"><span class="pre">(G(q1,</span> <span class="pre">r),</span> <span class="pre">MOVE(q2,</span> <span class="pre">r))</span></code> adding the <em>fictional</em> gate <code class="docutils literal notranslate"><span class="pre">G(q1,</span> <span class="pre">q2)</span></code> to the simplified architecture.
+This works since the fictional gate can be implemented as the QR gate sequence</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">G</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">)</span> <span class="o">=</span> <span class="p">[</span><span class="n">MOVE</span><span class="p">(</span><span class="n">q2</span><span class="p">,</span> <span class="n">r</span><span class="p">),</span> <span class="n">G</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">r</span><span class="p">),</span> <span class="n">MOVE</span><span class="p">(</span><span class="n">q2</span><span class="p">,</span> <span class="n">r</span><span class="p">)]</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>This sequence is called a <em>resolution</em> of <code class="docutils literal notranslate"><span class="pre">G(q1,</span> <span class="pre">q2)</span></code>.
+Currently  we assume all the QR gates (other than MOVE) are symmetric in the sense that</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">MOVE</span><span class="p">(</span><span class="n">q2</span><span class="p">,</span> <span class="n">r</span><span class="p">),</span> <span class="n">G</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">r</span><span class="p">),</span> <span class="n">MOVE</span><span class="p">(</span><span class="n">q2</span><span class="p">,</span> <span class="n">r</span><span class="p">)]</span> <span class="o">=</span> <span class="n">G</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">)</span> <span class="o">=</span> <span class="n">G</span><span class="p">(</span><span class="n">q2</span><span class="p">,</span> <span class="n">q1</span><span class="p">)</span> <span class="o">=</span> <span class="p">[</span><span class="n">MOVE</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">r</span><span class="p">),</span> <span class="n">G</span><span class="p">(</span><span class="n">q2</span><span class="p">,</span> <span class="n">r</span><span class="p">),</span> <span class="n">MOVE</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">r</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>holds. This has the effect of doubling the number of possible resolutions for <code class="docutils literal notranslate"><span class="pre">G(q1,</span> <span class="pre">q2)</span></code> since
+you can reverse the roles of the qubits.</p>
 <p>Before a circuit transpiled to a simplified architecture can be executed it must be further
 transpiled to the real Star architecture using <a class="reference internal" href="iqm.iqm_client.transpile.transpile_insert_moves.html#iqm.iqm_client.transpile.transpile_insert_moves" title="iqm.iqm_client.transpile.transpile_insert_moves"><code class="xref py py-func docutils literal notranslate"><span class="pre">transpile_insert_moves()</span></code></a>, which will introduce
 the resonators, add MOVE gates as necessary to move the states, and convert the fictional two-qubit
@@ -409,6 +420,15 @@ corresponding simplified architecture, e.g. so that the circuit can be retranspi
 using third-party tools that do not support the MOVE gate.</p>
 <p>Given a <code class="xref py py-class docutils literal notranslate"><span class="pre">DynamicQuantumArchitecture</span></code> for a Star architecture, the corresponding simplified
 version can be obtained using <a class="reference internal" href="iqm.iqm_client.transpile.simplify_architecture.html#iqm.iqm_client.transpile.simplify_architecture" title="iqm.iqm_client.transpile.simplify_architecture"><code class="xref py py-func docutils literal notranslate"><span class="pre">simplify_architecture()</span></code></a>.</p>
+<p class="rubric">Module Attributes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="iqm.iqm_client.transpile.Resolution.html#iqm.iqm_client.transpile.Resolution" title="iqm.iqm_client.transpile.Resolution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Resolution</span></code></a></p></td>
+<td><p>A (gate qubit, move qubit, resonator) triple that represents a resolution of a fictional qubit-qubit gate.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <p class="rubric">Functions</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
@@ -461,11 +481,11 @@ version can be obtained using <a class="reference internal" href="iqm.iqm_client
       </div>
     </a>
     <a class="right-next"
-       href="iqm.iqm_client.transpile.simplify_architecture.html"
+       href="iqm.iqm_client.transpile.Resolution.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">iqm.iqm_client.transpile.simplify_architecture</p>
+        <p class="prev-next-title">iqm.iqm_client.transpile.Resolution</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -504,7 +524,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2025-02-18.
+  Last updated on 2025-02-20.
   <br/>
 </p>
   </div>

@@ -5,6 +5,13 @@ iqm.iqm\_client.transpile
 
    
    
+   .. rubric:: Module Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Resolution
+   
    
 
    
