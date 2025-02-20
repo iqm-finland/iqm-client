@@ -488,6 +488,9 @@ class _ResonatorStateTracker:
                         # 1q gate on m, state must be restored
                         badness += 1
 
+            if badness == 0:
+                # badness cannot be lower than 0, so this is already an optimal resolution
+                return res
             options.append((res, badness))
 
         # return the best option
