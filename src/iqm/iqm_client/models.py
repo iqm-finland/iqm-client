@@ -62,7 +62,7 @@ _SUPPORTED_OPERATIONS: dict[str, NativeOperation] = {
     for op in [
         NativeOperation('barrier', 0, symmetric=True, no_calibration_needed=True),
         NativeOperation('delay', 0, {'duration': (float,)}, symmetric=True, no_calibration_needed=True),
-        NativeOperation('measure', 0, {'key': (str,)}, {'feedback_key': (str,)}, factorizable=True),
+        NativeOperation('measure', 0, {'key': (str,)}, args_not_required={'feedback_key': (str,)}, factorizable=True),
         NativeOperation(
             'prx',
             1,
@@ -81,6 +81,8 @@ _SUPPORTED_OPERATIONS: dict[str, NativeOperation] = {
                 'feedback_qubit': (str,),
             },
         ),
+        # TODO reset does need calibration, but it inherits it from cc_prx and does not yet appear in the DQA itself.
+        NativeOperation('reset', 0, symmetric=True, factorizable=True, no_calibration_needed=True),
         NativeOperation('cz', 2, symmetric=True),
         NativeOperation('move', 2),
     ]
