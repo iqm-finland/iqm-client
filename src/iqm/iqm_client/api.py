@@ -53,11 +53,6 @@ class APIEndpoint(Enum):
 class APIVariant(Enum):
     """
     Supported API versions and variants.
-
-    WARNING:
-    Only .V1 is considered stable. The .V2 API is experimental and
-    is subject to change without notice, even in minor or patch releases.
-    Use with caution, as future updates may introduce breaking changes or remove functionality entirely.
     """
 
     V1 = "V1"  # QCCSW Cocos-based circuits execution
