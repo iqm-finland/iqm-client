@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 22.3
+============
+
+* Add the native ``reset`` operation.
+
 Version 22.2
 ============
 
