@@ -34,6 +34,7 @@ from requests import HTTPError, Response
 from iqm.iqm_client import (
     DIST_NAME,
     REQUESTS_TIMEOUT,
+    CalibrationSet,
     Circuit,
     CircuitCompilationOptions,
     DDMode,
@@ -46,6 +47,7 @@ from iqm.iqm_client import (
     IQMClient,
     MoveGateFrameTrackingMode,
     MoveGateValidationMode,
+    QualityMetricSet,
     RunRequest,
     SingleQubitMapping,
     __version__,
@@ -115,6 +117,16 @@ def existing_job_status_url(existing_job_url) -> str:
 @pytest.fixture()
 def quantum_architecture_url(base_url) -> str:
     return f'{base_url}/quantum-architecture'
+
+
+@pytest.fixture()
+def quality_metric_set_url(base_url) -> str:
+    return f'{base_url}/calibration/metrics/latest'
+
+
+@pytest.fixture()
+def calibration_set_url(base_url) -> str:
+    return f'{base_url}/api/v1/calibration'
 
 
 @pytest.fixture()
@@ -476,6 +488,64 @@ def sample_static_architecture():
 
 
 @pytest.fixture
+def sample_quality_metric_set():
+    return QualityMetricSet(
+        quality_metric_set_id=UUID('e70667f9-a432-4585-97a9-d54de9a85abd'),
+        quality_metric_set_dut_label='M194_W0_P08_Z99',
+        quality_metric_set_created_timestamp='2023-02-10T08:57:04.605956',
+        quality_metric_set_end_timestamp='2023-02-10T08:57:04.605956',
+        quality_metric_set_is_invalid=False,
+        metrics="""{
+            "QB1.t1_time": {
+                "value": "4.408139707188389e-05",
+                "unit": "s",
+                "uncertainty": "2.83049498694448e-06",
+                "timestamp": "2023-02-10T08:57:04.605956"
+            },
+            "QB1.t2_time": {
+                "value": "3.245501974471748e-05",
+                "unit": "s",
+                "uncertainty": "2.39049697699448e-06",
+                "timestamp": "2023-02-10T08:57:04.605956"
+            }
+        }""",
+    )
+
+
+@pytest.fixture
+def sample_calibration_set():
+    return CalibrationSet(
+        calibration_set_id=UUID('e70667f9-a432-4585-97a9-d54de9a85abd'),
+        calibration_set_dut_label='M194_W0_P08_Z99',
+        calibration_set_created_timestamp='2023-02-10T08:57:04.605956',
+        calibration_set_end_timestamp='2023-02-10T08:57:04.605956',
+        calibration_set_is_invalid=False,
+        observations="""{
+                "QB4.flux.voltage": {
+                    "observation_id": 123456,
+                    "dut_field": "QB4.flux.voltage",
+                    "unit": "V",
+                    "value": -0.158,
+                    "uncertainty": null,
+                    "invalid": false,
+                    "created_timestamp": "2023-02-10T08:57:04.605956",
+                    "modified_timestamp": "2023-02-10T08:57:04.605956"
+                },
+                "PL-1.readout.center_frequency": {
+                    "observation_id": 234567,
+                    "dut_field": "PL-1.readout.center_frequency",
+                    "unit": "Hz",
+                    "value": 5.5e9,
+                    "uncertainty": null,
+                    "invalid": false,
+                    "created_timestamp": "2023-02-10T08:57:04.605956",
+                    "modified_timestamp": "2023-02-10T08:57:04.605956"
+                }
+            }""",
+    )
+
+
+@pytest.fixture
 def sample_dynamic_architecture() -> DynamicQuantumArchitecture:
     return DynamicQuantumArchitecture(
         calibration_set_id=UUID('26c5e70f-bea0-43af-bd37-6212ec7d04cb'),
@@ -683,6 +753,16 @@ def submit_failed_auth() -> MockJsonResponse:
 @pytest.fixture()
 def static_architecture_success(sample_static_architecture) -> MockJsonResponse:
     return MockJsonResponse(200, sample_static_architecture)
+
+
+@pytest.fixture()
+def quality_metric_set_success(sample_quality_metric_set) -> MockJsonResponse:
+    return MockJsonResponse(200, sample_quality_metric_set)
+
+
+@pytest.fixture()
+def calibration_set_success(sample_calibration_set) -> MockJsonResponse:
+    return MockJsonResponse(200, sample_calibration_set)
 
 
 @pytest.fixture()

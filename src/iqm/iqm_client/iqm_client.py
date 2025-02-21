@@ -44,6 +44,7 @@ from iqm.iqm_client.errors import (
     ClientAuthenticationError,
     ClientConfigurationError,
     JobAbortionError,
+    QualityMetricsRetrievalError,
 )
 from iqm.iqm_client.models import (
     _SUPPORTED_OPERATIONS,
@@ -54,6 +55,7 @@ from iqm.iqm_client.models import (
     DynamicQuantumArchitecture,
     Instruction,
     MoveGateValidationMode,
+    QualityMetric,
     QuantumArchitecture,
     QuantumArchitectureSpecification,
     RunCounts,
@@ -853,6 +855,38 @@ class IQMClient:
         # Cache architecture so that later invocations do not need to query it again
         self._architecture = qa
         return qa
+
+    def get_quality_metrics(self, *, timeout_secs: float = REQUESTS_TIMEOUT) -> QualityMetric:
+        """Retrieve the latest quality metrics from the server.
+        Caches the result and returns the same result on later invocations.
+
+
+        Returns:
+            quality metrics
+
+        Raises:
+            QualityMetricsRetrievalError: IQM server specific exceptions
+            ClientAuthenticationError: if no valid authentication is provided
+            HTTPException: HTTP exceptions
+        """
+        result = requests.get(
+            self._api.url(APIEndpoint.QUALITY_METRICS_LATEST),
+            headers=self._default_headers(),
+            timeout=timeout_secs,
+        )
+
+        self._check_not_found_error(result)
+        self._check_authentication_errors(result)
+        result.raise_for_status()
+
+        try:
+            qm = QualityMetric(**result.json())
+        except (json.decoder.JSONDecodeError, KeyError) as e:
+            raise QualityMetricsRetrievalError(f'Invalid response: {result.text}, {e}') from e
+
+        # cache the metric data so that later invocations do not need to query it again
+        self._quality_metrics = qm
+        return qm
 
     def get_dynamic_quantum_architecture(
         self, calibration_set_id: Optional[UUID] = None, *, timeout_secs: float = REQUESTS_TIMEOUT

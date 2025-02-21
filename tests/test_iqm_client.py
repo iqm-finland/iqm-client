@@ -27,6 +27,8 @@ from iqm.iqm_client import (
     APIEndpoint,
     APIVariant,
     ArchitectureRetrievalError,
+    CalibrationRetrievalError,
+    QualityMetricsRetrievalError,
     Circuit,
     CircuitCompilationOptions,
     CircuitExecutionError,
@@ -36,6 +38,8 @@ from iqm.iqm_client import (
     DDMode,
     DDStrategy,
     DynamicQuantumArchitecture,
+    QualityMetricSet,
+    CalibrationSet,
     HeraldingMode,
     Instruction,
     IQMClient,
@@ -632,6 +636,26 @@ def test_get_quantum_architecture(
     assert sample_client.get_quantum_architecture() == QuantumArchitectureSpecification(
         **sample_static_architecture['quantum_architecture']
     )
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+def test_get_quality_metric_set(sample_client, quality_metric_set_url, sample_quality_metric, quality_metric_set_success):
+    """Test retrieving the quality metric set."""
+    expect(requests, times=1).get(quality_metric_set_url, ...).thenReturn(quality_metric_set_success)
+
+    assert sample_client.get_quality_metric_set('quality_metric_set_id') == QualityMetricSet(
+        **sample_quality_metric['quality_metric_set'])
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+def test_get_calibration_set(sample_client, calibration_set_url, sample_calibration_set, calibration_set_success):
+    """Test retrieving the calibration set."""
+    expect(requests, times=1).get(calibration_set_url, ...).thenReturn(calibration_set_success)
+
+    assert sample_client.get_calibration_set('calibration_set_id') == CalibrationSet(
+        **sample_calibration_set['calibration_set'])
 
     verifyNoUnwantedInteractions()
     unstub()

@@ -216,7 +216,6 @@ class TestMoveTranspilerHybrid(MoveTranspilerBase):
         # assert len(c1.instructions) == 4  # move(QB5, CR2), cz(QB3, CR2), move(QB3, CR1), cz(QB1, CR1)
         assert 4 <= len(c1.instructions) <= 6
 
-
     def test_simplify_architecture_with_insert_moves(self):
         """Conversions between simplified architecture circuits and corresponding full arch circuits."""
 

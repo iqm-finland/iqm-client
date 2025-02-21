@@ -21,6 +21,8 @@ from iqm.iqm_client.models import (
     CircuitBatch,
     DDMode,
     DynamicQuantumArchitecture,
+    QualityMetrics,
+    CalibrationSet,
     GateImplementationInfo,
     GateInfo,
     HeraldingMode,
@@ -132,3 +134,68 @@ def test_dqa_deserialization():
     dqa_reconstructed = DynamicQuantumArchitecture(**json.loads(dqa_json))
 
     assert dqa_reconstructed == dqa
+
+def test_quality_metric_set_deserialization():
+    qm = QualityMetrics(
+        quality_metric_set_id=UUID('e70667f9-a432-4585-97a9-d54de9a85abd'),
+        quality_metric_set_dut_label='M194_W0_P08_Z99',
+        quality_metric_set_created_timestamp='2023-02-10T08:57:04.605956',
+        quality_metric_set_end_timestamp='2023-02-10T08:57:04.605956',
+        quality_metric_set_is_invalid = False,
+        metrics = """{
+            "QB1.t1_time": {
+                "value": "4.408139707188389e-05",
+                "unit": "s",
+                "uncertainty": "2.83049498694448e-06",
+                "timestamp": "2023-02-10T08:57:04.605956"
+            },
+            "QB1.t2_time": {
+                "value": "3.245501974471748e-05",
+                "unit": "s",
+                "uncertainty": "2.39049697699448e-06",
+                "timestamp": "2023-02-10T08:57:04.605956"
+            }
+        }"""
+    )
+
+    qm_json = qm.model_dump_json()
+    qm_reconstructed = QualityMetrics(**json.loads(qm_json))
+
+    assert qm_reconstructed == qm
+
+def test_calibration_set_deserialization():
+    cs = CalibrationSet(
+        calibration_set_id=UUID('59478539-dcef-4b2e-80c8-122d7ec3fc89'),
+        calibration_set_dut_label='M194_W0_P08_Z99',
+        calibration_set_created_timestamp='2023-02-10T08:57:04.605956',
+        calibration_set_end_timestamp='2023-02-10T08:57:04.605956',
+        calibration_set_is_invalid = False,
+        observations = """{
+                "QB4.flux.voltage": {
+                    "observation_id": 123456,
+                    "dut_field": "QB4.flux.voltage",
+                    "unit": "V",
+                    "value": -0.158,
+                    "uncertainty": null,
+                    "invalid": false,
+                    "created_timestamp": "2023-02-10T08:57:04.605956",
+                    "modified_timestamp": "2023-02-10T08:57:04.605956"
+                },
+                "PL-1.readout.center_frequency": {
+                    "observation_id": 234567,
+                    "dut_field": "PL-1.readout.center_frequency",
+                    "unit": "Hz",
+                    "value": 5.5e9,
+                    "uncertainty": null,
+                    "invalid": false,
+                    "created_timestamp": "2023-02-10T08:57:04.605956",
+                    "modified_timestamp": "2023-02-10T08:57:04.605956"
+                }
+            }"""
+    )
+
+    cs_json = cs.model_dump_json()
+    cs_reconstructed = CalibrationSet(**json.loads(cs_json))
+
+    assert cs_reconstructed == cs
+
