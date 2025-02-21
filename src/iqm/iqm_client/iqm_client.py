@@ -45,6 +45,7 @@ from iqm.iqm_client.errors import (
     ClientConfigurationError,
     JobAbortionError,
     QualityMetricsRetrievalError,
+    CalibrationRetrievalError,
 )
 from iqm.iqm_client.models import (
     _SUPPORTED_OPERATIONS,
@@ -55,8 +56,9 @@ from iqm.iqm_client.models import (
     DynamicQuantumArchitecture,
     Instruction,
     MoveGateValidationMode,
-    QualityMetric,
     QuantumArchitecture,
+    QualityMetricSet,
+    CalibrationSet,
     QuantumArchitectureSpecification,
     RunCounts,
     RunRequest,
