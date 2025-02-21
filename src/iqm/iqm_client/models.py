@@ -604,7 +604,6 @@ class CalibrationSet(BaseModel):
         super().__init__(**data)
         # self.observations = {k: v for k, v in self.observations.items()} # i dont think we need this
 
-
 class GateImplementationInfo(BaseModel):
     """Information about an implementation of a quantum gate/operation."""
 
