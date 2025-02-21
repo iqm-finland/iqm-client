@@ -44,8 +44,8 @@ from iqm.iqm_client.errors import (
     ClientAuthenticationError,
     ClientConfigurationError,
     JobAbortionError,
-    QualityMetricsRetrievalError,
-    CalibrationRetrievalError,
+    QualityMetricSetRetrievalError,
+    CalibrationSetRetrievalError,
 )
 from iqm.iqm_client.models import (
     _SUPPORTED_OPERATIONS,
@@ -887,7 +887,7 @@ class IQMClient:
         try:
             qm = QualityMetricSet(**result.json())
         except (json.decoder.JSONDecodeError, KeyError) as e:
-            raise QualityMetricsRetrievalError(f'Invalid response: {result.text}, {e}') from e
+            raise QualityMetricSetRetrievalError(f'Invalid response: {result.text}, {e}') from e
 
         # cache the metric data so that later invocations do not need to query it again
         self._quality_metrics = qm
@@ -923,7 +923,7 @@ class IQMClient:
         try:
             cs = CalibrationSet(**result.json())
         except (json.decoder.JSONDecodeError, KeyError) as e:
-            raise CalibrationRetrievalError(f'Invalid response: {result.text}, {e}') from e
+            raise CalibrationSetRetrievalError(f'Invalid response: {result.text}, {e}') from e
         
         # cache the calibration set so that later invocations do not need to query it again
         self._calibration_set = cs

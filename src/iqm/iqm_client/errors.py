@@ -48,9 +48,9 @@ class ArchitectureRetrievalError(RuntimeError):
     """Retrieving quantum architecture failed."""
 
 
-class QualityMetricsRetrievalError(RuntimeError):
+class QualityMetricSetRetrievalError(RuntimeError):
     """Retrieving quality metrics failed."""
 
 
-class CalibrationRetrievalError(RuntimeError):
+class CalibrationSetRetrievalError(RuntimeError):
     """Retrieving calibration failed."""

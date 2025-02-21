@@ -27,8 +27,8 @@ from iqm.iqm_client import (
     APIEndpoint,
     APIVariant,
     ArchitectureRetrievalError,
-    CalibrationRetrievalError,
-    QualityMetricsRetrievalError,
+    CalibrationSetRetrievalError,
+    QualityMetricSetRetrievalError,
     Circuit,
     CircuitCompilationOptions,
     CircuitExecutionError,
@@ -735,6 +735,26 @@ def test_quantum_architecture_throws_json_decode_error_if_received_not_json(
 
     verifyNoUnwantedInteractions()
     unstub()
+
+def test_quality_metric_set_throws_json_decode_error_if_received_not_json(
+    sample_client, quality_metric_set_url, not_valid_json_response
+):
+    """Test that an exception is raised when the response is not a valid JSON"""
+    expect(requests, times=1).get(quality_metric_set_url, ...).thenReturn(not_valid_json_response)
+
+    with pytest.raises(QualityMetricSetRetrievalError):
+        sample_client.get_quality_metric_set('quality_metric_set_id')
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+def test_calibration_set_throws_json_decode_error_if_received_not_json(
+    sample_client, calibration_set_url, not_valid_json_response):
+    """Test that an exception is raised when the response is not a valid JSON"""
+    expect(requests, times=1).get(calibration_set_url, ...).thenReturn(not_valid_json_response)
+
+    with pytest.raises(CalibrationSetRetrievalError):
+        sample_client.get_calibration_set('calibration_set_id')
 
 
 def test_submit_circuits_throws_json_decode_error_if_received_not_json(
