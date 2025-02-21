@@ -564,8 +564,7 @@ def _component_sort_key(component_name: str) -> tuple[str, int, str]:
 
     return re.sub(r'[^a-zA-Z]', '', component_name), get_numeric_id(component_name), component_name
 
-
-class QualityMetric(BaseModel):
+class QualityMetricSet(BaseModel):
     """Latest quality metrics for a calibration set."""
 
     quality_metric_set_id: Optional[UUID] = Field(...)
@@ -582,9 +581,8 @@ class QualityMetric(BaseModel):
     """Quality metrics."""
 
     def __init__(self, **data):
-        super().__init__(**data)
+        super().__init__(**data) 
         # self.metrics = {k: v for k, v in self.metrics.items()} # i dont think we need this
-
 
 class CalibrationSet(BaseModel):
     """Metadata and observations of a calibration set."""
