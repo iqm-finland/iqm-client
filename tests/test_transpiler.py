@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from collections import Counter
 import re
 from typing import Optional
 from uuid import UUID
@@ -195,9 +196,7 @@ class TestMoveTranspilerHybrid(MoveTranspilerBase):
         c1 = self.insert(circuit, handling_option)
         self.assert_valid_circuit(c1)
         assert self.check_equiv_without_moves(c1, circuit)
-        # TODO currently not always optimal
-        # assert len(c1.instructions) == 4  # prx(QB2), move(QB2, CR2), cz(QB3, CR2), cz(QB5, CR2)
-        assert 4 <= len(c1.instructions) <= 6
+        assert len(c1.instructions) == 4  # prx(QB2), move(QB2, CR2), cz(QB3, CR2), cz(QB5, CR2)
 
     @pytest.mark.parametrize('handling_option', ExistingMoveHandlingOptions)
     def test_heuristic_move_correct_qubit(self, handling_option):
@@ -205,16 +204,14 @@ class TestMoveTranspilerHybrid(MoveTranspilerBase):
         circuit = Circuit(
             name='test',
             instructions=(
-                I(name='cz', qubits=('QB3', 'QB5'), args={}),  # both cz(QB3, QB5) and cz(QB5, QB3) are possible via CR2
-                I(name='cz', qubits=('QB3', 'QB1'), args={}),  # only cz(QB1, QB3) is possible via CR1
+                I(name='cz', qubits=('QB3', 'QB5'), args={}),  # can happen via moving either QB3 or QB5 to CR2
+                I(name='cz', qubits=('QB3', 'QB1'), args={}),  # requires moving QB3 to CR1
             ),
         )
         c1 = self.insert(circuit, handling_option, restore_states=False)
         self.assert_valid_circuit(c1)
         assert self.check_equiv_without_moves(c1, circuit)
-        # TODO currently not always optimal
-        # assert len(c1.instructions) == 4  # move(QB5, CR2), cz(QB3, CR2), move(QB3, CR1), cz(QB1, CR1)
-        assert 4 <= len(c1.instructions) <= 6
+        assert len(c1.instructions) == 4  # move(QB5, CR2), cz(QB3, CR2), move(QB3, CR1), cz(QB1, CR1)
 
     def test_simplify_architecture_with_insert_moves(self):
         """Conversions between simplified architecture circuits and corresponding full arch circuits."""
@@ -457,6 +454,66 @@ class TestMoveTranspiler(MoveTranspilerBase):
         c1 = self.insert(c, ExistingMoveHandlingOptions.TRUST)
         self.assert_valid_circuit(c1)
         assert self.check_moves_in_circuit(c1, moves)
+
+    @pytest.mark.parametrize('handling_option', ExistingMoveHandlingOptions)
+    @pytest.mark.parametrize('n', range(2, 6))
+    def test_star_ghz(self, handling_option, n: int):
+        """Test that the Star transpiler produces an optimal n-qubit GHZ circuit."""
+        # all gates available for all loci
+        qubits = [f'QB{k+1}' for k in range(n)]
+        q_loci = tuple((q,) for q in qubits)
+        qr_loci = tuple((q, 'CR') for q in qubits)
+        arch = DynamicQuantumArchitecture(
+            calibration_set_id=UUID('26c5e70f-bea0-43af-bd37-6212ec7d04cb'),
+            qubits=qubits,
+            computational_resonators=['CR'],
+            gates={
+                'prx': GateInfo(
+                    implementations={'drag_gaussian': GateImplementationInfo(loci=q_loci)},
+                    default_implementation='drag_gaussian',
+                    override_default_implementation={},
+                ),
+                'cz': GateInfo(
+                    implementations={'tgss': GateImplementationInfo(loci=qr_loci)},
+                    default_implementation='tgss',
+                    override_default_implementation={},
+                ),
+                'move': GateInfo(
+                    implementations={'tgss_crf': GateImplementationInfo(loci=qr_loci)},
+                    default_implementation='tgss_crf',
+                    override_default_implementation={},
+                ),
+                'measure': GateInfo(
+                    implementations={'constant': GateImplementationInfo(loci=q_loci)},
+                    default_implementation='constant',
+                    override_default_implementation={},
+                ),
+            },
+        )
+
+        instructions = [I(name='prx', qubits=(qubits[0],), args={'phase_t': 0.25, 'angle_t': 0.0})]
+        for q in qubits[1:]:
+            instructions.extend(
+                [
+                    I(name='prx', qubits=(q,), args={'phase_t': 0.25, 'angle_t': 0.0}),
+                    I(name='cz', qubits=(qubits[0], q), args={}),
+                    I(name='prx', qubits=(q,), args={'phase_t': -0.25, 'angle_t': 0.0}),
+                ]
+            )
+        circuit = Circuit(
+            name='simplified',
+            instructions=instructions,
+        )
+        c = transpile_insert_moves(
+            circuit,
+            arch=arch,
+            existing_moves=handling_option,
+        )
+        counter = Counter([inst.name for inst in c.instructions])
+        # optimal circuit is a cz comb where QB1 is moved into CR, and then moved back at the end
+        assert counter['prx'] == 2 * n - 1
+        assert counter['move'] == 2
+        assert counter['cz'] == n - 1
 
     @pytest.mark.parametrize('handling_option', ExistingMoveHandlingOptions)
     def test_with_qubit_map(self, handling_option):

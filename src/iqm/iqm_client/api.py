@@ -15,6 +15,7 @@
 
 from enum import Enum, auto
 from posixpath import join
+import warnings
 
 
 class APIEndpoint(Enum):
@@ -52,11 +53,6 @@ class APIEndpoint(Enum):
 class APIVariant(Enum):
     """
     Supported API versions and variants.
-
-    WARNING:
-    Only .V1 is considered stable. The .V2 API is experimental and
-    is subject to change without notice, even in minor or patch releases.
-    Use with caution, as future updates may introduce breaking changes or remove functionality entirely.
     """
 
     V1 = "V1"  # QCCSW Cocos-based circuits execution
@@ -76,6 +72,15 @@ class APIConfig:
                             or https://test.qc.iqm.fi for .V2
         """
         self.variant = variant
+
+        # V1 API is deprecated and will be removed in a future release.
+        # V2 API is supported by the QCCSW starting with version 3.3.0.
+        if self.variant == APIVariant.V1:
+            warnings.warn(
+                "The V1 API is deprecated and will be removed in a future release. Please use the V2 API instead.",
+                DeprecationWarning,
+            )
+
         self.iqm_server_url = iqm_server_url
         self.urls = self._get_api_urls()
 
