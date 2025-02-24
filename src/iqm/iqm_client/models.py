@@ -564,25 +564,27 @@ def _component_sort_key(component_name: str) -> tuple[str, int, str]:
 
     return re.sub(r'[^a-zA-Z]', '', component_name), get_numeric_id(component_name), component_name
 
+
 class QualityMetricSet(BaseModel):
     """Latest quality metrics for a calibration set."""
 
     quality_metric_set_id: Optional[UUID] = Field(...)
     """ID of the calibration/quality metric set."""
+    quality_metric_set_dut_label: Optional[str] = Field(...)
+    """Label of the device under test."""
+    quality_metric_set_created_timestamp: Optional[str] = Field(...)
+    """Timestamp when the quality metric set was created."""
+    quality_metric_set_end_timestamp: Optional[str] = Field(...)
+    """Timestamp when the quality metric set ended."""
     quality_metric_set_is_invalid: bool = Field(...)
     """Whether the quality metric set is invalid."""
-    quality_metric_set_created_timestamp: str = Field(...)
-    """Timestamp when the quality metric set was created."""
-    quality_metric_set_end_timestamp: str = Field(...)
-    """Timestamp when the quality metric set ended."""
-    quality_metric_set_dut_label: str = Field(...)
-    """Label of the device under test."""
-    metrics: dict[str, Any] = Field(...)
+    metrics: Optional[dict[str, dict[str, Any]]] = Field(...)
     """Quality metrics."""
 
     def __init__(self, **data):
-        super().__init__(**data) 
+        super().__init__(**data)
         # self.metrics = {k: v for k, v in self.metrics.items()} # i dont think we need this
+
 
 class CalibrationSet(BaseModel):
     """Metadata and observations of a calibration set."""
@@ -603,6 +605,7 @@ class CalibrationSet(BaseModel):
     def __init__(self, **data):
         super().__init__(**data)
         # self.observations = {k: v for k, v in self.observations.items()} # i dont think we need this
+
 
 class GateImplementationInfo(BaseModel):
     """Information about an implementation of a quantum gate/operation."""

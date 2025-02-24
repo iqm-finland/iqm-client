@@ -27,8 +27,8 @@ from iqm.iqm_client import (
     APIEndpoint,
     APIVariant,
     ArchitectureRetrievalError,
+    CalibrationSet,
     CalibrationSetRetrievalError,
-    QualityMetricSetRetrievalError,
     Circuit,
     CircuitCompilationOptions,
     CircuitExecutionError,
@@ -38,12 +38,12 @@ from iqm.iqm_client import (
     DDMode,
     DDStrategy,
     DynamicQuantumArchitecture,
-    QualityMetricSet,
-    CalibrationSet,
     HeraldingMode,
     Instruction,
     IQMClient,
     JobAbortionError,
+    QualityMetricSet,
+    QualityMetricSetRetrievalError,
     QuantumArchitectureSpecification,
     SingleQubitMapping,
     Status,
@@ -640,22 +640,133 @@ def test_get_quantum_architecture(
     verifyNoUnwantedInteractions()
     unstub()
 
-def test_get_quality_metric_set(sample_client, quality_metric_set_url, sample_quality_metric, quality_metric_set_success):
+
+def test_get_quality_metric_set(
+    sample_client, quality_metric_set_url, sample_quality_metric_set, quality_metric_set_success
+):
     """Test retrieving the quality metric set."""
     expect(requests, times=1).get(quality_metric_set_url, ...).thenReturn(quality_metric_set_success)
 
-    assert sample_client.get_quality_metric_set('quality_metric_set_id') == QualityMetricSet(
-        **sample_quality_metric['quality_metric_set'])
+    assert sample_client.get_quality_metric_set() == sample_quality_metric_set
 
     verifyNoUnwantedInteractions()
     unstub()
+
+
+def test_get_quality_metric_set_without_calset_id_does_not_cache(
+    sample_client, quality_metric_set_url, sample_quality_metric_set, quality_metric_set_success
+):
+    """
+    Tests that the correct quality metric set is returned in the case where default calset
+    changes between two invocations of get_quality_metric_set().
+    """
+    quality_metric_set_2 = {
+        'quality_metric_set_id': '3902d525-d8f4-42c0-9fa9-6bbd535b6c80',
+        'quality_metric_set_dut_label': 'M194_W0_P08_Z99',
+        'quality_metric_set_created_timestamp': '2024-02-10T08:57:04.605956',
+        'quality_metric_set_end_timestamp': '2024-02-10T08:57:04.605956',
+        'quality_metric_set_is_invalid': False,
+        'metrics': {
+            'QB1.t1_time': {
+                'value': '4.408139707188389e-05',
+                'unit': 's',
+                'uncertainty': '2.83049498694448e-06',
+                'timestamp': '2024-02-10T08:57:04.605956',
+            },
+            'QB1.t2_time': {
+                'value': '3.245501974471748e-05',
+                'unit': 's',
+                'uncertainty': '2.39049697699448e-06',
+                'timestamp': '2024-02-10T08:57:04.605956',
+            },
+        },
+    }
+
+    quality_metric_set_success_2 = MockJsonResponse(200, quality_metric_set_2)
+    expect(requests, times=2).get(quality_metric_set_url, ...).thenReturn(quality_metric_set_success).thenReturn(
+        quality_metric_set_success_2
+    )
+
+    assert sample_client.get_quality_metric_set() == sample_quality_metric_set
+    assert sample_client.get_quality_metric_set() == QualityMetricSet(**quality_metric_set_2)
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
 
 def test_get_calibration_set(sample_client, calibration_set_url, sample_calibration_set, calibration_set_success):
     """Test retrieving the calibration set."""
     expect(requests, times=1).get(calibration_set_url, ...).thenReturn(calibration_set_success)
 
-    assert sample_client.get_calibration_set('calibration_set_id') == CalibrationSet(
-        **sample_calibration_set['calibration_set'])
+    assert sample_client.get_calibration_set() == sample_calibration_set
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_get_calibration_set_with_calset_id(sample_client, base_url, sample_calibration_set, calibration_set_success):
+    """Tests that the correct calibration set for the given ``calibration_set_id`` is returned."""
+    calset_id = sample_calibration_set.calibration_set_id
+    expect(requests, times=1).get(f'{base_url}/api/v1/calibration/{calset_id}', ...).thenReturn(calibration_set_success)
+    assert sample_client.get_calibration_set(calset_id) == sample_calibration_set
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_get_calibration_set_without_calset_id(
+    sample_client, base_url, sample_calibration_set, calibration_set_success
+):
+    """Tests that the correct calibration set for the default calibration set is returned."""
+    expect(requests, times=1).get(f'{base_url}/api/v1/calibration/default', ...).thenReturn(calibration_set_success)
+    assert sample_client.get_calibration_set() == sample_calibration_set
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_get_calibration_set_without_calset_id_does_not_cache(
+    sample_client, base_url, sample_calibration_set, calibration_set_success
+):
+    """
+    Tests that the correct calibration set is returned in the case where default calset
+    changes between two invocations of get_calibration_set().
+    """
+    calibration_set_2 = {
+        'calibration_set_id': '3902d525-d8f4-42c0-9fa9-6bbd535b6c80',
+        'calibration_set_dut_label': 'M194_W0_P08_Z99',
+        'calibration_set_created_timestamp': '2024-02-10T08:57:04.605956',
+        'calibration_set_end_timestamp': '2024-02-10T08:57:04.605956', 
+        'calibration_set_is_invalid': False,
+        'observations': {
+            'QB4.flux.voltage': {
+                'observation_id': 123456,
+                'dut_field': 'QB4.flux.voltage',
+                'unit': 'V',
+                'value': -0.2,
+                'uncertainty': None,
+                'invalid': False,
+                'created_timestamp': '2024-02-10T08:57:04.605956',
+                'modified_timestamp': '2024-02-10T08:57:04.605956',
+            },
+            'PL-1.readout.center_frequency': {
+                'observation_id': 234567,
+                'dut_field': 'PL-1.readout.center_frequency',
+                'unit': 'Hz',
+                'value': 5.7e9,
+                'uncertainty': None,
+                'invalid': False,
+                'created_timestamp': '2024-02-10T08:57:04.605956',
+                'modified_timestamp': '2024-02-10T08:57:04.605956',
+            },
+        },
+    }
+
+    calibration_set_success_2 = MockJsonResponse(200, calibration_set_2)
+    expect(requests, times=2).get(f'{base_url}/api/v1/calibration/default', ...).thenReturn(
+        calibration_set_success
+    ).thenReturn(calibration_set_success_2)
+
+    assert sample_client.get_calibration_set() == sample_calibration_set
+    assert sample_client.get_calibration_set() == CalibrationSet(**calibration_set_2)
 
     verifyNoUnwantedInteractions()
     unstub()
@@ -736,6 +847,7 @@ def test_quantum_architecture_throws_json_decode_error_if_received_not_json(
     verifyNoUnwantedInteractions()
     unstub()
 
+
 def test_quality_metric_set_throws_json_decode_error_if_received_not_json(
     sample_client, quality_metric_set_url, not_valid_json_response
 ):
@@ -743,18 +855,23 @@ def test_quality_metric_set_throws_json_decode_error_if_received_not_json(
     expect(requests, times=1).get(quality_metric_set_url, ...).thenReturn(not_valid_json_response)
 
     with pytest.raises(QualityMetricSetRetrievalError):
-        sample_client.get_quality_metric_set('quality_metric_set_id')
+        sample_client.get_quality_metric_set()
 
     verifyNoUnwantedInteractions()
     unstub()
 
+
 def test_calibration_set_throws_json_decode_error_if_received_not_json(
-    sample_client, calibration_set_url, not_valid_json_response):
+    sample_client, calibration_set_url, not_valid_json_response
+):
     """Test that an exception is raised when the response is not a valid JSON"""
     expect(requests, times=1).get(calibration_set_url, ...).thenReturn(not_valid_json_response)
 
     with pytest.raises(CalibrationSetRetrievalError):
-        sample_client.get_calibration_set('calibration_set_id')
+        sample_client.get_calibration_set()
+
+    verifyNoUnwantedInteractions()
+    unstub()
 
 
 def test_submit_circuits_throws_json_decode_error_if_received_not_json(
