@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>iqm.iqm_client.models.Instruction &#8212; IQM client 22.2 documentation</title>
+    <title>iqm.iqm_client.models.Instruction &#8212; IQM client 22.3 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=116c9468"></script>
+    <script src="../_static/documentation_options.js?v=aa901675"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
@@ -54,8 +54,8 @@
     <link rel="prev" title="iqm.iqm_client.models.HeraldingMode" href="iqm.iqm_client.models.HeraldingMode.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="22.2" />
-    <meta name="docbuild:last-update" content="2025-02-20"/>
+  <meta name="docsearch:version" content="22.3" />
+    <meta name="docbuild:last-update" content="2025-02-24"/>
   </head>
   
   
@@ -134,8 +134,8 @@
       
     
     
-    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 22.2 documentation - Home"/>
-    <img src="../_static/logo.png" class="logo__image only-dark pst-js-only" alt="IQM client 22.2 documentation - Home"/>
+    <img src="../_static/logo.png" class="logo__image only-light" alt="IQM client 22.3 documentation - Home"/>
+    <img src="../_static/logo.png" class="logo__image only-dark pst-js-only" alt="IQM client 22.3 documentation - Home"/>
   
   
 </a></div>
@@ -445,25 +445,30 @@ The operation is determined by <a class="reference internal" href="#iqm.iqm_clie
 <code class="docutils literal notranslate"><span class="pre">feedback_key:</span> <span class="pre">str</span></code></p></td>
 <td><p>Classically controlled PRX gate.</p></td>
 </tr>
-<tr class="row-odd"><td><p>cz</p></td>
+<tr class="row-odd"><td><p>reset</p></td>
+<td><p>&gt;= 1</p></td>
+<td></td>
+<td><p>Reset the qubit(s) to <span class="math notranslate nohighlight">\(|0\rangle\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>cz</p></td>
 <td><p>2</p></td>
 <td></td>
 <td><p>Controlled-Z gate.</p></td>
 </tr>
-<tr class="row-even"><td><p>move</p></td>
+<tr class="row-odd"><td><p>move</p></td>
 <td><p>2</p></td>
 <td></td>
-<td><p>Moves a qubit state between a qubit and a
+<td><p>Move a qubit state between a qubit and a
 computational resonator, as long as
 at least one of the components is
 in the <span class="math notranslate nohighlight">\(|0\rangle\)</span> state.</p></td>
 </tr>
-<tr class="row-odd"><td><p>barrier</p></td>
+<tr class="row-even"><td><p>barrier</p></td>
 <td><p>&gt;= 1</p></td>
 <td></td>
 <td><p>Execution barrier.</p></td>
 </tr>
-<tr class="row-even"><td><p>delay</p></td>
+<tr class="row-odd"><td><p>delay</p></td>
 <td><p>&gt;= 1</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">duration:</span> <span class="pre">float</span></code></p></td>
 <td><p>Force a delay between circuit operations.</p></td>
@@ -519,14 +524,28 @@ If the measurement result is 1, the PRX gate is applied. If it is 0, an identity
 duration gate is applied instead.
 The measurement instruction must precede the classically controlled gate instruction in the quantum circuit.</p>
 </section>
+<section id="reset">
+<h2>Reset<a class="headerlink" href="#reset" title="Link to this heading">#</a></h2>
+<p>Resets the qubit(s) non-unitarily to the <span class="math notranslate nohighlight">\(|0\rangle\)</span> state.</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">Example</span><a class="headerlink" href="#id3" title="Link to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Instruction</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;reset&#39;</span><span class="p">,</span> <span class="n">qubits</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;alice&#39;</span><span class="p">,</span> <span class="s1">&#39;bob&#39;</span><span class="p">),</span> <span class="n">args</span><span class="o">=</span><span class="p">{})</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Currently inherits its calibration from <code class="docutils literal notranslate"><span class="pre">cc_prx</span></code> and is only available when <code class="docutils literal notranslate"><span class="pre">cc_prx</span></code> is.</p>
+</div>
+</section>
 <section id="cz">
 <h2>CZ<a class="headerlink" href="#cz" title="Link to this heading">#</a></h2>
 <p>Controlled-Z gate. Represented in the standard computational basis by the matrix</p>
 <div class="math notranslate nohighlight">
 \[\text{CZ} = \text{diag}(1, 1, 1, -1).\]</div>
 <p>It is symmetric wrt. the qubits it’s acting on, and takes no arguments.</p>
-<div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">Example</span><a class="headerlink" href="#id3" title="Link to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">Example</span><a class="headerlink" href="#id4" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Instruction</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;cz&#39;</span><span class="p">,</span> <span class="n">qubits</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;alice&#39;</span><span class="p">,</span> <span class="s1">&#39;bob&#39;</span><span class="p">),</span> <span class="n">args</span><span class="o">=</span><span class="p">{})</span>
 </pre></div>
 </div>
@@ -545,8 +564,8 @@ Its effect on the orthogonal subspace is undefined.</p>
 <p>To ensure that the state of the qubit and resonator has no overlap with <span class="math notranslate nohighlight">\(|11\rangle\)</span>, it is
 recommended that no single qubit gates are applied to the qubit in between a
 pair of MOVE operations.</p>
-<div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text">Example</span><a class="headerlink" href="#id4" title="Link to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">Example</span><a class="headerlink" href="#id5" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Instruction</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;move&#39;</span><span class="p">,</span> <span class="n">qubits</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;alice&#39;</span><span class="p">,</span> <span class="s1">&#39;resonator&#39;</span><span class="p">),</span> <span class="n">args</span><span class="o">=</span><span class="p">{})</span>
 </pre></div>
 </div>
@@ -564,8 +583,8 @@ It ensures that any such instructions that succeed the barrier are only executed
 all such instructions that precede the barrier have been completed.
 Hence it can be used to guarantee a specific causal order for the other instructions.
 It takes no arguments, and has no other effect.</p>
-<div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">Example</span><a class="headerlink" href="#id5" title="Link to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">Example</span><a class="headerlink" href="#id6" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Instruction</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;barrier&#39;</span><span class="p">,</span> <span class="n">qubits</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;alice&#39;</span><span class="p">,</span> <span class="s1">&#39;bob&#39;</span><span class="p">),</span> <span class="n">args</span><span class="o">=</span><span class="p">{})</span>
 </pre></div>
 </div>
@@ -583,8 +602,8 @@ therefore having them is allowed.</p>
 It can be applied to any number of qubits. Takes one argument, <code class="docutils literal notranslate"><span class="pre">duration</span></code>, which is the minimum
 duration of the delay in seconds. It will be rounded up to the nearest possible duration the
 hardware can handle.</p>
-<div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">Example</span><a class="headerlink" href="#id6" title="Link to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">Example</span><a class="headerlink" href="#id7" title="Link to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Instruction</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;delay&#39;</span><span class="p">,</span> <span class="n">qubits</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;alice&#39;</span><span class="p">,</span> <span class="s1">&#39;bob&#39;</span><span class="p">),</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="mf">80e-9</span><span class="p">})</span>
 </pre></div>
 </div>
@@ -814,7 +833,7 @@ By IQM client developers
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on 2025-02-20.
+  Last updated on 2025-02-24.
   <br/>
 </p>
   </div>
