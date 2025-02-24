@@ -37,6 +37,12 @@ reverse_qb_mapping = {value: key for key, value in sample_qb_mapping.items()}
         Instruction(name='delay', qubits=['QB1', 'QB2'], args={'duration': 40e-9}),
         Instruction(name='delay', qubits=['QB2', 'QB1'], args={'duration': 100e-9}),  # delay can use any loci
         Instruction(name='prx', qubits=['QB1'], args={'phase_t': 0.3, 'angle_t': -0.2}),
+        Instruction(
+            name='cc_prx',
+            qubits=['QB1'],
+            args={'phase_t': 0.3, 'angle_t': -0.2, 'feedback_key': 'f1', 'feedback_qubit': 'QB2'},
+        ),
+        Instruction(name='reset', qubits=['QB1'], args={}),
         Instruction(name='cz', qubits=['QB1', 'QB2'], args={}),
         Instruction(name='cz', qubits=['QB2', 'QB1'], args={}),  # CZ is symmetric
         Instruction(name='measure', qubits=['QB1'], args={'key': 'm'}),

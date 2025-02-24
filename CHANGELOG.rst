@@ -2,11 +2,17 @@
 Changelog
 =========
 
+Version 22.3
+============
+
+* Add the native ``reset`` operation. `#170 <https://github.com/iqm-finland/iqm-client/pull/170>`_
+
 Version 22.2
 ============
 
 * Improve the documentation of the ``delay`` operation.
 * Improve the performance of :func:`.transpile_insert_moves`.
+  `#168 <https://github.com/iqm-finland/iqm-client/pull/168>`_
 
 Version 22.1
 =============
