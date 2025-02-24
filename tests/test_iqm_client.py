@@ -734,7 +734,7 @@ def test_get_calibration_set_without_calset_id_does_not_cache(
         'calibration_set_id': '3902d525-d8f4-42c0-9fa9-6bbd535b6c80',
         'calibration_set_dut_label': 'M194_W0_P08_Z99',
         'calibration_set_created_timestamp': '2024-02-10T08:57:04.605956',
-        'calibration_set_end_timestamp': '2024-02-10T08:57:04.605956', 
+        'calibration_set_end_timestamp': '2024-02-10T08:57:04.605956',
         'calibration_set_is_invalid': False,
         'observations': {
             'QB4.flux.voltage': {
