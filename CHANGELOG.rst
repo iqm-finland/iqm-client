@@ -2,6 +2,12 @@
 Changelog
 =========
 
+Version 22.4
+============
+
+* Python 3.10 support is deprecated and will be removed in the future.
+  `#173 <https://github.com/iqm-finland/iqm-client/pull/173>`_
+
 Version 22.3
 ============
 
