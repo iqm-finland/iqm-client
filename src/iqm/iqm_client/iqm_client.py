@@ -859,7 +859,8 @@ class IQMClient:
         return qa
 
     def get_quality_metric_set(self, *, timeout_secs: float = REQUESTS_TIMEOUT) -> QualityMetricSet:
-        """Retrieve the latest quality metric set from the server using the V1 API (Cocos circuits execution and Resonance) architecture.
+        """Retrieve the latest quality metric set from the server using the V1 API 
+        (Cocos circuits execution and Resonance) architecture.
 
         Caches the result and returns the same result on later invocations.
 
