@@ -582,9 +582,6 @@ class QualityMetricSet(BaseModel):
     metrics: Optional[dict[str, dict[str, Any]]] = Field(...)
     """Quality metrics."""
 
-    def __init__(self, **data):
-        super().__init__(**data)
-
 
 class CalibrationSet(BaseModel):
     """Metadata and observations of a calibration set."""
@@ -601,9 +598,6 @@ class CalibrationSet(BaseModel):
     """Label of the device under test."""
     observations: dict[str, Any] = Field(...)
     """Observations of the calibration set."""
-
-    def __init__(self, **data):
-        super().__init__(**data)
 
 
 class GateImplementationInfo(BaseModel):
