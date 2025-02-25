@@ -585,6 +585,7 @@ class QualityMetricSet(BaseModel):
     def __init__(self, **data):
         super().__init__(**data)
 
+
 class CalibrationSet(BaseModel):
     """Metadata and observations of a calibration set."""
 
@@ -603,6 +604,7 @@ class CalibrationSet(BaseModel):
 
     def __init__(self, **data):
         super().__init__(**data)
+
 
 class GateImplementationInfo(BaseModel):
     """Information about an implementation of a quantum gate/operation."""
