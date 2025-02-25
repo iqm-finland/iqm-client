@@ -74,6 +74,8 @@ Resolution = tuple[str, str, str]
 """A (gate qubit, move qubit, resonator) triple that represents a resolution of a fictional
  qubit-qubit gate."""
 
+NEW_HEURISTIC = True
+
 
 class ExistingMoveHandlingOptions(str, Enum):
     """Options for how :func:`transpile_insert_moves` should handle existing MOVE instructions
@@ -373,6 +375,26 @@ class _ResonatorStateTracker:
         a, b = inst.qubits
         return [(a, b, r) for r in get_resonators(a, b)] + [(b, a, r) for r in get_resonators(b, a)]
 
+    def _get_badness(self, res: Resolution, g_holder: str, m_holder: str, r_owner: str) -> int:
+        """Badness of the given resolution for implementing a fictional qubit-qubit gate.
+
+        ``g_holder``, ``m_holder`` and ``r_owner`` represent the current QPU state.
+        """
+        g, m, r = res
+        badness = 0
+        if g_holder != g:
+            badness += 1  # need to move the state back to g from a resonator
+        if m_holder == r:
+            pass  # m qubit state already in r
+        else:
+            if r_owner != r:
+                badness += 1  # resonator has some other qubit's state in it, and must be reset
+            if m_holder == m:
+                badness += 1  # need to move the m state to r
+            else:
+                badness += 2  # m state is in another resonator, need 2 moves to get it to r
+        return badness
+
     def find_best_resolution(self, inst: Instruction, lookahead: Iterable[Instruction]) -> Resolution | None:
         """Find the best resolution for the fictional qubit-qubit gate ``inst``
         using the available native qubit-resonator gates.
@@ -407,33 +429,13 @@ class _ResonatorStateTracker:
                 if q in inst.qubits:
                     followers.setdefault(q, follower)
 
-        def get_badness(res: Resolution, g_holder: str, m_holder: str, r_owner: str) -> int:
-            """Badness of the given resolution for implementing a fictional qubit-qubit gate.
-
-            ``g_holder``, ``m_holder`` and ``r_owner`` represent the current QPU state.
-            """
-            g, m, r = res
-            badness = 0
-            if g_holder != g:
-                badness += 1  # need to move the state back to g from a resonator
-            if m_holder == r:
-                pass  # m qubit state already in r
-            else:
-                if r_owner != r:
-                    badness += 1  # resonator has some other qubit's state in it, and must be reset
-                if m_holder == m:
-                    badness += 1  # need to move the m state to r
-                else:
-                    badness += 2  # m state is in another resonator, need 2 moves to get it to r
-            return badness
-
         options = []
         for res in resolutions:
             g, m, r = res
             # badness is the number of extra native instructions we need to implement ``inst``
             # and its followers using this resolution.
             # implementing the gate itself, starting from the current tracker state
-            badness: int = get_badness(
+            badness: int = self._get_badness(
                 res,
                 self.qubit_state_holder.get(g, g),
                 self.qubit_state_holder.get(m, m),
@@ -456,7 +458,7 @@ class _ResonatorStateTracker:
                         pass
                     else:
                         # same resolution not ok, find the cheapest one
-                        badness += min(get_badness(f_res, g, r, m) for f_res in follower_resolutions)
+                        badness += min(self._get_badness(f_res, g, r, m) for f_res in follower_resolutions)
             else:
                 if g_follower:
                     if g_follower.name in self.qr_gates_q2r:
@@ -495,6 +497,70 @@ class _ResonatorStateTracker:
 
         # return the best option
         return min(options, key=lambda x: x[1])[0]
+
+    def find_best_resolution_with_commutation(
+        self, lookahead: Iterable[Instruction]
+    ) -> (Resolution, Iterable[Instruction], Iterable[Instruction]) | None:
+        # Alternative best resolutions
+
+        # Collect the CZs at the start of the circuit
+        filled_qubits = []
+        cz_block = []
+        remaining_lookahead = []
+        for instr in lookahead:
+            if instr.name == 'cz':  # TODO deal with other commuting 2q gates
+                q1, q2 = instr.qubits
+                # Split the lookahead into CZ block at the start and the rest
+                if q1 in filled_qubits and q2 in filled_qubits:
+                    remaining_lookahead.append(instr)
+                else:
+                    cz_block.append(instr)
+            else:  # TODO deal with barriers and other special gates
+                filled_qubits.append(instr.qubits[0])
+                remaining_lookahead.append(instr)
+
+        # Consider all possible resolutions for this CZ block
+        resolutions = []
+        for instr in cz_block:
+            resolutions += self.find_resolutions(instr)
+        if not resolutions:
+            return None, [], lookahead
+
+        def get_placeable_cz_block_for_resolution(resolution: Resolution) -> list[Instruction]:
+            _gate_qubit, move_qubit, resonator = resolution
+            placeable_block = []
+            for instr in cz_block:
+                if move_qubit in instr.qubits:
+                    q1, q2 = instr.qubits
+                    new_gate_qubit = q1 if q2 == move_qubit else q2
+                    # Add if this CZ can be trivially placed
+                    if resonator in self.qr_gates_q2r['cz'].get(new_gate_qubit, set()):
+                        placeable_block.append(instr)
+            return placeable_block
+
+        # Calculate the quality for each resolution
+        options = []
+        for res in resolutions:
+            g, m, r = res
+            badness: int = self._get_badness(
+                res,
+                self.qubit_state_holder.get(g, g),
+                self.qubit_state_holder.get(m, m),
+                self.res_state_owner[r],
+            )
+            cz_block_for_resolution = get_placeable_cz_block_for_resolution(res)
+            cz_count = len(cz_block_for_resolution)  # Always at least 1 because the resolution is created from a CZ
+            options.append((res, (badness, cz_count), cz_block_for_resolution))
+
+        def scoring_fn(badness, cz_count):
+            return badness / (cz_count + 1)
+
+        choice, _metrics, cz_block_to_place = min(options, key=lambda x: scoring_fn(*x[1]))
+        print(f'{choice} chosen from {options}')
+        # Shuffle the lookahead to place the chosen CZ block first, then the rest of the CZs, then everything else
+        for instr in cz_block_to_place:
+            cz_block.remove(instr)  # Remove the placed CZs from the lookahead
+        return choice, cz_block_to_place, cz_block + remaining_lookahead
 
     def get_sequence(self, resolution: Resolution, inst: Instruction) -> list[Instruction]:
         """Apply a fictional two-qubit gate using a sequence of native qubit-resonator gates.
@@ -579,6 +645,7 @@ class _ResonatorStateTracker:
                     raise CircuitTranspilationError(e) from e
 
                 resolution = self.find_best_resolution(inst, instructions[idx + 1 :])
+
                 if resolution is None:
                     raise CircuitTranspilationError(
                         f'Unable to find native gate sequence to enable fictional gate {inst.name} at {locus}.'
@@ -587,6 +654,57 @@ class _ResonatorStateTracker:
 
                 # implement G using the sequence
                 new_instructions += self.get_sequence(resolution, inst)
+
+        return new_instructions
+
+    def insert_moves_with_commutations(
+        self,
+        instructions: list[Instruction],
+        arch: DynamicQuantumArchitecture,
+    ) -> list[Instruction]:
+        new_instructions: list[Instruction] = []
+        remaining_circuit = instructions
+        i = 0
+        while len(remaining_circuit) > 0:
+            i += 1
+            first_instr, remaining_circuit = remaining_circuit[0], remaining_circuit[1:]
+            print(f'{i}: {first_instr}, {remaining_circuit}')
+            locus = first_instr.qubits
+            try:
+                IQMClient._validate_instruction(architecture=arch, instruction=first_instr)
+                # inst can be applied as is on locus, but we may first need to use MOVEs to make
+                # sure the locus qubits contain their states
+
+                if first_instr.name == self.move_gate:
+                    # apply the requested MOVE, closing interfering MOVE sandwiches first
+                    new_instructions += self.create_move_instructions(*locus)
+                    continue
+
+                # are some of the locus qubits' states currently in a resonator?
+                if res_match := self.resonators_holding_qubits(locus):
+                    # Some locus qubits do not hold their states, which need to be restored before applying the gate.
+                    # NOTE: as a consequence, a barrier closes a MOVE sandwich.
+                    new_instructions += self.reset_as_move_instructions(res_match)
+                new_instructions.append(first_instr)
+
+            except CircuitValidationError as e:
+                # inst can not be applied to this locus as is
+                if first_instr.name not in self.qr_gates_q2r or any(c in self.resonators for c in locus):
+                    raise CircuitTranspilationError(e) from e
+                assert first_instr.name == 'cz'
+                resolution, cz_block, remaining_circuit = self.find_best_resolution_with_commutation(
+                    [first_instr] + remaining_circuit
+                )
+
+                if resolution is None:
+                    raise CircuitTranspilationError(
+                        f'Unable to find native gate sequence to enable fictional gate {first_instr.name} at {locus}.'
+                        ' Try routing the circuit to the simplified architecture first.'
+                    ) from e
+
+                # implement G using the sequence
+                for instr in cz_block:
+                    new_instructions += self.get_sequence(resolution, instr)
 
         return new_instructions
 
@@ -761,7 +879,10 @@ def transpile_insert_moves(
         # convert to physical qubit names
         phys_instructions = _map_loci(circuit.instructions, qubit_mapping)
 
-    new_instructions = tracker.insert_moves(phys_instructions, arch)
+    if NEW_HEURISTIC:
+        new_instructions = tracker.insert_moves_with_commutations(phys_instructions, arch)
+    else:
+        new_instructions = tracker.insert_moves(phys_instructions, arch)
 
     if restore_states:
         new_instructions += tracker.reset_as_move_instructions()
