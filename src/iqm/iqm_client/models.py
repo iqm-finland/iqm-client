@@ -581,6 +581,40 @@ def _component_sort_key(component_name: str) -> tuple[str, int, str]:
     return re.sub(r'[^a-zA-Z]', '', component_name), get_numeric_id(component_name), component_name
 
 
+class QualityMetricSet(BaseModel):
+    """Latest quality metrics for a calibration set."""
+
+    quality_metric_set_id: Optional[UUID] = Field(...)
+    """ID of the calibration/quality metric set."""
+    quality_metric_set_dut_label: Optional[str] = Field(...)
+    """Label of the device under test."""
+    quality_metric_set_created_timestamp: Optional[str] = Field(...)
+    """Timestamp when the quality metric set was created."""
+    quality_metric_set_end_timestamp: Optional[str] = Field(...)
+    """Timestamp when the quality metric set ended."""
+    quality_metric_set_is_invalid: bool = Field(...)
+    """Whether the quality metric set is invalid."""
+    metrics: Optional[dict[str, dict[str, Any]]] = Field(...)
+    """Quality metrics."""
+
+
+class CalibrationSet(BaseModel):
+    """Metadata and observations of a calibration set."""
+
+    calibration_set_id: UUID = Field(...)
+    """ID of the calibration set."""
+    calibration_set_is_invalid: bool = Field(...)
+    """Whether the calibration set is invalid."""
+    calibration_set_created_timestamp: str = Field(...)
+    """Timestamp when the calibration set was created."""
+    calibration_set_end_timestamp: str = Field(...)
+    """Timestamp when the calibration set ended."""
+    calibration_set_dut_label: str = Field(...)
+    """Label of the device under test."""
+    observations: dict[str, Any] = Field(...)
+    """Observations of the calibration set."""
+
+
 class GateImplementationInfo(BaseModel):
     """Information about an implementation of a quantum gate/operation."""
 

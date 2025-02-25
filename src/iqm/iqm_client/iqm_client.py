@@ -39,14 +39,17 @@ from iqm.iqm_client.authentication import TokenManager
 from iqm.iqm_client.errors import (
     APITimeoutError,
     ArchitectureRetrievalError,
+    CalibrationSetRetrievalError,
     CircuitExecutionError,
     CircuitValidationError,
     ClientAuthenticationError,
     ClientConfigurationError,
     JobAbortionError,
+    QualityMetricSetRetrievalError,
 )
 from iqm.iqm_client.models import (
     _SUPPORTED_OPERATIONS,
+    CalibrationSet,
     Circuit,
     CircuitBatch,
     CircuitCompilationOptions,
@@ -54,6 +57,7 @@ from iqm.iqm_client.models import (
     DynamicQuantumArchitecture,
     Instruction,
     MoveGateValidationMode,
+    QualityMetricSet,
     QuantumArchitecture,
     QuantumArchitectureSpecification,
     RunCounts,
@@ -817,7 +821,7 @@ class IQMClient:
             raise JobAbortionError(result.text)
 
     def get_quantum_architecture(self, *, timeout_secs: float = REQUESTS_TIMEOUT) -> QuantumArchitectureSpecification:
-        """Retrieve quantum architecture from server.
+        """Retrieve quantum architecture from server
         Caches the result and returns the same result on later invocations.
 
         Args:
@@ -853,6 +857,82 @@ class IQMClient:
         # Cache architecture so that later invocations do not need to query it again
         self._architecture = qa
         return qa
+
+    def get_quality_metric_set(self, *, timeout_secs: float = REQUESTS_TIMEOUT) -> QualityMetricSet:
+        """Retrieve the latest quality metric set from the server using the V1 API 
+        (Cocos circuits execution and Resonance) architecture.
+
+        Caches the result and returns the same result on later invocations.
+
+        Args:
+            timeout_secs: network request timeout
+
+        Returns:
+            quality metrics
+
+        Raises:
+            QualityMetricsRetrievalError: IQM server specific exceptions
+            ClientAuthenticationError: if no valid authentication is provided
+            HTTPException: HTTP exceptions
+        """
+
+        result = requests.get(
+            self._api.url(APIEndpoint.QUALITY_METRICS_LATEST),
+            headers=self._default_headers(),
+            timeout=timeout_secs,
+        )
+
+        self._check_not_found_error(result)
+        self._check_authentication_errors(result)
+        result.raise_for_status()
+
+        try:
+            qm = QualityMetricSet(**result.json())
+        except (json.decoder.JSONDecodeError, KeyError) as e:
+            raise QualityMetricSetRetrievalError(f'Invalid response: {result.text}, {e}') from e
+
+        return qm
+
+    def get_calibration_set(
+        self, calibration_set_id: Optional[UUID] = None, *, timeout_secs: float = REQUESTS_TIMEOUT
+    ) -> CalibrationSet:
+        """Retrieve calibration set from the server using the V1 API (Cocos circuits execution and Resonance)
+
+        Caches the result and returns the same result on later invocations.
+
+        Args:
+            calibration_set_id: ID of the calibration set to retrieve. If None, the default calibration set is used.
+            timeout_secs: network request timeout
+
+        Returns:
+            calibration set
+
+        Raises:
+            CalibrationSetRetrievalError: IQM server specific exceptions
+            ClientAuthenticationError: if no valid authentication is provided
+            HTTPException: HTTP exceptions
+        """
+        if calibration_set_id is None:
+            calibration_set_id_str = 'default'
+        else:
+            calibration_set_id_str = str(calibration_set_id)
+
+        result = requests.get(
+            self._api.url(APIEndpoint.CALIBRATION, calibration_set_id_str),
+            headers=self._default_headers(),
+            timeout=timeout_secs,
+        )
+
+        self._check_not_found_error(result)
+        self._check_authentication_errors(result)
+        result.raise_for_status()
+
+        try:
+            cs = CalibrationSet(**result.json())
+        except (json.decoder.JSONDecodeError, KeyError) as e:
+            raise CalibrationSetRetrievalError(f'Invalid response: {result.text}, {e}') from e
+
+        return cs
 
     def get_dynamic_quantum_architecture(
         self, calibration_set_id: Optional[UUID] = None, *, timeout_secs: float = REQUESTS_TIMEOUT
