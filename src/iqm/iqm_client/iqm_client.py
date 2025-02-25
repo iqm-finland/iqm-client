@@ -890,8 +890,6 @@ class IQMClient:
         except (json.decoder.JSONDecodeError, KeyError) as e:
             raise QualityMetricSetRetrievalError(f'Invalid response: {result.text}, {e}') from e
 
-        # cache the metric data so that later invocations do not need to query it again
-        self._quality_metrics = qm
         return qm
 
     def get_calibration_set(
