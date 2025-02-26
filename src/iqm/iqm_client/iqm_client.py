@@ -26,7 +26,7 @@ import json
 import os
 import platform
 import time
-from typing import Any, Optional
+from typing import Any
 from uuid import UUID
 import warnings
 
@@ -884,7 +884,7 @@ class IQMClient:
             calibration_set_id_str = str(calibration_set_id)
 
         result = requests.get(
-            self._api.url(APIEndpoint.QUALITY_METRICS_LATEST, calibration_set_id_str),
+            self._api.url(APIEndpoint.QUALITY_METRICS, calibration_set_id_str),
             headers=self._default_headers(),
             timeout=timeout_secs,
         )
