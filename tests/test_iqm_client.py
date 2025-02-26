@@ -672,7 +672,10 @@ def test_get_calibration_set(sample_client, calibration_set_url, sample_calibrat
     verifyNoUnwantedInteractions()
     unstub()
 
-def test_get_calibration_set_v2(sample_client_v2,calibration_set_url_v2, sample_calibration_set, calibration_set_success):
+
+def test_get_calibration_set_v2(
+    sample_client_v2, calibration_set_url_v2, sample_calibration_set, calibration_set_success
+):
     """Test retrieving the calibration set."""
     expect(requests, times=1).get(calibration_set_url_v2, ...).thenReturn(calibration_set_success)
 

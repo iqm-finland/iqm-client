@@ -22,7 +22,7 @@ import json
 import os
 import platform
 import time
-from typing import Any, Optional
+from typing import Any
 from uuid import UUID
 
 from mockito import ANY, unstub, when
@@ -139,12 +139,12 @@ def quantum_architecture_url(base_url) -> str:
 
 @pytest.fixture()
 def quality_metric_set_url(base_url) -> str:
-    return f'{base_url}/calibration/metrics/latest'
+    return f'{base_url}/calibration/metrics/default'
 
 
 @pytest.fixture()
 def quality_metric_set_url_v2(base_url) -> str:
-    return f'{base_url}/cocos/calibration/metrics/latest'
+    return f'{base_url}/cocos/calibration/metrics/default'
 
 
 @pytest.fixture()
@@ -174,7 +174,7 @@ def settings_dict():
     Reads and parses settings file into a dictionary
     """
     settings_path = os.path.dirname(os.path.realpath(__file__)) + '/resources/settings.json'
-    with open(settings_path, 'r', encoding='utf-8') as f:
+    with open(settings_path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -708,7 +708,7 @@ def hybrid_move_architecture() -> DynamicQuantumArchitecture:
 
 
 class MockTextResponse:
-    def __init__(self, status_code: int, text: str, history: Optional[list[Response]] = None):
+    def __init__(self, status_code: int, text: str, history: list[Response] | None = None):
         self.status_code = status_code
         self.text = text
         self.history = history
@@ -727,7 +727,7 @@ def not_valid_json_response() -> MockTextResponse:
 
 
 class MockJsonResponse:
-    def __init__(self, status_code: int, json_data: dict, history: Optional[list[Response]] = None):
+    def __init__(self, status_code: int, json_data: dict, history: list[Response] | None = None):
         self.status_code = status_code
         self.json_data = json_data
         self.history = history
@@ -746,7 +746,7 @@ class MockJsonResponse:
 
 
 def mock_supported_client_libraries_response(
-    iqm_client_name: str = 'iqm-client', max_version: Optional[str] = None, min_version: Optional[str] = None
+    iqm_client_name: str = 'iqm-client', max_version: str | None = None, min_version: str | None = None
 ) -> MockJsonResponse:
     client_version = parse(version('iqm-client'))
     min_version = f'{client_version.major}.0' if min_version is None else min_version
@@ -836,16 +836,16 @@ def make_token(token_type: str, lifetime: int) -> str:
     Returns:
         Encoded token
     """
-    empty = b64encode('{}'.encode('utf-8')).decode('utf-8')
+    empty = b64encode(b'{}').decode('utf-8')
     body = f'{{ "typ": "{token_type}", "exp": {int(time.time()) + lifetime} }}'
     body = b64encode(body.encode('utf-8')).decode('utf-8')
     return f'{empty}.{body}.{empty}'
 
 
 def post_jobs_args(
-    run_request: Optional[RunRequest] = None,
-    user_agent: Optional[str] = None,
-    access_token: Optional[str] = None,
+    run_request: RunRequest | None = None,
+    user_agent: str | None = None,
+    access_token: str | None = None,
 ) -> dict[str, Any]:
     """Returns expected kwargs of POST /jobs request"""
     headers = {'Expect': '100-Continue'} if run_request is not None else {}
@@ -863,8 +863,8 @@ def post_jobs_args(
 
 
 def get_jobs_args(
-    user_agent: Optional[str] = None,
-    access_token: Optional[str] = None,
+    user_agent: str | None = None,
+    access_token: str | None = None,
 ) -> dict[str, Any]:
     """Returns expected kwargs of POST /jobs request"""
     headers = {}

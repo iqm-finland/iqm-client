@@ -18,7 +18,7 @@ Client for connecting to the IQM quantum computer server interface.
 
 from __future__ import annotations
 
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from datetime import datetime
 from importlib.metadata import version
 import itertools
@@ -26,7 +26,7 @@ import json
 import os
 import platform
 import time
-from typing import Any, Callable, Optional
+from typing import Any, Optional
 from uuid import UUID
 import warnings
 
@@ -105,17 +105,17 @@ class IQMClient:
         self,
         url: str,
         *,
-        client_signature: Optional[str] = None,
-        token: Optional[str] = None,
-        tokens_file: Optional[str] = None,
-        auth_server_url: Optional[str] = None,
-        username: Optional[str] = None,
-        password: Optional[str] = None,
-        api_variant: Optional[APIVariant] = None,
+        client_signature: str | None = None,
+        token: str | None = None,
+        tokens_file: str | None = None,
+        auth_server_url: str | None = None,
+        username: str | None = None,
+        password: str | None = None,
+        api_variant: APIVariant | None = None,
     ):
         if not url.startswith(('http:', 'https:')):
             raise ClientConfigurationError(f'The URL schema has to be http or https. Incorrect schema in URL: {url}')
-        self._token_manager: Optional[TokenManager] = TokenManager(
+        self._token_manager: TokenManager | None = TokenManager(
             token,
             tokens_file,
             auth_server_url,
@@ -164,11 +164,11 @@ class IQMClient:
         self,
         circuits: CircuitBatch,
         *,
-        qubit_mapping: Optional[dict[str, str]] = None,
-        custom_settings: Optional[dict[str, Any]] = None,
-        calibration_set_id: Optional[UUID] = None,
+        qubit_mapping: dict[str, str] | None = None,
+        custom_settings: dict[str, Any] | None = None,
+        calibration_set_id: UUID | None = None,
         shots: int = 1,
-        options: Optional[CircuitCompilationOptions] = None,
+        options: CircuitCompilationOptions | None = None,
     ) -> UUID:
         """Submits a batch of quantum circuits for execution on a quantum computer.
 
@@ -200,11 +200,11 @@ class IQMClient:
         self,
         circuits: CircuitBatch,
         *,
-        qubit_mapping: Optional[dict[str, str]] = None,
-        custom_settings: Optional[dict[str, Any]] = None,
-        calibration_set_id: Optional[UUID] = None,
+        qubit_mapping: dict[str, str] | None = None,
+        custom_settings: dict[str, Any] | None = None,
+        calibration_set_id: UUID | None = None,
         shots: int = 1,
-        options: Optional[CircuitCompilationOptions] = None,
+        options: CircuitCompilationOptions | None = None,
     ) -> RunRequest:
         """Creates a run request for executing circuits without sending it to the server.
 
@@ -322,7 +322,7 @@ class IQMClient:
     def _validate_qubit_mapping(
         architecture: DynamicQuantumArchitecture,
         circuits: CircuitBatch,
-        qubit_mapping: Optional[dict[str, str]] = None,
+        qubit_mapping: dict[str, str] | None = None,
     ) -> None:
         """Validates the given qubit mapping, if defined.
 
@@ -362,7 +362,7 @@ class IQMClient:
     def _validate_circuit_instructions(
         architecture: DynamicQuantumArchitecture,
         circuits: CircuitBatch,
-        qubit_mapping: Optional[dict[str, str]] = None,
+        qubit_mapping: dict[str, str] | None = None,
         validate_moves: MoveGateValidationMode = MoveGateValidationMode.STRICT,
         *,
         must_close_sandwiches: bool = True,
@@ -403,7 +403,7 @@ class IQMClient:
     def _validate_instruction(
         architecture: DynamicQuantumArchitecture,
         instruction: Instruction,
-        qubit_mapping: Optional[dict[str, str]] = None,
+        qubit_mapping: dict[str, str] | None = None,
     ) -> None:
         """Validate an instruction against the dynamic quantum quantum architecture.
 
@@ -464,7 +464,7 @@ class IQMClient:
         if op_info.factorizable:
             # Check that all the locus components are allowed by the architecture
             check_locus_components(
-                set(q for locus in allowed_loci for q in locus), msg=f"is not allowed as locus for '{instruction_name}'"
+                {q for locus in allowed_loci for q in locus}, msg=f"is not allowed as locus for '{instruction_name}'"
             )
             return
 
@@ -485,7 +485,7 @@ class IQMClient:
     def _validate_circuit_moves(
         architecture: DynamicQuantumArchitecture,
         circuit: Circuit,
-        qubit_mapping: Optional[dict[str, str]] = None,
+        qubit_mapping: dict[str, str] | None = None,
         validate_moves: MoveGateValidationMode = MoveGateValidationMode.STRICT,
         *,
         must_close_sandwiches: bool = True,
@@ -858,14 +858,17 @@ class IQMClient:
         self._architecture = qa
         return qa
 
-    def get_quality_metric_set(self, *, timeout_secs: float = REQUESTS_TIMEOUT) -> QualityMetricSet:
+    def get_quality_metric_set(
+        self, calibration_set_id: UUID | None = None, *, timeout_secs: float = REQUESTS_TIMEOUT
+    ) -> QualityMetricSet:
         """Retrieve the latest quality metric set from the server using the V1 API
         (Cocos circuits execution and Resonance) architecture.
 
         Caches the result and returns the same result on later invocations.
 
         Args:
-            timeout_secs: network request timeout
+            calibration_set_id: ID of the calibration set for which the quality metrics are returned. If None, the current default calibration set is used.
+            timeout_secs: network request timeout.
 
         Returns:
             quality metrics
@@ -875,9 +878,13 @@ class IQMClient:
             ClientAuthenticationError: if no valid authentication is provided
             HTTPException: HTTP exceptions
         """
+        if calibration_set_id is None:
+            calibration_set_id_str = 'default'
+        else:
+            calibration_set_id_str = str(calibration_set_id)
 
         result = requests.get(
-            self._api.url(APIEndpoint.QUALITY_METRICS_LATEST),
+            self._api.url(APIEndpoint.QUALITY_METRICS_LATEST, calibration_set_id_str),
             headers=self._default_headers(),
             timeout=timeout_secs,
         )
@@ -901,7 +908,7 @@ class IQMClient:
         Caches the result and returns the same result on later invocations.
 
         Args:
-            calibration_set_id: ID of the calibration set to retrieve. If None, the curent default calibration set is used.
+            calibration_set_id: ID of the calibration set to retrieve. If None, the current default calibration set is used.
             timeout_secs: network request timeout
 
         Returns:
@@ -935,7 +942,7 @@ class IQMClient:
         return cs
 
     def get_dynamic_quantum_architecture(
-        self, calibration_set_id: Optional[UUID] = None, *, timeout_secs: float = REQUESTS_TIMEOUT
+        self, calibration_set_id: UUID | None = None, *, timeout_secs: float = REQUESTS_TIMEOUT
     ) -> DynamicQuantumArchitecture:
         """Retrieve dynamic quantum architecture (DQA) for the given calibration set from server.
 
@@ -1073,7 +1080,7 @@ class IQMClient:
                 )
             raise HTTPError(f'{response.url} not found.{version_message}', response=response)
 
-    def _check_versions(self) -> Optional[str]:
+    def _check_versions(self) -> str | None:
         """Checks the client version against compatible client versions reported by server.
 
         Returns:

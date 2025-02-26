@@ -296,7 +296,7 @@ class _ResonatorStateTracker:
 
     def reset_as_move_instructions(
         self,
-        resonators: Optional[Iterable[str]] = None,
+        resonators: Iterable[str] | None = None,
     ) -> list[Instruction]:
         """MOVE instructions that move the states held in the given resonators back to their qubits.
 
@@ -694,7 +694,7 @@ def transpile_insert_moves(
     arch: DynamicQuantumArchitecture,
     *,
     existing_moves: ExistingMoveHandlingOptions = ExistingMoveHandlingOptions.KEEP,
-    qubit_mapping: Optional[dict[str, str]] = None,
+    qubit_mapping: dict[str, str] | None = None,
     restore_states: bool = True,
 ) -> Circuit:
     """Convert a simplified architecture circuit into an equivalent Star architecture circuit with
