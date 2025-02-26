@@ -52,6 +52,7 @@ from iqm.iqm_client import (
     SingleQubitMapping,
     __version__,
 )
+from iqm.iqm_client.api import APIVariant
 
 
 @pytest.fixture()
@@ -85,6 +86,16 @@ def sample_client(base_url) -> IQMClient:
         mock_supported_client_libraries_response()
     )
     client = IQMClient(url=base_url)
+    client._token_manager = None  # Do not use authentication
+    return client
+
+
+@pytest.fixture(scope='function')
+def sample_client_v2(base_url) -> IQMClient:
+    when(requests).get(f'{base_url}/info/client-libraries', headers=ANY, timeout=ANY).thenReturn(
+        mock_supported_client_libraries_response()
+    )
+    client = IQMClient(url=base_url, api_variant=APIVariant.V2)
     client._token_manager = None  # Do not use authentication
     return client
 
@@ -132,8 +143,18 @@ def quality_metric_set_url(base_url) -> str:
 
 
 @pytest.fixture()
+def quality_metric_set_url_v2(base_url) -> str:
+    return f'{base_url}/cocos/calibration/metrics/latest'
+
+
+@pytest.fixture()
 def calibration_set_url(base_url) -> str:
     return f'{base_url}/api/v1/calibration/default'
+
+
+@pytest.fixture()
+def calibration_set_url_v2(base_url) -> str:
+    return f'{base_url}/cocos/api/v1/calibration/default'
 
 
 @pytest.fixture()

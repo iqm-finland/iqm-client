@@ -859,7 +859,7 @@ class IQMClient:
         return qa
 
     def get_quality_metric_set(self, *, timeout_secs: float = REQUESTS_TIMEOUT) -> QualityMetricSet:
-        """Retrieve the latest quality metric set from the server using the V1 API 
+        """Retrieve the latest quality metric set from the server using the V1 API
         (Cocos circuits execution and Resonance) architecture.
 
         Caches the result and returns the same result on later invocations.
@@ -894,14 +894,14 @@ class IQMClient:
         return qm
 
     def get_calibration_set(
-        self, calibration_set_id: Optional[UUID] = None, *, timeout_secs: float = REQUESTS_TIMEOUT
+        self, calibration_set_id: UUID | None = None, *, timeout_secs: float = REQUESTS_TIMEOUT
     ) -> CalibrationSet:
-        """Retrieve calibration set from the server using the V1 API (Cocos circuits execution and Resonance)
+        """Retrieve calibration set from the server using the V1 API (Cocos circuits execution and Resonance).
 
         Caches the result and returns the same result on later invocations.
 
         Args:
-            calibration_set_id: ID of the calibration set to retrieve. If None, the default calibration set is used.
+            calibration_set_id: ID of the calibration set to retrieve. If None, the curent default calibration set is used.
             timeout_secs: network request timeout
 
         Returns:
@@ -909,7 +909,7 @@ class IQMClient:
 
         Raises:
             CalibrationSetRetrievalError: IQM server specific exceptions
-            ClientAuthenticationError: if no valid authentication is provided
+            ClientAuthenticationError: No valid authentication is provided
             HTTPException: HTTP exceptions
         """
         if calibration_set_id is None:

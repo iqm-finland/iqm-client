@@ -103,7 +103,7 @@ class APIConfig:
         if self.variant == APIVariant.V1:
             return {
                 APIEndpoint.CONFIGURATION: "configuration",
-                APIEndpoint.QUALITY_METRICS_LATEST: "calibration/metrics/latest",
+                APIEndpoint.QUALITY_METRICS_LATEST: "calibration/metrics/%s",
                 APIEndpoint.SUBMIT_JOB: "jobs",
                 APIEndpoint.GET_JOB_RESULT: "jobs/%s",
                 APIEndpoint.GET_JOB_STATUS: "jobs/%s/status",
@@ -126,7 +126,7 @@ class APIConfig:
             return {
                 APIEndpoint.GET_JOB_REQUEST_PARAMETERS: "station/circuits/%s/request_parameters",
                 APIEndpoint.CONFIGURATION: "cocos/configuration",
-                APIEndpoint.QUALITY_METRICS_LATEST: "cocos/calibration/metrics/latest",
+                APIEndpoint.QUALITY_METRICS_LATEST: "cocos/calibration/metrics/%s",
                 APIEndpoint.SUBMIT_JOB: "station/circuits",
                 APIEndpoint.GET_JOB_RESULT: "station/circuits/%s/measurements",
                 APIEndpoint.GET_JOB_STATUS: "station/circuits/%s/status",

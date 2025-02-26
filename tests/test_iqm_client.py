@@ -651,11 +651,32 @@ def test_get_quality_metric_set(
     unstub()
 
 
+def test_get_quality_metric_set_v2(
+    sample_client_v2, quality_metric_set_url_v2, sample_quality_metric_set, quality_metric_set_success
+):
+    """Test retrieving the quality metric set using the control station api version (v2)"""
+    expect(requests, times=1).get(quality_metric_set_url_v2, ...).thenReturn(quality_metric_set_success)
+
+    assert sample_client_v2.get_quality_metric_set() == sample_quality_metric_set
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
 def test_get_calibration_set(sample_client, calibration_set_url, sample_calibration_set, calibration_set_success):
     """Test retrieving the calibration set."""
     expect(requests, times=1).get(calibration_set_url, ...).thenReturn(calibration_set_success)
 
     assert sample_client.get_calibration_set() == sample_calibration_set
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+def test_get_calibration_set_v2(sample_client_v2,calibration_set_url_v2, sample_calibration_set, calibration_set_success):
+    """Test retrieving the calibration set."""
+    expect(requests, times=1).get(calibration_set_url_v2, ...).thenReturn(calibration_set_success)
+
+    assert sample_client_v2.get_calibration_set() == sample_calibration_set
 
     verifyNoUnwantedInteractions()
     unstub()
