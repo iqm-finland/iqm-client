@@ -19,7 +19,7 @@ from base64 import b64decode
 import json
 import os
 import time
-from typing import Any, Optional
+from typing import Any
 
 import requests
 

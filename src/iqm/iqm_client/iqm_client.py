@@ -867,7 +867,8 @@ class IQMClient:
         Caches the result and returns the same result on later invocations.
 
         Args:
-            calibration_set_id: ID of the calibration set for which the quality metrics are returned. If None, the current default calibration set is used.
+            calibration_set_id: ID of the calibration set for which the quality metrics are returned. 
+            If None, the current default calibration set is used.
             timeout_secs: network request timeout.
 
         Returns:
@@ -908,7 +909,8 @@ class IQMClient:
         Caches the result and returns the same result on later invocations.
 
         Args:
-            calibration_set_id: ID of the calibration set to retrieve. If None, the current default calibration set is used.
+            calibration_set_id: ID of the calibration set to retrieve. If None, the current default 
+            calibration set is used.
             timeout_secs: network request timeout
 
         Returns:

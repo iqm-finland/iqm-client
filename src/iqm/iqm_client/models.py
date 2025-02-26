@@ -21,7 +21,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from functools import cached_property
 import re
-from typing import Any, Optional, Union
+from typing import Any
 from uuid import UUID
 
 from pydantic import BaseModel, Field, StrictStr, field_validator

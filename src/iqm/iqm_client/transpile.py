@@ -58,7 +58,6 @@ from __future__ import annotations
 
 from collections.abc import Collection, Iterable
 from enum import Enum
-from typing import Optional
 
 from iqm.iqm_client import (
     Circuit,
