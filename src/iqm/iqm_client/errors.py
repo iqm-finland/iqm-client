@@ -46,3 +46,11 @@ class JobAbortionError(RuntimeError):
 
 class ArchitectureRetrievalError(RuntimeError):
     """Retrieving quantum architecture failed."""
+
+
+class QualityMetricSetRetrievalError(RuntimeError):
+    """Retrieving quality metrics failed."""
+
+
+class CalibrationSetRetrievalError(RuntimeError):
+    """Retrieving calibration failed."""
