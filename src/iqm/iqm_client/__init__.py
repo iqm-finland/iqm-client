@@ -30,3 +30,6 @@ except PackageNotFoundError:
     __version__ = "unknown"
 finally:
     del version, PackageNotFoundError
+
+if sys.version_info < (3, 11):
+    warnings.warn(DeprecationWarning("Python 3.10 will no longer be supported in a later release of IQM client."))

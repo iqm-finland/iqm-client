@@ -62,7 +62,7 @@ _SUPPORTED_OPERATIONS: dict[str, NativeOperation] = {
     for op in [
         NativeOperation('barrier', 0, symmetric=True, no_calibration_needed=True),
         NativeOperation('delay', 0, {'duration': (float,)}, symmetric=True, no_calibration_needed=True),
-        NativeOperation('measure', 0, {'key': (str,)}, {'feedback_key': (str,)}, factorizable=True),
+        NativeOperation('measure', 0, {'key': (str,)}, args_not_required={'feedback_key': (str,)}, factorizable=True),
         NativeOperation(
             'prx',
             1,
@@ -81,6 +81,8 @@ _SUPPORTED_OPERATIONS: dict[str, NativeOperation] = {
                 'feedback_qubit': (str,),
             },
         ),
+        # TODO reset does need calibration, but it inherits it from cc_prx and does not yet appear in the DQA itself.
+        NativeOperation('reset', 0, symmetric=True, factorizable=True, no_calibration_needed=True),
         NativeOperation('cz', 2, symmetric=True),
         NativeOperation('move', 2),
     ]
@@ -107,8 +109,9 @@ class Instruction(BaseModel):
     cc_prx           1           ``angle_t: float``, ``phase_t: float``,
                                  ``feedback_qubit: str``,
                                  ``feedback_key: str``                   Classically controlled PRX gate.
+    reset            >= 1                                                Reset the qubit(s) to :math:`|0\rangle`.
     cz               2                                                   Controlled-Z gate.
-    move             2                                                   Moves a qubit state between a qubit and a
+    move             2                                                   Move a qubit state between a qubit and a
                                                                          computational resonator, as long as
                                                                          at least one of the components is
                                                                          in the :math:`|0\rangle` state.
@@ -167,6 +170,18 @@ class Instruction(BaseModel):
     If the measurement result is 1, the PRX gate is applied. If it is 0, an identity gate of similar time
     duration gate is applied instead.
     The measurement instruction must precede the classically controlled gate instruction in the quantum circuit.
+
+    Reset
+    -----
+
+    Resets the qubit(s) non-unitarily to the :math:`|0\rangle` state.
+
+    .. code-block:: python
+        :caption: Example
+
+        Instruction(name='reset', qubits=('alice', 'bob'), args={})
+
+    .. note:: Currently inherits its calibration from ``cc_prx`` and is only available when ``cc_prx`` is.
 
     CZ
     --
