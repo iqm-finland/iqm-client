@@ -8,6 +8,11 @@
 IQM Client
 ###########
 
+
+**The IQM Client GitHub repository has been archived. The iqm-client package, including the source code, is available
+at** `PyPI <https://pypi.org/project/iqm-client/>`_  **and the latest documentation is available at**
+`<https://docs.meetiqm.com/iqm-client/>`_.
+
 Client-side Python library for connecting to an `IQM <https://meetiqm.com/>`_ quantum computer.
 
 Installation
@@ -26,61 +31,16 @@ If you want just this library, though, you can install it from the Python Packag
 
     `uv <https://docs.astral.sh/uv/>`_ is highly recommended for practical Python environment and package management.
 
-Supplied within the Python package there is an additional `requirements.txt` file containing locked, security scanned
-dependencies. The file can be used to constrain installed dependencies either directly from the repo or by
-extracting it from the PyPI package.
-
-.. code-block:: bash
-
-    $ uv pip install --constraint requirements.txt iqm-client
-
-Contributing
-============
-
-Format your code:
-
-.. code-block:: bash
-
-   $ ./format
-
-Run the tests:
-
-.. code-block:: bash
-
-   $ ./test
-
-Update the requirements:
-
-.. code-block:: bash
-
-   $ python update-requirements.py
-
-After this, any changes in the lockfile `requirements.txt` have to be committed.
-The script upgrades locked dependencies defined in `pyproject.toml` within the given version ranges. However, transitive
-dependencies are deliberately not upgraded automatically.
-
 Documentation
 =============
 
-Documentation for the latest version is `available online <https://iqm-finland.github.io/iqm-client/>`_. 
-You can build documentation for any older version locally by cloning the Git repository, checking out the 
-corresponding tag, and running the docs builder. For example, to build the documentation for version ``20.12``:
+Documentation for the latest version is `available online <https://docs.meetiqm.com/iqm-client/>`_.
+You can build documentation for any older version locally by downloading the corresponding package from PyPI,
+and running the docs builder. For versions 20.12 and later this is done by running ``./docbuild`` in the
+``iqm-client`` root directory, and for earlier versions by running ``tox run -e docs``.
 
-.. code-block:: bash
-
-    $ git clone git@github.com:iqm-finland/iqm-client.git
-    $ cd iqm-client
-    $ git checkout 20.12
-    $ ./docbuild
-
-(Unless you need to build documentation for multiple versions, consider passing ``git clone`` options to
-only clone the commit for the specific version tag, e.g. ``--branch 15.4 --depth 1`` for version ``15.4``.
-This will be much faster than cloning the full repository, because some large files have been stored
-in the commit history.)
-
-``./docbuild`` will build the documentation at ``./build/sphinx/html``. This command requires the ``sphinx`` and
-``sphinx-book-theme`` Python packages (see the ``docs`` optional dependency in ``pyproject.toml``); 
-you can install the necessary packages with e.g. ``uv pip install -e ".[dev,docs]"``
+``./docbuild`` or ``tox run -e docs`` will build the documentation at ``./build/sphinx/html``.
+These commands require the ``sphinx`` and ``sphinx-book-theme`` Python packages.
 
 Copyright
 =========
