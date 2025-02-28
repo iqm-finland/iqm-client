@@ -27,6 +27,7 @@ from iqm.iqm_client import (
     APIEndpoint,
     APIVariant,
     ArchitectureRetrievalError,
+    CalibrationSet,
     CalibrationSetRetrievalError,
     Circuit,
     CircuitCompilationOptions,
@@ -41,6 +42,7 @@ from iqm.iqm_client import (
     Instruction,
     IQMClient,
     JobAbortionError,
+    QualityMetricSet,
     QualityMetricSetRetrievalError,
     QuantumArchitectureSpecification,
     SingleQubitMapping,
@@ -639,36 +641,58 @@ def test_get_quantum_architecture(
     unstub()
 
 
-def test_get_quality_metric_set(
-    sample_client, quality_metric_set_url, sample_quality_metric_set, quality_metric_set_success
+def test_get_quality_metric_set_with_calset_id(
+    sample_client, base_url, sample_quality_metric_set, quality_metric_set_success
 ):
-    """Test retrieving the quality metric set."""
-    expect(requests, times=1).get(quality_metric_set_url, ...).thenReturn(quality_metric_set_success)
+    """Tests that the correct quality metric set for the given ``calibration_set_id`` is returned."""
+    calset_id = sample_quality_metric_set['calibration_set_id']
+    expect(requests, times=1).get(f'{base_url}/calibration/metrics/{calset_id}', ...).thenReturn(
+        quality_metric_set_success
+    )
 
-    assert sample_client.get_quality_metric_set() == sample_quality_metric_set
+    assert sample_client.get_quality_metric_set(calset_id) == QualityMetricSet(**sample_quality_metric_set)
 
     verifyNoUnwantedInteractions()
     unstub()
 
 
-def test_get_quality_metric_set_v2(
+def test_get_quality_metric_set_without_calset_id(
+    sample_client, base_url, sample_quality_metric_set, quality_metric_set_success
+):
+    """Tests that the default quality metric set is returned when no ``calibration_set_id`` is provided."""
+    expect(requests, times=1).get(f'{base_url}/calibration/metrics/default', ...).thenReturn(quality_metric_set_success)
+    assert sample_client.get_quality_metric_set() == QualityMetricSet(**sample_quality_metric_set)
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_get_quality_metric_set_v2_with_calset_id(
     sample_client_v2, quality_metric_set_url_v2, sample_quality_metric_set, quality_metric_set_success
 ):
     """Test retrieving the quality metric set using the control station api version (v2)"""
     expect(requests, times=1).get(quality_metric_set_url_v2, ...).thenReturn(quality_metric_set_success)
 
-    assert sample_client_v2.get_quality_metric_set() == sample_quality_metric_set
+    assert sample_client_v2.get_quality_metric_set() == QualityMetricSet(**sample_quality_metric_set)
 
     verifyNoUnwantedInteractions()
     unstub()
 
 
-def test_get_calibration_set(sample_client, calibration_set_url, sample_calibration_set, calibration_set_success):
-    """Test retrieving the calibration set."""
-    expect(requests, times=1).get(calibration_set_url, ...).thenReturn(calibration_set_success)
+def test_get_calibration_set_with_calset_id(sample_client, base_url, sample_calibration_set, calibration_set_success):
+    """Tests that the correct calibration set for the given ``calibration_set_id`` is returned."""
+    calset_id = sample_calibration_set['calibration_set_id']
+    expect(requests, times=1).get(f'{base_url}/api/v1/calibration/{calset_id}', ...).thenReturn(calibration_set_success)
+    assert sample_client.get_calibration_set(calset_id) == CalibrationSet(**sample_calibration_set)
+    verifyNoUnwantedInteractions()
+    unstub()
 
-    assert sample_client.get_calibration_set() == sample_calibration_set
 
+def test_get_calibration_set_without_calset_id(
+    sample_client, base_url, sample_calibration_set, calibration_set_success
+):
+    """Tests that the correct calibration set for the default calibration set is returned."""
+    expect(requests, times=1).get(f'{base_url}/api/v1/calibration/default', ...).thenReturn(calibration_set_success)
+    assert sample_client.get_calibration_set() == CalibrationSet(**sample_calibration_set)
     verifyNoUnwantedInteractions()
     unstub()
 
@@ -679,27 +703,8 @@ def test_get_calibration_set_v2(
     """Test retrieving the calibration set."""
     expect(requests, times=1).get(calibration_set_url_v2, ...).thenReturn(calibration_set_success)
 
-    assert sample_client_v2.get_calibration_set() == sample_calibration_set
+    assert sample_client_v2.get_calibration_set() == CalibrationSet(**sample_calibration_set)
 
-    verifyNoUnwantedInteractions()
-    unstub()
-
-
-def test_get_calibration_set_with_calset_id(sample_client, base_url, sample_calibration_set, calibration_set_success):
-    """Tests that the correct calibration set for the given ``calibration_set_id`` is returned."""
-    calset_id = sample_calibration_set.calibration_set_id
-    expect(requests, times=1).get(f'{base_url}/api/v1/calibration/{calset_id}', ...).thenReturn(calibration_set_success)
-    assert sample_client.get_calibration_set(calset_id) == sample_calibration_set
-    verifyNoUnwantedInteractions()
-    unstub()
-
-
-def test_get_calibration_set_without_calset_id(
-    sample_client, base_url, sample_calibration_set, calibration_set_success
-):
-    """Tests that the correct calibration set for the default calibration set is returned."""
-    expect(requests, times=1).get(f'{base_url}/api/v1/calibration/default', ...).thenReturn(calibration_set_success)
-    assert sample_client.get_calibration_set() == sample_calibration_set
     verifyNoUnwantedInteractions()
     unstub()
 

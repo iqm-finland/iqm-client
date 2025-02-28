@@ -34,7 +34,6 @@ from requests import HTTPError, Response
 from iqm.iqm_client import (
     DIST_NAME,
     REQUESTS_TIMEOUT,
-    CalibrationSet,
     Circuit,
     CircuitCompilationOptions,
     DDMode,
@@ -47,7 +46,6 @@ from iqm.iqm_client import (
     IQMClient,
     MoveGateFrameTrackingMode,
     MoveGateValidationMode,
-    QualityMetricSet,
     RunRequest,
     SingleQubitMapping,
     __version__,
@@ -517,13 +515,19 @@ def sample_static_architecture():
 
 @pytest.fixture
 def sample_quality_metric_set():
-    return QualityMetricSet(
-        quality_metric_set_id=UUID('e70667f9-a432-4585-97a9-d54de9a85abd'),
-        quality_metric_set_dut_label='M194_W0_P08_Z99',
-        quality_metric_set_created_timestamp='2023-02-10T08:57:04.605956',
-        quality_metric_set_end_timestamp='2023-02-10T08:57:04.605956',
-        quality_metric_set_is_invalid=False,
-        metrics={
+    return {
+        'calibration_set_id': UUID('e70667f9-a432-4585-97a9-d54de9a85abd'),
+        'calibration_set_dut_label': 'M194_W0_P08_Z99',
+        'calibration_set_number_of_observations': 691,
+        'calibration_set_created_timestamp': '2023-02-10T08:57:04.605956',
+        'calibration_set_end_timestamp': '2023-02-10T08:57:04.605956',
+        'calibration_set_is_invalid': False,
+        'quality_metric_set_id': UUID('e70667f9-a432-4585-97a9-d54de9a85abd'),
+        'quality_metric_set_dut_label': 'M194_W0_P08_Z99',
+        'quality_metric_set_created_timestamp': '2023-02-10T08:57:04.605956',
+        'quality_metric_set_end_timestamp': '2023-02-10T08:57:04.605956',
+        'quality_metric_set_is_invalid': False,
+        'metrics': {
             'QB1.t1_time': {
                 'value': '4.408139707188389e-05',
                 'unit': 's',
@@ -537,18 +541,18 @@ def sample_quality_metric_set():
                 'timestamp': '2023-02-10T08:57:04.605956',
             },
         },
-    )
+    }
 
 
 @pytest.fixture
 def sample_calibration_set():
-    return CalibrationSet(
-        calibration_set_id=UUID('e70667f9-a432-4585-97a9-d54de9a85abd'),
-        calibration_set_dut_label='M194_W0_P08_Z99',
-        calibration_set_created_timestamp='2023-02-10T08:57:04.605956',
-        calibration_set_end_timestamp='2023-02-10T08:57:04.605956',
-        calibration_set_is_invalid=False,
-        observations={
+    return {
+        'calibration_set_id': UUID('e70667f9-a432-4585-97a9-d54de9a85abd'),
+        'calibration_set_dut_label': 'M194_W0_P08_Z99',
+        'calibration_set_created_timestamp': '2023-02-10T08:57:04.605956',
+        'calibration_set_end_timestamp': '2023-02-10T08:57:04.605956',
+        'calibration_set_is_invalid': False,
+        'observations': {
             'QB4.flux.voltage': {
                 'observation_id': 123456,
                 'dut_field': 'QB4.flux.voltage',
@@ -570,7 +574,7 @@ def sample_calibration_set():
                 'modified_timestamp': '2023-02-10T08:57:04.605956',
             },
         },
-    )
+    }
 
 
 @pytest.fixture
@@ -792,12 +796,13 @@ def static_architecture_success(sample_static_architecture) -> MockJsonResponse:
 
 @pytest.fixture()
 def quality_metric_set_success(sample_quality_metric_set) -> MockJsonResponse:
-    return MockJsonResponse(200, sample_quality_metric_set.model_dump())
+    """Mock server response for quality metrics."""
+    return MockJsonResponse(200, sample_quality_metric_set)
 
 
 @pytest.fixture()
 def calibration_set_success(sample_calibration_set) -> MockJsonResponse:
-    return MockJsonResponse(200, sample_calibration_set.model_dump())
+    return MockJsonResponse(200, sample_calibration_set)
 
 
 @pytest.fixture()

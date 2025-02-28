@@ -584,17 +584,29 @@ def _component_sort_key(component_name: str) -> tuple[str, int, str]:
 class QualityMetricSet(BaseModel):
     """Quality metrics for a calibration set."""
 
+    calibration_set_id: UUID | None = Field(...)
+    """ID of the calibration set."""
+    calibration_set_dut_label: str = Field(...)
+    """Chip Label."""
+    calibration_set_number_of_observations: int = Field(...)
+    """Number of observations in the calibration set."""
+    calibration_set_created_timestamp: str = Field(...)
+    """Timestamp when the calibration set was created."""
+    calibration_set_end_timestamp: str = Field(...)
+    """Timestamp when the calibration set was finalized."""
+    calibration_set_is_invalid: bool = Field(...)
+    """Whether the calibration set is invalid."""
     quality_metric_set_id: UUID | None = Field(...)
     """ID of the quality metric set."""
     quality_metric_set_dut_label: str | None = Field(...)
-    """Label of the QPU."""
+    """Chip label."""
     quality_metric_set_created_timestamp: str | None = Field(...)
     """Timestamp when the quality metric set was created."""
     quality_metric_set_end_timestamp: str | None = Field(...)
     """Timestamp when the quality metric set was finalized."""
     quality_metric_set_is_invalid: bool = Field(...)
     """Whether the quality metric set is invalid."""
-    metrics: dict[str, dict[str, float | int | str]] | None = Field(...)
+    metrics: dict[str, dict[str, Any]] | None = Field(...)
     """Quality metrics."""
 
 
@@ -603,14 +615,14 @@ class CalibrationSet(BaseModel):
 
     calibration_set_id: UUID = Field(...)
     """ID of the calibration set."""
+    calibration_set_dut_label: str = Field(...)
+    """Chip Label."""
     calibration_set_is_invalid: bool = Field(...)
     """Whether the calibration set is invalid."""
     calibration_set_created_timestamp: str = Field(...)
     """Timestamp when the calibration set was created."""
     calibration_set_end_timestamp: str = Field(...)
     """Timestamp when the calibration set was finalized."""
-    calibration_set_dut_label: str = Field(...)
-    """Label of the QPU."""
     observations: dict[str, Any] = Field(...)
     """Calibration data."""
 

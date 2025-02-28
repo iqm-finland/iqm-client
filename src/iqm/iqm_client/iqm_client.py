@@ -821,8 +821,9 @@ class IQMClient:
             raise JobAbortionError(result.text)
 
     def get_quantum_architecture(self, *, timeout_secs: float = REQUESTS_TIMEOUT) -> QuantumArchitectureSpecification:
-        """Retrieve quantum architecture from server
-        Caches the result and returns the same result on later invocations.
+        """Retrieve quantum architecture from server.
+
+        Caches the result and returns it on later invocations.
 
         Args:
             timeout_secs: network request timeout
@@ -861,18 +862,17 @@ class IQMClient:
     def get_quality_metric_set(
         self, calibration_set_id: UUID | None = None, *, timeout_secs: float = REQUESTS_TIMEOUT
     ) -> QualityMetricSet:
-        """Retrieve the latest quality metric set from the server using the V1 API
-        (Cocos circuits execution and Resonance) architecture.
+        """Retrieve the given quality metric set from the server.
 
         Caches the result and returns the same result on later invocations.
 
         Args:
-            calibration_set_id: ID of the calibration set for which the quality metrics are returned. 
+            calibration_set_id: ID of the calibration set for which the quality metrics are returned.
             If None, the current default calibration set is used.
             timeout_secs: network request timeout.
 
         Returns:
-            quality metrics
+            Requested quality metric set.
 
         Raises:
             QualityMetricsRetrievalError: IQM server specific exceptions
@@ -904,17 +904,17 @@ class IQMClient:
     def get_calibration_set(
         self, calibration_set_id: UUID | None = None, *, timeout_secs: float = REQUESTS_TIMEOUT
     ) -> CalibrationSet:
-        """Retrieve calibration set from the server using the V1 API (Cocos circuits execution and Resonance).
+        """Retrieve the given calibration set from the server.
 
         Caches the result and returns the same result on later invocations.
 
         Args:
-            calibration_set_id: ID of the calibration set to retrieve. If None, the current default 
+            calibration_set_id: ID of the calibration set to retrieve. If None, the current default
             calibration set is used.
             timeout_secs: network request timeout
 
         Returns:
-            calibration set
+            Requested calibration set.
 
         Raises:
             CalibrationSetRetrievalError: IQM server specific exceptions

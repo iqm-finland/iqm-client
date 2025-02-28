@@ -138,6 +138,12 @@ def test_dqa_deserialization():
 
 def test_quality_metric_set_deserialization():
     qm = QualityMetricSet(
+        calibration_set_id=UUID('e70667f9-a432-4585-97a9-d54de9a85abd'),
+        calibration_set_dut_label='M194_W0_P08_Z99',
+        calibration_set_number_of_observations=691,
+        calibration_set_created_timestamp='2023-02-10T08:57:04.605956',
+        calibration_set_end_timestamp='2023-02-10T08:57:04.605956',
+        calibration_set_is_invalid=False,
         quality_metric_set_id=UUID('e70667f9-a432-4585-97a9-d54de9a85abd'),
         quality_metric_set_dut_label='M194_W0_P08_Z99',
         quality_metric_set_created_timestamp='2023-02-10T08:57:04.605956',
@@ -200,3 +206,89 @@ def test_calibration_set_deserialization():
     cs_reconstructed = CalibrationSet(**json.loads(cs_json))
 
     assert cs_reconstructed == cs
+
+
+def test_quality_metric_set_deserialize_json_reference():
+    qms = {
+        'calibration_set_id': 'e70667f9-a432-4585-97a9-d54de9a85abd',
+        'calibration_set_dut_label': 'M194_W0_P08_Z99',
+        'calibration_set_number_of_observations': 691,
+        'calibration_set_created_timestamp': '2023-02-10T08:57:04.605956',
+        'calibration_set_end_timestamp': '2023-02-10T08:57:04.605956',
+        'calibration_set_is_invalid': False,
+        'quality_metric_set_id': 'e70667f9-a432-4585-97a9-d54de9a85abd',
+        'quality_metric_set_dut_label': 'M194_W0_P08_Z99',
+        'quality_metric_set_created_timestamp': '2023-02-10T08:57:04.605956',
+        'quality_metric_set_end_timestamp': '2023-02-10T08:57:04.605956',
+        'quality_metric_set_is_invalid': False,
+        'metrics': {
+            'QB1.t1_time': {
+                'value': '4.408139707188389e-05',
+                'unit': 's',
+                'uncertainty': '2.83049498694448e-06',
+                'timestamp': '2023-02-10T08:57:04.605956',
+            },
+            'QB1.t2_time': {
+                'value': '3.245501974471748e-05',
+                'unit': 's',
+                'uncertainty': '2.39049697699448e-06',
+                'timestamp': '2023-02-10T08:57:04.605956',
+            },
+        },
+    }
+
+    qms_json = json.dumps(qms)
+
+    qms_dict = json.loads(qms_json)
+
+    qms_model = QualityMetricSet(**qms_dict)
+
+    model_keys = set(qms_model.model_fields.keys())
+
+    dict_keys = set(qms_dict.keys())
+
+    assert dict_keys == model_keys
+
+
+def test_calibration_set_deserialize_json_reference():
+    cs = {
+        'calibration_set_id': 'e70667f9-a432-4585-97a9-d54de9a85abd',
+        'calibration_set_dut_label': 'M194_W0_P08_Z99',
+        'calibration_set_created_timestamp': '2023-02-10T08:57:04.605956',
+        'calibration_set_end_timestamp': '2023-02-10T08:57:04.605956',
+        'calibration_set_is_invalid': False,
+        'observations': {
+            'QB4.flux.voltage': {
+                'observation_id': 123456,
+                'dut_field': 'QB4.flux.voltage',
+                'unit': 'V',
+                'value': -0.158,
+                'uncertainty': None,
+                'invalid': False,
+                'created_timestamp': '2023-02-10T08:57:04.605956',
+                'modified_timestamp': '2023-02-10T08:57:04.605956',
+            },
+            'PL-1.readout.center_frequency': {
+                'observation_id': 234567,
+                'dut_field': 'PL-1.readout.center_frequency',
+                'unit': 'Hz',
+                'value': 5500000000,
+                'uncertainty': None,
+                'invalid': False,
+                'created_timestamp': '2023-02-10T08:57:04.605956',
+                'modified_timestamp': '2023-02-10T08:57:04.605956',
+            },
+        },
+    }
+
+    cs_json = json.dumps(cs)
+
+    cs_dict = json.loads(cs_json)
+
+    cs_model = CalibrationSet(**cs_dict)
+
+    cs_model_keys = set(cs_model.model_fields.keys())
+
+    cs_dict_keys = set(cs_dict.keys())
+
+    assert cs_dict_keys == cs_model_keys
