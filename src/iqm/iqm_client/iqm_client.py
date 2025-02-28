@@ -1053,6 +1053,7 @@ class IQMClient:
         return self._token_manager.close()
 
     def _default_headers(self) -> dict[str, str]:
+        """Default headers for HTTP requests to the IQM server."""
         headers = {'User-Agent': self._signature}
         if self._token_manager is not None:
             bearer_token = self._token_manager.get_bearer_token()
@@ -1062,6 +1063,7 @@ class IQMClient:
 
     @staticmethod
     def _check_authentication_errors(result: requests.Response) -> None:
+        """Raise ClientAuthenticationError with appropriate message if the authentication failed for some reason."""
         # for not strictly authenticated endpoints,
         # we need to handle 302 redirects to the auth server login page
         if result.history and any(
@@ -1072,7 +1074,7 @@ class IQMClient:
             raise ClientAuthenticationError(f'Authentication failed: {result.text}')
 
     def _check_not_found_error(self, response: requests.Response) -> None:
-        """Raises HTTPError with appropriate message if ``response.status_code == 404``."""
+        """Raise HTTPError with appropriate message if ``response.status_code == 404``."""
         if response.status_code == 404:
             version_message = ''
             if (version_incompatibility_msg := self._check_versions()) is not None:
