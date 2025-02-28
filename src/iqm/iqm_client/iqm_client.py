@@ -31,7 +31,8 @@ from uuid import UUID
 import warnings
 
 from packaging.version import parse
-from pydantic import TypeAdapter, ValidationError as PydanticValidationError
+from pydantic import BaseModel
+from pydantic import ValidationError as PydanticValidationError
 import requests
 from requests import HTTPError
 
@@ -39,15 +40,12 @@ from iqm.iqm_client.api import APIConfig, APIEndpoint, APIVariant
 from iqm.iqm_client.authentication import TokenManager
 from iqm.iqm_client.errors import (
     APITimeoutError,
-    ArchitectureRetrievalError,
-    CalibrationSetRetrievalError,
     CircuitExecutionError,
     CircuitValidationError,
     ClientAuthenticationError,
     ClientConfigurationError,
     EndpointRequestError,
     JobAbortionError,
-    QualityMetricSetRetrievalError,
 )
 from iqm.iqm_client.models import (
     _SUPPORTED_OPERATIONS,
@@ -73,7 +71,7 @@ from iqm.iqm_client.models import (
     validate_circuit,
 )
 
-T = TypeVar('T')
+T_BaseModel = TypeVar('T_BaseModel', bound=BaseModel)
 
 REQUESTS_TIMEOUT = float(os.environ.get('IQM_CLIENT_REQUESTS_TIMEOUT', 60.0))
 DEFAULT_TIMEOUT_SECONDS = 900
@@ -167,71 +165,69 @@ class IQMClient:
 
     def _get_request(
         self,
-        url: str,
+        api_endpoint: APIEndpoint,
+        endpoint_args: tuple[str, ...] = (),
         *,
         timeout_secs: float,
         retry: bool = False,
     ) -> requests.Response:
-        """Make a HTTP GET request to IQM server.
+        """Make a HTTP GET request to an IQM server endpoint.
 
         Contains all the boilerplate code for making endpoint requests.
 
         Args:
-            url: endpoint URL
-            timeout_secs: HTTP request timeout (in seconds)
-            retry: iff True, keep trying if you get a 502 error
+            api_endpoint: API endpoint to GET.
+            endpoint_args: Arguments for the endpoint.
+            timeout_secs: HTTP request timeout (in seconds).
+            retry: Iff True, keep trying if you get a 502 error.
 
         Returns:
             HTTP response to the request.
+
+        Raises:
+            ClientAuthenticationError: No valid authentication was provided.
+            HTTPError: Various HTTP exceptions.
         """
-        request = lambda: requests.get(
-            url,
-            headers=self._default_headers(),
-            timeout=timeout_secs,
-        )
+        url = self._api.url(api_endpoint, *endpoint_args)
+
+        def request():
+            return requests.get(
+                url,
+                headers=self._default_headers(),
+                timeout=timeout_secs,
+            )
+
         response = self._retry_request_on_error(request) if retry else request()
         self._check_not_found_error(response)
         self._check_authentication_errors(response)
         response.raise_for_status()
         return response
 
-    def _get_endpoint(
+    def _deserialize_response(
         self,
-        url: str,
-        *,
-        timeout_secs: float,
-        model_class: type[T],
-        retry: bool = False,
-    ) -> T:
-        """Make a HTTP GET request to IQM server, decode the response into a Python object.
+        response: requests.Response,
+        model_class: type[T_BaseModel],
+    ) -> T_BaseModel:
+        """Deserialize a HTTP endpoint response.
 
         Args:
-            url: endpoint URL
-            timeout_secs: HTTP request timeout (in seconds)
-            retry: iff True, keep trying if you get a 502 error
-            model_class:
+            response: HTTP response data.
+            model_class: Pydantic model to deserialize the data into.
 
         Returns:
+            Deserialized endpoint response.
+
         Raises:
-            ClientAuthenticationError: No valid authentication was provided.
-            HTTPError: Various HTTP exceptions.
             EndpointRequestError: Did not understand the endpoint response.
         """
-        response = self._get_request(url, timeout_secs=timeout_secs)
-
         try:
-            if isinstance(model_class, TypeAdapter):
-                # model = model_class.validate_python(response.json())
-                model = model_class.validate_json(response.text)  # faster?
-            else:
-                model = model_class.model_validate(response.json())
-                # faster? MockJsonResponse.text in our unit tests cannot handle UUID
-                # model = model_class.model_validate_json(response.text)
-        except (json.decoder.JSONDecodeError, PydanticValidationError) as e:
+            model = model_class.model_validate(response.json())
+            # faster? MockJsonResponse.text in our unit tests cannot handle UUID
+            # model = model_class.model_validate_json(response.text)
+        except json.decoder.JSONDecodeError as e:
             raise EndpointRequestError(f'Invalid response: {response.text}, {e!r}') from e
         return model
 
-    # pylint: disable=too-many-locals
     def submit_circuits(
         self,
         circuits: CircuitBatch,
@@ -646,12 +642,13 @@ class IQMClient:
         V1 API (Cocos circuits execution and Resonance) has an inefficient `GET /jobs/<id>` endpoint
         that returns the full job status, including the result and the original request, in a single call.
         """
-        return self._get_endpoint(
-            self._api.url(APIEndpoint.GET_JOB_RESULT, str(job_id)),
+        response = self._get_request(
+            APIEndpoint.GET_JOB_RESULT,
+            (str(job_id),),
             timeout_secs=timeout_secs,
-            model_class=RunResult,
             retry=True,
         )
+        return self._deserialize_response(response, RunResult)
 
     def _get_run_v2(self, job_id: UUID, timeout_secs: float = REQUESTS_TIMEOUT) -> RunResult:
         """
@@ -659,7 +656,8 @@ class IQMClient:
         """
 
         status_response = self._get_request(
-            self._api.url(APIEndpoint.GET_JOB_STATUS, str(job_id)),
+            APIEndpoint.GET_JOB_STATUS,
+            (str(job_id),),
             timeout_secs=timeout_secs,
         )
         status = status_response.json()
@@ -794,12 +792,14 @@ class IQMClient:
             CircuitExecutionError: IQM server specific exceptions
             HTTPException: HTTP exceptions
         """
-        run_status = self._get_endpoint(
-            self._api.url(APIEndpoint.GET_JOB_STATUS, str(job_id)),
+        response = self._get_request(
+            APIEndpoint.GET_JOB_STATUS,
+            (str(job_id),),
             timeout_secs=timeout_secs,
-            model_class=RunStatus,
             retry=True,
         )
+        run_status = self._deserialize_response(response, RunStatus)
+
         if run_status.warnings:
             for warning in run_status.warnings:
                 warnings.warn(warning)
@@ -885,18 +885,18 @@ class IQMClient:
             quantum architecture
 
         Raises:
-            ArchitectureRetrievalError: IQM server specific exceptions
+            EndpointRequestError: IQM server specific exceptions
             ClientAuthenticationError: if no valid authentication is provided
             HTTPException: HTTP exceptions
         """
         if self._architecture:
             return self._architecture
 
-        qa = self._get_endpoint(
-            self._api.url(APIEndpoint.QUANTUM_ARCHITECTURE),
+        response = self._get_request(
+            APIEndpoint.QUANTUM_ARCHITECTURE,
             timeout_secs=timeout_secs,
-            model_class=QuantumArchitecture,
-        ).quantum_architecture
+        )
+        qa = self._deserialize_response(response, QuantumArchitecture).quantum_architecture
 
         # Cache architecture so that later invocations do not need to query it again
         self._architecture = qa
@@ -919,7 +919,7 @@ class IQMClient:
             quality metrics
 
         Raises:
-            QualityMetricsRetrievalError: IQM server specific exceptions
+            EndpointRequestError: IQM server specific exceptions
             ClientAuthenticationError: if no valid authentication is provided
             HTTPException: HTTP exceptions
         """
@@ -928,11 +928,12 @@ class IQMClient:
         else:
             calibration_set_id_str = str(calibration_set_id)
 
-        return self._get_endpoint(
-            self._api.url(APIEndpoint.QUALITY_METRICS, calibration_set_id_str),
+        response = self._get_request(
+            APIEndpoint.QUALITY_METRICS,
+            (calibration_set_id_str,),
             timeout_secs=timeout_secs,
-            model_class=QualityMetricSet,
         )
+        return self._deserialize_response(response, QualityMetricSet)
 
     def get_calibration_set(
         self, calibration_set_id: UUID | None = None, *, timeout_secs: float = REQUESTS_TIMEOUT
@@ -950,7 +951,7 @@ class IQMClient:
             calibration set
 
         Raises:
-            CalibrationSetRetrievalError: IQM server specific exceptions
+            EndpointRequestError: IQM server specific exceptions
             ClientAuthenticationError: No valid authentication is provided
             HTTPException: HTTP exceptions
         """
@@ -959,11 +960,12 @@ class IQMClient:
         else:
             calibration_set_id_str = str(calibration_set_id)
 
-        return self._get_endpoint(
-            self._api.url(APIEndpoint.CALIBRATION, calibration_set_id_str),
+        response = self._get_request(
+            APIEndpoint.CALIBRATION,
+            (calibration_set_id_str,),
             timeout_secs=timeout_secs,
-            model_class=CalibrationSet,
         )
+        return self._deserialize_response(response, CalibrationSet)
 
     def get_dynamic_quantum_architecture(
         self, calibration_set_id: UUID | None = None, *, timeout_secs: float = REQUESTS_TIMEOUT
@@ -983,7 +985,7 @@ class IQMClient:
             dynamic quantum architecture corresponding to the given calibration set
 
         Raises:
-            ArchitectureRetrievalError: IQM server specific exceptions
+            EndpointRequestError: IQM server specific exceptions
             ClientAuthenticationError: if no valid authentication is provided
             HTTPException: HTTP exceptions
         """
@@ -994,11 +996,12 @@ class IQMClient:
         else:
             calibration_set_id_str = str(calibration_set_id)
 
-        dqa = self._get_endpoint(
-            self._api.url(APIEndpoint.CALIBRATED_GATES, calibration_set_id_str),
+        response = self._get_request(
+            APIEndpoint.CALIBRATED_GATES,
+            (calibration_set_id_str,),
             timeout_secs=timeout_secs,
-            model_class=DynamicQuantumArchitecture,
         )
+        dqa = self._deserialize_response(response, DynamicQuantumArchitecture)
 
         # Cache architecture so that later invocations do not need to query it again
         self._dynamic_architectures[dqa.calibration_set_id] = dqa
@@ -1021,11 +1024,14 @@ class IQMClient:
             ClientAuthenticationError: if no valid authentication is provided
             HTTPException: HTTP exceptions
         """
-        channel_properties = self._get_endpoint(
-            self._api.url(APIEndpoint.CHANNEL_PROPERTIES),
+        response = self._get_request(
+            APIEndpoint.CHANNEL_PROPERTIES,
             timeout_secs=timeout_secs,
-            model_class=DictDict,
         )
+        try:
+            channel_properties = DictDict.validate_json(response.text)
+        except PydanticValidationError as e:
+            raise EndpointRequestError(f'Invalid response: {response.text}, {e!r}') from e
 
         all_qubits = self.get_quantum_architecture().qubits
         groups: dict[str, set[str]] = {}
@@ -1133,12 +1139,13 @@ class IQMClient:
             CircuitExecutionError: IQM server specific exceptions
             HTTPException: HTTP exceptions
         """
-        return self._get_endpoint(
-            self._api.url(APIEndpoint.GET_JOB_COUNTS, str(job_id)),
+        response = self._get_request(
+            APIEndpoint.GET_JOB_COUNTS,
+            (str(job_id),),
             timeout_secs=timeout_secs,
-            model_class=RunCounts,
             retry=True,
         )
+        return self._deserialize_response(response, RunCounts)
 
     def get_supported_client_libraries(self, timeout_secs: float = REQUESTS_TIMEOUT) -> dict[str, ClientLibrary]:
         """Retrieves information about supported client libraries from the server.
@@ -1153,8 +1160,11 @@ class IQMClient:
             HTTPError: HTTP exceptions
             ClientAuthenticationError: if authentication fails
         """
-        return self._get_endpoint(
-            self._api.url(APIEndpoint.CLIENT_LIBRARIES),
+        response = self._get_request(
+            APIEndpoint.CLIENT_LIBRARIES,
             timeout_secs=timeout_secs,
-            model_class=ClientLibraryDict,
         )
+        try:
+            return ClientLibraryDict.validate_json(response.text)
+        except PydanticValidationError as e:
+            raise EndpointRequestError(f'Invalid response: {response.text}, {e!r}') from e

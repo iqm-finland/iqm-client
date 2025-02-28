@@ -27,8 +27,6 @@ from requests import HTTPError
 from iqm.iqm_client import (
     APIEndpoint,
     APIVariant,
-    ArchitectureRetrievalError,
-    CalibrationSetRetrievalError,
     Circuit,
     CircuitCompilationOptions,
     CircuitExecutionError,
@@ -43,7 +41,6 @@ from iqm.iqm_client import (
     Instruction,
     IQMClient,
     JobAbortionError,
-    QualityMetricSetRetrievalError,
     QuantumArchitectureSpecification,
     SingleQubitMapping,
     Status,
@@ -1277,14 +1274,14 @@ def test_get_supported_client_libraries(base_url, sample_client):
 
 
 @pytest.mark.parametrize(
-    "method,url_fixture,args",
+    'method,url_fixture,args',
     [
-        ("get_supported_client_libraries", "client_libraries_url", ()),
-        ("get_quantum_architecture", "quantum_architecture_url", ()),
-        ("get_quality_metric_set", "quality_metric_set_url", ()),
-        ("get_calibration_set", "calibration_set_url", ()),
-        ("get_dynamic_quantum_architecture", "dynamic_architecture_url", ()),
-        ("get_run_status", "existing_job_status_url", (uuid.UUID('3c3fcda3-e860-46bf-92a4-bcc59fa76ce9'),)),
+        ('get_supported_client_libraries', 'client_libraries_url', ()),
+        ('get_quantum_architecture', 'quantum_architecture_url', ()),
+        ('get_quality_metric_set', 'quality_metric_set_url', ()),
+        ('get_calibration_set', 'calibration_set_url', ()),
+        ('get_dynamic_quantum_architecture', 'dynamic_architecture_url', ()),
+        ('get_run_status', 'existing_job_status_url', (uuid.UUID('3c3fcda3-e860-46bf-92a4-bcc59fa76ce9'),)),
     ],
 )
 def test_endpoint_request_throws_error_if_received_not_json(

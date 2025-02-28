@@ -45,16 +45,4 @@ class JobAbortionError(RuntimeError):
 
 
 class EndpointRequestError(RuntimeError):
-    """Retrieving something from an endpoint failed."""
-
-
-class ArchitectureRetrievalError(RuntimeError):
-    """Retrieving quantum architecture failed."""
-
-
-class QualityMetricSetRetrievalError(RuntimeError):
-    """Retrieving quality metrics failed."""
-
-
-class CalibrationSetRetrievalError(RuntimeError):
-    """Retrieving calibration failed."""
+    """Retrieving something from a server endpoint failed."""
