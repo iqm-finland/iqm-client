@@ -57,6 +57,7 @@ from iqm.iqm_client.api import APIVariant
 
 @pytest.fixture()
 def base_url() -> str:
+    # NOTE: You should mock all HTTP requests in the tests, so we do not send out actual HTTP requests here!
     return 'https://example.com'
 
 
@@ -166,6 +167,11 @@ def dynamic_architecture_url(base_url) -> str:
 def channel_properties_url(base_url) -> str:
     # Only in API V2
     return f'{base_url}/station/channel-properties'
+
+
+@pytest.fixture()
+def client_libraries_url(base_url) -> str:
+    return f'{base_url}/info/client-libraries'
 
 
 @pytest.fixture
@@ -742,6 +748,7 @@ class MockJsonResponse:
 
     @property
     def text(self):
+        # NOTE cannot handle UUIDs
         return json.dumps(self.json_data)
 
     def json(self):

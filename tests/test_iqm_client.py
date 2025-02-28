@@ -15,6 +15,7 @@
 # pylint: disable=too-many-arguments,too-many-lines
 from importlib.metadata import version
 import re
+import time
 import uuid
 
 from mockito import ANY, expect, unstub, verifyNoUnwantedInteractions, when
@@ -37,6 +38,7 @@ from iqm.iqm_client import (
     DDMode,
     DDStrategy,
     DynamicQuantumArchitecture,
+    EndpointRequestError,
     HeraldingMode,
     Instruction,
     IQMClient,
@@ -539,6 +541,7 @@ def test_waiting_for_compilation(
         pending_compilation_status
     ).thenReturn(pending_compilation_status).thenReturn(pending_execution_status)
     expect(requests, times=1).get(existing_job_url, **get_jobs_args()).thenReturn(pending_execution_job_result)
+    expect(time, times=2).sleep(...).thenReturn()  # skip sleeps to speed up the test
 
     assert sample_client.wait_for_compilation(existing_run_id).status == Status.PENDING_EXECUTION
 
@@ -566,6 +569,7 @@ def test_wait_for_compilation_adds_user_agent_with_signature(
     expect(requests, times=1).get(
         existing_job_url, **get_jobs_args(user_agent=client_with_signature._signature)
     ).thenReturn(pending_execution_job_result)
+    expect(time, times=2).sleep(...).thenReturn()  # skip sleeps to speed up the test
 
     assert client_with_signature.wait_for_compilation(existing_run_id).status == Status.PENDING_EXECUTION
 
@@ -590,6 +594,7 @@ def test_waiting_for_results(
         pending_compilation_status
     ).thenReturn(pending_execution_status).thenReturn(ready_status)
     expect(requests, times=1).get(existing_job_url, **get_jobs_args()).thenReturn(ready_job_result)
+    expect(time, times=2).sleep(...).thenReturn()  # skip sleeps to speed up the test
 
     assert sample_client.wait_for_results(existing_run_id).status == Status.READY
 
@@ -618,6 +623,7 @@ def test_wait_for_results_adds_user_agent_with_signature(
     expect(requests, times=1).get(
         existing_job_url, **get_jobs_args(user_agent=client_with_signature._signature)
     ).thenReturn(ready_job_result)
+    expect(time, times=2).sleep(...).thenReturn()  # skip sleeps to speed up the test
 
     assert client_with_signature.wait_for_results(existing_run_id).status == Status.READY
 
@@ -747,60 +753,8 @@ def test_run_result_throws_json_decode_error_if_received_not_json(
     """Test that an exception is raised when the response is not a valid JSON"""
     expect(requests, times=1).get(existing_job_url, ...).thenReturn(not_valid_json_response)
 
-    with pytest.raises(CircuitExecutionError):
+    with pytest.raises(EndpointRequestError, match='Invalid response'):
         sample_client.get_run(existing_run_id)
-
-    verifyNoUnwantedInteractions()
-    unstub()
-
-
-def test_run_result_status_throws_json_decode_error_if_received_not_json(
-    sample_client, existing_job_status_url, existing_run_id, not_valid_json_response
-):
-    """Test that an exception is raised when the response is not a valid JSON"""
-    expect(requests, times=1).get(existing_job_status_url, ...).thenReturn(not_valid_json_response)
-
-    with pytest.raises(CircuitExecutionError):
-        sample_client.get_run_status(existing_run_id)
-
-    verifyNoUnwantedInteractions()
-    unstub()
-
-
-def test_quantum_architecture_throws_json_decode_error_if_received_not_json(
-    sample_client, quantum_architecture_url, not_valid_json_response
-):
-    """Test that an exception is raised when the response is not a valid JSON"""
-    expect(requests, times=1).get(quantum_architecture_url, ...).thenReturn(not_valid_json_response)
-
-    with pytest.raises(ArchitectureRetrievalError):
-        sample_client.get_quantum_architecture()
-
-    verifyNoUnwantedInteractions()
-    unstub()
-
-
-def test_quality_metric_set_throws_json_decode_error_if_received_not_json(
-    sample_client, quality_metric_set_url, not_valid_json_response
-):
-    """Test that an exception is raised when the response is not a valid JSON"""
-    expect(requests, times=1).get(quality_metric_set_url, ...).thenReturn(not_valid_json_response)
-
-    with pytest.raises(QualityMetricSetRetrievalError):
-        sample_client.get_quality_metric_set()
-
-    verifyNoUnwantedInteractions()
-    unstub()
-
-
-def test_calibration_set_throws_json_decode_error_if_received_not_json(
-    sample_client, calibration_set_url, not_valid_json_response
-):
-    """Test that an exception is raised when the response is not a valid JSON"""
-    expect(requests, times=1).get(calibration_set_url, ...).thenReturn(not_valid_json_response)
-
-    with pytest.raises(CalibrationSetRetrievalError):
-        sample_client.get_calibration_set()
 
     verifyNoUnwantedInteractions()
     unstub()
@@ -1161,21 +1115,6 @@ def test_get_dynamic_quantum_architecture_without_calset_id_does_not_cache(
     unstub()
 
 
-def test_get_dynamic_quantum_architecture_throws_json_decode_error_if_received_not_json(
-    sample_client, base_url, not_valid_json_response
-):
-    """Test that an exception is raised when the response is not a valid JSON"""
-    expect(requests, times=1).get(f'{base_url}/api/v1/calibration/default/gates', ...).thenReturn(
-        not_valid_json_response
-    )
-
-    with pytest.raises(ArchitectureRetrievalError):
-        sample_client.get_dynamic_quantum_architecture()
-
-    verifyNoUnwantedInteractions()
-    unstub()
-
-
 def test_get_dynamic_quantum_architecture_not_found(base_url, sample_client):
     """Test that an informative error message is returned when 404 is returned due to version incompatibility."""
     client_version = parse(version('iqm-client'))
@@ -1337,8 +1276,37 @@ def test_get_supported_client_libraries(base_url, sample_client):
     unstub()
 
 
+@pytest.mark.parametrize(
+    "method,url_fixture,args",
+    [
+        ("get_supported_client_libraries", "client_libraries_url", ()),
+        ("get_quantum_architecture", "quantum_architecture_url", ()),
+        ("get_quality_metric_set", "quality_metric_set_url", ()),
+        ("get_calibration_set", "calibration_set_url", ()),
+        ("get_dynamic_quantum_architecture", "dynamic_architecture_url", ()),
+        ("get_run_status", "existing_job_status_url", (uuid.UUID('3c3fcda3-e860-46bf-92a4-bcc59fa76ce9'),)),
+    ],
+)
+def test_endpoint_request_throws_error_if_received_not_json(
+    method, url_fixture, args, sample_client, not_valid_json_response, request
+):
+    """Test that an exception is raised when the response to an endpoint request is not valid JSON."""
+    url = request.getfixturevalue(url_fixture)
+    expect(requests, times=1).get(url, ...).thenReturn(not_valid_json_response)
+
+    with pytest.raises(EndpointRequestError, match='Invalid response'):
+        getattr(sample_client, method)(*args)
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
 def test_check_api_version_deprecation_warning(base_url):
     """Test that deprecation warning is raised when API version is deprecated."""
+    expect(requests, times=1).get(f'{base_url}/info/client-libraries', ...).thenReturn(
+        mock_supported_client_libraries_response()
+    )
+
     with pytest.warns(
         DeprecationWarning,
         match=re.escape(
@@ -1346,4 +1314,6 @@ def test_check_api_version_deprecation_warning(base_url):
         ),
     ):
         IQMClient(base_url, api_variant=APIVariant.V1)
+
+    verifyNoUnwantedInteractions()
     unstub()

@@ -44,6 +44,10 @@ class JobAbortionError(RuntimeError):
     """Job abortion failed."""
 
 
+class EndpointRequestError(RuntimeError):
+    """Retrieving something from an endpoint failed."""
+
+
 class ArchitectureRetrievalError(RuntimeError):
     """Retrieving quantum architecture failed."""
 

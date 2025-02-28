@@ -24,7 +24,7 @@ import re
 from typing import Any
 from uuid import UUID
 
-from pydantic import BaseModel, Field, StrictStr, field_validator
+from pydantic import BaseModel, Field, StrictStr, TypeAdapter, field_validator
 from pydantic_core.core_schema import ValidationInfo
 
 
@@ -1051,20 +1051,6 @@ class RunStatus(BaseModel):
     warnings: list[str] | None = Field(None)
     """list of warning messages"""
 
-    @staticmethod
-    def from_dict(inp: dict[str, str | dict | list | None]) -> RunStatus:
-        """Parses the result from a dict.
-
-        Args:
-            inp: value to parse, has to map to RunResult
-
-        Returns:
-            parsed job status
-
-        """
-        input_copy = inp.copy()
-        return RunStatus(status=Status(input_copy.pop('status')), **input_copy)
-
 
 class Counts(BaseModel):
     """Measurement results in the counts representation"""
@@ -1089,20 +1075,6 @@ class RunCounts(BaseModel):
     the 0 state.""",
     )
 
-    @staticmethod
-    def from_dict(inp: dict[str, str | dict | list | None]) -> RunCounts:
-        """Parses the result from a dict.
-
-        Args:
-            inp: value to parse, has to map to RunCounts
-
-        Returns:
-            parsed job status
-
-        """
-        input_copy = inp.copy()
-        return RunCounts(status=Status(input_copy.pop('status')), **input_copy)
-
 
 class ClientLibrary(BaseModel):
     """Represents a client library with its metadata.
@@ -1122,3 +1094,7 @@ class ClientLibrary(BaseModel):
     package_url: str | None = Field(None)
     min: str
     max: str
+
+
+ClientLibraryDict = TypeAdapter(dict[str, ClientLibrary])
+DictDict = TypeAdapter(dict[str, dict])
