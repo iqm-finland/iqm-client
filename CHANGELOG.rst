@@ -2,6 +2,12 @@
 Changelog
 =========
 
+Version 23.0
+============
+
+* Make the server endpoint error behavior more uniform.
+* Speed up the unit tests by mocking ``sleep`` calls, do not send out actual HTTP requests.
+
 Version 22.4
 ============
 
