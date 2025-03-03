@@ -587,7 +587,7 @@ class QualityMetricSet(BaseModel):
     calibration_set_id: UUID | None = Field(...)
     """ID of the calibration set."""
     calibration_set_dut_label: str = Field(...)
-    """Chip Label."""
+    """Chip Label of the calibration set."""
     calibration_set_number_of_observations: int = Field(...)
     """Number of observations in the calibration set."""
     calibration_set_created_timestamp: str = Field(...)
@@ -599,7 +599,7 @@ class QualityMetricSet(BaseModel):
     quality_metric_set_id: UUID | None = Field(...)
     """ID of the quality metric set."""
     quality_metric_set_dut_label: str | None = Field(...)
-    """Chip label."""
+    """Chip label of the quality metric set."""
     quality_metric_set_created_timestamp: str | None = Field(...)
     """Timestamp when the quality metric set was created."""
     quality_metric_set_end_timestamp: str | None = Field(...)
@@ -616,7 +616,7 @@ class CalibrationSet(BaseModel):
     calibration_set_id: UUID = Field(...)
     """ID of the calibration set."""
     calibration_set_dut_label: str = Field(...)
-    """Chip Label."""
+    """Chip Label of the calibration set."""
     calibration_set_is_invalid: bool = Field(...)
     """Whether the calibration set is invalid."""
     calibration_set_created_timestamp: str = Field(...)
