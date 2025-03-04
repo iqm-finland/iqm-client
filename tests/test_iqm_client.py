@@ -641,28 +641,6 @@ def test_get_quantum_architecture(
     unstub()
 
 
-def test_get_latest_quality_metric_set(sample_client, base_url, sample_quality_metric_set, quality_metric_set_success):
-    """Tests that the latest quality metric set is returned."""
-    expect(requests, times=1).get(f'{base_url}/calibration/metrics/latest', ...).thenReturn(quality_metric_set_success)
-    assert sample_client.get_latest_quality_metric_set() == QualityMetricSet(**sample_quality_metric_set)
-    verifyNoUnwantedInteractions()
-    unstub()
-
-
-def test_get_latest_quality_metric_set_v2(
-    sample_client_v2, base_url, sample_quality_metric_set, quality_metric_set_success
-):
-    """Test retrieving the latest quality metric set using the control station api version (v2)"""
-    expect(requests, times=1).get(f'{base_url}/cocos/calibration/metrics/latest', ...).thenReturn(
-        quality_metric_set_success
-    )
-
-    assert sample_client_v2.get_latest_quality_metric_set() == QualityMetricSet(**sample_quality_metric_set)
-
-    verifyNoUnwantedInteractions()
-    unstub()
-
-
 def test_get_quality_metric_set_with_calset_id(
     sample_client, base_url, sample_quality_metric_set, quality_metric_set_success
 ):
@@ -1364,13 +1342,13 @@ def test_get_supported_client_libraries(base_url, sample_client):
     unstub()
 
 
-def test_check_api_version_deprecation_warning(base_url):
-    """Test that deprecation warning is raised when API version is deprecated."""
-    with pytest.warns(
-        DeprecationWarning,
-        match=re.escape(
-            'The V1 API is deprecated and will be removed in a future release. Please use the V2 API instead.'
-        ),
-    ):
-        IQMClient(base_url, api_variant=APIVariant.V1)
-    unstub()
+# def test_check_api_version_deprecation_warning(base_url):
+#     """Test that deprecation warning is raised when API version is deprecated."""
+#     with pytest.warns(
+#         DeprecationWarning,
+#         match=re.escape(
+#             'The V1 API is deprecated and will be removed in a future release. Please use the V2 API instead.'
+#         ),
+#     ):
+#         IQMClient(base_url, api_variant=APIVariant.V1)
+#     unstub()

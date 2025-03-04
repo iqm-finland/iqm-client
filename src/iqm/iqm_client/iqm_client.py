@@ -862,7 +862,7 @@ class IQMClient:
     def get_quality_metric_set(
         self, calibration_set_id: UUID | None = None, *, timeout_secs: float = REQUESTS_TIMEOUT
     ) -> QualityMetricSet:
-        """Retrieve the given quality metric set from the server.
+        """Retrieve the latest quality metric set for the given calibration set from the server.
 
         Args:
             calibration_set_id: ID of the calibration set for which the quality metrics are returned.
@@ -884,37 +884,6 @@ class IQMClient:
 
         result = requests.get(
             self._api.url(APIEndpoint.QUALITY_METRICS, calibration_set_id_str),
-            headers=self._default_headers(),
-            timeout=timeout_secs,
-        )
-
-        self._check_not_found_error(result)
-        self._check_authentication_errors(result)
-        result.raise_for_status()
-
-        try:
-            qm = QualityMetricSet(**result.json())
-        except (json.decoder.JSONDecodeError, KeyError) as e:
-            raise QualityMetricSetRetrievalError(f'Invalid response: {result.text}, {e}') from e
-
-        return qm
-
-    def get_latest_quality_metric_set(self, *, timeout_secs: float = REQUESTS_TIMEOUT) -> QualityMetricSet:
-        """Retrieve the latest quality metric set from the server.
-
-        Args:
-            timeout_secs: network request timeout.
-
-        Returns:
-            Requested quality metric set.
-
-        Raises:
-            QualityMetricsRetrievalError: IQM server specific exceptions
-            ClientAuthenticationError: if no valid authentication is provided
-            HTTPException: HTTP exceptions
-        """
-        result = requests.get(
-            self._api.url(APIEndpoint.QUALITY_METRICS_LATEST),
             headers=self._default_headers(),
             timeout=timeout_secs,
         )
