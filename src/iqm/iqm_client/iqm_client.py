@@ -904,8 +904,6 @@ class IQMClient:
     ) -> CalibrationSet:
         """Retrieve the given calibration set from the server.
 
-        Caches the result and returns the same result on later invocations.
-
         Args:
             calibration_set_id: ID of the calibration set to retrieve. If None, the current default
                 calibration set is used.

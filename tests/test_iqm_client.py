@@ -1342,13 +1342,13 @@ def test_get_supported_client_libraries(base_url, sample_client):
     unstub()
 
 
-# def test_check_api_version_deprecation_warning(base_url):
-#     """Test that deprecation warning is raised when API version is deprecated."""
-#     with pytest.warns(
-#         DeprecationWarning,
-#         match=re.escape(
-#             'The V1 API is deprecated and will be removed in a future release. Please use the V2 API instead.'
-#         ),
-#     ):
-#         IQMClient(base_url, api_variant=APIVariant.V1)
-#     unstub()
+def test_check_api_version_deprecation_warning(base_url):
+    """Test that deprecation warning is raised when API version is deprecated."""
+    with pytest.warns(
+        DeprecationWarning,
+        match=re.escape(
+            'The V1 API is deprecated and will be removed in a future release. Please use the V2 API instead.'
+        ),
+    ):
+        IQMClient(base_url, api_variant=APIVariant.V1)
+    unstub()
