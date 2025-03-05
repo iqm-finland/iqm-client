@@ -27,6 +27,8 @@ from iqm.iqm_client import (
     APIEndpoint,
     APIVariant,
     ArchitectureRetrievalError,
+    CalibrationSet,
+    CalibrationSetRetrievalError,
     Circuit,
     CircuitCompilationOptions,
     CircuitExecutionError,
@@ -40,6 +42,8 @@ from iqm.iqm_client import (
     Instruction,
     IQMClient,
     JobAbortionError,
+    QualityMetricSet,
+    QualityMetricSetRetrievalError,
     QuantumArchitectureSpecification,
     SingleQubitMapping,
     Status,
@@ -637,6 +641,74 @@ def test_get_quantum_architecture(
     unstub()
 
 
+def test_get_quality_metric_set_with_calset_id(
+    sample_client, base_url, sample_quality_metric_set, quality_metric_set_success
+):
+    """Tests that the correct quality metric set for the given ``calibration_set_id`` is returned."""
+    calset_id = sample_quality_metric_set['calibration_set_id']
+    expect(requests, times=1).get(f'{base_url}/calibration/metrics/{calset_id}', ...).thenReturn(
+        quality_metric_set_success
+    )
+
+    assert sample_client.get_quality_metric_set(calset_id) == QualityMetricSet(**sample_quality_metric_set)
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_get_quality_metric_set_without_calset_id(
+    sample_client, base_url, sample_quality_metric_set, quality_metric_set_success
+):
+    """Tests that the default quality metric set is returned when no ``calibration_set_id`` is provided."""
+    expect(requests, times=1).get(f'{base_url}/calibration/metrics/default', ...).thenReturn(quality_metric_set_success)
+    assert sample_client.get_quality_metric_set() == QualityMetricSet(**sample_quality_metric_set)
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_get_quality_metric_set_v2_with_calset_id(
+    sample_client_v2, quality_metric_set_url_v2, sample_quality_metric_set, quality_metric_set_success
+):
+    """Test retrieving the quality metric set using the control station api version (v2)"""
+    expect(requests, times=1).get(quality_metric_set_url_v2, ...).thenReturn(quality_metric_set_success)
+
+    assert sample_client_v2.get_quality_metric_set() == QualityMetricSet(**sample_quality_metric_set)
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_get_calibration_set_with_calset_id(sample_client, base_url, sample_calibration_set, calibration_set_success):
+    """Tests that the correct calibration set for the given ``calibration_set_id`` is returned."""
+    calset_id = sample_calibration_set['calibration_set_id']
+    expect(requests, times=1).get(f'{base_url}/api/v1/calibration/{calset_id}', ...).thenReturn(calibration_set_success)
+    assert sample_client.get_calibration_set(calset_id) == CalibrationSet(**sample_calibration_set)
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_get_calibration_set_without_calset_id(
+    sample_client, base_url, sample_calibration_set, calibration_set_success
+):
+    """Tests that the correct calibration set for the default calibration set is returned."""
+    expect(requests, times=1).get(f'{base_url}/api/v1/calibration/default', ...).thenReturn(calibration_set_success)
+    assert sample_client.get_calibration_set() == CalibrationSet(**sample_calibration_set)
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_get_calibration_set_v2(
+    sample_client_v2, calibration_set_url_v2, sample_calibration_set, calibration_set_success
+):
+    """Test retrieving the calibration set."""
+    expect(requests, times=1).get(calibration_set_url_v2, ...).thenReturn(calibration_set_success)
+
+    assert sample_client_v2.get_calibration_set() == CalibrationSet(**sample_calibration_set)
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
 def test_get_feedback_groups(base_url, channel_properties_url, channel_properties_success, static_architecture_success):
     """Test retrieving the feedback groups."""
     when(requests).get(f'{base_url}/info/client-libraries', headers=ANY, timeout=ANY).thenReturn(
@@ -708,6 +780,32 @@ def test_quantum_architecture_throws_json_decode_error_if_received_not_json(
 
     with pytest.raises(ArchitectureRetrievalError):
         sample_client.get_quantum_architecture()
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_quality_metric_set_throws_json_decode_error_if_received_not_json(
+    sample_client, quality_metric_set_url, not_valid_json_response
+):
+    """Test that an exception is raised when the response is not a valid JSON"""
+    expect(requests, times=1).get(quality_metric_set_url, ...).thenReturn(not_valid_json_response)
+
+    with pytest.raises(QualityMetricSetRetrievalError):
+        sample_client.get_quality_metric_set()
+
+    verifyNoUnwantedInteractions()
+    unstub()
+
+
+def test_calibration_set_throws_json_decode_error_if_received_not_json(
+    sample_client, calibration_set_url, not_valid_json_response
+):
+    """Test that an exception is raised when the response is not a valid JSON"""
+    expect(requests, times=1).get(calibration_set_url, ...).thenReturn(not_valid_json_response)
+
+    with pytest.raises(CalibrationSetRetrievalError):
+        sample_client.get_calibration_set()
 
     verifyNoUnwantedInteractions()
     unstub()

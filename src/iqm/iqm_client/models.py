@@ -21,7 +21,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from functools import cached_property
 import re
-from typing import Any, Optional, Union
+from typing import Any
 from uuid import UUID
 
 from pydantic import BaseModel, Field, StrictStr, field_validator
@@ -278,7 +278,7 @@ class Instruction(BaseModel):
 
     name: str = Field(..., examples=['measure'])
     """name of the quantum operation"""
-    implementation: Optional[StrictStr] = Field(None)
+    implementation: StrictStr | None = Field(None)
     """name of the implementation, for experimental use only"""
     qubits: Locus = Field(..., examples=[('alice',)])
     """names of the locus components (typically qubits) the operation acts on"""
@@ -417,7 +417,7 @@ class Circuit(BaseModel):
     """name of the circuit"""
     instructions: tuple[Instruction, ...] = Field(...)
     """instructions comprising the circuit"""
-    metadata: Optional[dict[str, Any]] = Field(None)
+    metadata: dict[str, Any] | None = Field(None)
     """arbitrary metadata associated with the circuit"""
 
     def all_qubits(self) -> set[str]:
@@ -581,6 +581,52 @@ def _component_sort_key(component_name: str) -> tuple[str, int, str]:
     return re.sub(r'[^a-zA-Z]', '', component_name), get_numeric_id(component_name), component_name
 
 
+class QualityMetricSet(BaseModel):
+    """Quality metrics for a calibration set."""
+
+    calibration_set_id: UUID | None = Field(...)
+    """ID of the calibration set."""
+    calibration_set_dut_label: str = Field(...)
+    """Chip Label of the calibration set."""
+    calibration_set_number_of_observations: int = Field(...)
+    """Number of observations in the calibration set."""
+    calibration_set_created_timestamp: str = Field(...)
+    """Timestamp when the calibration set was created."""
+    calibration_set_end_timestamp: str = Field(...)
+    """Timestamp when the calibration set was finalized."""
+    calibration_set_is_invalid: bool = Field(...)
+    """Whether the calibration set is invalid."""
+    quality_metric_set_id: UUID | None = Field(...)
+    """ID of the quality metric set."""
+    quality_metric_set_dut_label: str | None = Field(...)
+    """Chip label of the quality metric set."""
+    quality_metric_set_created_timestamp: str | None = Field(...)
+    """Timestamp when the quality metric set was created."""
+    quality_metric_set_end_timestamp: str | None = Field(...)
+    """Timestamp when the quality metric set was finalized."""
+    quality_metric_set_is_invalid: bool = Field(...)
+    """Whether the quality metric set is invalid."""
+    metrics: dict[str, dict[str, Any]] | None = Field(...)
+    """Quality metrics."""
+
+
+class CalibrationSet(BaseModel):
+    """Metadata and observations of a calibration set."""
+
+    calibration_set_id: UUID = Field(...)
+    """ID of the calibration set."""
+    calibration_set_dut_label: str = Field(...)
+    """Chip Label of the calibration set."""
+    calibration_set_is_invalid: bool = Field(...)
+    """Whether the calibration set is invalid."""
+    calibration_set_created_timestamp: str = Field(...)
+    """Timestamp when the calibration set was created."""
+    calibration_set_end_timestamp: str = Field(...)
+    """Timestamp when the calibration set was finalized."""
+    observations: dict[str, Any] = Field(...)
+    """Calibration data."""
+
+
 class GateImplementationInfo(BaseModel):
     """Information about an implementation of a quantum gate/operation."""
 
@@ -638,7 +684,7 @@ class GateInfo(BaseModel):
             ('QB10', 'QB2'),
 
         """
-        loci_set = set(locus for impl in self.implementations.values() for locus in impl.loci)
+        loci_set = {locus for impl in self.implementations.values() for locus in impl.loci}
         loci_sorted = sorted(loci_set, key=lambda locus: tuple(map(_component_sort_key, locus)))
         return tuple(loci_sorted)
 
@@ -735,7 +781,7 @@ class DDStrategy(BaseModel):
     merge_contiguous_waits: bool = Field(True)
     """Merge contiguous ``Wait`` instructions into one if they are separated only by ``Block`` instructions."""
 
-    target_qubits: Optional[frozenset[str]] = Field(None)
+    target_qubits: frozenset[str] | None = Field(None)
     """Qubits on which dynamical decoupling should be applied. If ``None``, all qubits are targeted."""
 
     skip_leading_wait: bool = Field(True)
@@ -744,7 +790,7 @@ class DDStrategy(BaseModel):
     skip_trailing_wait: bool = Field(True)
     """Skip processing trailing ``Wait`` instructions."""
 
-    gate_sequences: list[tuple[int, Union[str, PRXSequence], str]] = Field(default_factory=list)
+    gate_sequences: list[tuple[int, str | PRXSequence, str]] = Field(default_factory=list)
     """Available decoupling gate sequences to chose from in this strategy.
 
     Each sequence is defined by a tuple of ``(ratio, gate pattern, align)``:
@@ -782,7 +828,7 @@ STANDARD_DD_STRATEGY = DDStrategy(gate_sequences=[(9, 'XYXYYXYX', 'asap'), (5, '
 class CircuitCompilationOptions:
     """Various discrete options for quantum circuit compilation to pulse schedule."""
 
-    max_circuit_duration_over_t2: Optional[float] = None
+    max_circuit_duration_over_t2: float | None = None
     """Server-side circuit disqualification threshold.
     The job is rejected on the server if any circuit in it is estimated to take longer than
     the shortest T2 time of any qubit used in the circuit, multiplied by this value.
@@ -796,14 +842,14 @@ class CircuitCompilationOptions:
     move_gate_frame_tracking: MoveGateFrameTrackingMode = MoveGateFrameTrackingMode.FULL
     """MOVE gate frame tracking mode for circuit compilation. This options is ignored on devices that do not support
         MOVE and for circuits that do not contain MOVE gates."""
-    active_reset_cycles: Optional[int] = None
+    active_reset_cycles: int | None = None
     """Number of active ``reset`` operations inserted at the beginning of each circuit for each active qubit.
     ``None`` means active reset is not used but instead reset is done by waiting (relaxation). Integer values smaller
     than 1 result in neither active nor reset by wait being used, in which case any reset operations must be explicitly
     added in the circuit."""
     dd_mode: DDMode = DDMode.DISABLED
     """Control whether dynamical decoupling should be enabled or disabled during the execution."""
-    dd_strategy: Optional[DDStrategy] = None
+    dd_strategy: DDStrategy | None = None
     """A particular dynamical decoupling strategy to be used during the execution."""
 
     def __post_init__(self):
@@ -827,16 +873,16 @@ class RunRequest(BaseModel):
 
     circuits: CircuitBatch = Field(...)
     """batch of quantum circuit(s) to execute"""
-    custom_settings: Optional[dict[str, Any]] = Field(None)
+    custom_settings: dict[str, Any] | None = Field(None)
     """Custom settings to override default IQM hardware settings and calibration data.
     Note: This field should be always None in normal use."""
-    calibration_set_id: Optional[UUID] = Field(None)
+    calibration_set_id: UUID | None = Field(None)
     """ID of the calibration set to use, or None to use the latest calibration set"""
-    qubit_mapping: Optional[list[SingleQubitMapping]] = Field(None)
+    qubit_mapping: list[SingleQubitMapping] | None = Field(None)
     """mapping of logical qubit names to physical qubit names, or None if using physical qubit names"""
     shots: int = Field(..., gt=0)
     """how many times to execute each circuit in the batch, must be greater than zero"""
-    max_circuit_duration_over_t2: Optional[float] = Field(None)
+    max_circuit_duration_over_t2: float | None = Field(None)
     """Circuits are disqualified on the server if they are longer than this ratio
         of the T2 time of the qubits.
         If set to 0.0, no circuits are disqualified. If set to None the server default value is used."""
@@ -847,14 +893,14 @@ class RunRequest(BaseModel):
     """Which method of MOVE gate validation to use for circuit compilation."""
     move_gate_frame_tracking_mode: MoveGateFrameTrackingMode = Field(MoveGateFrameTrackingMode.FULL)
     """Which method of MOVE gate frame tracking to use for circuit compilation."""
-    active_reset_cycles: Optional[int] = Field(None)
+    active_reset_cycles: int | None = Field(None)
     """Number of active ``reset`` operations inserted at the beginning of each circuit for each active qubit.
     ``None`` means active reset is not used but instead reset is done by waiting (relaxation). Integer values smaller
     than 1 result in neither active nor reset by wait being used, in which case any reset operations must be explicitly
     added in the circuit."""
     dd_mode: DDMode = Field(DDMode.DISABLED)
     """Control whether dynamical decoupling should be enabled or disabled during the execution."""
-    dd_strategy: Optional[DDStrategy] = Field(None)
+    dd_strategy: DDStrategy | None = Field(None)
     """A particular dynamical decoupling strategy to be used during the execution."""
 
 
@@ -871,28 +917,28 @@ class JobParameters(BaseModel):
     """Job-specific parameters extracted from the original RunRequest."""
 
     shots: int = Field(...)
-    max_circuit_duration_over_t2: Optional[float] = Field(None)
+    max_circuit_duration_over_t2: float | None = Field(None)
     heralding_mode: HeraldingMode = Field(HeraldingMode.NONE)
     move_validation_mode: MoveGateValidationMode = Field(MoveGateValidationMode.STRICT)
     move_gate_frame_tracking_mode: MoveGateFrameTrackingMode = Field(MoveGateFrameTrackingMode.FULL)
     dd_mode: DDMode = Field(DDMode.DISABLED)
-    dd_strategy: Optional[DDStrategy] = Field(None)
+    dd_strategy: DDStrategy | None = Field(None)
 
 
 class Metadata(BaseModel):
     """Metadata describing a circuit execution job."""
 
-    calibration_set_id: Optional[UUID] = Field(None)
+    calibration_set_id: UUID | None = Field(None)
     """ID of the calibration set used"""
-    request: Optional[RunRequest] = Field(None)
+    request: RunRequest | None = Field(None)
     """optional copy of the original RunRequest sent to the server"""
-    parameters: Optional[JobParameters] = Field(None)
+    parameters: JobParameters | None = Field(None)
     """job-specific parameters extracted from the original request"""
-    circuits_batch: Optional[CircuitBatch] = Field(None)
+    circuits_batch: CircuitBatch | None = Field(None)
     """circuits batch submitted for execution"""
-    cocos_version: Optional[str] = Field(None)
+    cocos_version: str | None = Field(None)
     """CoCoS version used to execute the job"""
-    timestamps: Optional[dict[str, str]] = Field(None)
+    timestamps: dict[str, str] | None = Field(None)
     """Timestamps of execution progress"""
 
     @property
@@ -932,7 +978,7 @@ class Metadata(BaseModel):
         raise ValueError('No dynamical decoupling mode information available in the metadata')
 
     @property
-    def dd_strategy(self) -> Optional[DDStrategy]:
+    def dd_strategy(self) -> DDStrategy | None:
         """Return the dynamical decoupling strategy used with the job."""
         if self.parameters is not None:
             return self.parameters.dd_strategy
@@ -983,17 +1029,17 @@ class RunResult(BaseModel):
 
     status: Status = Field(...)
     """current status of the job, in ``{'pending compilation', 'pending execution', 'ready', 'failed', 'aborted'}``"""
-    measurements: Optional[CircuitMeasurementResultsBatch] = Field(None)
+    measurements: CircuitMeasurementResultsBatch | None = Field(None)
     """if the job has finished successfully, the measurement results for the circuit(s)"""
-    message: Optional[str] = Field(None)
+    message: str | None = Field(None)
     """if the job failed, an error message"""
     metadata: Metadata = Field(...)
     """metadata about the job"""
-    warnings: Optional[list[str]] = Field(None)
+    warnings: list[str] | None = Field(None)
     """list of warning messages"""
 
     @staticmethod
-    def from_dict(inp: dict[str, Union[str, dict, list, None]]) -> RunResult:
+    def from_dict(inp: dict[str, str | dict | list | None]) -> RunResult:
         """Parses the result from a dict.
 
         Args:
@@ -1012,13 +1058,13 @@ class RunStatus(BaseModel):
 
     status: Status = Field(...)
     """current status of the job, in ``{'pending compilation', 'pending execution', 'ready', 'failed', 'aborted'}``"""
-    message: Optional[str] = Field(None)
+    message: str | None = Field(None)
     """if the job failed, an error message"""
-    warnings: Optional[list[str]] = Field(None)
+    warnings: list[str] | None = Field(None)
     """list of warning messages"""
 
     @staticmethod
-    def from_dict(inp: dict[str, Union[str, dict, list, None]]) -> RunStatus:
+    def from_dict(inp: dict[str, str | dict | list | None]) -> RunStatus:
         """Parses the result from a dict.
 
         Args:
@@ -1046,7 +1092,7 @@ class RunCounts(BaseModel):
 
     status: Status = Field(...)
     """current status of the job, in ``{'pending compilation', 'pending execution', 'ready', 'failed', 'aborted'}``"""
-    counts_batch: Optional[list[Counts]] = Field(
+    counts_batch: list[Counts] | None = Field(
         None,
         description="""Measurement results in histogram representation.
     The `measurement_keys` list provides the order of the measurment keys for the repesentation of the states in the keys
@@ -1056,7 +1102,7 @@ class RunCounts(BaseModel):
     )
 
     @staticmethod
-    def from_dict(inp: dict[str, Union[str, dict, list, None]]) -> RunCounts:
+    def from_dict(inp: dict[str, str | dict | list | None]) -> RunCounts:
         """Parses the result from a dict.
 
         Args:
@@ -1083,8 +1129,8 @@ class ClientLibrary(BaseModel):
     """
 
     name: str
-    package_name: Optional[str] = Field(None)
-    repo_url: Optional[str] = Field(None)
-    package_url: Optional[str] = Field(None)
+    package_name: str | None = Field(None)
+    repo_url: str | None = Field(None)
+    package_url: str | None = Field(None)
     min: str
     max: str

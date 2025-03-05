@@ -22,10 +22,10 @@ import json
 import os
 import platform
 import time
-from typing import Any, Optional
+from typing import Any
 from uuid import UUID
 
-from mockito import ANY, when
+from mockito import ANY, unstub, when
 from packaging.version import parse
 import pytest
 import requests
@@ -50,6 +50,7 @@ from iqm.iqm_client import (
     SingleQubitMapping,
     __version__,
 )
+from iqm.iqm_client.api import APIVariant
 
 
 @pytest.fixture()
@@ -77,12 +78,22 @@ def missing_run_id() -> UUID:
     return UUID('059e4186-50a3-4e6c-ba1f-37fe6afbdfc2')
 
 
-@pytest.fixture()
+@pytest.fixture(scope='function')
 def sample_client(base_url) -> IQMClient:
     when(requests).get(f'{base_url}/info/client-libraries', headers=ANY, timeout=ANY).thenReturn(
         mock_supported_client_libraries_response()
     )
     client = IQMClient(url=base_url)
+    client._token_manager = None  # Do not use authentication
+    return client
+
+
+@pytest.fixture(scope='function')
+def sample_client_v2(base_url) -> IQMClient:
+    when(requests).get(f'{base_url}/info/client-libraries', headers=ANY, timeout=ANY).thenReturn(
+        mock_supported_client_libraries_response()
+    )
+    client = IQMClient(url=base_url, api_variant=APIVariant.V2)
     client._token_manager = None  # Do not use authentication
     return client
 
@@ -95,6 +106,13 @@ def client_with_signature(base_url) -> IQMClient:
     client = IQMClient(url=base_url, client_signature='some-signature')
     client._token_manager = None  # Do not use authentication
     return client
+
+
+@pytest.fixture(autouse=True)
+def cleanup_mockito():
+    """Automatically cleanup all mockito stubs after each test."""
+    yield  # This runs the test
+    unstub()  # This runs after each test
 
 
 @pytest.fixture()
@@ -118,6 +136,26 @@ def quantum_architecture_url(base_url) -> str:
 
 
 @pytest.fixture()
+def quality_metric_set_url(base_url) -> str:
+    return f'{base_url}/calibration/metrics/default'
+
+
+@pytest.fixture()
+def quality_metric_set_url_v2(base_url) -> str:
+    return f'{base_url}/cocos/calibration/metrics/default'
+
+
+@pytest.fixture()
+def calibration_set_url(base_url) -> str:
+    return f'{base_url}/api/v1/calibration/default'
+
+
+@pytest.fixture()
+def calibration_set_url_v2(base_url) -> str:
+    return f'{base_url}/cocos/api/v1/calibration/default'
+
+
+@pytest.fixture()
 def dynamic_architecture_url(base_url) -> str:
     return f'{base_url}/api/v1/calibration/default/gates'
 
@@ -134,7 +172,7 @@ def settings_dict():
     Reads and parses settings file into a dictionary
     """
     settings_path = os.path.dirname(os.path.realpath(__file__)) + '/resources/settings.json'
-    with open(settings_path, 'r', encoding='utf-8') as f:
+    with open(settings_path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -476,6 +514,70 @@ def sample_static_architecture():
 
 
 @pytest.fixture
+def sample_quality_metric_set():
+    return {
+        'calibration_set_id': 'e70667f9-a432-4585-97a9-d54de9a85abd',
+        'calibration_set_dut_label': 'M194_W0_P08_Z99',
+        'calibration_set_number_of_observations': 691,
+        'calibration_set_created_timestamp': '2023-02-10T08:57:04.605956+00:00',
+        'calibration_set_end_timestamp': '2023-02-10T08:57:04.605956+00:00',
+        'calibration_set_is_invalid': False,
+        'quality_metric_set_id': 'e70667f9-a432-4585-97a9-d54de9a85abd',
+        'quality_metric_set_dut_label': 'M194_W0_P08_Z99',
+        'quality_metric_set_created_timestamp': '2023-02-10T08:57:04.605956+00:00',
+        'quality_metric_set_end_timestamp': '2023-02-10T08:57:04.605956+00:00',
+        'quality_metric_set_is_invalid': False,
+        'metrics': {
+            'QB1.t1_time': {
+                'value': '4.408139707188389e-05',
+                'unit': 's',
+                'uncertainty': '2.83049498694448e-06',
+                'timestamp': '2023-02-10T08:57:04.605956+00:00',
+            },
+            'QB1.t2_time': {
+                'value': '3.245501974471748e-05',
+                'unit': 's',
+                'uncertainty': '2.39049697699448e-06',
+                'timestamp': '2023-02-10T08:57:04.605956+00:00',
+            },
+        },
+    }
+
+
+@pytest.fixture
+def sample_calibration_set():
+    return {
+        'calibration_set_id': 'e70667f9-a432-4585-97a9-d54de9a85abd',
+        'calibration_set_dut_label': 'M194_W0_P08_Z99',
+        'calibration_set_created_timestamp': '2023-02-10T08:57:04.605956+00:00',
+        'calibration_set_end_timestamp': '2023-02-10T08:57:04.605956+00:00',
+        'calibration_set_is_invalid': False,
+        'observations': {
+            'QB4.flux.voltage': {
+                'observation_id': 123456,
+                'dut_field': 'QB4.flux.voltage',
+                'unit': 'V',
+                'value': -0.158,
+                'uncertainty': None,
+                'invalid': False,
+                'created_timestamp': '2023-02-10T08:57:04.605956+00:00',
+                'modified_timestamp': '2023-02-10T08:57:04.605956+00:00',
+            },
+            'PL-1.readout.center_frequency': {
+                'observation_id': 234567,
+                'dut_field': 'PL-1.readout.center_frequency',
+                'unit': 'Hz',
+                'value': 5.5e9,
+                'uncertainty': None,
+                'invalid': False,
+                'created_timestamp': '2023-02-10T08:57:04.605956+00:00',
+                'modified_timestamp': '2023-02-10T08:57:04.605956+00:00',
+            },
+        },
+    }
+
+
+@pytest.fixture
 def sample_dynamic_architecture() -> DynamicQuantumArchitecture:
     return DynamicQuantumArchitecture(
         calibration_set_id=UUID('26c5e70f-bea0-43af-bd37-6212ec7d04cb'),
@@ -617,7 +719,7 @@ def hybrid_move_architecture() -> DynamicQuantumArchitecture:
 
 
 class MockTextResponse:
-    def __init__(self, status_code: int, text: str, history: Optional[list[Response]] = None):
+    def __init__(self, status_code: int, text: str, history: list[Response] | None = None):
         self.status_code = status_code
         self.text = text
         self.history = history
@@ -636,7 +738,7 @@ def not_valid_json_response() -> MockTextResponse:
 
 
 class MockJsonResponse:
-    def __init__(self, status_code: int, json_data: dict, history: Optional[list[Response]] = None):
+    def __init__(self, status_code: int, json_data: dict, history: list[Response] | None = None):
         self.status_code = status_code
         self.json_data = json_data
         self.history = history
@@ -655,7 +757,7 @@ class MockJsonResponse:
 
 
 def mock_supported_client_libraries_response(
-    iqm_client_name: str = 'iqm-client', max_version: Optional[str] = None, min_version: Optional[str] = None
+    iqm_client_name: str = 'iqm-client', max_version: str | None = None, min_version: str | None = None
 ) -> MockJsonResponse:
     client_version = parse(version('iqm-client'))
     min_version = f'{client_version.major}.0' if min_version is None else min_version
@@ -690,6 +792,17 @@ def submit_failed_auth() -> MockJsonResponse:
 @pytest.fixture()
 def static_architecture_success(sample_static_architecture) -> MockJsonResponse:
     return MockJsonResponse(200, sample_static_architecture)
+
+
+@pytest.fixture()
+def quality_metric_set_success(sample_quality_metric_set) -> MockJsonResponse:
+    """Mock server response for quality metrics."""
+    return MockJsonResponse(200, sample_quality_metric_set)
+
+
+@pytest.fixture()
+def calibration_set_success(sample_calibration_set) -> MockJsonResponse:
+    return MockJsonResponse(200, sample_calibration_set)
 
 
 @pytest.fixture()
@@ -735,16 +848,16 @@ def make_token(token_type: str, lifetime: int) -> str:
     Returns:
         Encoded token
     """
-    empty = b64encode('{}'.encode('utf-8')).decode('utf-8')
+    empty = b64encode(b'{}').decode('utf-8')
     body = f'{{ "typ": "{token_type}", "exp": {int(time.time()) + lifetime} }}'
     body = b64encode(body.encode('utf-8')).decode('utf-8')
     return f'{empty}.{body}.{empty}'
 
 
 def post_jobs_args(
-    run_request: Optional[RunRequest] = None,
-    user_agent: Optional[str] = None,
-    access_token: Optional[str] = None,
+    run_request: RunRequest | None = None,
+    user_agent: str | None = None,
+    access_token: str | None = None,
 ) -> dict[str, Any]:
     """Returns expected kwargs of POST /jobs request"""
     headers = {'Expect': '100-Continue'} if run_request is not None else {}
@@ -762,8 +875,8 @@ def post_jobs_args(
 
 
 def get_jobs_args(
-    user_agent: Optional[str] = None,
-    access_token: Optional[str] = None,
+    user_agent: str | None = None,
+    access_token: str | None = None,
 ) -> dict[str, Any]:
     """Returns expected kwargs of POST /jobs request"""
     headers = {}

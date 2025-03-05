@@ -19,7 +19,7 @@ from base64 import b64decode
 import json
 import os
 import time
-from typing import Any, Optional
+from typing import Any
 
 import requests
 
@@ -69,11 +69,11 @@ class TokenManager:
 
     def __init__(
         self,
-        token: Optional[str] = None,
-        tokens_file: Optional[str] = None,
-        auth_server_url: Optional[str] = None,
-        username: Optional[str] = None,
-        password: Optional[str] = None,
+        token: str | None = None,
+        tokens_file: str | None = None,
+        auth_server_url: str | None = None,
+        username: str | None = None,
+        password: str | None = None,
     ):
         # pylint: disable=too-many-positional-arguments
         def _format_names(variable_names: list[str]) -> str:
@@ -113,8 +113,8 @@ class TokenManager:
         else:
             auth_parameters = {key: str(value) for key, value in init_parameters.items() if value}
 
-        self._token_provider: Optional[TokenProviderInterface] = None
-        self._access_token: Optional[str] = None
+        self._token_provider: TokenProviderInterface | None = None
+        self._access_token: str | None = None
 
         if not auth_parameters:
             self._token_provider = None
@@ -135,7 +135,7 @@ class TokenManager:
                 f'Invalid combination of authentication parameters specified: {list(auth_parameters)}',
             )
 
-    def get_bearer_token(self, retries: int = 1) -> Optional[str]:
+    def get_bearer_token(self, retries: int = 1) -> str | None:
         """
         Returns a valid bearer token, or None if no user authentication has been configured.
 
@@ -203,7 +203,7 @@ class ExternalToken(TokenProviderInterface):
     """Holds an external token"""
 
     def __init__(self, token: str):
-        self._token: Optional[str] = token
+        self._token: str | None = token
 
     def get_token(self) -> str:
         if self._token is None:
@@ -219,13 +219,13 @@ class TokensFileReader(TokenProviderInterface):
     """Reads token from a file"""
 
     def __init__(self, tokens_file: str):
-        self._path: Optional[str] = tokens_file
+        self._path: str | None = tokens_file
 
     def get_token(self) -> str:
         try:
             if self._path is None:
                 raise ClientAuthenticationError('No tokens file available')
-            with open(self._path, 'r', encoding='utf-8') as file:
+            with open(self._path, encoding='utf-8') as file:
                 raw_data = file.read()
             json_data = json.loads(raw_data)
             token = json_data.get('access_token')
@@ -252,9 +252,9 @@ class TokenClient(TokenProviderInterface):
         self._logout_url = f'{auth_server_url}/realms/{realm}/protocol/openid-connect/logout'
         self._username = username
         self._password = password
-        self._refresh_token: Optional[str] = None
+        self._refresh_token: str | None = None
 
-    def _get_access_token_from_server(self, grant_type: str) -> Optional[str]:
+    def _get_access_token_from_server(self, grant_type: str) -> str | None:
         """Get new access token from the server and update refresh token."""
 
         if grant_type == TokenClient.REFRESH_TOKEN_GRANT_TYPE:
@@ -274,7 +274,7 @@ class TokenClient(TokenProviderInterface):
             }
 
         # Request new tokens from the server
-        access_token: Optional[str] = None
+        access_token: str | None = None
         result = requests.post(self._token_url, data=data, timeout=AUTH_REQUESTS_TIMEOUT)
         if result.status_code == 200:
             tokens = result.json()
@@ -291,7 +291,7 @@ class TokenClient(TokenProviderInterface):
         if not self._token_url:
             raise ClientConfigurationError('No auth server configured')
 
-        access_token: Optional[str] = None
+        access_token: str | None = None
         if TokenManager.time_left_seconds(self._refresh_token) > REFRESH_MARGIN_SECONDS:
             # There is a valid refresh token, try to update tokens using it
             access_token = self._get_access_token_from_server(TokenClient.REFRESH_TOKEN_GRANT_TYPE)

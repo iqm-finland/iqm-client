@@ -13,7 +13,6 @@
 # limitations under the License.
 from collections import Counter
 import re
-from typing import Optional
 from uuid import UUID
 
 import pytest
@@ -44,8 +43,8 @@ class MoveTranspilerBase:
     def insert(
         self,
         circuit: Circuit,
-        existing_moves: Optional[ExistingMoveHandlingOptions] = None,
-        qb_map: Optional[dict[str, str]] = None,
+        existing_moves: ExistingMoveHandlingOptions | None = None,
+        qb_map: dict[str, str] | None = None,
         restore_states: bool = True,
     ):
         """Call transpile_insert_moves on the given circuit."""
