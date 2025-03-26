@@ -8,10 +8,10 @@
 IQM Client
 ###########
 
-
-**The IQM Client GitHub repository has been archived. The iqm-client package, including the source code, is available
-at** `PyPI <https://pypi.org/project/iqm-client/>`_  **and the latest documentation is available at**
-`<https://docs.meetiqm.com/iqm-client/>`_.
+**The IQM Client GitHub repository has been archived. New versions of the iqm-client package, including the source code,
+will continue to be published at** `PyPI <https://pypi.org/project/iqm-client/>`_  **and the latest documentation is
+available at** `<https://docs.meetiqm.com/iqm-client/>`_. **A public mirror of the latest source code is also available
+at** `<https://github.com/iqm-finland/sdk>`_. **For support, you can contact support@meetiqm.com**.
 
 Client-side Python library for connecting to an `IQM <https://meetiqm.com/>`_ quantum computer.
 
