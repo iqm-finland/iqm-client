@@ -10,10 +10,10 @@ IQM Client
 
 **The IQM Client GitHub repository has been archived. New versions of the iqm-client package, including the source code,
 will continue to be published at** `PyPI <https://pypi.org/project/iqm-client/>`_  **and the latest documentation is
-available at** `<https://docs.meetiqm.com/iqm-client/>`_. **A public mirror of the latest source code is also available
-at** `<https://github.com/iqm-finland/sdk>`_. **For support, you can contact support@meetiqm.com**.
+available at** `<https://docs.iqm.tech/iqm-client/>`_. **A public mirror of the latest source code is also available
+at** `<https://github.com/iqm-finland/sdk>`_. **For support, you can contact support@iqm.tech**.
 
-Client-side Python library for connecting to an `IQM <https://meetiqm.com/>`_ quantum computer.
+Client-side Python library for connecting to an `IQM <https://iqm.tech/>`_ quantum computer.
 
 Installation
 ============
@@ -34,7 +34,7 @@ If you want just this library, though, you can install it from the Python Packag
 Documentation
 =============
 
-Documentation for the latest version is `available online <https://docs.meetiqm.com/iqm-client/>`_.
+Documentation for the latest version is `available online <https://docs.iqm.tech/iqm-client/>`_.
 You can build documentation for any older version locally by downloading the corresponding package from PyPI,
 and running the docs builder. For versions 20.12 and later this is done by running ``./docbuild`` in the
 ``iqm-client`` root directory, and for earlier versions by running ``tox run -e docs``.
